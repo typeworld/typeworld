@@ -6,7 +6,8 @@
 2. [Introduction](#introduction)
 3. [Versioning](#versioning)
 4. [Object model](#objectmodel)
-5. [Class Reference](#classreference)
+5. [Example Code](#example)
+6. [Class Reference](#classreference)
 
 
 
@@ -42,6 +43,66 @@ Requires `deepdiff` for recursive dictionary comparison, but only if you wish to
 ```sh
 pip install deepdiff
 ```
+
+
+
+<div id="objectmodel"></div>
+
+## Object model
+
+![](../../../object-model.png)
+
+
+
+<div id="versioning"></div>
+
+## Versioning
+
+Every type producer has different habits when it comes to versioning of fonts. Most people would update all fonts of the family to the new version, others would only tweak a few fonts.
+
+To accommodate all of these habits, the Type.World API supports version information in two places. However, the entire system relies on version numbers being specified as float numbers, making them mathematically comparable for sorting. Higher numbers mean newer versions.
+
+#### Versions at the [Family](#class_Family) level
+
+The [Family.versions](#class_Family_attribute_versions) attribute can carry a list of [Version](#class_Version) objects. Versions that you specify here are expected to be present throughout the entire family; meaning that the complete amount of all fonts in all versions is the result of a multiplication of the number of fonts with the number of versions.
+
+#### Versions at the [Font](#class_Font) level
+
+In addition to that, you may also specify a list of [Version](#class_Version) objects at the [Font.versions](#class_Font_attribute_versions) attribute. Versions that you specify here are expected to be available only for this font. 
+
+When versions defined here carry the same version number as versions defined at the family level, the font-specific versions take precedence over the family-specific versions.
+
+You may define a smaller amount of versions here than at the family level. In this case it is still assumed that all those versions which are defined at the family level but not at the font level are available for this font, with the versions defined at the font being available additionally.
+
+You may also define a larger amount of versions here than at the family level. In this case it is assumed that the font carries versions that are not available for the entire family.
+
+This leaves us with four different scenarios for defining versions:
+
+#### 1. Versions only defined at family level
+
+Each font is expected to be available in all the versions defined at the family level.
+
+#### 2. Versions only defined at font level
+
+Each font is expected to be available in just the versions defined at each individual font. Therefore, a single font can contain completely individual version numbers and descriptions.
+
+#### 3. Versions are defined at family and font level
+
+Each font is expected to be available in all the versions defined at the family level.
+
+Additionally, font-level definitions can overwrite versions defined at family level when they use the same version number. This makes sense when only the description of a font-level version needs to differ from the same version number’s family-level description.
+
+Additionally, individual font-level definitions may add versions not defined at the family level.
+
+#### Use [Font.getSortedVersions()](#class_Font_method_getSortedVersions)
+
+Because in the end the versions matter only at the font level, the [Font.getSortedVersions()](#class_Font_method_getSortedVersions) method will output the final list of versions in the above combinations, with font-level definitions taking precedence over family-level definitions.
+
+
+<div id="example"></div>
+
+## Example Code
+
 
 First, we import the Type.World module:
 
@@ -206,58 +267,6 @@ Will, or should print:
 True
 ```
 
-
-<div id="objectmodel"></div>
-
-## Object model
-
-![](../../../object-model.png)
-
-
-
-<div id="versioning"></div>
-
-## Versioning
-
-Every type producer has different habits when it comes to versioning of fonts. Most people would update all fonts of the family to the new version, others would only tweak a few fonts.
-
-To accommodate all of these habits, the Type.World API supports version information in two places. However, the entire system relies on version numbers being specified as float numbers, making them mathematically comparable for sorting. Higher numbers mean newer versions.
-
-#### Versions at the [Family](#class_Family) level
-
-The [Family.versions](#class_Family_attribute_versions) attribute can carry a list of [Version](#class_Version) objects. Versions that you specify here are expected to be present throughout the entire family; meaning that the complete amount of all fonts in all versions is the result of a multiplication of the number of fonts with the number of versions.
-
-#### Versions at the [Font](#class_Font) level
-
-In addition to that, you may also specify a list of [Version](#class_Version) objects at the [Font.versions](#class_Font_attribute_versions) attribute. Versions that you specify here are expected to be available only for this font. 
-
-When versions defined here carry the same version number as versions defined at the family level, the font-specific versions take precedence over the family-specific versions.
-
-You may define a smaller amount of versions here than at the family level. In this case it is still assumed that all those versions which are defined at the family level but not at the font level are available for this font, with the versions defined at the font being available additionally.
-
-You may also define a larger amount of versions here than at the family level. In this case it is assumed that the font carries versions that are not available for the entire family.
-
-This leaves us with four different scenarios for defining versions:
-
-#### 1. Versions only defined at family level
-
-Each font is expected to be available in all the versions defined at the family level.
-
-#### 2. Versions only defined at font level
-
-Each font is expected to be available in just the versions defined at each individual font. Therefore, a single font can contain completely individual version numbers and descriptions.
-
-#### 3. Versions are defined at family and font level
-
-Each font is expected to be available in all the versions defined at the family level.
-
-Additionally, font-level definitions can overwrite versions defined at family level when they use the same version number. This makes sense when only the description of a font-level version needs to differ from the same version number’s family-level description.
-
-Additionally, individual font-level definitions may add versions not defined at the family level.
-
-#### Use [Font.getSortedVersions()](#class_Font_method_getSortedVersions)
-
-Because in the end the versions matter only at the font level, the [Font.getSortedVersions()](#class_Font_method_getSortedVersions) method will output the final list of versions in the above combinations, with font-level definitions taking precedence over family-level definitions.
 
 
 <div id="classreference"></div>
