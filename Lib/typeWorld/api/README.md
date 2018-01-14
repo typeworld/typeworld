@@ -294,7 +294,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 ### Methods
 
-[validate()](#class_APIRoot_method_validate)<br />
+[sameContent()](#class_APIRoot_method_sameContent)<br />[validate()](#class_APIRoot_method_validate)<br />
 
 ## Attributes
 
@@ -377,6 +377,14 @@ Required: False<br />
 
 
 ## Methods
+
+<div id="class_APIRoot_method_sameContent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
 
 <div id="class_APIRoot_method_validate"></div>
 

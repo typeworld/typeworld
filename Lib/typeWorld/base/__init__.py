@@ -338,9 +338,11 @@ class DictBasedObject(object):
 				if args.args != ['self']:
 					
 					argList = []
-					startPoint = len(args.args) - len(args.defaults)
-					for i, defaultValue in enumerate(args.defaults):
-						argList.append('%s = %s' % (args.args[i + startPoint], defaultValue))
+					if 	args.args and args.defaults:
+
+						startPoint = len(args.args) - len(args.defaults)
+						for i, defaultValue in enumerate(args.defaults):
+							argList.append('%s = %s' % (args.args[i + startPoint], defaultValue))
 
 
 

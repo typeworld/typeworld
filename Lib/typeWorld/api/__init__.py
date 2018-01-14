@@ -548,7 +548,17 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 	def __cmp__(self, other):
 		from deepdiff import DeepDiff
-		return 	DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True) == {}
+		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True) == {}
+
+	def sameContent(self, other):
+		u'''\
+		Compares the data structure of this object to the other object.
+
+		Requires deepdiff module.
+		'''
+
+		from deepdiff import DeepDiff
+		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True) == {}
 
 	def __repr__(self):
 		return '<API>'
