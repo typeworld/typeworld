@@ -194,7 +194,7 @@ api2 = APIRoot()
 api2.loadJSON(json)
 
 # Let’s see if they are identical (requires deepdiff)
-print api == api2
+print api.sameContent(api2)
 ```
 
 
