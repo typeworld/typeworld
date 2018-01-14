@@ -4,6 +4,7 @@ import json, copy, types, inspect, re
 from optparse import OptionParser
 
 import typeWorld.api
+import typeWorld.base
 
 # Response types (success, error, ...)
 SUCCESS = 'success'
@@ -276,6 +277,8 @@ class DictBasedObject(object):
 		elif 'typeWorld.api.' in ('%s' % class_.dataType):
 			return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
+		elif 'typeWorld.base.' in ('%s' % class_.dataType):
+			return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
 		return class_.dataType.__name__.title()
 

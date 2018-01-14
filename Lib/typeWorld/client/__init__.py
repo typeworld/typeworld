@@ -3,7 +3,7 @@
 
 import os, sys, json
 
-from typeWorld.classes import *
+from typeWorld.base import *
 import typeWorld.api
 
 

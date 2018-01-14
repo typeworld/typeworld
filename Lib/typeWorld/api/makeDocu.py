@@ -2,6 +2,7 @@
 
 import os
 from typeWorld.api import *
+from typeWorld.base import *
 from ynlib.files import WriteToFile
 
 api = APIRoot()
