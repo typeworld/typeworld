@@ -14,8 +14,8 @@ docstring = u'''
 
 # typeWorld.api Reference
 
-1. [List of Classes](#classTOC)
-2. [Introduction](#introduction)
+1. [Introduction](#introduction)
+2. [List of Classes](#classTOC)
 3. [Versioning](#versioning)
 4. [Object model](#objectmodel)
 5. [Example Code](#example)
@@ -23,11 +23,6 @@ docstring = u'''
 
 
 
-## List of Classes
-
-<div id="classTOC"></div>
-
-__classTOC__
 
 
 <div id="introduction"></div>
@@ -42,6 +37,12 @@ Requires `deepdiff` for recursive dictionary comparison, but only if you wish to
 pip install deepdiff
 ```
 
+
+<div id="classTOC"></div>
+
+## List of Classes
+
+__classTOC__
 
 
 <div id="objectmodel"></div>

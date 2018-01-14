@@ -2,31 +2,12 @@
 
 # typeWorld.api Reference
 
-1. [List of Classes](#classTOC)
-2. [Introduction](#introduction)
+1. [Introduction](#introduction)
+2. [List of Classes](#classTOC)
 3. [Versioning](#versioning)
 4. [Object model](#objectmodel)
 5. [Example Code](#example)
 6. [Class Reference](#classreference)
-
-
-
-## List of Classes
-
-<div id="classTOC"></div>
-
-- [APIRoot](#class_APIRoot)<br />
-- [MultiLanguageText](#class_MultiLanguageText)<br />
-- [Response](#class_Response)<br />
-- [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
-- [Foundry](#class_Foundry)<br />
-- [Family](#class_Family)<br />
-- [Version](#class_Version)<br />
-- [Font](#class_Font)<br />
-- [License](#class_License)<br />
-- [Designer](#class_Designer)<br />
-- [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
-- [InstallFontsResponse](#class_InstallFontsResponse)<br />
 
 
 
@@ -43,6 +24,26 @@ Requires `deepdiff` for recursive dictionary comparison, but only if you wish to
 ```sh
 pip install deepdiff
 ```
+
+
+<div id="classTOC"></div>
+
+## List of Classes
+
+- [APIRoot](#class_APIRoot)<br />
+- [MultiLanguageText](#class_MultiLanguageText)<br />
+- [Response](#class_Response)<br />
+- [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
+- [Foundry](#class_Foundry)<br />
+- [Family](#class_Family)<br />
+- [Version](#class_Version)<br />
+- [Font](#class_Font)<br />
+- [License](#class_License)<br />
+- [Designer](#class_Designer)<br />
+- [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
+- [InstallFontsResponse](#class_InstallFontsResponse)<br />
+
+
 
 
 
