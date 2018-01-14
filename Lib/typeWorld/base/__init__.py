@@ -104,10 +104,11 @@ class StringDataType(DataType):
 class UnicodeDataType(DataType):
 	dataType = unicode
 
-class WebURLDataType(UnicodeDataType):
-
 	def shapeValue(self, value):
-		return value.lower()
+		return unicode(value)
+
+
+class WebURLDataType(UnicodeDataType):
 
 	def valid(self):
 		if not self.value.startswith('http://') and not self.value.startswith('https://'):
