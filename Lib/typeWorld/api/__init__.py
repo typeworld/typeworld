@@ -11,6 +11,7 @@ class SupportedAPICommandsDataType(UnicodeDataType):
 	
 	commands = [x['keyword'] for x in COMMANDS]
 
+
 	def valid(self):
 		if self.value in self.commands:
 			return True
@@ -546,9 +547,10 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 	}
 
-	def __cmp__(self, other):
+
+	def difference(self, other):
 		from deepdiff import DeepDiff
-		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True) == {}
+		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
 
 	def sameContent(self, other):
 		u'''\
@@ -556,9 +558,8 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 		Requires deepdiff module.
 		'''
+		return self.difference(other) == {}
 
-		from deepdiff import DeepDiff
-		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True) == {}
 
 	def __repr__(self):
 		return '<API>'

@@ -68,4 +68,4 @@ if __name__ == '__main__':
 	api2.loadJSON(json)
 
 	# Let’s see if they are identical
-	print api == api2
+	print api.sameContent(api2)
