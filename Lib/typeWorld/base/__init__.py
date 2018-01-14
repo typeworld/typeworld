@@ -729,26 +729,33 @@ for languageCode, text in (
 	def __repr__(self):
 		return '<MultiLanguageText>'
 
-	def getText(self, locale = ['en']):
-		u'''Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.'''
+	def getTextAndLocale(self, locale = ['en']):
+		u'''Like getText(), but additionally returns the language of whatever text was found first.'''
 
 		if type(locale) in (str, unicode):
 			if self.get(locale):
-				return self.get(locale)
+				return self.get(locale), locale
 
 		elif type(locale) in (str, unicode):
 			for key in locale:
 				if self.get(key):
-					return self.get(key)
+					return self.get(key), key
 
 		# try english
 		if self.get('en'):
-			return self.get('en')
+			return self.get('en'), 'en'
 
 		# try anything
 		for key in self._possible_keys:
 			if self.get(key):
-				return self.get(key)
+				return self.get(key), key
+
+	def getText(self, locale = ['en']):
+		u'''Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.'''
+
+		text, locale = self.getTextAndLanguage(locale)
+
+		return text
 
 
 	def customValidation(self):

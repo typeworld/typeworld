@@ -436,7 +436,7 @@ for languageCode, text in (
 
 ### Methods
 
-[getText()](#class_MultiLanguageText_method_getText)<br />
+[getText()](#class_MultiLanguageText_method_getText)<br />[getTextAndLocale()](#class_MultiLanguageText_method_getTextAndLocale)<br />
 
 ## Methods
 
@@ -445,6 +445,12 @@ for languageCode, text in (
 #### getText(locale = ['en'])
 
 Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
+
+<div id="class_MultiLanguageText_method_getTextAndLocale"></div>
+
+#### getTextAndLocale(locale = ['en'])
+
+Like getText(), but additionally returns the language of whatever text was found first.
 
 
 
