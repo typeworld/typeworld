@@ -4,8 +4,8 @@
 
 1. [Introduction](#introduction)
 2. [List of Classes](#classTOC)
-3. [Versioning](#versioning)
-4. [Object model](#objectmodel)
+3. [Object model](#objectmodel)
+4. [Versioning](#versioning)
 5. [Example Code](#example)
 6. [Class Reference](#classreference)
 
