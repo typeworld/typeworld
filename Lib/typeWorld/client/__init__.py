@@ -112,7 +112,7 @@ class APIClient(object):
 		self.preferences = preferences
 
 
-	def readResponse(self, url):
+	def readResponse(self, url, acceptableMimeTypes):
 		d = {}
 		d['errors'] = []
 		d['warnings'] = []
@@ -128,8 +128,8 @@ class APIClient(object):
 			if response.getcode() != 200:
 				d['errors'].append('Resource returned with HTTP code %s' % response.code)
 
-			if response.headers.type != 'application/json':
-				d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is "application/json".' % response.headers.type)
+			if not response.headers.type in acceptableMimeTypes:
+				d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes))
 
 			if response.getcode() == 200:
 
@@ -165,7 +165,7 @@ class APIClient(object):
 	def addRepository(self, url):
 
 		# Read response
-		api, responses = self.readResponse(url)
+		api, responses = self.readResponse(url, INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'])
 
 		# Errors
 		if responses['errors']:
@@ -179,7 +179,7 @@ class APIClient(object):
 		url = self.addCommandToURL(url, 'installableFonts')
 
 		# Read response again, this time with installableFonts command
-		api, responses = self.readResponse(url)
+		api, responses = self.readResponse(url, INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'])
 
 		# Add endpoint if new
 		if not self.endpoints.has_key(api.canonicalURL):
@@ -200,12 +200,13 @@ if __name__ == '__main__':
 
 	for key in client.endpoints.keys():
 		endpoint = client.endpoints[key]
-		print endpoint
+#		print endpoint
 
 		for key2 in endpoint.repositories.keys():
 			repo = endpoint.repositories[key2]
-			print repo
-			repo.update()
+#			print repo
+#			repo.update()
 
-#			print repo.latestVersion()
+			print repo.latestVersion().name.getTextAndLocale('de')
+#			print repo.latestVersion().response.getCommand().foundries[0].families
 	
