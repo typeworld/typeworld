@@ -33,6 +33,7 @@ pip install deepdiff
 - [APIRoot](#class_APIRoot)<br />
 - [MultiLanguageText](#class_MultiLanguageText)<br />
 - [Response](#class_Response)<br />
+- [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
 - [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
 - [Foundry](#class_Foundry)<br />
 - [Family](#class_Family)<br />
@@ -40,7 +41,6 @@ pip install deepdiff
 - [Font](#class_Font)<br />
 - [License](#class_License)<br />
 - [Designer](#class_Designer)<br />
-- [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
 - [InstallFontsResponse](#class_InstallFontsResponse)<br />
 
 
@@ -372,7 +372,7 @@ Required: False<br />
 
 #### supportedCommands
 
-List of commands this API endpoint supports: ['installableFonts', 'installFonts', 'uninstallFonts']
+List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
 
 Type: List of Unicode objects<br />
 Required: True<br />
@@ -464,7 +464,7 @@ Like getText(), but additionally returns the language of whatever text was found
 
 ### Attributes
 
-[command](#class_Response_attribute_command)<br />[installFonts](#class_Response_attribute_installFonts)<br />[installableFonts](#class_Response_attribute_installableFonts)<br />[uninstallFonts](#class_Response_attribute_uninstallFonts)<br />
+[command](#class_Response_attribute_command)<br />[installFont](#class_Response_attribute_installFont)<br />[installableFonts](#class_Response_attribute_installableFonts)<br />[uninstallFont](#class_Response_attribute_uninstallFont)<br />
 
 ### Methods
 
@@ -480,9 +480,9 @@ Command code of the response. The specific response must then be present under a
 
 Type: Unicode<br />
 Required: True<br />
-<div id="class_Response_attribute_installFonts"></div>
+<div id="class_Response_attribute_installFont"></div>
 
-#### installFonts
+#### installFont
 
 Type: [InstallFontsResponse](#class_InstallFontsResponse)<br />
 Required: False<br />
@@ -492,9 +492,9 @@ Required: False<br />
 
 Type: [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
 Required: False<br />
-<div id="class_Response_attribute_uninstallFonts"></div>
+<div id="class_Response_attribute_uninstallFont"></div>
 
-#### uninstallFonts
+#### uninstallFont
 
 Type: [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
 Required: False<br />
@@ -520,6 +520,58 @@ print api.response.get(api.response.command)
 # will print:
 <InstallableFontsResponse>
 ```
+
+
+
+
+
+<div id="class_UninstallFontsResponse"></div>
+
+# _class_ UninstallFontsResponse()
+
+
+
+### Attributes
+
+[customMessage](#class_UninstallFontsResponse_attribute_customMessage)<br />[licenseIdentifier](#class_UninstallFontsResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontsResponse_attribute_type)<br />[version](#class_UninstallFontsResponse_attribute_version)<br />
+
+## Attributes
+
+<div id="class_UninstallFontsResponse_attribute_customMessage"></div>
+
+#### customMessage
+
+Description of error in case of custom response type
+
+Type: Unicode<br />
+Required: False<br />
+<div id="class_UninstallFontsResponse_attribute_licenseIdentifier"></div>
+
+#### licenseIdentifier
+
+Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.
+
+Type: Unicode<br />
+Required: False<br />
+Default value: CC-BY-NC-ND-4.0
+
+<div id="class_UninstallFontsResponse_attribute_type"></div>
+
+#### type
+
+Success or error or else.
+
+Type: Unicode<br />
+Required: True<br />
+<div id="class_UninstallFontsResponse_attribute_version"></div>
+
+#### version
+
+Version of "uninstallFont" response
+
+Type: Float<br />
+Required: True<br />
+Default value: 0.1
 
 
 
@@ -973,7 +1025,7 @@ Required: False<br />
 
 #### seatsInstalled
 
-In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFonts" and "uninstallFonts" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFonts" command when the limits are exceeded.
+In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded.
 
 Type: Int<br />
 Required: False<br />
@@ -1145,58 +1197,6 @@ Required: False<br />
 
 
 
-<div id="class_UninstallFontsResponse"></div>
-
-# _class_ UninstallFontsResponse()
-
-
-
-### Attributes
-
-[customMessage](#class_UninstallFontsResponse_attribute_customMessage)<br />[licenseIdentifier](#class_UninstallFontsResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontsResponse_attribute_type)<br />[version](#class_UninstallFontsResponse_attribute_version)<br />
-
-## Attributes
-
-<div id="class_UninstallFontsResponse_attribute_customMessage"></div>
-
-#### customMessage
-
-Description of error in case of custom response type
-
-Type: Unicode<br />
-Required: False<br />
-<div id="class_UninstallFontsResponse_attribute_licenseIdentifier"></div>
-
-#### licenseIdentifier
-
-Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.
-
-Type: Unicode<br />
-Required: False<br />
-Default value: CC-BY-NC-ND-4.0
-
-<div id="class_UninstallFontsResponse_attribute_type"></div>
-
-#### type
-
-Success or error or else.
-
-Type: Unicode<br />
-Required: True<br />
-<div id="class_UninstallFontsResponse_attribute_version"></div>
-
-#### version
-
-Version of "uninstallFonts" response
-
-Type: Float<br />
-Required: True<br />
-Default value: 0.1
-
-
-
-
-
 <div id="class_InstallFontsResponse"></div>
 
 # _class_ InstallFontsResponse()
@@ -1239,7 +1239,7 @@ Required: True<br />
 
 #### version
 
-Version of "installFonts" response
+Version of "installFont" response
 
 Type: Float<br />
 Required: True<br />

@@ -140,7 +140,7 @@ class Font(DictBasedObject):
 #		'public':			[BooleanDataType,		False, 	False, 	u'If false, signals restricted access to a commercial font only available to certain users. Download and installation may be restricted by the API point depending on the API point URL that needs to include the private key to identify the user.'],
 		'type':				[FontTypeDataType,		True, 	None, 	u'Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (FONTTYPES)],
 		'seatsAllowed':		[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations permitted by the user’s license.'],
-		'seatsInstalled':	[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTSCOMMAND['keyword'], UNINSTALLFONTSCOMMAND['keyword'], INSTALLFONTSCOMMAND['keyword'])],
+		'seatsInstalled':	[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
 		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	u'In case of non-desktop font (see ::Font.type::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
 		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop'],
 		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop'],
@@ -415,10 +415,10 @@ class InstallableFontsResponseProxy(Proxy):
 
 class InstallFontsResponseType(UnicodeDataType):
 	def valid(self):
-		if self.value in INSTALLFONTSCOMMAND['responseTypes']:
+		if self.value in INSTALLFONTCOMMAND['responseTypes']:
 			return True
 		else:
-			return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTSCOMMAND['responseTypes'])
+			return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTCOMMAND['responseTypes'])
 
 class InstallFontsResponse(BaseResponse):
 	# 	key: 					[data type, required, default value, description]
@@ -427,7 +427,7 @@ class InstallFontsResponse(BaseResponse):
 		# Root
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Success or error or else.'],
 		'customMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
-		'version': 			[FloatDataType,					True, 	INSTALLFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTSCOMMAND['keyword']],
+		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
 		# Response-specific
@@ -442,10 +442,10 @@ class InstallFontsResponseProxy(Proxy):
 
 class UninstallFontsResponseType(UnicodeDataType):
 	def valid(self):
-		if self.value in UNINSTALLFONTSCOMMAND['responseTypes']:
+		if self.value in UNINSTALLFONTCOMMAND['responseTypes']:
 			return True
 		else:
-			return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTSCOMMAND['responseTypes'])
+			return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTCOMMAND['responseTypes'])
 
 class UninstallFontsResponse(BaseResponse):
 	# 	key: 					[data type, required, default value, description]
@@ -454,7 +454,7 @@ class UninstallFontsResponse(BaseResponse):
 		# Root
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Success or error or else.'],
 		'customMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
-		'version': 			[FloatDataType,					True, 	UNINSTALLFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTSCOMMAND['keyword']],
+		'version': 			[FloatDataType,					True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
 		# Response-specific
@@ -469,8 +469,8 @@ class Response(DictBasedObject):
 	_structure = {
 		'command': 							[SupportedAPICommandsDataType,	True, 	None, 	'Command code of the response. The specific response must then be present under an attribute of same name.'],
 		INSTALLABLEFONTSCOMMAND['keyword']:	[InstallableFontsResponseProxy, 	False, 	None, 	''],
-		INSTALLFONTSCOMMAND['keyword']:		[InstallFontsResponseProxy, 	False, 	None, 	''],
-		UNINSTALLFONTSCOMMAND['keyword']:	[UninstallFontsResponseProxy, 	False, 	None, 	''],
+		INSTALLFONTCOMMAND['keyword']:		[InstallFontsResponseProxy, 	False, 	None, 	''],
+		UNINSTALLFONTCOMMAND['keyword']:	[UninstallFontsResponseProxy, 	False, 	None, 	''],
 	}
 
 	def __repr__(self):

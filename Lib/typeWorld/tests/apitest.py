@@ -51,6 +51,7 @@ if __name__ == '__main__':
 
 	# Add font to family
 	font = Font()
+	font.ID = u'yanone-NonameSans-Regular'
 	font.name.en = u'Regular'
 	font.postScriptName = u'AwesomeSans-Regular'
 	font.licenseKeyword = u'awesomeFontsEULA'

@@ -20,21 +20,21 @@ INSTALLABLEFONTSCOMMAND = {
 	'responseTypes': [SUCCESS, ERROR, CUSTOM],
 	'acceptableMimeTypes': ['application/json'],
 	}
-INSTALLFONTSCOMMAND ={
-	'keyword': 'installFonts',
+INSTALLFONTCOMMAND ={
+	'keyword': 'installFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR, CUSTOM],
 	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'font/woff', 'font/woff2'],
 	}
-UNINSTALLFONTSCOMMAND =	{
-	'keyword': 'uninstallFonts',
+UNINSTALLFONTCOMMAND =	{
+	'keyword': 'uninstallFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR, CUSTOM],
 	'acceptableMimeTypes': ['application/json'],
 	}
-COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND]
+COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
 
 FONTTYPES = ['desktop', 'web', 'app']
 
@@ -753,7 +753,7 @@ for languageCode, text in (
 	def getText(self, locale = ['en']):
 		u'''Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.'''
 
-		text, locale = self.getTextAndLanguage(locale)
+		text, locale = self.getTextAndLocale(locale)
 
 		return text
 
