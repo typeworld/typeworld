@@ -25,7 +25,7 @@ INSTALLFONTSCOMMAND ={
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR, CUSTOM],
-	'acceptableMimeTypes': ['application/json', 'application/x-font-ttf', 'application/x-font-truetype', 'application/x-font-opentype'],
+	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'font/woff', 'font/woff2'],
 	}
 UNINSTALLFONTSCOMMAND =	{
 	'keyword': 'uninstallFonts',
