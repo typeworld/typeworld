@@ -524,79 +524,85 @@ class DictBasedObject(object):
 
 #			print key, self._content[key], self._content[key].isEmpty()
 
-			if self._structure[key][1] and self._content[key].isEmpty():
-				critical.append('%s.%s is a required attribute, but empty' % (self, key))
+			if self.discardThisKey(key) == False:
 
-			else:
-				# recurse
-				if issubclass(self._content[key].__class__, (Proxy)):
-					if self._content[key]:
-		
-#						print 'isProxy', key, self._content[key], self._content[key].isEmpty()
+				if self._structure[key][1] and self._content[key].isEmpty():
+					critical.append('%s.%s is a required attribute, but empty' % (self, key))
+
+				else:
+					# recurse
+					if issubclass(self._content[key].__class__, (Proxy)):
+						if self._content[key]:
+			
+	#						print 'isProxy', key, self._content[key], self._content[key].isEmpty()
+
+							if self._content[key].isEmpty() == False:
+								if self._content[key].value:
+									newInformation, newWarnings, newCritical = self._content[key].value._validate()
+									information.extend(extendWithKey(newInformation))
+									warnings.extend(extendWithKey(newWarnings))
+									critical.extend(extendWithKey(newCritical))
+
+								# Check custom messages:
+								if hasattr(self._content[key].value, 'customValidation') and isinstance(self._content[key].value.customValidation, types.MethodType):
+									newInformation, newWarnings, newCritical = self._content[key].value.customValidation()
+									information.extend(extendWithKey(newInformation))
+									warnings.extend(extendWithKey(newWarnings))
+									critical.extend(extendWithKey(newCritical))
+
+
+					# recurse
+					if issubclass(self._content[key].__class__, ListProxy):
+
 
 						if self._content[key].isEmpty() == False:
-							if self._content[key].value:
-								newInformation, newWarnings, newCritical = self._content[key].value._validate()
+							for item in self._content[key]:
+								if hasattr(item, '_validate') and isinstance(item._validate, types.MethodType):
+									newInformation, newWarnings, newCritical = item._validate()
+									information.extend(extendWithKey(newInformation))
+									warnings.extend(extendWithKey(newWarnings))
+									critical.extend(extendWithKey(newCritical))
+
+								# Check custom messages:
+								if hasattr(item, 'customValidation') and isinstance(item.customValidation, types.MethodType):
+									newInformation, newWarnings, newCritical = item.customValidation()
+									information.extend(extendWithKey(newInformation))
+									warnings.extend(extendWithKey(newWarnings))
+									critical.extend(extendWithKey(newCritical))
+
+	#			if self._structure[key][1] == False and self._content[key].isEmpty():
+
+	#			print inspect.getmro(self._content[key].value)
+
+
+					# Check data types for validity recursively
+					for key in self._content.keys():
+
+						if self._content[key].isEmpty() == False:
+							# field is required or empty
+							if (self._structure.has_key(key) and self._structure[key][1]) or (self._content.has_key(key) and self._content[key].isEmpty()):
+								self.initAttr(key)
+								data = self._content[key]
+				#				print data
+
+								newInformation, newWarnings, newCritical = self.validateData(key, data)
 								information.extend(extendWithKey(newInformation))
 								warnings.extend(extendWithKey(newWarnings))
 								critical.extend(extendWithKey(newCritical))
 
-							# Check custom messages:
-							if hasattr(self._content[key].value, 'customValidation') and isinstance(self._content[key].value.customValidation, types.MethodType):
-								newInformation, newWarnings, newCritical = self._content[key].value.customValidation()
-								information.extend(extendWithKey(newInformation))
-								warnings.extend(extendWithKey(newWarnings))
-								critical.extend(extendWithKey(newCritical))
-
-
-				# recurse
-				if issubclass(self._content[key].__class__, ListProxy):
-
-
-					if self._content[key].isEmpty() == False:
-						for item in self._content[key]:
-							if hasattr(item, '_validate') and isinstance(item._validate, types.MethodType):
-								newInformation, newWarnings, newCritical = item._validate()
-								information.extend(extendWithKey(newInformation))
-								warnings.extend(extendWithKey(newWarnings))
-								critical.extend(extendWithKey(newCritical))
-
-							# Check custom messages:
-							if hasattr(item, 'customValidation') and isinstance(item.customValidation, types.MethodType):
-								newInformation, newWarnings, newCritical = item.customValidation()
-								information.extend(extendWithKey(newInformation))
-								warnings.extend(extendWithKey(newWarnings))
-								critical.extend(extendWithKey(newCritical))
-
-#			if self._structure[key][1] == False and self._content[key].isEmpty():
-
-#			print inspect.getmro(self._content[key].value)
-
-
-				# Check data types for validity recursively
-				for key in self._content.keys():
-
-					if self._content[key].isEmpty() == False:
-						# field is required or empty
-						if (self._structure.has_key(key) and self._structure[key][1]) or (self._content.has_key(key) and self._content[key].isEmpty()):
-							self.initAttr(key)
-							data = self._content[key]
-			#				print data
-
-							newInformation, newWarnings, newCritical = self.validateData(key, data)
-							information.extend(extendWithKey(newInformation))
-							warnings.extend(extendWithKey(newWarnings))
-							critical.extend(extendWithKey(newCritical))
-
-		#Check custom messages:
-		# if hasattr(self, 'customValidation') and isinstance(self.customValidation, types.MethodType):
-		# 	newWarnings, newCritical = self.customValidation()
-		# 	warnings.extend(newWarnings)
-		# 	critical.extend(newCritical)
+			#Check custom messages:
+			# if hasattr(self, 'customValidation') and isinstance(self.customValidation, types.MethodType):
+			# 	newWarnings, newCritical = self.customValidation()
+			# 	warnings.extend(newWarnings)
+			# 	critical.extend(newCritical)
 
 
 
 		return information, warnings, critical
+
+	def discardThisKey(self, key):
+		
+		return False
 
 	def validate(self):
 		return self._validate()
@@ -614,29 +620,30 @@ class DictBasedObject(object):
 
 		for key in self._content.keys():
 			
+			if self.discardThisKey(key) == False:
 
-			# if required or not empty
-			if (self._structure.has_key(key) and self._structure[key][1]) or getattr(self, key) is not None:
+				# if required or not empty
+				if (self._structure.has_key(key) and self._structure[key][1]) or getattr(self, key) is not None:
 
-				
-				if hasattr(getattr(self, key), 'dumpDict'):
-					d[key] = getattr(self, key).dumpDict()
+					
+					if hasattr(getattr(self, key), 'dumpDict'):
+						d[key] = getattr(self, key).dumpDict()
 
-				# elif issubclass(getattr(self, key).__class__, (DictBasedObject)):
-				# 	d[key] = getattr(self, key).dumpDict()
+					# elif issubclass(getattr(self, key).__class__, (DictBasedObject)):
+					# 	d[key] = getattr(self, key).dumpDict()
 
-				elif issubclass(getattr(self, key).__class__, (ListProxy)):
-					d[key] = list(getattr(self, key))
+					elif issubclass(getattr(self, key).__class__, (ListProxy)):
+						d[key] = list(getattr(self, key))
 
-					if len(d[key]) > 0 and hasattr(d[key][0], 'dumpDict'):
-						d[key] = [x.dumpDict() for x in d[key]]
+						if len(d[key]) > 0 and hasattr(d[key][0], 'dumpDict'):
+							d[key] = [x.dumpDict() for x in d[key]]
 
-				else:
-					d[key] = getattr(self, key)
+					else:
+						d[key] = getattr(self, key)
 
-				# delete empty sets that are not required
-				if (self._structure.has_key(key) and self._structure[key][1] == False) and not d[key]:
-					del d[key]
+					# delete empty sets that are not required
+					if (self._structure.has_key(key) and self._structure[key][1] == False) and not d[key]:
+						del d[key]
 
 
 		return d

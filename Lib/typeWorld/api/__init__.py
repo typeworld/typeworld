@@ -350,6 +350,7 @@ class BaseResponse(DictBasedObject):
 	def __repr__(self):
 		return '<%s>' % self.__class__.__name__
 
+
 	def customValidation(self):
 		information, warnings, critical = [], [], []
 
@@ -406,6 +407,14 @@ class InstallableFontsResponse(BaseResponse):
 
 		if self._designersDict.has_key(keyword):
 			return self._designersDict[keyword]
+
+	def discardThisKey(self, key):
+		
+		if key in ['foundries', 'designers', 'licenseIdentifier'] and self.type in ['custom', 'error']:
+			return True
+
+		return False
+
 
 class InstallableFontsResponseProxy(Proxy):
 	dataType = InstallableFontsResponse
