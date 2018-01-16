@@ -256,6 +256,16 @@ class Family(DictBasedObject):
 	def __repr__(self):
 		return '<Family "%s">' % self.name.getText() or 'undefined'
 
+	def customValidation(self):
+		information, warnings, critical = [], [], []
+
+		# Checking for designers
+		for designerKeyword in self.designers:
+			if not self.parent.parent.getDesignerByKeyword(designerKeyword):
+				critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent))
+
+		return information, warnings, critical
+
 	def getDesigners(self):
 		if not hasattr(self, '_designers'):
 			self._designers = []
