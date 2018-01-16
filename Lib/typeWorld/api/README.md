@@ -941,7 +941,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowed](#class_Font_attribute_seatsAllowed)<br />[seatsInstalled](#class_Font_attribute_seatsInstalled)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1021,17 +1021,17 @@ URL of preview image of font, specifications to follow
 
 Type: Unicode<br />
 Required: False<br />
-<div id="class_Font_attribute_seatsAllowed"></div>
+<div id="class_Font_attribute_seatsAllowedForUser"></div>
 
-#### seatsAllowed
+#### seatsAllowedForUser
 
 In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations permitted by the user’s license.
 
 Type: Int<br />
 Required: False<br />
-<div id="class_Font_attribute_seatsInstalled"></div>
+<div id="class_Font_attribute_seatsInstalledByUser"></div>
 
-#### seatsInstalled
+#### seatsInstalledByUser
 
 In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded.
 
