@@ -96,6 +96,7 @@ class Version(DictBasedObject):
 	_structure = {
 		'number':	 				[FloatDataType,				True, 	None, 	'Font version number'],
 		'description':	 			[MultiLanguageTextProxy,	False, 	None, 	'Description of font version'],
+		'releaseDate':	 			[IntegerDataType,			False, 	None, 	u'Timestamp of version’s release date.'],
 	}
 
 	def __repr__(self):

@@ -886,7 +886,7 @@ Returns a list of [Designer](#class_Designer) objects that represent all of the 
 
 ### Attributes
 
-[description](#class_Version_attribute_description)<br />[number](#class_Version_attribute_number)<br />
+[description](#class_Version_attribute_description)<br />[number](#class_Version_attribute_number)<br />[releaseDate](#class_Version_attribute_releaseDate)<br />
 
 ### Methods
 
@@ -910,6 +910,14 @@ Font version number
 
 Type: Float<br />
 Required: True<br />
+<div id="class_Version_attribute_releaseDate"></div>
+
+#### releaseDate
+
+Timestamp of version’s release date.
+
+Type: Int<br />
+Required: False<br />
 
 
 ## Methods
