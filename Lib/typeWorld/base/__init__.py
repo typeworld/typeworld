@@ -62,7 +62,7 @@ class DataType(object):
 			if type(self.value) == self.dataType:
 				return True
 			else:
-				return 'Wrong data type. Is %s, should be: %s' % (type(self.value), self.dataType)
+				return 'Wrong data type. Is %s, should be: %s.' % (type(self.value), self.dataType)
 		else:
 			return True
 

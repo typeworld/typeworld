@@ -171,6 +171,11 @@ class Font(DictBasedObject):
 		if not self.getLicense():
 			critical.append('%s has license "%s", but %s has no matching license.' % (self, self.licenseKeyword, self.parent.parent))
 
+		# Checking for designers
+		for designerKeyword in self.designers:
+			if not self.parent.parent.parent.getDesignerByKeyword(designerKeyword):
+				critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
+
 		return information, warnings, critical
 
 	def getSortedVersions(self):
