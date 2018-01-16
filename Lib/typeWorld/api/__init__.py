@@ -145,7 +145,7 @@ class Font(DictBasedObject):
 		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	u'In case of non-desktop font (see ::Font.type::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
 		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop'],
 		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop'],
-		'timeAdded':		[IntegerDataType,		False, 	None, 	u'Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts.'],
+		'timeAddedForUser':	[IntegerDataType,		False, 	None, 	u'Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
 	}
 
 	def __repr__(self):
