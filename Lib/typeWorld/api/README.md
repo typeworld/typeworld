@@ -916,7 +916,7 @@ Required: True<br />
 
 Timestamp of version’s release date.
 
-Type: Int<br />
+Type: Float<br />
 Required: False<br />
 
 
