@@ -33,7 +33,7 @@ pip install deepdiff
 - [APIRoot](#class_APIRoot)<br />
 - [MultiLanguageText](#class_MultiLanguageText)<br />
 - [Response](#class_Response)<br />
-- [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
+- [UninstallFontResponse](#class_UninstallFontResponse)<br />
 - [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
 - [Foundry](#class_Foundry)<br />
 - [Family](#class_Family)<br />
@@ -41,7 +41,7 @@ pip install deepdiff
 - [Font](#class_Font)<br />
 - [License](#class_License)<br />
 - [Designer](#class_Designer)<br />
-- [InstallFontsResponse](#class_InstallFontsResponse)<br />
+- [InstallFontResponse](#class_InstallFontResponse)<br />
 
 
 
@@ -484,7 +484,7 @@ Required: True<br />
 
 #### installFont
 
-Type: [InstallFontsResponse](#class_InstallFontsResponse)<br />
+Type: [InstallFontResponse](#class_InstallFontResponse)<br />
 Required: False<br />
 <div id="class_Response_attribute_installableFonts"></div>
 
@@ -496,7 +496,7 @@ Required: False<br />
 
 #### uninstallFont
 
-Type: [UninstallFontsResponse](#class_UninstallFontsResponse)<br />
+Type: [UninstallFontResponse](#class_UninstallFontResponse)<br />
 Required: False<br />
 
 
@@ -525,19 +525,19 @@ print api.response.get(api.response.command)
 
 
 
-<div id="class_UninstallFontsResponse"></div>
+<div id="class_UninstallFontResponse"></div>
 
-# _class_ UninstallFontsResponse()
+# _class_ UninstallFontResponse()
 
 
 
 ### Attributes
 
-[customMessage](#class_UninstallFontsResponse_attribute_customMessage)<br />[licenseIdentifier](#class_UninstallFontsResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontsResponse_attribute_type)<br />[version](#class_UninstallFontsResponse_attribute_version)<br />
+[customMessage](#class_UninstallFontResponse_attribute_customMessage)<br />[licenseIdentifier](#class_UninstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_UninstallFontsResponse_attribute_customMessage"></div>
+<div id="class_UninstallFontResponse_attribute_customMessage"></div>
 
 #### customMessage
 
@@ -545,7 +545,7 @@ Description of error in case of custom response type
 
 Type: Unicode<br />
 Required: False<br />
-<div id="class_UninstallFontsResponse_attribute_licenseIdentifier"></div>
+<div id="class_UninstallFontResponse_attribute_licenseIdentifier"></div>
 
 #### licenseIdentifier
 
@@ -555,7 +555,7 @@ Type: Unicode<br />
 Required: False<br />
 Default value: CC-BY-NC-ND-4.0
 
-<div id="class_UninstallFontsResponse_attribute_type"></div>
+<div id="class_UninstallFontResponse_attribute_type"></div>
 
 #### type
 
@@ -563,7 +563,7 @@ Success or error or else.
 
 Type: Unicode<br />
 Required: True<br />
-<div id="class_UninstallFontsResponse_attribute_version"></div>
+<div id="class_UninstallFontResponse_attribute_version"></div>
 
 #### version
 
@@ -1205,19 +1205,19 @@ Required: False<br />
 
 
 
-<div id="class_InstallFontsResponse"></div>
+<div id="class_InstallFontResponse"></div>
 
-# _class_ InstallFontsResponse()
+# _class_ InstallFontResponse()
 
 
 
 ### Attributes
 
-[customMessage](#class_InstallFontsResponse_attribute_customMessage)<br />[licenseIdentifier](#class_InstallFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontsResponse_attribute_type)<br />[version](#class_InstallFontsResponse_attribute_version)<br />
+[customMessage](#class_InstallFontResponse_attribute_customMessage)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_InstallFontsResponse_attribute_customMessage"></div>
+<div id="class_InstallFontResponse_attribute_customMessage"></div>
 
 #### customMessage
 
@@ -1225,7 +1225,7 @@ Description of error in case of custom response type
 
 Type: Unicode<br />
 Required: False<br />
-<div id="class_InstallFontsResponse_attribute_licenseIdentifier"></div>
+<div id="class_InstallFontResponse_attribute_licenseIdentifier"></div>
 
 #### licenseIdentifier
 
@@ -1235,7 +1235,7 @@ Type: Unicode<br />
 Required: False<br />
 Default value: CC-BY-NC-ND-4.0
 
-<div id="class_InstallFontsResponse_attribute_type"></div>
+<div id="class_InstallFontResponse_attribute_type"></div>
 
 #### type
 
@@ -1243,7 +1243,7 @@ Success or error or else.
 
 Type: Unicode<br />
 Required: True<br />
-<div id="class_InstallFontsResponse_attribute_version"></div>
+<div id="class_InstallFontResponse_attribute_version"></div>
 
 #### version
 

@@ -412,16 +412,16 @@ class InstallableFontsResponseProxy(Proxy):
 
 ####################################################################################################################################
 
-#  InstallFonts
+#  InstallFont
 
-class InstallFontsResponseType(UnicodeDataType):
+class InstallFontResponseType(UnicodeDataType):
 	def valid(self):
 		if self.value in INSTALLFONTCOMMAND['responseTypes']:
 			return True
 		else:
 			return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTCOMMAND['responseTypes'])
 
-class InstallFontsResponse(BaseResponse):
+class InstallFontResponse(BaseResponse):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 
@@ -434,21 +434,21 @@ class InstallFontsResponse(BaseResponse):
 		# Response-specific
 		}
 
-class InstallFontsResponseProxy(Proxy):
-	dataType = InstallFontsResponse
+class InstallFontResponseProxy(Proxy):
+	dataType = InstallFontResponse
 
 ####################################################################################################################################
 
 #  Uninstall Fonts
 
-class UninstallFontsResponseType(UnicodeDataType):
+class UninstallFontResponseType(UnicodeDataType):
 	def valid(self):
 		if self.value in UNINSTALLFONTCOMMAND['responseTypes']:
 			return True
 		else:
 			return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTCOMMAND['responseTypes'])
 
-class UninstallFontsResponse(BaseResponse):
+class UninstallFontResponse(BaseResponse):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 
@@ -461,8 +461,8 @@ class UninstallFontsResponse(BaseResponse):
 		# Response-specific
 		}
 
-class UninstallFontsResponseProxy(Proxy):
-	dataType = UninstallFontsResponse
+class UninstallFontResponseProxy(Proxy):
+	dataType = UninstallFontResponse
 
 
 class Response(DictBasedObject):
@@ -470,8 +470,8 @@ class Response(DictBasedObject):
 	_structure = {
 		'command': 							[SupportedAPICommandsDataType,	True, 	None, 	'Command code of the response. The specific response must then be present under an attribute of same name.'],
 		INSTALLABLEFONTSCOMMAND['keyword']:	[InstallableFontsResponseProxy, 	False, 	None, 	''],
-		INSTALLFONTCOMMAND['keyword']:		[InstallFontsResponseProxy, 	False, 	None, 	''],
-		UNINSTALLFONTCOMMAND['keyword']:	[UninstallFontsResponseProxy, 	False, 	None, 	''],
+		INSTALLFONTCOMMAND['keyword']:		[InstallFontResponseProxy, 	False, 	None, 	''],
+		UNINSTALLFONTCOMMAND['keyword']:	[UninstallFontResponseProxy, 	False, 	None, 	''],
 	}
 
 	def __repr__(self):
