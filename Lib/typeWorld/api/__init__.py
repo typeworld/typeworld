@@ -351,13 +351,13 @@ class BaseResponse(DictBasedObject):
 		return '<%s>' % self.__class__.__name__
 
 
-	def customValidation(self):
-		information, warnings, critical = [], [], []
+	# def customValidation(self):
+	# 	information, warnings, critical = [], [], []
 
-		if self.type == CUSTOM and self.errorMessage is None:
-			critical.append('%s.type is "%s", but .errorMessage is missing.' % (self, CUSTOM))
+	# 	if self.type == ERROR and self.errorMessage is None:
+	# 		critical.append('%s.type is "%s", but .errorMessage is missing.' % (self, CUSTOM))
 
-		return information, warnings, critical
+	# 	return information, warnings, critical
 
 def BaseResponse_Parent(self):
 	if hasattr(self, '_parent') and hasattr(self._parent, '_parent'):
