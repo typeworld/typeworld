@@ -9,7 +9,6 @@ import typeWorld.base
 # Response types (success, error, ...)
 SUCCESS = 'success'
 ERROR = 'error'
-CUSTOM = 'custom'
 
 
 # Commands
@@ -17,21 +16,21 @@ INSTALLABLEFONTSCOMMAND = {
 	'keyword': 'installableFonts',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
-	'responseTypes': [SUCCESS, ERROR, CUSTOM],
+	'responseTypes': [SUCCESS, ERROR],
 	'acceptableMimeTypes': ['application/json'],
 	}
 INSTALLFONTCOMMAND ={
 	'keyword': 'installFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
-	'responseTypes': [SUCCESS, ERROR, CUSTOM],
+	'responseTypes': [SUCCESS, ERROR],
 	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'font/woff', 'font/woff2'],
 	}
 UNINSTALLFONTCOMMAND =	{
 	'keyword': 'uninstallFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
-	'responseTypes': [SUCCESS, ERROR, CUSTOM],
+	'responseTypes': [SUCCESS, ERROR],
 	'acceptableMimeTypes': ['application/json'],
 	}
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
@@ -601,7 +600,7 @@ class DictBasedObject(object):
 		return information, warnings, critical
 
 	def discardThisKey(self, key):
-		
+
 		return False
 
 	def validate(self):

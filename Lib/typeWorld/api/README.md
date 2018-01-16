@@ -533,13 +533,13 @@ print api.response.get(api.response.command)
 
 ### Attributes
 
-[customMessage](#class_UninstallFontResponse_attribute_customMessage)<br />[licenseIdentifier](#class_UninstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
+[errorMessage](#class_UninstallFontResponse_attribute_errorMessage)<br />[licenseIdentifier](#class_UninstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_UninstallFontResponse_attribute_customMessage"></div>
+<div id="class_UninstallFontResponse_attribute_errorMessage"></div>
 
-#### customMessage
+#### errorMessage
 
 Description of error in case of custom response type
 
@@ -593,18 +593,10 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[customMessage](#class_InstallableFontsResponse_attribute_customMessage)<br />[designers](#class_InstallableFontsResponse_attribute_designers)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
+[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_InstallableFontsResponse_attribute_customMessage"></div>
-
-#### customMessage
-
-Description of error in case of [InstallableFontsResponse.type](#class_InstallableFontsResponse_attribute_type) being "custom".
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_designers"></div>
 
 #### designers
@@ -612,6 +604,14 @@ Required: False<br />
 List of [Designer](#class_Designer) objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.
 
 Type: List of [Designer](#class_Designer) objects<br />
+Required: False<br />
+<div id="class_InstallableFontsResponse_attribute_errorMessage"></div>
+
+#### errorMessage
+
+Description of error in case of [InstallableFontsResponse.type](#class_InstallableFontsResponse_attribute_type) being "custom".
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_foundries"></div>
 
@@ -635,7 +635,7 @@ Default value: CC-BY-NC-ND-4.0
 
 #### type
 
-Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.customMessage](#class_InstallableFontsResponse_attribute_customMessage).
+Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#class_InstallableFontsResponse_attribute_errorMessage).
 
 Type: Unicode<br />
 Required: True<br />
@@ -1213,13 +1213,13 @@ Required: False<br />
 
 ### Attributes
 
-[customMessage](#class_InstallFontResponse_attribute_customMessage)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
+[errorMessage](#class_InstallFontResponse_attribute_errorMessage)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_InstallFontResponse_attribute_customMessage"></div>
+<div id="class_InstallFontResponse_attribute_errorMessage"></div>
 
-#### customMessage
+#### errorMessage
 
 Description of error in case of custom response type
 

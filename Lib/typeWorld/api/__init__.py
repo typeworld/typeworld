@@ -354,8 +354,8 @@ class BaseResponse(DictBasedObject):
 	def customValidation(self):
 		information, warnings, critical = [], [], []
 
-		if self.type == CUSTOM and self.customMessage is None:
-			critical.append('%s.type is "%s", but .customMessage is missing.' % (self, CUSTOM))
+		if self.type == CUSTOM and self.errorMessage is None:
+			critical.append('%s.type is "%s", but .errorMessage is missing.' % (self, CUSTOM))
 
 		return information, warnings, critical
 
@@ -389,8 +389,8 @@ class InstallableFontsResponse(BaseResponse):
 	_structure = {
 
 		# Root
-		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.customMessage::.'],
-		'customMessage': 	[MultiLanguageTextProxy,				False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
+		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.'],
+		'errorMessage': 	[MultiLanguageTextProxy,				False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
 		'version': 			[FloatDataType,					True, 	INSTALLABLEFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
@@ -436,7 +436,7 @@ class InstallFontResponse(BaseResponse):
 
 		# Root
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Success or error or else.'],
-		'customMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
+		'errorMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
@@ -463,7 +463,7 @@ class UninstallFontResponse(BaseResponse):
 
 		# Root
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Success or error or else.'],
-		'customMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
+		'errorMessage': 	[UnicodeDataType,				False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
