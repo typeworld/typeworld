@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>billboards</key>
+	<string></string>
+	<key>description</key>
+	<dict>
+		<key>en</key>
+		<string>Yanone Kaffeesatz is a modern classic. It became popular in the early 2000s due to its free price tag.</string>
+		<key>de</key>
+		<string>Yanone Kaffeesatz ist ein moderner Klassiker. Sie erlangte Popularität Anfang der 2000er durch ihre kostenlose Veröffentlichung.</string>
+	</dict>
+	<key>designers</key>
+	<array>
+		<string>yanone</string>
+	</array>
+	<key>issueTrackerURL</key>
+	<string></string>
+	<key>name</key>
+	<dict>
+		<key>en</key>
+		<string>Yanone Kaffeesatz</string>
+	</dict>
+	<key>sourceURL</key>
+	<string></string>
+</dict>
+</plist>

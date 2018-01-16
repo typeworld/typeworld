@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>canonicalURL</key>
+	<string>## In this reference implementation, this value get inferred by the code ##</string>
+	<key>adminEmail</key>
+	<string>admin@fontpublisher.com</string>
+	<key>licenseIdentifier</key>
+	<string>CC-BY-NC-ND-4.0</string>
+	<key>logo</key>
+	<string></string>
+	<key>name</key>
+	<dict>
+		<key>en</key>
+		<string>Yanone</string>
+	</dict>
+	<key>public</key>
+	<false/>
+	<key>supportedCommands</key>
+	<array>
+		<string>installableFonts</string>
+		<string>installFont</string>
+		<string>uninstallFont</string>
+	</array>
+	<key>website</key>
+	<string>http://fontpublisher.com</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>seatAllowances</key>
+	<dict>
+		<key>awesomefonts-YanoneKaffeesatz-Regular</key>
+		<integer>1</integer>
+		<key>awesomefonts-YanoneKaffeesatz-Thin</key>
+		<integer>1</integer>
+		<key>awesomefonts-YanoneKaffeesatz-Light</key>
+		<integer>1</integer>
+	</dict>
+	<key>anonymousID</key>
+	<string>5hXmdNNvywkHe2asYLXqJR2T</string>
+	<key>name</key>
+	<string>User 1</string>
+</dict>
+</plist>

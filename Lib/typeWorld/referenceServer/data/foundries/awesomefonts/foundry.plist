@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>backgroundColor</key>
+	<string></string>
+	<key>description</key>
+	<dict/>
+	<key>email</key>
+	<string></string>
+	<key>facebook</key>
+	<string></string>
+	<key>instagram</key>
+	<string></string>
+	<key>logo</key>
+	<string></string>
+	<key>name</key>
+	<dict>
+		<key>en</key>
+		<string>Awesome Fonts</string>
+	</dict>
+	<key>skype</key>
+	<string></string>
+	<key>supportEmail</key>
+	<string></string>
+	<key>telephone</key>
+	<string></string>
+	<key>twitter</key>
+	<string></string>
+	<key>website</key>
+	<string></string>
+</dict>
+</plist>

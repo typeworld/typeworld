@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ID</key>
+	<string>## In this reference implementation, this gets inferred from the foundry name and postScriptName ##</string>
+	<key>beta</key>
+	<false/>
+	<key>designers</key>
+	<array>
+		<string>yanone</string>
+	</array>
+	<key>free</key>
+	<false/>
+	<key>licenseAllowanceDescription</key>
+	<dict/>
+	<key>licenseKeyword</key>
+	<string>sil</string>
+	<key>name</key>
+	<dict>
+		<key>en</key>
+		<string>Regular</string>
+	</dict>
+	<key>postScriptName</key>
+	<string>## In this reference implementation, this gets inferred from the folder name ##</string>
+	<key>previewImage</key>
+	<string></string>
+	<key>seatsAllowedForUser</key>
+	<string>## This field gets filled in by the code according to each client’s font installations ##</string>
+	<key>seatsInstalledByUser</key>
+	<string>## This field gets filled in by the code according to each client’s font installations ##</string>
+	<key>timeAddedForUser</key>
+	<integer>0</integer>
+	<key>type</key>
+	<string>desktop</string>
+	<key>upgradeLicenseURL</key>
+	<string></string>
+	<key>variableFont</key>
+	<false/>
+	<key>variantName</key>
+	<string></string>
+</dict>
+</plist>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>description</key>
+	<dict>
+		<key>en</key>
+		<string>Yanone is a german type designer currently living in Amman, Jordan.</string>
+		<key>de</key>
+		<string>Yanone ist ein deutscher Schriftgestalter, der momentan in Amman, Jordanien, lebt.</string>
+	</dict>
+	<key>keyword</key>
+	<string>## In this reference implementation, the keyword gets inferred from the folder name ##</string>
+	<key>name</key>
+	<dict>
+		<key>en</key>
+		<string>Yanone</string>
+	</dict>
+	<key>website</key>
+	<string>https://yanone.de</string>
+</dict>
+</plist>
