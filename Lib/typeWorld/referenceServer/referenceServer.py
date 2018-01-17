@@ -112,7 +112,15 @@ class Foundry(PlistBasedClass):
 		return licenses
 
 class Family(PlistBasedClass):
-	pass
+	def fontsForAllowances(self, seatAllowances):
+		fonts = []
+
+		for font in self.fonts:
+			if font.uniqueID() in seatAllowances.keys():
+				if not font in fonts:
+					fonts.append(font)
+
+		return fonts
 
 class License(PlistBasedClass):
 	def dictForAPI(self):
@@ -259,9 +267,20 @@ class ReferenceServer(object):
 
 		return designers
 
+	def seatsForUser(self, userID, fontID, anonymousAppID):
+		seats = 0
+#		print userID, fontID, anonymousAppID
+		for line in open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'r').readlines():
+			if line.startswith('%s %s' % (userID, fontID)):
+				seats += 1
+		return seats
+
+
+
 	def api(self, command = None, userID = None, fontID = None, anonymousAppID = None):
 
 		api = typeWorld.api.APIRoot()
+		mimeType = 'application/json'
 
 		# Put in root publisher data
 		self.publisher.applyValuesToTypeWorldObjects(api)
@@ -288,56 +307,95 @@ class ReferenceServer(object):
 			else:
 				api.response.installableFonts.type = 'success'
 
+				# Fetch user
 				user = self.usersByID[userID]
 				seatAllowances = user.plist['seatAllowances']
 
+				# Designers
 				for rsDesigner in self.designersForAllowances(seatAllowances):
 					twDesigner = typeWorld.api.Designer()
 					rsDesigner.applyValuesToTypeWorldObjects(twDesigner)
 					api.response.installableFonts.designers.append(twDesigner)
 
+				# Foundries
 				for rsFoundry in self.foundriesForAllowances(seatAllowances):
 					twFoundry = typeWorld.api.Foundry()
 					rsFoundry.applyValuesToTypeWorldObjects(twFoundry)
 					api.response.installableFonts.foundries.append(twFoundry)
 
+					# Licenses
 					for rsLicense in rsFoundry.licensesForAllowances(seatAllowances):
 						twLicense = typeWorld.api.License()
 						rsLicense.applyValuesToTypeWorldObjects(twLicense)
 						twFoundry.licenses.append(twLicense)
 
+					# Families
 					for rsFamily in rsFoundry.familiesForAllowances(seatAllowances):
 						twFamily = typeWorld.api.Family()
 						rsFamily.applyValuesToTypeWorldObjects(twFamily)
 						twFoundry.families.append(twFamily)
 
-						for rsFont in rsFamily.fonts:
-							seatAllowance = 0
+						# Fonts
+						for rsFont in rsFamily.fontsForAllowances(seatAllowances):
 							if seatAllowances.has_key(rsFont.uniqueID()):
 								seatAllowance = seatAllowances[rsFont.uniqueID()]
+							else:
+								seatAllowance = 0
+							twFont = typeWorld.api.Font()
+							rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsForUser(userID, rsFont.uniqueID(), anonymousAppID)})
+							twFamily.fonts.append(twFont)
 
-							if seatAllowance:
-								twFont = typeWorld.api.Font()
-								rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance})
-								twFamily.fonts.append(twFont)
+							# Font-Level Versions
+							for rsVersion in rsFont.versions:
+								twVersion = typeWorld.api.Version()
+								rsVersion.applyValuesToTypeWorldObjects(twVersion)
+								twFont.versions.append(twVersion)
 
+						# Family-Level Versions
 						for rsVersion in rsFamily.versions:
 							twVersion = typeWorld.api.Version()
 							rsVersion.applyValuesToTypeWorldObjects(twVersion)
 							twFamily.versions.append(twVersion)
 
-
-
-
-
 		# Return JSON code
-		return api.dumpJSON()
+		return api.dumpJSON(), mimeType
 
 
-if __name__ == '__main__':
 
+# Anonymous App ID, will later be different for every installation
+anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
+
+# Start web server
+from flask import Flask, Response, request, url_for
+app = Flask(__name__)
+
+ip = '127.0.0.1'
+port = 5000
+
+# Print test links
+print '####################################################################'
+print
+print '  Type.World Reference Server'
+print '  General API information:'.ljust(45), 'http://%s:%s/' % (ip, port)
+print '  Official Type.World App link for user1:'.ljust(45), 'http://%s:%s/?userID=%s' % (ip, port, ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/').users[0].plist['anonymousID'])
+print '  installableFonts command for user1:'.ljust(45), 'http://%s:%s/?command=installableFonts&userID=%s&anonymousAppID=%s' % (ip, port, ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/').users[0].plist['anonymousID'], anonymousAppID)
+print
+print '####################################################################'
+print
+
+@app.route('/', methods=['GET'])
+def root():
+
+
+	# Instantiate reference server
 	server = ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/')
 
-#	print server.usersByID
+	# Get JSON (or font) output
+	content, mimeType = server.api(command = request.args.get('command'), userID = request.args.get('userID'), anonymousAppID = request.args.get('anonymousAppID'))
 
-	print server.api(command = 'installableFonts', userID = '5hXmdNNvywkHe2asYLXqJR2T')
+	# Send output
+	return Response(content, mimetype = mimeType)
+	
+
+if __name__ == '__main__':
+	app.run(host=ip, port=port, debug=True)
