@@ -29,4 +29,4 @@ See [typeWorld.client](Lib/typeWorld/client)
 
 # More Developer Information
 
-Please also check the [Type.World Developer Page](http://type.world/developer/) for more information. It also has an online [API validator](http://type.world/validator/).
+Please also check the [Type.World Developer Page](http://type.world/developers/) for more information. It also has an online [API validator](http://type.world/validator/).
