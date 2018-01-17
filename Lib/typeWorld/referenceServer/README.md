@@ -27,3 +27,5 @@ It will print a couple of links like so:
 ```
 
 Copy/paste these into your browser to see the JSON responses.
+
+Currently still missing is installation and uninstallation of fonts. Coming up, stay tuned.
