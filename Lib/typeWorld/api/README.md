@@ -543,7 +543,7 @@ print api.response.get(api.response.command)
 
 Description of error in case of custom response type
 
-Type: Unicode<br />
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
 <div id="class_UninstallFontResponse_attribute_licenseIdentifier"></div>
 
@@ -559,7 +559,7 @@ Default value: CC-BY-NC-ND-4.0
 
 #### type
 
-Success or error or else.
+Success or error.
 
 Type: Unicode<br />
 Required: True<br />
@@ -1223,7 +1223,7 @@ Required: False<br />
 
 Description of error in case of custom response type
 
-Type: Unicode<br />
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallFontResponse_attribute_licenseIdentifier"></div>
 
@@ -1239,7 +1239,7 @@ Default value: CC-BY-NC-ND-4.0
 
 #### type
 
-Success or error or else.
+Success or error.
 
 Type: Unicode<br />
 Required: True<br />
