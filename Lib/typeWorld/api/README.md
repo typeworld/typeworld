@@ -789,7 +789,7 @@ Required: False<br />
 
 ### Attributes
 
-[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[versions](#class_Family_attribute_versions)<br />
+[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
 
 ### Methods
 
@@ -850,6 +850,14 @@ Required: True<br />
 #### sourceURL
 
 URL pointing to the source of a font project, such as a GitHub repository
+
+Type: Unicode<br />
+Required: False<br />
+<div id="class_Family_attribute_upgradeLicenseURL"></div>
+
+#### upgradeLicenseURL
+
+URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at [Font.upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL).
 
 Type: Unicode<br />
 Required: False<br />
