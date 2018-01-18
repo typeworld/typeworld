@@ -292,6 +292,19 @@ class ReferenceServer(object):
 			f.write(string)
 			f.close()
 
+	def removeInstallation(self, userID, fontID, anonymousAppID):
+
+		string = '%s %s %s\n' % (userID, fontID, anonymousAppID)
+
+		lines = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'r').readlines()
+
+		f = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'w')
+		for line in lines:
+			if line != string:
+				f.write(string)
+		f.close()
+
+
 	def seatsAllowedForUser(self, userID, fontID):
 
 		if self.usersByID[userID].plist['seatAllowances'].has_key(fontID):
@@ -417,7 +430,6 @@ class ReferenceServer(object):
 
 			# all set, output fonts
 			else:
-				api.response.installFont.type = 'success'
 				font = self.fontsByID[fontID]
 
 				# Font is free, give it away
@@ -494,7 +506,63 @@ class ReferenceServer(object):
 						api.response.installFont.type = 'seatAllowanceReached'
 						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
+		# InstallFont Command
+		elif command == 'uninstallFont':
+			api.response = typeWorld.api.Response()
+			api.response.command = command
+			api.response.uninstallFont = typeWorld.api.UninstallFontResponse()
 
+			# fontID is empty
+			if not fontID:
+				api.response.uninstallFont.type = 'error'
+				api.response.uninstallFont.errorMessage.en = 'No fontID supplied'
+				api.response.uninstallFont.errorMessage.de = u'Keine fontID übergeben'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+			# fontID doesn't exist
+			if not self.fontsByID.has_key(fontID):
+				api.response.uninstallFont.type = 'error'
+				api.response.uninstallFont.errorMessage.en = 'No font found for fontID'
+				api.response.uninstallFont.errorMessage.de = u'Kein Font für fontID gefunden'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+			# installation not found
+			if self.seatsInstalledForUser(userID, fontID, anonymousAppID) != 1:
+				api.response.uninstallFont.type = 'error'
+				api.response.uninstallFont.errorMessage.en = 'This font installation for this appID is unknown'
+				api.response.uninstallFont.errorMessage.de = u'Diese Font-Installation für diese appID ist unbekannt.'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+			# all set, remove font
+			else:
+				font = self.fontsByID[fontID]
+
+				# Font is free; do nothing
+				if font.plist['free'] == True:
+					pass
+
+				# Font is commercial, need to remove license from ledger
+				else:
+
+					# userID is empty
+					if not userID:
+						api.response.uninstallFont.type = 'error'
+						api.response.uninstallFont.errorMessage.en = 'No userID supplied'
+						api.response.uninstallFont.errorMessage.de = u'Keine userID übergeben'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+					# userID doesn't exist
+					if not self.usersByID.has_key(userID):
+						api.response.uninstallFont.type = 'error'
+						api.response.uninstallFont.errorMessage.en = 'This userID is unknown'
+						api.response.uninstallFont.errorMessage.de = 'Diese userID is unbekannt'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+					# Add installation to ledger
+					self.removeInstallation(userID, fontID, anonymousAppID)
+
+					api.response.uninstallFont.type = 'success'
+					return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 
 # Anonymous App ID, will later be different for every installation
@@ -520,6 +588,7 @@ print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (u
 print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, server.users[0].plist['anonymousID'], anonymousAppID)
 print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Bold&fontVersion=1.0' % (url)
 print '  Install commercial font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
+print '  Uninstall commercial font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
 print
 print '####################################################################'
 print
