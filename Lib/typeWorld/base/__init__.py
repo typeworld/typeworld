@@ -9,6 +9,7 @@ import typeWorld.base
 # Response types (success, error, ...)
 SUCCESS = 'success'
 ERROR = 'error'
+SEATALLOWANCEREACHED = 'seatAllowanceReached'
 
 
 # Commands
@@ -23,7 +24,7 @@ INSTALLFONTCOMMAND ={
 	'keyword': 'installFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
-	'responseTypes': [SUCCESS, ERROR],
+	'responseTypes': [SUCCESS, ERROR, SEATALLOWANCEREACHED],
 	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'font/woff', 'font/woff2'],
 	}
 UNINSTALLFONTCOMMAND =	{
