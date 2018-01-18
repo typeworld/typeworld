@@ -162,10 +162,6 @@ class Font(DictBasedObject):
 	def customValidation(self):
 		information, warnings, critical = [], [], []
 
-		# Checking for seatsAllowedForUser if font is free
-		if self.free and self.seatsAllowedForUser:
-			critical.append("The font %s is marked as free, but has a limit to `seatsAllowedForUser`. This doesn't make sense." % (self))
-
 		# Checking version information
 		if not self.hasVersionInformation():
 			critical.append('The font %s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
