@@ -11,7 +11,7 @@
 		<string>yanone</string>
 	</array>
 	<key>free</key>
-	<false/>
+	<true/>
 	<key>licenseAllowanceDescription</key>
 	<dict/>
 	<key>licenseKeyword</key>
