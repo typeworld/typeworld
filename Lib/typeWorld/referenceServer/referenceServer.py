@@ -8,8 +8,7 @@ import typeWorld.api, typeWorld.base
 from typeWorld.api import *
 from typeWorld.base import *
 
-from flask import Flask, Response, request, url_for, send_file, send_from_directory, make_response
-
+import flask
 
 
 
@@ -361,7 +360,6 @@ class ReferenceServer(object):
 							twFamily.versions.append(twVersion)
 
 			
-			return Response(api.dumpJSON(), mimetype = 'application/json')
 
 		# InstallFont Command
 		elif command == 'installFont':
@@ -398,13 +396,13 @@ class ReferenceServer(object):
 					fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
 					b = open(fontPath, 'rb').read()
 
-					response = make_response(b)
+					response = flask.make_response(b)
 					response.headers['Content-Type'] = 'font/otf'
 					response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
 					return response
 
-			return Response(api.dumpJSON(), mimetype = 'application/json')
-		
+		return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+			
 
 
 
@@ -412,7 +410,7 @@ class ReferenceServer(object):
 anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
 
 # Start web server
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 ip = '127.0.0.1'
 port = 5000
@@ -443,7 +441,7 @@ def root():
 	server = ReferenceServer(dataPath, url)
 
 	# Get JSON (or font) output
-	response = server.api(command = request.args.get('command'), userID = request.args.get('userID'), anonymousAppID = request.args.get('anonymousAppID'), fontID = request.args.get('fontID'), fontVersion = request.args.get('fontVersion'))
+	response = server.api(command = flask.request.args.get('command'), userID = flask.request.args.get('userID'), anonymousAppID = flask.request.args.get('anonymousAppID'), fontID = flask.request.args.get('fontID'), fontVersion = flask.request.args.get('fontVersion'))
 
 	# Send output
 	return response
