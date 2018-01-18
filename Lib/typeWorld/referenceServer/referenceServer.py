@@ -8,7 +8,7 @@ import typeWorld.api, typeWorld.base
 from typeWorld.api import *
 from typeWorld.base import *
 
-
+from flask import Flask, Response, request, url_for, send_file, send_from_directory, make_response
 
 
 
@@ -277,10 +277,13 @@ class ReferenceServer(object):
 
 
 
-	def api(self, command = None, userID = None, fontID = None, anonymousAppID = None):
+	def api(self, command = None, userID = None, fontID = None, anonymousAppID = None, fontVersion = None):
 
 		api = typeWorld.api.APIRoot()
-		mimeType = 'application/json'
+		mimeType = None
+		content = None
+
+
 
 		# Put in root publisher data
 		self.publisher.applyValuesToTypeWorldObjects(api)
@@ -357,8 +360,51 @@ class ReferenceServer(object):
 							rsVersion.applyValuesToTypeWorldObjects(twVersion)
 							twFamily.versions.append(twVersion)
 
-		# Return JSON code
-		return api.dumpJSON(), mimeType
+			
+			return Response(api.dumpJSON(), mimetype = 'application/json')
+
+		# InstallFont Command
+		elif command == 'installFont':
+			api.response = typeWorld.api.Response()
+			api.response.command = command
+			api.response.installFont = typeWorld.api.InstallFontResponse()
+
+			# fontID is empty
+			if not fontID:
+				api.response.installFont.type = 'error'
+				api.response.installFont.errorMessage.en = 'No fontID supplied'
+				api.response.installFont.errorMessage.de = u'Keine fontID übergeben'
+
+			# fontID doesn't exist
+			elif not self.fontsByID.has_key(fontID):
+				api.response.installFont.type = 'error'
+				api.response.installFont.errorMessage.en = 'No font found for fontID'
+				api.response.installFont.errorMessage.de = u'Kein Font für fontID gefunden'
+
+			# fontVersion is empty
+			elif not fontVersion:
+				api.response.installFont.type = 'error'
+				api.response.installFont.errorMessage.en = 'No fontVersion supplied'
+				api.response.installFont.errorMessage.de = u'Keine fontVersion übergeben'
+
+			# all set, output fonts
+			else:
+				api.response.installFont.type = 'success'
+				font = self.fontsByID[fontID]
+
+				# Font is free, give it away
+				if font.plist['free'] == True:
+					fileName = '%s_%s.otf' % (font.keyword, fontVersion)
+					fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
+					b = open(fontPath, 'rb').read()
+
+					response = make_response(b)
+					response.headers['Content-Type'] = 'font/otf'
+					response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
+					return response
+
+			return Response(api.dumpJSON(), mimetype = 'application/json')
+		
 
 
 
@@ -366,19 +412,24 @@ class ReferenceServer(object):
 anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
 
 # Start web server
-from flask import Flask, Response, request, url_for
 app = Flask(__name__)
 
 ip = '127.0.0.1'
 port = 5000
 
+
 # Print test links
+url = 'http://%s:%s/' % (ip, port)
+dataPath = os.path.join(os.path.dirname(__file__), 'data')
+server = ReferenceServer(dataPath, url)
+print server.fontsByID
 print '####################################################################'
 print
 print '  Type.World Reference Server'
-print '  General API information:'.ljust(45), 'http://%s:%s/' % (ip, port)
-print '  Official Type.World App link for user1:'.ljust(45), 'http://%s:%s/?userID=%s' % (ip, port, ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/').users[0].plist['anonymousID'])
-print '  installableFonts command for user1:'.ljust(45), 'http://%s:%s/?command=installableFonts&userID=%s&anonymousAppID=%s' % (ip, port, ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/').users[0].plist['anonymousID'], anonymousAppID)
+print '  General API information:'.ljust(45), url
+print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, server.users[0].plist['anonymousID'])
+print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, server.users[0].plist['anonymousID'], anonymousAppID)
+print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Bold&fontVersion=1.0' % (url)
 print
 print '####################################################################'
 print
@@ -388,13 +439,14 @@ def root():
 
 
 	# Instantiate reference server
-	server = ReferenceServer(os.path.join(os.path.dirname(__file__), 'data'), 'http://localhost:88/api/')
+	# Read it new every time to reflect changes in the data base (file structure)
+	server = ReferenceServer(dataPath, url)
 
 	# Get JSON (or font) output
-	content, mimeType = server.api(command = request.args.get('command'), userID = request.args.get('userID'), anonymousAppID = request.args.get('anonymousAppID'))
+	response = server.api(command = request.args.get('command'), userID = request.args.get('userID'), anonymousAppID = request.args.get('anonymousAppID'), fontID = request.args.get('fontID'), fontVersion = request.args.get('fontVersion'))
 
 	# Send output
-	return Response(content, mimetype = mimeType)
+	return response
 	
 
 if __name__ == '__main__':
