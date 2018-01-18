@@ -266,14 +266,38 @@ class ReferenceServer(object):
 
 		return designers
 
-	def seatsForUser(self, userID, fontID, anonymousAppID):
+	def seatsInstalledForUser(self, userID, fontID, anonymousAppID = None):
 		seats = 0
-#		print userID, fontID, anonymousAppID
+
+		if anonymousAppID:
+			compareString = '%s %s %s' % (userID, fontID, anonymousAppID)
+		else:
+			compareString = '%s %s' % (userID, fontID)
+
 		for line in open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'r').readlines():
 			if line.startswith('%s %s' % (userID, fontID)):
 				seats += 1
 		return seats
 
+	def addInstallation(self, userID, fontID, anonymousAppID):
+
+		# This installation is already registered; do nothing
+		if self.seatsInstalledForUser(userID, fontID, anonymousAppID) == 1:
+			pass
+
+		# Add this installation
+		else:
+			string = '%s %s %s\n' % (userID, fontID, anonymousAppID)
+			f = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'a')
+			f.write(string)
+			f.close()
+
+	def seatsAllowedForUser(self, userID, fontID):
+
+		if self.usersByID[userID].plist['seatAllowances'].has_key(fontID):
+			return self.usersByID[userID].plist['seatAllowances'][fontID]
+		else:
+			return 0
 
 
 	def api(self, command = None, userID = None, fontID = None, anonymousAppID = None, fontVersion = None):
@@ -298,12 +322,14 @@ class ReferenceServer(object):
 				api.response.installableFonts.type = 'error'
 				api.response.installableFonts.errorMessage.en = 'No userID supplied'
 				api.response.installableFonts.errorMessage.de = u'Keine userID übergeben'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 			# userID doesn't exist
 			elif not self.usersByID.has_key(userID):
 				api.response.installableFonts.type = 'error'
 				api.response.installableFonts.errorMessage.en = 'This userID is unknown'
 				api.response.installableFonts.errorMessage.de = 'Diese userID is unbekannt'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 			# userID exists, proceed
 			else:
@@ -344,7 +370,7 @@ class ReferenceServer(object):
 							else:
 								seatAllowance = 0
 							twFont = typeWorld.api.Font()
-							rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsForUser(userID, rsFont.uniqueID(), anonymousAppID)})
+							rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsInstalledForUser(userID, rsFont.uniqueID(), anonymousAppID)})
 							twFamily.fonts.append(twFont)
 
 							# Font-Level Versions
@@ -359,6 +385,7 @@ class ReferenceServer(object):
 							rsVersion.applyValuesToTypeWorldObjects(twVersion)
 							twFamily.versions.append(twVersion)
 
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 			
 
 		# InstallFont Command
@@ -372,18 +399,21 @@ class ReferenceServer(object):
 				api.response.installFont.type = 'error'
 				api.response.installFont.errorMessage.en = 'No fontID supplied'
 				api.response.installFont.errorMessage.de = u'Keine fontID übergeben'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 			# fontID doesn't exist
 			elif not self.fontsByID.has_key(fontID):
 				api.response.installFont.type = 'error'
 				api.response.installFont.errorMessage.en = 'No font found for fontID'
 				api.response.installFont.errorMessage.de = u'Kein Font für fontID gefunden'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 			# fontVersion is empty
 			elif not fontVersion:
 				api.response.installFont.type = 'error'
 				api.response.installFont.errorMessage.en = 'No fontVersion supplied'
 				api.response.installFont.errorMessage.de = u'Keine fontVersion übergeben'
+				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 			# all set, output fonts
 			else:
@@ -392,17 +422,78 @@ class ReferenceServer(object):
 
 				# Font is free, give it away
 				if font.plist['free'] == True:
+
 					fileName = '%s_%s.otf' % (font.keyword, fontVersion)
 					fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
-					b = open(fontPath, 'rb').read()
 
-					response = flask.make_response(b)
-					response.headers['Content-Type'] = 'font/otf'
-					response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
-					return response
+					# File exists
+					if os.path.exists(fontPath):
+						b = open(fontPath, 'rb').read()
 
-		return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+						response = flask.make_response(b)
+						response.headers['Content-Type'] = 'font/otf'
+						response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
+						return response
+
+					# File does not exist
+					else:
+						api.response.installFont.type = 'error'
+						api.response.installFont.errorMessage.en = 'Font file could not be found.'
+						api.response.installFont.errorMessage.de = u'Die Font-Datei konnte nicht gefunden werden.'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+				# Font is commercial. Need to check, if we're allowed to give it away
+				else:
+
+					# userID is empty
+					if not userID:
+						api.response.installFont.type = 'error'
+						api.response.installFont.errorMessage.en = 'No userID supplied'
+						api.response.installFont.errorMessage.de = u'Keine userID übergeben'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+					# userID doesn't exist
+					if not self.usersByID.has_key(userID):
+						api.response.installFont.type = 'error'
+						api.response.installFont.errorMessage.en = 'This userID is unknown'
+						api.response.installFont.errorMessage.de = 'Diese userID is unbekannt'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+
+					seatsInstalledForUser = self.seatsInstalledForUser(userID, fontID)
+					seatsAllowedForUser = self.seatsAllowedForUser(userID, fontID)
 			
+					# User still has seat allowance
+					if seatsInstalledForUser < seatsAllowedForUser:
+
+						fileName = '%s_%s.otf' % (font.keyword, fontVersion)
+						fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
+
+						# File exists
+						if os.path.exists(fontPath):
+
+							# Add installation to ledger
+							self.addInstallation(userID, fontID, anonymousAppID)
+
+							# Put out font
+							b = open(fontPath, 'rb').read()
+							response = flask.make_response(b)
+							response.headers['Content-Type'] = 'font/otf'
+							response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
+							return response
+
+						# File does not exist
+						else:
+							api.response.installFont.type = 'error'
+							api.response.installFont.errorMessage.en = 'Font file could not be found.'
+							api.response.installFont.errorMessage.de = u'Die Font-Datei konnte nicht gefunden werden.'
+							return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+					# User's seat allowance has been reached
+					else:
+						api.response.installFont.type = 'seatAllowanceReached'
+						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
 
 
 
@@ -428,6 +519,7 @@ print '  General API information:'.ljust(45), url
 print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, server.users[0].plist['anonymousID'])
 print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, server.users[0].plist['anonymousID'], anonymousAppID)
 print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Bold&fontVersion=1.0' % (url)
+print '  Install commercial font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
 print
 print '####################################################################'
 print
