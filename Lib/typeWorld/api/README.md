@@ -1057,7 +1057,7 @@ Required: True<br />
 
 #### upgradeLicenseURL
 
-URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop
+URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at [Family.upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL).
 
 Type: Unicode<br />
 Required: False<br />
