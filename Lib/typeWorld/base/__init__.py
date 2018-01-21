@@ -826,6 +826,33 @@ class MultiLanguageTextListProxy(ListProxy):
 
 
 
+####################################################################################################################################
+
+#  Object model
+
+class SupportedAPICommandsDataType(UnicodeDataType):
+	
+	commands = [x['keyword'] for x in COMMANDS]
+
+
+	def valid(self):
+		if self.value in self.commands:
+			return True
+		else:
+			return 'Unknown API command: "%s". Possible: %s' % (self.value, self.commands)
+
+class SupportedAPICommandsListProxy(ListProxy):
+	dataType = SupportedAPICommandsDataType
+
+
+class FontTypeDataType(UnicodeDataType):
+	def valid(self):
+		if self.value in FONTTYPES:
+			return True
+		else:
+			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
+
+
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
