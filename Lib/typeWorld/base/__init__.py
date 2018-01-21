@@ -877,12 +877,25 @@ class FontTypeDataType(UnicodeDataType):
 			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
 
 
-class FontFileTypeDataType(UnicodeDataType):
+class FontExtensionDataType(UnicodeDataType):
 	def valid(self):
-		if self.value in FONTTYPES:
+
+		found = False
+
+		for mimeType in MIMETYPES:
+			if self.value in mimeType['fileExtensions']:
+				found = True
+				break
+
+		if found:
 			return True
 		else:
-			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
+
+			extensions = []
+			for mimeType in MIMETYPES:
+				extensions = list(set(extensions) | set(mimeType['fileExtensions']))
+
+			return 'Unknown font extension: "%s". Possible: %s' % (self.value, extensions)
 
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
