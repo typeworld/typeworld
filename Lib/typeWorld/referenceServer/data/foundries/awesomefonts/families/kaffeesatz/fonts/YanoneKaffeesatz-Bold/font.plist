@@ -34,7 +34,7 @@
 	<key>timeAddedForUser</key>
 	<integer>0</integer>
 	<key>trackSeatAllowance</key>
-	<false/>
+	<true/>
 	<key>type</key>
 	<string>desktop</string>
 	<key>upgradeLicenseURL</key>

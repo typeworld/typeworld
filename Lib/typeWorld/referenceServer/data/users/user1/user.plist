@@ -6,6 +6,8 @@
 	<dict>
 		<key>awesomefonts-YanoneKaffeesatz-Regular</key>
 		<integer>1</integer>
+		<key>awesomefonts-YanoneKaffeesatz-Bold</key>
+		<integer>3</integer>
 		<key>awesomefonts-YanoneKaffeesatz-Thin</key>
 		<integer>1</integer>
 		<key>awesomefonts-YanoneKaffeesatz-Light</key>

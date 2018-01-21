@@ -538,7 +538,7 @@ class ReferenceServer(object):
 				font = self.fontsByID[fontID]
 
 				# Font is free; do nothing
-				if font.plist['trackSeatAllowance'] == False::
+				if font.plist['trackSeatAllowance'] == False:
 					pass
 
 				# Font is commercial, need to remove license from ledger
