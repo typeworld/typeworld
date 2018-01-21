@@ -137,6 +137,9 @@ class IntegerDataType(DataType):
 class FloatDataType(DataType):
 	dataType = float
 
+	def shapeValue(self, value):
+		return float(value)
+
 class StringDataType(DataType):
 	dataType = str
 
