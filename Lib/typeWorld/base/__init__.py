@@ -884,8 +884,8 @@ class FontExtensionDataType(UnicodeDataType):
 
 		found = False
 
-		for mimeType in MIMETYPES:
-			if self.value in mimeType['fileExtensions']:
+		for mimeType in MIMETYPES.keys():
+			if self.value in MIMETYPES[mimeType]['fileExtensions']:
 				found = True
 				break
 

@@ -988,7 +988,7 @@ Required: False<br />
 File extension. Required in case of `desktop` font (see [Font.type](#class_Font_attribute_type). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
 
 Type: Unicode<br />
-Required: True<br />
+Required: False<br />
 <div id="class_Font_attribute_free"></div>
 
 #### free

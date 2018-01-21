@@ -56,6 +56,7 @@ if __name__ == '__main__':
 	font.postScriptName = u'AwesomeSans-Regular'
 	font.licenseKeyword = u'awesomeFontsEULA'
 	font.type = u'desktop'
+	font.fileExtension = u'otf'
 	family.fonts.append(font)
 
 	# Output API response as JSON
