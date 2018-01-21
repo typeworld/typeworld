@@ -789,7 +789,7 @@ Required: False<br />
 
 ### Attributes
 
-[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
+[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[timeFirstPublished](#class_Family_attribute_timeFirstPublished)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
 
 ### Methods
 
@@ -852,6 +852,14 @@ Required: True<br />
 URL pointing to the source of a font project, such as a GitHub repository
 
 Type: Unicode<br />
+Required: False<br />
+<div id="class_Family_attribute_timeFirstPublished"></div>
+
+#### timeFirstPublished
+
+Timestamp of the initial release of the family. May be overriden on font level at [Font.timeFirstPublished](#class_Font_attribute_timeFirstPublished).
+
+Type: Int<br />
 Required: False<br />
 <div id="class_Family_attribute_upgradeLicenseURL"></div>
 
@@ -949,7 +957,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[fileExtension](#class_Font_attribute_fileExtension)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[trackSeatAllowance](#class_Font_attribute_trackSeatAllowance)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[trackSeatAllowance](#class_Font_attribute_trackSeatAllowance)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -980,14 +988,6 @@ Required: False<br />
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#class_InstallableFontsResponse_attribute_designers). This attribute overrides the designer definitions at the family level at [Family.designers](#class_Family_attribute_designers).
 
 Type: List of Unicode objects<br />
-Required: False<br />
-<div id="class_Font_attribute_fileExtension"></div>
-
-#### fileExtension
-
-File extension. Required in case of `desktop` font (see [Font.type](#class_Font_attribute_type). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
-
-Type: Unicode<br />
 Required: False<br />
 <div id="class_Font_attribute_free"></div>
 
@@ -1037,6 +1037,14 @@ URL of preview image of font, specifications to follow
 
 Type: Unicode<br />
 Required: False<br />
+<div id="class_Font_attribute_purpose"></div>
+
+#### purpose
+
+Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['web', 'app', 'desktop']
+
+Type: Unicode<br />
+Required: True<br />
 <div id="class_Font_attribute_seatsAllowedForUser"></div>
 
 #### seatsAllowedForUser
@@ -1061,6 +1069,14 @@ Timestamp of the time the user has purchased this font or the font has become av
 
 Type: Int<br />
 Required: False<br />
+<div id="class_Font_attribute_timeFirstPublished"></div>
+
+#### timeFirstPublished
+
+Timestamp of the initial release of the font. May also be define family-wide at [Family.timeFirstPublished](#class_Family_attribute_timeFirstPublished).
+
+Type: Int<br />
+Required: False<br />
 <div id="class_Font_attribute_trackSeatAllowance"></div>
 
 #### trackSeatAllowance
@@ -1073,10 +1089,10 @@ Required: False<br />
 
 #### type
 
-Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['web', 'app', 'desktop']
+Font file type. Required value in case of `desktop` font (see [Font.fontPurpose](#class_Font_attribute_fontPurpose). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
 
 Type: Unicode<br />
-Required: True<br />
+Required: False<br />
 <div id="class_Font_attribute_upgradeLicenseURL"></div>
 
 #### upgradeLicenseURL

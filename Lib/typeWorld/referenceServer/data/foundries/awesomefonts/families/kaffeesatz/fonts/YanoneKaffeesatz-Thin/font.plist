@@ -10,7 +10,7 @@
 	<array>
 		<string>yanone</string>
 	</array>
-	<key>fileExtension</key>
+	<key>type</key>
 	<string>otf</string>
 	<key>free</key>
 	<true/>
@@ -35,7 +35,7 @@
 	<integer>0</integer>
 	<key>trackSeatAllowance</key>
 	<false/>
-	<key>type</key>
+	<key>purpose</key>
 	<string>desktop</string>
 	<key>upgradeLicenseURL</key>
 	<string></string>
