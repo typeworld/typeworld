@@ -18,25 +18,32 @@ INSTALLABLEFONTSCOMMAND = {
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR],
-	'acceptableMimeTypes': ['application/json'],
 	}
 INSTALLFONTCOMMAND ={
 	'keyword': 'installFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR, SEATALLOWANCEREACHED],
-	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'font/woff', 'font/woff2'],
 	}
 UNINSTALLFONTCOMMAND =	{
 	'keyword': 'uninstallFont',
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR],
-	'acceptableMimeTypes': ['application/json'],
 	}
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
 
-FONTTYPES = ['desktop', 'web', 'app']
+FONTTYPES = {
+	'desktop': {
+		'acceptableMimeTypes': ['font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'application/zip'],
+	},
+	'web': {
+		'acceptableMimeTypes': ['application/zip'],
+	},
+	'app': {
+		'acceptableMimeTypes': ['application/zip'],
+	},
+}
 
 # https://tools.ietf.org/html/rfc8081
 
@@ -60,9 +67,12 @@ MIMETYPES = {
 		'fileExtensions': ['woff2'],
 	},
 }
+
+# Compile list of file extensions
 FILEEXTENSIONS = []
 for mimeType in MIMETYPES.keys():
 	FILEEXTENSIONS = list(set(FILEEXTENSIONS) | set(MIMETYPES[mimeType]['fileExtensions']))
+
 
 
 
@@ -873,10 +883,10 @@ class SupportedAPICommandsListProxy(ListProxy):
 
 class FontTypeDataType(UnicodeDataType):
 	def valid(self):
-		if self.value in FONTTYPES:
+		if self.value in FONTTYPES.keys():
 			return True
 		else:
-			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
+			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES.keys())
 
 
 class FontExtensionDataType(UnicodeDataType):

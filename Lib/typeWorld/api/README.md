@@ -1065,7 +1065,7 @@ Required: False<br />
 
 #### type
 
-Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['desktop', 'web', 'app']
+Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['web', 'app', 'desktop']
 
 Type: Unicode<br />
 Required: True<br />
