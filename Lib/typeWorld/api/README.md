@@ -957,7 +957,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[trackSeatAllowance](#class_Font_attribute_trackSeatAllowance)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1045,6 +1045,14 @@ Technical purpose of font. This influences how the app handles the font. For ins
 
 Type: Unicode<br />
 Required: True<br />
+<div id="class_Font_attribute_requiresUserID"></div>
+
+#### requiresUserID
+
+Indication that the server requires a userID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.
+
+Type: Bool<br />
+Required: False<br />
 <div id="class_Font_attribute_seatsAllowedForUser"></div>
 
 #### seatsAllowedForUser
@@ -1076,14 +1084,6 @@ Required: False<br />
 Timestamp of the initial release of the font. May also be define family-wide at [Family.timeFirstPublished](#class_Family_attribute_timeFirstPublished).
 
 Type: Int<br />
-Required: False<br />
-<div id="class_Font_attribute_trackSeatAllowance"></div>
-
-#### trackSeatAllowance
-
-Indication that the server tracks font installations and a userID needs to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.
-
-Type: Bool<br />
 Required: False<br />
 <div id="class_Font_attribute_type"></div>
 
