@@ -1001,7 +1001,7 @@ Required: False<br />
 
 #### licenseAllowanceDescription
 
-In case of non-desktop font (see [Font.type](#class_Font_attribute_type)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
+In case of non-desktop font (see [Font.purpose](#class_Font_attribute_purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
 
 Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
@@ -1057,7 +1057,7 @@ Required: False<br />
 
 #### seatsAllowedForUser
 
-In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations permitted by the user’s license.
+In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations permitted by the user’s license.
 
 Type: Int<br />
 Required: False<br />
@@ -1065,7 +1065,7 @@ Required: False<br />
 
 #### seatsInstalledByUser
 
-In case of desktop font (see [Font.type](#class_Font_attribute_type)), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded.
+In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded.
 
 Type: Int<br />
 Required: False<br />
