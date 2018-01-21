@@ -142,7 +142,7 @@ class Font(DictBasedObject):
 
 		# Checking font type/extension
 		if self.type == 'desktop' and not self.fileExtension:
-			critical.append('The font %s is a desktop font (see .type), but has no .fileExtension value.' % (self))
+			critical.append('The font %s is a desktop font (see .purpose), but has no .type value.' % (self))
 
 		# Checking version information
 		if not self.hasVersionInformation():
