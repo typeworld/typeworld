@@ -113,6 +113,7 @@ class Font(DictBasedObject):
 		'free':				[BooleanDataType,		False, 	None, 	u'Font is freeware. For UI signaling'],
 		'beta':				[BooleanDataType,		False, 	None, 	u'Font is in beta stage. For UI signaling'],
 		'variableFont':		[BooleanDataType,		False, 	None, 	u'Font is an OpenType Variable Font. For UI signaling'],
+		'fileExtension':	[FontExtensionDataType,	True, 	None, 	u'File extension. Possible: %s' % FILEEXTENSIONS],
 #		'public':			[BooleanDataType,		False, 	False, 	u'If false, signals restricted access to a commercial font only available to certain users. Download and installation may be restricted by the API point depending on the API point URL that needs to include the private key to identify the user.'],
 		'type':				[FontTypeDataType,		True, 	None, 	u'Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (FONTTYPES)],
 		'seatsAllowedForUser':[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations permitted by the user’s license.'],

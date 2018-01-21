@@ -949,7 +949,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[fileExtension](#class_Font_attribute_fileExtension)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -981,6 +981,14 @@ List of keywords referencing designers. These are defined at [InstallableFontsRe
 
 Type: List of Unicode objects<br />
 Required: False<br />
+<div id="class_Font_attribute_fileExtension"></div>
+
+#### fileExtension
+
+File extension. Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
+
+Type: Unicode<br />
+Required: True<br />
 <div id="class_Font_attribute_free"></div>
 
 #### free

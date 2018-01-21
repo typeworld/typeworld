@@ -60,7 +60,9 @@ MIMETYPES = {
 		'fileExtensions': ['woff2'],
 	},
 }
-
+FILEEXTENSIONS = []
+for mimeType in MIMETYPES.keys():
+	FILEEXTENSIONS = list(set(FILEEXTENSIONS) | set(MIMETYPES[mimeType]['fileExtensions']))
 
 
 
@@ -891,11 +893,7 @@ class FontExtensionDataType(UnicodeDataType):
 			return True
 		else:
 
-			extensions = []
-			for mimeType in MIMETYPES:
-				extensions = list(set(extensions) | set(mimeType['fileExtensions']))
-
-			return 'Unknown font extension: "%s". Possible: %s' % (self.value, extensions)
+			return 'Unknown font extension: "%s". Possible: %s' % (self.value, FILEEXTENSIONS)
 
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
