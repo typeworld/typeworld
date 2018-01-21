@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import os, sys, json, platform, urllib2, re
+import os, sys, json, platform, urllib2, re, traceback
 
 import typeWorld.api, typeWorld.base
 from typeWorld.api import *
@@ -34,10 +34,10 @@ class AppKitNSUserDefaults(Preferences):
 
 	def get(self, key):
 		if self.defaults.has_key(key):
-			return self.defaults[key]
+			return self.defaults.objectForKey_(key)
 
 	def set(self, key, value):
-		self.defaults[key] = value
+		self.defaults.setObject_forKey_(value, key)
 
 	def save(self):
 		pass
@@ -50,9 +50,17 @@ class APIRepository(object):
 	The values stored in self.repositoryVersions are the typeWorld.api.APIRoot() objects.
 	"""
 
-	def __init__(self, url):
+	def __init__(self, url, _dict = None):
 		self.url = url
 		self.repositoryVersions = []
+
+		# Load from preferences
+		if _dict:
+			_dict = dict(_dict)
+			for v in _dict['repositoryVersions']:
+				api = typeWorld.api.APIRoot()
+				api.loadDict(v)
+				self.repositoryVersions.append(api)
 
 	def latestVersion(self):
 		if self.repositoryVersions:
@@ -79,15 +87,27 @@ class APIRepository(object):
 		"""
 		self.parent.parent.addRepository(self.url)
 
+	def dict(self):
+		_dict = {}
+		_dict['repositoryVersions'] = []
+		for repositoryVersion in self.repositoryVersions:
+			_dict['repositoryVersions'].append(repositoryVersion.dumpDict())
+		return _dict
 
 class APIEndPoint(object):
 	u"""\
 	Represents an API endpoint, identified and grouped by the canonical URL attribute of the API responses. This API endpoint class can then hold several repositories.
 	"""
 
-	def __init__(self, canonicalURL):
+	def __init__(self, canonicalURL, _dict = None):
 		self.canonicalURL = canonicalURL
 		self.repositories = {}
+
+		# Load from preferences
+		if _dict:
+			_dict = dict(_dict)
+			for key in _dict['repositories'].keys():
+				self.repositories[key] = APIRepository(key, _dict['repositories'][key])
 
 	def addRepository(self, url, api):
 
@@ -101,6 +121,20 @@ class APIEndPoint(object):
 		self.repositories[url].updateWithAPIObject(api)
 
 
+	def name(self):
+		if self.repositories:
+			repo = self.repositories[self.repositories.keys()[0]]
+			if repo.latestVersion():
+				return repo.latestVersion().name
+
+
+	def dict(self):
+		_dict = {}
+		_dict['repositories'] = {}
+		for key in self.repositories:
+			_dict['repositories'][key] = self.repositories[key].dict()
+		return _dict
+
 class APIClient(object):
 	u"""\
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
@@ -111,6 +145,32 @@ class APIClient(object):
 		self.endpoints = {}
 		self.preferences = preferences
 
+		self.loadPreferences()
+
+	def savePreferences(self):
+		if self.preferences:
+			self.preferences.set('preferences', self.dict())
+
+	def loadPreferences(self):
+		if self.preferences:
+			_dict = self.preferences.get('preferences')
+			# import json
+			# print(json.dumps(_dict, indent=4, sort_keys=True))
+			
+			# Load from preferences
+			_dict = dict(_dict)
+			for key in _dict['endpoints'].keys():
+				self.endpoints[key] = APIEndPoint(key, _dict['endpoints'][key])
+
+
+	def dict(self):
+
+		_dict = {'endpoints': {}}
+
+		for key in self.endpoints.keys():
+			_dict['endpoints'][key] = self.endpoints[key].dict()
+
+		return _dict
 
 	def readResponse(self, url, acceptableMimeTypes):
 		d = {}
@@ -190,23 +250,21 @@ class APIClient(object):
 		# Add repository to endpoint
 		self.endpoints[api.canonicalURL].addRepository(url, api)
 
+		# Save
+		self.savePreferences()
 
 
 if __name__ == '__main__':
 
 	client = APIClient(preferences = AppKitNSUserDefaults('world.type.clientapp'))
 
-	client.addRepository('http://192.168.56.102/type.world/api/wsqmRxRmY3C8vtrutfIr/?user=0Dm07Y9vQpGQHh1kwUY7')
+#	client.addRepository('http://192.168.56.102/type.world/api/wsqmRxRmY3C8vtrutfIr/?command=installableFonts&user=zFiZMRY3QHbq537RKL87')
 
 	for key in client.endpoints.keys():
 		endpoint = client.endpoints[key]
-#		print endpoint
 
 		for key2 in endpoint.repositories.keys():
 			repo = endpoint.repositories[key2]
-#			print repo
-#			repo.update()
+			print repo.latestVersion().name.getText()
+	# 		repo.update()
 
-			print repo.latestVersion().name.getTextAndLocale('de')
-#			print repo.latestVersion().response.getCommand().foundries[0].families
-	
