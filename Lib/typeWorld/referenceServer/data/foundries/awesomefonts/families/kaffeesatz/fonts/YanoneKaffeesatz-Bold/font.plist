@@ -33,6 +33,8 @@
 	<string>## This field gets filled in by the code according to each client’s font installations ##</string>
 	<key>timeAddedForUser</key>
 	<integer>0</integer>
+	<key>trackSeatAllowance</key>
+	<false/>
 	<key>type</key>
 	<string>desktop</string>
 	<key>upgradeLicenseURL</key>
