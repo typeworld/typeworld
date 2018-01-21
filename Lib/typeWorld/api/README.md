@@ -949,7 +949,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[fileExtension](#class_Font_attribute_fileExtension)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[ID](#class_Font_attribute_ID)<br />[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[fileExtension](#class_Font_attribute_fileExtension)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[trackSeatAllowance](#class_Font_attribute_trackSeatAllowance)<br />[type](#class_Font_attribute_type)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1060,6 +1060,14 @@ Required: False<br />
 Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#class_Version_attribute_releaseDate), although they could be identical.
 
 Type: Int<br />
+Required: False<br />
+<div id="class_Font_attribute_trackSeatAllowance"></div>
+
+#### trackSeatAllowance
+
+Indication that the server tracks font installations and a userID needs to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.
+
+Type: Bool<br />
 Required: False<br />
 <div id="class_Font_attribute_type"></div>
 
