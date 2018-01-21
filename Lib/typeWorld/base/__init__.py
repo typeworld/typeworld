@@ -38,6 +38,30 @@ COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
 
 FONTTYPES = ['desktop', 'web', 'app']
 
+# https://tools.ietf.org/html/rfc8081
+
+MIMETYPES = {
+	'font/sfnt': {
+		'fileExtensions': ['otf', 'ttf'],
+	},
+	'font/ttf': {
+		'fileExtensions': ['ttf'],
+	},
+	'font/otf': {
+		'fileExtensions': ['otf'],
+	},
+	'font/collection': {
+		'fileExtensions': ['ttc'],
+	},
+	'font/woff': {
+		'fileExtensions': ['woff'],
+	},
+	'font/woff2': {
+		'fileExtensions': ['woff2'],
+	},
+}
+
+
 
 
 
@@ -852,6 +876,13 @@ class FontTypeDataType(UnicodeDataType):
 		else:
 			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
 
+
+class FontFileTypeDataType(UnicodeDataType):
+	def valid(self):
+		if self.value in FONTTYPES:
+			return True
+		else:
+			return 'Unknown font type: "%s". Possible: %s' % (self.value, FONTTYPES)
 
 ##############################################################################################################################################################################
 ##############################################################################################################################################################################
