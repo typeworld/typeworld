@@ -10,6 +10,8 @@
 	<array>
 		<string>yanone</string>
 	</array>
+	<key>fileExtension</key>
+	<string>otf</string>
 	<key>free</key>
 	<false/>
 	<key>licenseAllowanceDescription</key>
