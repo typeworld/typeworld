@@ -13,7 +13,7 @@
 	<key>fileExtension</key>
 	<string>otf</string>
 	<key>free</key>
-	<false/>
+	<true/>
 	<key>licenseAllowanceDescription</key>
 	<dict/>
 	<key>licenseKeyword</key>
@@ -34,7 +34,7 @@
 	<key>timeAddedForUser</key>
 	<integer>0</integer>
 	<key>trackSeatAllowance</key>
-	<true/>
+	<false/>
 	<key>type</key>
 	<string>desktop</string>
 	<key>upgradeLicenseURL</key>

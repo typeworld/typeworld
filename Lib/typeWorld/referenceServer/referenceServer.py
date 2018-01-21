@@ -586,9 +586,9 @@ print '  Type.World Reference Server'
 print '  General API information:'.ljust(45), url
 print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, server.users[0].plist['anonymousID'])
 print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, server.users[0].plist['anonymousID'], anonymousAppID)
-print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Bold&fontVersion=1.0' % (url)
-print '  Install commercial font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
-print '  Uninstall commercial font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
+print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Thin&fontVersion=1.0' % (url)
+print '  Install access-limited font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
+print '  Uninstall access-limited font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
 print
 print '####################################################################'
 print
