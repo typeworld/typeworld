@@ -113,9 +113,9 @@ class Font(DictBasedObject):
 		'free':				[BooleanDataType,		False, 	None, 	u'Font is freeware. For UI signaling'],
 		'beta':				[BooleanDataType,		False, 	None, 	u'Font is in beta stage. For UI signaling'],
 		'variableFont':		[BooleanDataType,		False, 	None, 	u'Font is an OpenType Variable Font. For UI signaling'],
-		'fileExtension':	[FontExtensionDataType,	True, 	None, 	u'File extension. Possible: %s' % FILEEXTENSIONS],
 #		'public':			[BooleanDataType,		False, 	False, 	u'If false, signals restricted access to a commercial font only available to certain users. Download and installation may be restricted by the API point depending on the API point URL that needs to include the private key to identify the user.'],
 		'type':				[FontTypeDataType,		True, 	None, 	u'Technical type of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (FONTTYPES)],
+		'fileExtension':	[FontExtensionDataType,	True, 	None, 	u'File extension. Required in case of `desktop` font (see ::Font.type::. Possible: %s' % FILEEXTENSIONS],
 		'seatsAllowedForUser':[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations permitted by the user’s license.'],
 		'seatsInstalledByUser':	[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.type::), number of installations recorded by the API endpoint. This value will need to be supplied by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
 		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	u'In case of non-desktop font (see ::Font.type::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
@@ -137,6 +137,10 @@ class Font(DictBasedObject):
 
 	def customValidation(self):
 		information, warnings, critical = [], [], []
+
+		# Checking font type/extension
+		if self.type == 'desktop' and not self.fileExtension:
+			critical.append('The font %s is a desktop font (see .type), but has no .fileExtension value.' % (self))
 
 		# Checking version information
 		if not self.hasVersionInformation():

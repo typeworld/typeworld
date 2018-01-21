@@ -985,7 +985,7 @@ Required: False<br />
 
 #### fileExtension
 
-File extension. Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
+File extension. Required in case of `desktop` font (see [Font.type](#class_Font_attribute_type). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
 
 Type: Unicode<br />
 Required: True<br />
