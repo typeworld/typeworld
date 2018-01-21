@@ -796,6 +796,8 @@ for languageCode, text in (
 			if self.get(key):
 				return self.get(key), key
 
+		return None, None
+
 	def getText(self, locale = ['en']):
 		u'''Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.'''
 
