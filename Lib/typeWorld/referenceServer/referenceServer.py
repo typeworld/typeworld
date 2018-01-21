@@ -432,8 +432,8 @@ class ReferenceServer(object):
 			else:
 				font = self.fontsByID[fontID]
 
-				# Font is free, give it away
-				if font.plist['free'] == True:
+				# Font is free, no authentication required. Give it away
+				if font.plist['trackSeatAllowance'] == False:
 
 					fileName = '%s_%s.otf' % (font.keyword, fontVersion)
 					fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
@@ -538,7 +538,7 @@ class ReferenceServer(object):
 				font = self.fontsByID[fontID]
 
 				# Font is free; do nothing
-				if font.plist['free'] == True:
+				if font.plist['trackSeatAllowance'] == False::
 					pass
 
 				# Font is commercial, need to remove license from ledger
