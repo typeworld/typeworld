@@ -320,7 +320,7 @@ Required: True<br />
 
 #### canonicalURL
 
-Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change.
+Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.
 
 Type: Unicode<br />
 Required: True<br />
