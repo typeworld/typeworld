@@ -554,7 +554,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
 		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow.'],
-		'backgroundColor': 		[HexColorDataType,			False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color'],
+		'backgroundColor': 		[HexColorDataType,			False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 	}

@@ -320,7 +320,7 @@ Required: True<br />
 
 #### backgroundColor
 
-Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color
+Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
 
 Type: Str<br />
 Required: False<br />
