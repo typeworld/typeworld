@@ -121,12 +121,15 @@ class APIEndPoint(object):
 		self.repositories[url].updateWithAPIObject(api)
 
 
-	def name(self):
+	def latestVersion(self):
 		if self.repositories:
 			repo = self.repositories[self.repositories.keys()[0]]
 			if repo.latestVersion():
-				return repo.latestVersion().name
+				return repo.latestVersion()
 
+	def remove(self):
+		del self.parent.endpoints[self.canonicalURL]
+		self.parent.savePreferences()
 
 	def dict(self):
 		_dict = {}
@@ -134,6 +137,7 @@ class APIEndPoint(object):
 		for key in self.repositories:
 			_dict['repositories'][key] = self.repositories[key].dict()
 		return _dict
+
 
 class APIClient(object):
 	u"""\
@@ -160,7 +164,9 @@ class APIClient(object):
 			# Load from preferences
 			_dict = dict(_dict)
 			for key in _dict['endpoints'].keys():
-				self.endpoints[key] = APIEndPoint(key, _dict['endpoints'][key])
+				apiEndPoint = APIEndPoint(key, _dict['endpoints'][key])
+				apiEndPoint.parent = self
+				self.endpoints[key] = apiEndPoint
 
 
 	def dict(self):
@@ -258,7 +264,6 @@ if __name__ == '__main__':
 
 	client = APIClient(preferences = AppKitNSUserDefaults('world.type.clientapp'))
 
-#	client.addRepository('http://192.168.56.102/type.world/api/wsqmRxRmY3C8vtrutfIr/?command=installableFonts&user=zFiZMRY3QHbq537RKL87')
 
 	for key in client.endpoints.keys():
 		endpoint = client.endpoints[key]
