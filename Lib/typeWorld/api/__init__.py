@@ -551,9 +551,10 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'adminEmail': 			[EmailDataType, 			True, 	None, 	'API endpoint Administrator, to contact for technical problems and such'],
 		'licenseIdentifier':	[UnicodeDataType, 			True, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
-		'name': 				[MultiLanguageTextProxy, 			True, 	None, 	'Human-readable name of API endpoint'],
+		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
 		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow.'],
+		'backgroundColor': 		[HexColorDataType,			False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 	}

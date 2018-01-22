@@ -300,7 +300,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 ### Attributes
 
-[adminEmail](#class_APIRoot_attribute_adminEmail)<br />[canonicalURL](#class_APIRoot_attribute_canonicalURL)<br />[licenseIdentifier](#class_APIRoot_attribute_licenseIdentifier)<br />[logo](#class_APIRoot_attribute_logo)<br />[name](#class_APIRoot_attribute_name)<br />[public](#class_APIRoot_attribute_public)<br />[response](#class_APIRoot_attribute_response)<br />[supportedCommands](#class_APIRoot_attribute_supportedCommands)<br />[website](#class_APIRoot_attribute_website)<br />
+[adminEmail](#class_APIRoot_attribute_adminEmail)<br />[backgroundColor](#class_APIRoot_attribute_backgroundColor)<br />[canonicalURL](#class_APIRoot_attribute_canonicalURL)<br />[licenseIdentifier](#class_APIRoot_attribute_licenseIdentifier)<br />[logo](#class_APIRoot_attribute_logo)<br />[name](#class_APIRoot_attribute_name)<br />[public](#class_APIRoot_attribute_public)<br />[response](#class_APIRoot_attribute_response)<br />[supportedCommands](#class_APIRoot_attribute_supportedCommands)<br />[website](#class_APIRoot_attribute_website)<br />
 
 ### Methods
 
@@ -316,6 +316,14 @@ API endpoint Administrator, to contact for technical problems and such
 
 Type: Unicode<br />
 Required: True<br />
+<div id="class_APIRoot_attribute_backgroundColor"></div>
+
+#### backgroundColor
+
+Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color
+
+Type: Str<br />
+Required: False<br />
 <div id="class_APIRoot_attribute_canonicalURL"></div>
 
 #### canonicalURL
