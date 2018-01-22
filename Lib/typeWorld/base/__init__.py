@@ -785,7 +785,7 @@ for languageCode, text in (
 			if self.get(locale):
 				return self.get(locale), locale
 
-		elif type(locale) in (str, unicode):
+		elif type(locale) in (list, tuple):
 			for key in locale:
 				if self.get(key):
 					return self.get(key), key
