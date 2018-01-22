@@ -103,7 +103,7 @@ class Font(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	u'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-		'ID':				[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this font within its publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
+		'uniqueID':			[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	u'Complete PostScript name of font'],
 		'previewImage':		[WebURLDataType,		False, 	None, 	u'URL of preview image of font, specifications to follow'],
 		'variantName':		[MultiLanguageTextProxy,		False, 	None, 	'Optional variant name of font. This is used to visually group fonts in the UI. Thinking "Office Fonts" and such.'],
