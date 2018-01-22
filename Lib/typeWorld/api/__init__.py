@@ -223,7 +223,8 @@ class BillboardListProxy(ListProxy):
 class Family(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'name':	 					[MultiLanguageTextProxy,		True, 	None, 	u'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
+		'uniqueID':					[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this family within the publisher.'],
+		'name':	 					[MultiLanguageTextProxy,True, 	None, 	u'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	u'Description of font family'],
 		'billboards':	 			[BillboardListProxy,	False, 	None, 	u'List of URLs pointing at images to show for this typeface, specifications to follow'],
 		'designers':	 			[DesignersReferencesListProxy,	False, 	None, 	u'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
@@ -292,7 +293,8 @@ class FamiliesListProxy(ListProxy):
 class Foundry(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'name':	 					[MultiLanguageTextProxy,		True, 	None, 	'Name of foundry'],
+		'uniqueID':					[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this foundry within the publisher.'],
+		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
 		'logo':	 					[WebURLDataType,		False, 	None, 	u'URL of foundry’s logo. Specifications to follow.'],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
 		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry'],

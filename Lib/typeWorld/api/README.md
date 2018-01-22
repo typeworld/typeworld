@@ -661,7 +661,7 @@ Default value: 0.1
 
 ### Attributes
 
-[backgroundColor](#class_Foundry_attribute_backgroundColor)<br />[description](#class_Foundry_attribute_description)<br />[email](#class_Foundry_attribute_email)<br />[facebook](#class_Foundry_attribute_facebook)<br />[families](#class_Foundry_attribute_families)<br />[instagram](#class_Foundry_attribute_instagram)<br />[licenses](#class_Foundry_attribute_licenses)<br />[logo](#class_Foundry_attribute_logo)<br />[name](#class_Foundry_attribute_name)<br />[skype](#class_Foundry_attribute_skype)<br />[supportEmail](#class_Foundry_attribute_supportEmail)<br />[telephone](#class_Foundry_attribute_telephone)<br />[twitter](#class_Foundry_attribute_twitter)<br />[website](#class_Foundry_attribute_website)<br />
+[backgroundColor](#class_Foundry_attribute_backgroundColor)<br />[description](#class_Foundry_attribute_description)<br />[email](#class_Foundry_attribute_email)<br />[facebook](#class_Foundry_attribute_facebook)<br />[families](#class_Foundry_attribute_families)<br />[instagram](#class_Foundry_attribute_instagram)<br />[licenses](#class_Foundry_attribute_licenses)<br />[logo](#class_Foundry_attribute_logo)<br />[name](#class_Foundry_attribute_name)<br />[skype](#class_Foundry_attribute_skype)<br />[supportEmail](#class_Foundry_attribute_supportEmail)<br />[telephone](#class_Foundry_attribute_telephone)<br />[twitter](#class_Foundry_attribute_twitter)<br />[uniqueID](#class_Foundry_attribute_uniqueID)<br />[website](#class_Foundry_attribute_website)<br />
 
 ## Attributes
 
@@ -769,6 +769,14 @@ Twitter handle for this foundry, without the @
 
 Type: Unicode<br />
 Required: False<br />
+<div id="class_Foundry_attribute_uniqueID"></div>
+
+#### uniqueID
+
+An string that uniquely identifies this foundry within the publisher.
+
+Type: Unicode<br />
+Required: True<br />
 <div id="class_Foundry_attribute_website"></div>
 
 #### website
@@ -789,7 +797,7 @@ Required: False<br />
 
 ### Attributes
 
-[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[timeFirstPublished](#class_Family_attribute_timeFirstPublished)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
+[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[timeFirstPublished](#class_Family_attribute_timeFirstPublished)<br />[uniqueID](#class_Family_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
 
 ### Methods
 
@@ -861,6 +869,14 @@ Timestamp of the initial release of the family. May be overriden on font level a
 
 Type: Int<br />
 Required: False<br />
+<div id="class_Family_attribute_uniqueID"></div>
+
+#### uniqueID
+
+An string that uniquely identifies this family within the publisher.
+
+Type: Unicode<br />
+Required: True<br />
 <div id="class_Family_attribute_upgradeLicenseURL"></div>
 
 #### upgradeLicenseURL
