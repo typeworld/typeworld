@@ -88,6 +88,9 @@ class Designer(PlistBasedClass):
 
 class Foundry(PlistBasedClass):
 
+	def uniqueID(self):
+		return '%s' % (self.keyword)
+
 	def familiesForAllowances(self, seatAllowances):
 		families = []
 
@@ -111,6 +114,9 @@ class Foundry(PlistBasedClass):
 		return licenses
 
 class Family(PlistBasedClass):
+	def uniqueID(self):
+		return '%s-%s' % (self.parent.keyword, self.keyword)
+
 	def fontsForAllowances(self, seatAllowances):
 		fonts = []
 
@@ -297,11 +303,11 @@ class ReferenceServer(object):
 		string = '%s %s %s\n' % (userID, fontID, anonymousAppID)
 
 		lines = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'r').readlines()
+		lines.remove(string)
 
 		f = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'w')
 		for line in lines:
-			if line != string:
-				f.write(string)
+			f.write(line)
 		f.close()
 
 
@@ -361,6 +367,7 @@ class ReferenceServer(object):
 				# Foundries
 				for rsFoundry in self.foundriesForAllowances(seatAllowances):
 					twFoundry = typeWorld.api.Foundry()
+					twFoundry.uniqueID = rsFoundry.uniqueID()
 					rsFoundry.applyValuesToTypeWorldObjects(twFoundry)
 					api.response.installableFonts.foundries.append(twFoundry)
 
@@ -373,6 +380,7 @@ class ReferenceServer(object):
 					# Families
 					for rsFamily in rsFoundry.familiesForAllowances(seatAllowances):
 						twFamily = typeWorld.api.Family()
+						twFamily.uniqueID = rsFamily.uniqueID()
 						rsFamily.applyValuesToTypeWorldObjects(twFamily)
 						twFoundry.families.append(twFamily)
 
@@ -383,6 +391,7 @@ class ReferenceServer(object):
 							else:
 								seatAllowance = 0
 							twFont = typeWorld.api.Font()
+							twFont.uniqueID = rsFont.uniqueID()
 							rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsInstalledForUser(userID, rsFont.uniqueID(), anonymousAppID)})
 							twFamily.fonts.append(twFont)
 
