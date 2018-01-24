@@ -134,6 +134,9 @@ class BooleanDataType(DataType):
 class IntegerDataType(DataType):
 	dataType = int
 
+	def shapeValue(self, value):
+		return int(value)
+
 class FloatDataType(DataType):
 	dataType = float
 
@@ -818,8 +821,9 @@ for languageCode, text in (
 
 		# Check for text length
 		for langId in self._possible_keys:
-			if self._content.has_key(langId):
-				if len(getattr(self, langId)) > self._length:
+			if self.get(langId):
+#			if self._content.has_key(langId):
+				if len(self.get(langId)) > self._length:
 					critical.append('%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length))
 #		return True
 		return information, warnings, critical

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import os, sys, json, platform, urllib2, re, traceback
+import os, sys, json, platform, urllib2, re, traceback, json
 
 import typeWorld.api, typeWorld.base
 from typeWorld.api import *
@@ -60,6 +60,7 @@ class APIRepository(object):
 			for v in _dict['repositoryVersions']:
 				api = typeWorld.api.APIRoot()
 				api.loadDict(v)
+				api.parent = self
 				self.repositoryVersions.append(api)
 
 	def latestVersion(self):
@@ -99,15 +100,18 @@ class APIEndPoint(object):
 	Represents an API endpoint, identified and grouped by the canonical URL attribute of the API responses. This API endpoint class can then hold several repositories.
 	"""
 
-	def __init__(self, canonicalURL, _dict = None):
+	def __init__(self, canonicalURL, originalURL, _dict = None):
 		self.canonicalURL = canonicalURL
+		self.originalURL = originalURL
 		self.repositories = {}
 
 		# Load from preferences
 		if _dict:
 			_dict = dict(_dict)
 			for key in _dict['repositories'].keys():
-				self.repositories[key] = APIRepository(key, _dict['repositories'][key])
+				repo = APIRepository(key, _dict = _dict['repositories'][key])
+				repo.parent = self
+				self.repositories[key] = repo
 
 	def addRepository(self, url, api):
 
@@ -133,10 +137,194 @@ class APIEndPoint(object):
 
 	def dict(self):
 		_dict = {}
+		_dict['originalURL'] = self.originalURL
 		_dict['repositories'] = {}
 		for key in self.repositories:
 			_dict['repositories'][key] = self.repositories[key].dict()
 		return _dict
+
+	def installedFontVersion(self, fontID, folder = None):
+
+		api = self.latestVersion()
+
+		# User fonts folder
+		if not folder:
+			from os.path import expanduser
+			home = expanduser("~")
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
+
+		# Create folder if it doesn't exist
+		if not os.path.exists(folder):
+			os.makedirs(folder)
+
+		# Get font
+		for foundry in api.response.getCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.uniqueID == fontID:
+
+						for version in font.getSortedVersions():
+
+							filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
+
+							print 'Checking', os.path.join(folder, filename)
+
+							if os.path.exists(os.path.join(folder, filename)):
+								return version.number
+
+
+	def removeFont(self, fontID, folder = None):
+
+		api = self.latestVersion()
+
+		# User fonts folder
+		if not folder:
+			from os.path import expanduser
+			home = expanduser("~")
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
+
+		# Create folder if it doesn't exist
+		if not os.path.exists(folder):
+			os.makedirs(folder)
+
+		# Get font
+		for foundry in api.response.getCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.uniqueID == fontID:
+						
+						# Build URL
+						url = self.originalURL
+						url = self.parent.addAttributeToURL(url, 'command', 'uninstallFont')
+						url = self.parent.addAttributeToURL(url, 'fontID', fontID)
+						url = self.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.anonymousAppID())
+#						url = self.parent.addAttributeToURL(url, 'fontVersion', version)
+
+						print 'Uninstalling %s in %s' % (fontID, folder)
+						print url
+
+						acceptableMimeTypes = UNINSTALLFONTCOMMAND['acceptableMimeTypes']
+
+						try:
+							response = urllib2.urlopen(url)
+
+							if response.getcode() != 200:
+								return False, 'Resource returned with HTTP code %s' % response.code
+
+							if not response.headers.type in acceptableMimeTypes:
+								return False, 'Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes)
+
+
+							api = APIRoot()
+							_json = response.read()
+							api.loadJSON(_json)
+
+							print _json
+
+							if api.response.getCommand().type == 'error':
+								return False, api.response.getCommand().errorMessage
+							elif api.response.getCommand().type == 'seatAllowanceReached':
+								return False, 'seatAllowanceReached'
+							
+
+							# REMOVE
+							installedFontVersion = self.installedFontVersion(font.uniqueID)
+
+							if installedFontVersion:
+								# Delete file
+								filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.type)
+
+								if os.path.exists(os.path.join(folder, filename)):
+									os.remove(os.path.join(folder, filename))
+
+							return True, None
+
+
+						except:
+							exc_type, exc_value, exc_traceback = sys.exc_info()
+							return False, traceback.format_exc()
+
+
+
+	def installFont(self, fontID, version, folder = None):
+
+		api = self.latestVersion()
+
+		# User fonts folder
+		if not folder:
+			from os.path import expanduser
+			home = expanduser("~")
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
+
+		# Create folder if it doesn't exist
+		if not os.path.exists(folder):
+			os.makedirs(folder)
+
+		# Get font
+		for foundry in api.response.getCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.uniqueID == fontID:
+						
+						# Build URL
+						url = self.originalURL
+						url = self.parent.addAttributeToURL(url, 'command', 'installFont')
+						url = self.parent.addAttributeToURL(url, 'fontID', fontID)
+						url = self.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.anonymousAppID())
+						url = self.parent.addAttributeToURL(url, 'fontVersion', version)
+
+						print 'Installing %s in %s' % (fontID, folder)
+						print url
+
+						acceptableMimeTypes = INSTALLFONTCOMMAND['acceptableMimeTypes']
+
+						try:
+							response = urllib2.urlopen(url)
+
+							if response.getcode() != 200:
+								return False, 'Resource returned with HTTP code %s' % response.code
+
+							if not response.headers.type in acceptableMimeTypes:
+								return False, 'Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes)
+
+							# Expect an error message
+							if response.headers.type == 'application/json':
+
+								api = APIRoot()
+								_json = response.read()
+								api.loadJSON(_json)
+
+								print _json
+
+								if api.response.getCommand().type == 'error':
+									return False, api.response.getCommand().errorMessage
+								elif api.response.getCommand().type == 'seatAllowanceReached':
+									return False, 'seatAllowanceReached'
+								
+
+							else:
+
+								if not font.type in MIMETYPES[response.headers.type]['fileExtensions']:
+									return False, "Returned MIME type (%s) does not match file type (%s)." % (response.headers.type, font.type)
+
+								# Write file
+								filename = '%s_%s.%s' % (font.uniqueID, version, font.type)
+
+								print 'filename', filename
+
+								binary = response.read()
+								f = open(os.path.join(folder, filename), 'wb')
+								f.write(binary)
+								f.close()
+
+								return True, None
+
+						except:
+							exc_type, exc_value, exc_traceback = sys.exc_info()
+							return False, traceback.format_exc()
+
+
+		return False, 'No font was found to install.'
 
 
 class APIClient(object):
@@ -153,7 +341,8 @@ class APIClient(object):
 
 	def savePreferences(self):
 		if self.preferences:
-			self.preferences.set('preferences', self.dict())
+			_dict = self.dict()
+			self.preferences.set('preferences', _dict)
 
 	def loadPreferences(self):
 		if self.preferences:
@@ -164,7 +353,12 @@ class APIClient(object):
 			# Load from preferences
 			_dict = dict(_dict)
 			for key in _dict['endpoints'].keys():
-				apiEndPoint = APIEndPoint(key, _dict['endpoints'][key])
+				
+				originalURL = ''
+				if _dict['endpoints'][key].has_key('originalURL'):
+					originalURL = _dict['endpoints'][key]['originalURL']
+
+				apiEndPoint = APIEndPoint(key, originalURL, _dict = _dict['endpoints'][key])
 				apiEndPoint.parent = self
 				self.endpoints[key] = apiEndPoint
 
@@ -186,7 +380,6 @@ class APIClient(object):
 
 		# Validate
 		api = typeWorld.api.APIRoot()
-
 
 		try:
 			response = urllib2.urlopen(url)
@@ -217,16 +410,31 @@ class APIClient(object):
 
 		return api, d
 
-	def addCommandToURL(self, url, command):
-		if not 'command' in url:
+	def addAttributeToURL(self, url, key, value):
+		if not key in url:
 			if '?' in url:
-				url += '&command=' + command
+				url += '&' + key + '=' + value
 			else:
-				url += '?command=' + command
+				url += '?' + key + '=' + value
 		else:
-			url = re.sub(r'command=(\w*)', 'command=' + command, url)
+			url = re.sub(key + '=(\w*)', key + '=' + value, url)
 
 		return url
+
+	def anonymousAppID(self):
+		if self.preferences:
+			anonymousAppID = self.preferences.get('anonymousAppID')
+
+			if anonymousAppID == None:
+				import uuid
+				anonymousAppID = str(uuid.uuid1())
+				self.preferences.set('anonymousAppID', anonymousAppID)
+
+		else:
+			anonymousAppID = 'undefined'
+
+
+		return anonymousAppID
 
 	def addRepository(self, url):
 
@@ -235,21 +443,21 @@ class APIClient(object):
 
 		# Errors
 		if responses['errors']:
-			raise ValueError('\n'.join(responses['errors']))
+			return False, '\n'.join(responses['errors'])
 
 		# Check for installableFonts response support
 		if not 'installableFonts' in api.supportedCommands and not 'installFonts' in api.supportedCommands:
-			raise ValueError('API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % api.canonicalURL)
+			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % api.canonicalURL
 
 		# Tweak url to include "installableFonts" command
-		url = self.addCommandToURL(url, 'installableFonts')
+		url = self.addAttributeToURL(url, 'command', 'installableFonts')
 
 		# Read response again, this time with installableFonts command
 		api, responses = self.readResponse(url, INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'])
 
 		# Add endpoint if new
 		if not self.endpoints.has_key(api.canonicalURL):
-			newEndpoint = APIEndPoint(api.canonicalURL)
+			newEndpoint = APIEndPoint(api.canonicalURL, url)
 			newEndpoint.parent = self
 			self.endpoints[api.canonicalURL] = newEndpoint
 
@@ -259,11 +467,14 @@ class APIClient(object):
 		# Save
 		self.savePreferences()
 
+		return True, None
+
 
 if __name__ == '__main__':
 
 	client = APIClient(preferences = AppKitNSUserDefaults('world.type.clientapp'))
 
+	print 'anonymousAppID', client.anonymousAppID()
 
 	for key in client.endpoints.keys():
 		endpoint = client.endpoints[key]
