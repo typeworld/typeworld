@@ -3,6 +3,7 @@
 from typeWorld.base import *
 
 
+WEBRESOURCEDESCRIPTION = u'If you want to make sure that the app loads the latest version of this resource, consider making the URL unique by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401'
 
 ####################################################################################################################################
 
@@ -105,7 +106,7 @@ class Font(DictBasedObject):
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	u'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
 		'uniqueID':			[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	u'Complete PostScript name of font'],
-		'previewImage':		[WebURLDataType,		False, 	None, 	u'URL of preview image of font, specifications to follow'],
+		'previewImage':		[WebURLDataType,		False, 	None, 	u'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'variantName':		[MultiLanguageTextProxy,		False, 	None, 	'Optional variant name of font. This is used to visually group fonts in the UI. Thinking "Office Fonts" and such.'],
 		'licenseKeyword':	[UnicodeDataType,		True, 	None, 	u'Keyword reference of font’s license. This license must be specified in the Foundry.Licenses'],
 		'versions':	 		[VersionListProxy,		False, 	None, 	u'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
@@ -295,7 +296,7 @@ class Foundry(DictBasedObject):
 	_structure = {
 		'uniqueID':					[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this foundry within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
-		'logo':	 					[WebURLDataType,		False, 	None, 	u'URL of foundry’s logo. Specifications to follow.'],
+		'logo':	 					[WebURLDataType,		False, 	None, 	u'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
 		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry'],
 		'supportEmail':	 			[EmailDataType,			False, 	None, 	'Support email address for this foundry'],
@@ -556,7 +557,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
-		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow.'],
+		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'backgroundColor': 		[HexColorDataType,			False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
