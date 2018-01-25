@@ -35,12 +35,12 @@ pip install deepdiff
 - [Response](#class_Response)<br />
 - [UninstallFontResponse](#class_UninstallFontResponse)<br />
 - [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
+- [Designer](#class_Designer)<br />
 - [Foundry](#class_Foundry)<br />
 - [Family](#class_Family)<br />
 - [Version](#class_Version)<br />
 - [Font](#class_Font)<br />
 - [License](#class_License)<br />
-- [Designer](#class_Designer)<br />
 - [InstallFontResponse](#class_InstallFontResponse)<br />
 
 
@@ -601,10 +601,26 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
+[customerEmail](#class_InstallableFontsResponse_attribute_customerEmail)<br />[customerName](#class_InstallableFontsResponse_attribute_customerName)<br />[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
 
 ## Attributes
 
+<div id="class_InstallableFontsResponse_attribute_customerEmail"></div>
+
+#### customerEmail
+
+The email address of the customer who these fonts are licensed to.
+
+Type: Unicode<br />
+Required: False<br />
+<div id="class_InstallableFontsResponse_attribute_customerName"></div>
+
+#### customerName
+
+The name of the customer who these fonts are licensed to.
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_designers"></div>
 
 #### designers
@@ -657,6 +673,54 @@ Type: Float<br />
 Required: True<br />
 Default value: 0.1
 
+
+
+
+
+<div id="class_Designer"></div>
+
+# _class_ Designer()
+
+
+
+### Attributes
+
+[description](#class_Designer_attribute_description)<br />[keyword](#class_Designer_attribute_keyword)<br />[name](#class_Designer_attribute_name)<br />[website](#class_Designer_attribute_website)<br />
+
+## Attributes
+
+<div id="class_Designer_attribute_description"></div>
+
+#### description
+
+Description of designer
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
+<div id="class_Designer_attribute_keyword"></div>
+
+#### keyword
+
+Keyword under which the designer will be referenced from the individual fonts or font families
+
+Type: Unicode<br />
+Required: True<br />
+<div id="class_Designer_attribute_name"></div>
+
+#### name
+
+Human-readable name of designer
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: True<br />
+<div id="class_Designer_attribute_website"></div>
+
+#### website
+
+Designer’s web site
+
+Type: Unicode<br />
+Required: False<br />
 
 
 
@@ -1217,54 +1281,6 @@ Human-readable name of font license
 
 Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: True<br />
-
-
-
-
-<div id="class_Designer"></div>
-
-# _class_ Designer()
-
-
-
-### Attributes
-
-[description](#class_Designer_attribute_description)<br />[keyword](#class_Designer_attribute_keyword)<br />[name](#class_Designer_attribute_name)<br />[website](#class_Designer_attribute_website)<br />
-
-## Attributes
-
-<div id="class_Designer_attribute_description"></div>
-
-#### description
-
-Description of designer
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
-<div id="class_Designer_attribute_keyword"></div>
-
-#### keyword
-
-Keyword under which the designer will be referenced from the individual fonts or font families
-
-Type: Unicode<br />
-Required: True<br />
-<div id="class_Designer_attribute_name"></div>
-
-#### name
-
-Human-readable name of designer
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: True<br />
-<div id="class_Designer_attribute_website"></div>
-
-#### website
-
-Designer’s web site
-
-Type: Unicode<br />
-Required: False<br />
 
 
 
