@@ -65,7 +65,9 @@ class APIRepository(object):
 
 	def latestVersion(self):
 		if self.repositoryVersions:
-			return self.repositoryVersions[-1]
+			v = self.repositoryVersions[-1]
+			v.parent = self
+			return v
 
 	def updateWithAPIObject(self, api):
 		
@@ -76,17 +78,14 @@ class APIRepository(object):
 
 		# otherwise only append if new API object differs from last one
 		else:
-			if not api.sameContent(self.repositoryVersions[-1]):
-				self.repositoryVersions.append(api)
-				print 'New data appended'
-			else:
-				print 'No new data available'
-
-	def update(self):
-		u"""\
-		Check repository for updated data.
-		"""
-		self.parent.parent.addRepository(self.url)
+			# For now, replace latest version
+			# TODO: Add new version only if fonts are deleted
+			# if not api.sameContent(self.repositoryVersions[-1]):
+			# 	self.repositoryVersions.append(api)
+			# 	print 'New data appended'
+			# else:
+			# 	print 'No new data available'
+			self.repositoryVersions[-1] = api
 
 	def dict(self):
 		_dict = {}
@@ -112,6 +111,12 @@ class APIEndPoint(object):
 				repo = APIRepository(key, _dict = _dict['repositories'][key])
 				repo.parent = self
 				self.repositories[key] = repo
+
+	def update(self):
+		u"""\
+		Check repository for updated data.
+		"""
+		self.parent.addRepository(self.originalURL)
 
 	def addRepository(self, url, api):
 
@@ -143,7 +148,7 @@ class APIEndPoint(object):
 			_dict['repositories'][key] = self.repositories[key].dict()
 		return _dict
 
-	def installedFontVersion(self, fontID, folder = None):
+	def installedFontVersion(self, fontID = None, font = None, folder = None):
 
 		api = self.latestVersion()
 
@@ -157,20 +162,34 @@ class APIEndPoint(object):
 		if not os.path.exists(folder):
 			os.makedirs(folder)
 
+		# font given
+		if font:
+			for version in font.getSortedVersions():
+				filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
+				if os.path.exists(os.path.join(folder, filename)):
+					return version.number
+
+		# fontID given
+		else:
+			for foundry in api.response.getCommand().foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if font.uniqueID == fontID:
+
+							for version in font.getSortedVersions():
+								filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
+								if os.path.exists(os.path.join(folder, filename)):
+									return version.number
+
+	def amountInstalledFonts(self):
+		amount = 0
 		# Get font
-		for foundry in api.response.getCommand().foundries:
+		for foundry in self.latestVersion().response.getCommand().foundries:
 			for family in foundry.families:
 				for font in family.fonts:
-					if font.uniqueID == fontID:
-
-						for version in font.getSortedVersions():
-
-							filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
-
-							print 'Checking', os.path.join(folder, filename)
-
-							if os.path.exists(os.path.join(folder, filename)):
-								return version.number
+					if self.installedFontVersion(font = font):
+						amount += 1
+		return amount
 
 
 	def removeFont(self, fontID, folder = None):
@@ -201,7 +220,7 @@ class APIEndPoint(object):
 #						url = self.parent.addAttributeToURL(url, 'fontVersion', version)
 
 						print 'Uninstalling %s in %s' % (fontID, folder)
-						print url
+						# print url
 
 						acceptableMimeTypes = UNINSTALLFONTCOMMAND['acceptableMimeTypes']
 
@@ -219,7 +238,7 @@ class APIEndPoint(object):
 							_json = response.read()
 							api.loadJSON(_json)
 
-							print _json
+							# print _json
 
 							if api.response.getCommand().type == 'error':
 								return False, api.response.getCommand().errorMessage
@@ -294,7 +313,7 @@ class APIEndPoint(object):
 								_json = response.read()
 								api.loadJSON(_json)
 
-								print _json
+								# print _json
 
 								if api.response.getCommand().type == 'error':
 									return False, api.response.getCommand().errorMessage
