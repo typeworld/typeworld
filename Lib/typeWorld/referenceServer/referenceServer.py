@@ -335,6 +335,7 @@ class ReferenceServer(object):
 			api.response = typeWorld.api.Response()
 			api.response.command = command
 			api.response.installableFonts = typeWorld.api.InstallableFontsResponse()
+			api.response.installableFonts.type = 'success' # Let's assume success for now. If not, 'error' will be set and the method immediately returned
 
 			# userID is empty
 			if not userID:
@@ -350,64 +351,64 @@ class ReferenceServer(object):
 				api.response.installableFonts.errorMessage.de = 'Diese userID is unbekannt'
 				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
-			# userID exists, proceed
-			else:
-				api.response.installableFonts.type = 'success'
+			api.response.installableFonts.type = 'success'
 
-				# Fetch user
-				user = self.usersByID[userID]
-				seatAllowances = user.plist['seatAllowances']
+			# Fetch user
+			user = self.usersByID[userID]
+			api.response.installableFonts.customerName.en = user.plist['name']
+			api.response.installableFonts.customerEmail = user.plist['email']
+			seatAllowances = user.plist['seatAllowances']
 
-				# Designers
-				for rsDesigner in self.designersForAllowances(seatAllowances):
-					twDesigner = typeWorld.api.Designer()
-					rsDesigner.applyValuesToTypeWorldObjects(twDesigner)
-					api.response.installableFonts.designers.append(twDesigner)
+			# Designers
+			for rsDesigner in self.designersForAllowances(seatAllowances):
+				twDesigner = typeWorld.api.Designer()
+				rsDesigner.applyValuesToTypeWorldObjects(twDesigner)
+				api.response.installableFonts.designers.append(twDesigner)
 
-				# Foundries
-				for rsFoundry in self.foundriesForAllowances(seatAllowances):
-					twFoundry = typeWorld.api.Foundry()
-					twFoundry.uniqueID = rsFoundry.uniqueID()
-					rsFoundry.applyValuesToTypeWorldObjects(twFoundry)
-					api.response.installableFonts.foundries.append(twFoundry)
+			# Foundries
+			for rsFoundry in self.foundriesForAllowances(seatAllowances):
+				twFoundry = typeWorld.api.Foundry()
+				twFoundry.uniqueID = rsFoundry.uniqueID()
+				rsFoundry.applyValuesToTypeWorldObjects(twFoundry)
+				api.response.installableFonts.foundries.append(twFoundry)
 
-					# Licenses
-					for rsLicense in rsFoundry.licensesForAllowances(seatAllowances):
-						twLicense = typeWorld.api.License()
-						rsLicense.applyValuesToTypeWorldObjects(twLicense)
-						twFoundry.licenses.append(twLicense)
+				# Licenses
+				for rsLicense in rsFoundry.licensesForAllowances(seatAllowances):
+					twLicense = typeWorld.api.License()
+					rsLicense.applyValuesToTypeWorldObjects(twLicense)
+					twFoundry.licenses.append(twLicense)
 
-					# Families
-					for rsFamily in rsFoundry.familiesForAllowances(seatAllowances):
-						twFamily = typeWorld.api.Family()
-						twFamily.uniqueID = rsFamily.uniqueID()
-						rsFamily.applyValuesToTypeWorldObjects(twFamily)
-						twFoundry.families.append(twFamily)
+				# Families
+				for rsFamily in rsFoundry.familiesForAllowances(seatAllowances):
+					twFamily = typeWorld.api.Family()
+					twFamily.uniqueID = rsFamily.uniqueID()
+					rsFamily.applyValuesToTypeWorldObjects(twFamily)
+					twFoundry.families.append(twFamily)
 
-						# Fonts
-						for rsFont in rsFamily.fontsForAllowances(seatAllowances):
-							if seatAllowances.has_key(rsFont.uniqueID()):
-								seatAllowance = seatAllowances[rsFont.uniqueID()]
-							else:
-								seatAllowance = 0
-							twFont = typeWorld.api.Font()
-							twFont.uniqueID = rsFont.uniqueID()
-							rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsInstalledForUser(userID, rsFont.uniqueID(), anonymousAppID)})
-							twFamily.fonts.append(twFont)
+					# Fonts
+					for rsFont in rsFamily.fontsForAllowances(seatAllowances):
+						if seatAllowances.has_key(rsFont.uniqueID()):
+							seatAllowance = seatAllowances[rsFont.uniqueID()]
+						else:
+							seatAllowance = 0
+						twFont = typeWorld.api.Font()
+						twFont.uniqueID = rsFont.uniqueID()
+						rsFont.applyValuesToTypeWorldObjects(twFont, {'seatsAllowedForUser': seatAllowance, 'seatsInstalledByUser': self.seatsInstalledForUser(userID, rsFont.uniqueID(), anonymousAppID)})
+						twFamily.fonts.append(twFont)
 
-							# Font-Level Versions
-							for rsVersion in rsFont.versions:
-								twVersion = typeWorld.api.Version()
-								rsVersion.applyValuesToTypeWorldObjects(twVersion)
-								twFont.versions.append(twVersion)
-
-						# Family-Level Versions
-						for rsVersion in rsFamily.versions:
+						# Font-Level Versions
+						for rsVersion in rsFont.versions:
 							twVersion = typeWorld.api.Version()
 							rsVersion.applyValuesToTypeWorldObjects(twVersion)
-							twFamily.versions.append(twVersion)
+							twFont.versions.append(twVersion)
 
-				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+					# Family-Level Versions
+					for rsVersion in rsFamily.versions:
+						twVersion = typeWorld.api.Version()
+						rsVersion.applyValuesToTypeWorldObjects(twVersion)
+						twFamily.versions.append(twVersion)
+
+			return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 			
 
 		# InstallFont Command
