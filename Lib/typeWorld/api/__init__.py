@@ -3,7 +3,7 @@
 from typeWorld.base import *
 
 
-WEBRESOURCEDESCRIPTION = u'\nIf you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401'
+WEBRESOURCEDESCRIPTION = u'\n\nIf you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401'
 
 ####################################################################################################################################
 
