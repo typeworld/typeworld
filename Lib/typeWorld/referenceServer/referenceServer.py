@@ -574,6 +574,9 @@ class ReferenceServer(object):
 					api.response.uninstallFont.type = 'success'
 					return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
+		return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+
 
 # Anonymous App ID, will later be different for every installation
 anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
