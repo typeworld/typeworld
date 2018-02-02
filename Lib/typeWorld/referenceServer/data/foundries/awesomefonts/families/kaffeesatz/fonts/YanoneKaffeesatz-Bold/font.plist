@@ -5,7 +5,7 @@
 	<key>ID</key>
 	<string>## In this reference implementation, this gets inferred from the foundry name and postScriptName ##</string>
 	<key>beta</key>
-	<false/>
+	<true/>
 	<key>designers</key>
 	<array>
 		<string>yanone</string>

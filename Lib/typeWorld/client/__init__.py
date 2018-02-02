@@ -116,7 +116,7 @@ class APIEndPoint(object):
 		u"""\
 		Check repository for updated data.
 		"""
-		self.parent.addRepository(self.originalURL)
+		return self.parent.addRepository(self.originalURL)
 
 	def addRepository(self, url, api):
 
@@ -370,16 +370,17 @@ class APIClient(object):
 			# print(json.dumps(_dict, indent=4, sort_keys=True))
 			
 			# Load from preferences
-			_dict = dict(_dict)
-			for key in _dict['endpoints'].keys():
-				
-				originalURL = ''
-				if _dict['endpoints'][key].has_key('originalURL'):
-					originalURL = _dict['endpoints'][key]['originalURL']
+			if _dict:
+				_dict = dict(_dict)
+				for key in _dict['endpoints'].keys():
+					
+					originalURL = ''
+					if _dict['endpoints'][key].has_key('originalURL'):
+						originalURL = _dict['endpoints'][key]['originalURL']
 
-				apiEndPoint = APIEndPoint(key, originalURL, _dict = _dict['endpoints'][key])
-				apiEndPoint.parent = self
-				self.endpoints[key] = apiEndPoint
+					apiEndPoint = APIEndPoint(key, originalURL, _dict = _dict['endpoints'][key])
+					apiEndPoint.parent = self
+					self.endpoints[key] = apiEndPoint
 
 
 	def dict(self):
