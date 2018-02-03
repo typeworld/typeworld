@@ -469,7 +469,9 @@ class ReferenceServer(object):
 				# Font is free, no authentication required. Give it away
 				if font.plist['requiresUserID'] == False:
 
-					fileName = '%s_%s.otf' % (font.keyword, fontVersion)
+
+
+					fileName = '%s_%s.%s' % (font.keyword, fontVersion, font.plist['type'])
 					fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
 
 					# File exists
@@ -477,7 +479,7 @@ class ReferenceServer(object):
 						b = open(fontPath, 'rb').read()
 
 						response = flask.make_response(b)
-						response.headers['Content-Type'] = 'font/otf'
+						response.headers['Content-Type'] = MIMETYPEFORFONTTYPE[font.plist['type']]
 						response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
 						return response
 
