@@ -603,26 +603,10 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[customerEmail](#class_InstallableFontsResponse_attribute_customerEmail)<br />[customerName](#class_InstallableFontsResponse_attribute_customerName)<br />[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
+[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[userEmail](#class_InstallableFontsResponse_attribute_userEmail)<br />[userName](#class_InstallableFontsResponse_attribute_userName)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
 
 ## Attributes
 
-<div id="class_InstallableFontsResponse_attribute_customerEmail"></div>
-
-#### customerEmail
-
-The email address of the customer who these fonts are licensed to.
-
-Type: Unicode<br />
-Required: False<br />
-<div id="class_InstallableFontsResponse_attribute_customerName"></div>
-
-#### customerName
-
-The name of the customer who these fonts are licensed to.
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_designers"></div>
 
 #### designers
@@ -665,6 +649,22 @@ Type of response. This can be "success", "error", or "custom". In case of "custo
 
 Type: Unicode<br />
 Required: True<br />
+<div id="class_InstallableFontsResponse_attribute_userEmail"></div>
+
+#### userEmail
+
+The email address of the user who these fonts are licensed to.
+
+Type: Unicode<br />
+Required: False<br />
+<div id="class_InstallableFontsResponse_attribute_userName"></div>
+
+#### userName
+
+The name of the user who these fonts are licensed to.
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_version"></div>
 
 #### version

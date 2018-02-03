@@ -399,8 +399,8 @@ class InstallableFontsResponse(BaseResponse):
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
 		'foundries':		[FoundryListProxy,				True, 	None, 	'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
 
-		'customerName':		[MultiLanguageTextProxy,		False, 	None, 	'The name of the customer who these fonts are licensed to.'],
-		'customerEmail':	[EmailDataType,					False, 	None, 	'The email address of the customer who these fonts are licensed to.'],
+		'userName':			[MultiLanguageTextProxy,		False, 	None, 	'The name of the user who these fonts are licensed to.'],
+		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
 
 	def getDesignerByKeyword(self, keyword):
