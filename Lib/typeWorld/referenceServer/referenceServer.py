@@ -82,23 +82,23 @@ class Foundry(PlistBasedClass):
 	def uniqueID(self):
 		return '%s' % (self.keyword)
 
-	def familiesForAllowances(self, seatAllowances):
+	def familiesForAllowances(self, seatAllowances, includeNonRestrictedFonts = False):
 		families = []
 
 		for family in self.families:
 			for font in family.fonts:
-				if font.uniqueID() in seatAllowances.keys():
+				if font.uniqueID() in seatAllowances.keys() or (font.plist['requiresUserID'] == False and includeNonRestrictedFonts == True):
 					if not family in families:
 						families.append(family)
 
 		return families
 
-	def licensesForAllowances(self, seatAllowances):
+	def licensesForAllowances(self, seatAllowances, includeNonRestrictedFonts = False):
 		licenses = []
 
 		for family in self.families:
 			for font in family.fonts:
-				if font.uniqueID() in seatAllowances.keys():
+				if font.uniqueID() in seatAllowances.keys() or (font.plist['requiresUserID'] == False and includeNonRestrictedFonts == True):
 					if not font.getLicense() in licenses:
 						licenses.append(font.getLicense())
 
@@ -108,11 +108,11 @@ class Family(PlistBasedClass):
 	def uniqueID(self):
 		return '%s-%s' % (self.parent.keyword, self.keyword)
 
-	def fontsForAllowances(self, seatAllowances):
+	def fontsForAllowances(self, seatAllowances, includeNonRestrictedFonts = False):
 		fonts = []
 
 		for font in self.fonts:
-			if font.uniqueID() in seatAllowances.keys():
+			if font.uniqueID() in seatAllowances.keys() or (font.plist['requiresUserID'] == False and includeNonRestrictedFonts == True):
 				if not font in fonts:
 					fonts.append(font)
 
@@ -234,39 +234,41 @@ class ReferenceServer(object):
 
 	def printLinks(self):
 
+		align = 60
 		print '####################################################################'
 		print
 		print '  Type.World Reference Server'
-		print '  General API information:'.ljust(45), url
-		print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, self.users[0].plist['anonymousID'])
-		print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, self.users[0].plist['anonymousID'], anonymousAppID)
-		print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Thin&fontVersion=1.0' % (url)
-		print '  Install access-limited font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
-		print '  Uninstall access-limited font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
+		print '  General API information:'.ljust(align), url
+		print '  Official Type.World App link for user1:'.ljust(align), '%s?userID=%s' % (url, self.users[0].plist['anonymousID'])
+		print '  installableFonts for user1:'.ljust(align), '%s?command=installableFonts&userID=%s&&anonymousAppID=%s' % (url, self.users[0].plist['anonymousID'], anonymousAppID)
+		print '  installableFonts, just free & non-restricted, no userID:'.ljust(align), '%s?command=installableFonts&anonymousAppID=%s' % (url, anonymousAppID)
+		print '  Install free font:'.ljust(align), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Thin&fontVersion=1.0' % (url)
+		print '  Install access-limited font:'.ljust(align), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
+		print '  Uninstall access-limited font:'.ljust(align), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
 		print
 		print '####################################################################'
 		print
 
 
-	def foundriesForAllowances(self, seatAllowances):
+	def foundriesForAllowances(self, seatAllowances, includeNonRestrictedFonts = False):
 		foundries = []
 
 		for foundry in self.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
-					if font.uniqueID() in seatAllowances.keys():
+					if font.uniqueID() in seatAllowances.keys() or (font.plist['requiresUserID'] == False and includeNonRestrictedFonts == True):
 						if not foundry in foundries:
 							foundries.append(foundry)
 
 		return foundries
 
-	def designersForAllowances(self, seatAllowances):
+	def designersForAllowances(self, seatAllowances, includeNonRestrictedFonts = False):
 		designers = []
 
 		for foundry in self.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
-					if font.uniqueID() in seatAllowances.keys():
+					if font.uniqueID() in seatAllowances.keys() or (font.plist['requiresUserID'] == False and includeNonRestrictedFonts == True):
 
 						for designerKeyword in font.plist['designers']:
 							designer = self.designersByKeyword[designerKeyword]
@@ -333,7 +335,8 @@ class ReferenceServer(object):
 		mimeType = None
 		content = None
 
-
+		# Update preferences
+		self.preferences = plistlib.readPlist(os.path.join(os.path.dirname(__file__), 'preferences.plist'))
 
 		# Put in root publisher data
 		self.publisher.applyValuesToTypeWorldObjects(api)
@@ -345,56 +348,69 @@ class ReferenceServer(object):
 			api.response.installableFonts = typeWorld.api.InstallableFontsResponse()
 			api.response.installableFonts.type = 'success' # Let's assume success for now. If not, 'error' will be set and the method immediately returned
 
-			# userID is empty
-			if not userID:
-				api.response.installableFonts.type = 'error'
-				api.response.installableFonts.errorMessage.en = 'No userID supplied'
-				api.response.installableFonts.errorMessage.de = u'Keine userID übergeben'
-				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
-			# userID doesn't exist
-			elif not self.usersByID.has_key(userID):
-				api.response.installableFonts.type = 'error'
-				api.response.installableFonts.errorMessage.en = 'This userID is unknown'
-				api.response.installableFonts.errorMessage.de = 'Diese userID is unbekannt'
-				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+			# User is given. Fetch all fonts that belong to user.
+			if userID:
+				user = self.usersByID[userID]
+				api.response.installableFonts.description.en = 'Commercial Fonts'
+				api.response.installableFonts.userName.en = user.plist['name']
+				api.response.installableFonts.userEmail = user.plist['email']
+				seatAllowances = user.plist['seatAllowances']
 
-			api.response.installableFonts.type = 'success'
-
-			# Fetch user
-			user = self.usersByID[userID]
-			api.response.installableFonts.customerName.en = user.plist['name']
-			api.response.installableFonts.customerEmail = user.plist['email']
-			seatAllowances = user.plist['seatAllowances']
+				# Decide whether we should include non-restricted fonts
+				includeNonRestrictedFonts = self.preferences['includeNonRestrictedFontsForUser']
+			else:
+				user = None
+				api.response.installableFonts.description.en = 'Free Fonts'
+				seatAllowances = {}
+				includeNonRestrictedFonts = True
 
 			# Designers
-			for rsDesigner in self.designersForAllowances(seatAllowances):
+			for rsDesigner in self.designersForAllowances(seatAllowances, includeNonRestrictedFonts):
 				twDesigner = typeWorld.api.Designer()
 				rsDesigner.applyValuesToTypeWorldObjects(twDesigner)
 				api.response.installableFonts.designers.append(twDesigner)
 
 			# Foundries
-			for rsFoundry in self.foundriesForAllowances(seatAllowances):
+			for rsFoundry in self.foundriesForAllowances(seatAllowances, includeNonRestrictedFonts):
 				twFoundry = typeWorld.api.Foundry()
 				twFoundry.uniqueID = rsFoundry.uniqueID()
 				rsFoundry.applyValuesToTypeWorldObjects(twFoundry)
 				api.response.installableFonts.foundries.append(twFoundry)
 
 				# Licenses
-				for rsLicense in rsFoundry.licensesForAllowances(seatAllowances):
+				for rsLicense in rsFoundry.licensesForAllowances(seatAllowances, includeNonRestrictedFonts):
 					twLicense = typeWorld.api.License()
 					rsLicense.applyValuesToTypeWorldObjects(twLicense)
 					twFoundry.licenses.append(twLicense)
 
 				# Families
-				for rsFamily in rsFoundry.familiesForAllowances(seatAllowances):
+				for rsFamily in rsFoundry.familiesForAllowances(seatAllowances, includeNonRestrictedFonts):
 					twFamily = typeWorld.api.Family()
 					twFamily.uniqueID = rsFamily.uniqueID()
 					rsFamily.applyValuesToTypeWorldObjects(twFamily)
 					twFoundry.families.append(twFamily)
 
 					# Fonts
-					for rsFont in rsFamily.fontsForAllowances(seatAllowances):
+					for rsFont in rsFamily.fontsForAllowances(seatAllowances, includeNonRestrictedFonts):
+
+						# Font requires a user ID (meaning its access is resticted). Check for it
+						if rsFont.plist['requiresUserID'] == True:
+
+							# userID is empty
+							if not userID:
+								api.response.installableFonts.type = 'error'
+								api.response.installableFonts.errorMessage.en = 'No userID supplied'
+								api.response.installableFonts.errorMessage.de = u'Keine userID übergeben'
+								return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
+							# userID doesn't exist
+							elif not self.usersByID.has_key(userID):
+								api.response.installableFonts.type = 'error'
+								api.response.installableFonts.errorMessage.en = 'This userID is unknown'
+								api.response.installableFonts.errorMessage.de = 'Diese userID is unbekannt'
+								return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
 						if seatAllowances.has_key(rsFont.uniqueID()):
 							seatAllowance = seatAllowances[rsFont.uniqueID()]
 						else:
