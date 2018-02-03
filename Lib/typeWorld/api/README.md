@@ -1139,6 +1139,8 @@ Indication that the server requires a userID to be used for authentication. The 
 
 Type: Bool<br />
 Required: False<br />
+Default value: False
+
 <div id="class_Font_attribute_seatsAllowedForUser"></div>
 
 #### seatsAllowedForUser
