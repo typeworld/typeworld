@@ -603,10 +603,18 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[userEmail](#class_InstallableFontsResponse_attribute_userEmail)<br />[userName](#class_InstallableFontsResponse_attribute_userName)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
+[description](#class_InstallableFontsResponse_attribute_description)<br />[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[userEmail](#class_InstallableFontsResponse_attribute_userEmail)<br />[userName](#class_InstallableFontsResponse_attribute_userName)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
 
 ## Attributes
 
+<div id="class_InstallableFontsResponse_attribute_description"></div>
+
+#### description
+
+A description of this response and its contents. This is needed to manage repositories in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so there access is restricted. This is necessary because in the UI all fonts of all subscriptions will be grouped by foundry, family etc., and it will not be visible which fonts belong to which subscription. Then in the UI, the user will have the option to toggle visibility of subscription’s contents.
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_designers"></div>
 
 #### designers

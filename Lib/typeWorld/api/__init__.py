@@ -399,6 +399,7 @@ class InstallableFontsResponse(BaseResponse):
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
 		'foundries':		[FoundryListProxy,				True, 	None, 	'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
 
+		'description':		[MultiLanguageTextProxy,		False, 	None, 	u'A description of this response and its contents. This is needed to manage repositories in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so there access is restricted. This is necessary because in the UI all fonts of all subscriptions will be grouped by foundry, family etc., and it will not be visible which fonts belong to which subscription. Then in the UI, the user will have the option to toggle visibility of subscription’s contents.'],
 		'userName':			[MultiLanguageTextProxy,		False, 	None, 	'The name of the user who these fonts are licensed to.'],
 		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
