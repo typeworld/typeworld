@@ -11,15 +11,6 @@ from typeWorld.base import *
 import flask
 
 
-
-
-
-
-
-
-
-
-
 class PlistBasedClass(object):
 	def __init__(self, plistPath, keyword = None):
 		self.plistPath = plistPath
@@ -164,8 +155,9 @@ class ReferenceServer(object):
 	Main Server.
 	"""
 
-	def __init__(self, dataPath, canonicalURL):
+	def __init__(self, dataPath, preferences, canonicalURL):
 		self.dataPath = dataPath
+		self.preferences = preferences
 		self.canonicalURL = canonicalURL
 
 		if not os.path.exists(self.dataPath):
@@ -239,6 +231,22 @@ class ReferenceServer(object):
 						version = Version(os.path.join(self.dataPath, 'foundries', foundryKeyword, 'families', familyKeyword, 'fonts', fontKeyword, 'versions', versionKeyword, 'version.plist'), versionKeyword)
 						version.parent = font
 						font.versions.append(version)
+
+	def printLinks(self):
+
+		print '####################################################################'
+		print
+		print '  Type.World Reference Server'
+		print '  General API information:'.ljust(45), url
+		print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, self.users[0].plist['anonymousID'])
+		print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, self.users[0].plist['anonymousID'], anonymousAppID)
+		print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Thin&fontVersion=1.0' % (url)
+		print '  Install access-limited font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
+		print '  Uninstall access-limited font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, self.users[0].plist['anonymousID'])
+		print
+		print '####################################################################'
+		print
+
 
 	def foundriesForAllowances(self, seatAllowances):
 		foundries = []
@@ -578,33 +586,27 @@ class ReferenceServer(object):
 
 
 
-# Anonymous App ID, will later be different for every installation
-anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
 
 # Start web server
 app = flask.Flask(__name__)
 
-ip = '127.0.0.1'
-port = 5000
+# Anonymous App ID, will later be different for every installation
+anonymousAppID = 'H625npqamfsy2cnZgNSJWpZm'
 
+# Read settings
+preferences = plistlib.readPlist(os.path.join(os.path.dirname(__file__), 'preferences.plist'))
 
-# Print test links
+ip = preferences['serverIP']
+port = int(preferences['serverPort'])
 url = 'http://%s:%s/' % (ip, port)
-dataPath = os.path.join(os.path.dirname(__file__), 'data')
-server = ReferenceServer(dataPath, url)
-print server.fontsByID
-print '####################################################################'
-print
-print '  Type.World Reference Server'
-print '  General API information:'.ljust(45), url
-print '  Official Type.World App link for user1:'.ljust(45), '%s?userID=%s' % (url, server.users[0].plist['anonymousID'])
-print '  installableFonts command for user1:'.ljust(45), '%s?command=installableFonts&userID=%s&anonymousAppID=%s' % (url, server.users[0].plist['anonymousID'], anonymousAppID)
-print '  Install free font:'.ljust(45), '%s?command=installFont&fontID=awesomefonts-YanoneKaffeesatz-Thin&fontVersion=1.0' % (url)
-print '  Install access-limited font:'.ljust(45), '%s?command=installFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&fontVersion=1.0&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
-print '  Uninstall access-limited font:'.ljust(45), '%s?command=uninstallFont&userID=%s&fontID=awesomefonts-YanoneKaffeesatz-Regular&anonymousAppID=H625npqamfsy2cnZgNSJWpZm' % (url, server.users[0].plist['anonymousID'])
-print
-print '####################################################################'
-print
+if preferences['dataFolder'].startswith('/'):
+	dataPath = preferences['dataFolder']
+else:
+	dataPath = os.path.join(os.path.dirname(__file__), preferences['dataFolder'])
+
+# Init server here already to print links
+server = ReferenceServer(dataPath, preferences, url)
+server.printLinks()
 
 @app.route('/', methods=['GET'])
 def root():
@@ -612,7 +614,7 @@ def root():
 
 	# Instantiate reference server
 	# Read it new every time to reflect changes in the data base (file structure)
-	server = ReferenceServer(dataPath, url)
+	server = ReferenceServer(dataPath, preferences, url)
 
 	# Get JSON (or font) output
 	response = server.api(command = flask.request.args.get('command'), userID = flask.request.args.get('userID'), anonymousAppID = flask.request.args.get('anonymousAppID'), fontID = flask.request.args.get('fontID'), fontVersion = flask.request.args.get('fontVersion'))
@@ -623,3 +625,5 @@ def root():
 
 if __name__ == '__main__':
 	app.run(host=ip, port=port, debug=True)
+
+	
