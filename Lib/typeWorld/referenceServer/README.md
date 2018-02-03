@@ -8,6 +8,8 @@ Its data is stored in a simple folder structure under the `data` folder (can cha
 This server implementation provides a thorough example of the logic of how to output data, most importantly for the `installableFonts` command. 
 The same logic may not apply for your own cause. For instance, this reference server announces access to free/non-restricted fonts (YanoneKaffeesatz-Thin) when no userID is supplied in the access URL. Otherwise, when a userID is given (which indicates access to commercial or otherwise restricted fonts), it will look up in the `preferences.plist` whether the non-restricted fonts shall be included, too. But this may not work for you. Instead, you could annouce non-restricted fonts under a modified URL that includes a parameter describing access to free fonts (e.g. &freefonts=true) and only then including the non-restricted fonts.
 
+Therefore, this server *may* be used as is, but you may also want to adjust it to your needs. Then, it’ll just serve as a *reference*, as the title suggests.
+
 Its web server is based on Flask, which you can install with pip:
 
 `pip install flask`
