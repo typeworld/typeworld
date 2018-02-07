@@ -313,7 +313,8 @@ class ReferenceServer(object):
 		string = '%s %s %s\n' % (userID, fontID, anonymousAppID)
 
 		lines = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'r').readlines()
-		lines.remove(string)
+		if string in lines:
+			lines.remove(string)
 
 		f = open(os.path.join(self.dataPath, 'seatTracking', 'seats.txt'), 'w')
 		for line in lines:
@@ -542,7 +543,7 @@ class ReferenceServer(object):
 						api.response.installFont.type = 'seatAllowanceReached'
 						return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
-		# InstallFont Command
+		# UninstallFont Command
 		elif command == 'uninstallFont':
 			api.response = typeWorld.api.Response()
 			api.response.command = command
@@ -562,8 +563,10 @@ class ReferenceServer(object):
 				api.response.uninstallFont.errorMessage.de = u'Kein Font für fontID gefunden'
 				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
+			font = self.fontsByID[fontID]
+
 			# installation not found
-			if self.seatsInstalledForUser(userID, fontID, anonymousAppID) != 1:
+			if font.plist['requiresUserID'] == True and self.seatsInstalledForUser(userID, fontID, anonymousAppID) != 1:
 				api.response.uninstallFont.type = 'error'
 				api.response.uninstallFont.errorMessage.en = 'This font installation for this appID is unknown'
 				api.response.uninstallFont.errorMessage.de = u'Diese Font-Installation für diese appID ist unbekannt.'
@@ -575,7 +578,8 @@ class ReferenceServer(object):
 
 				# Font is free; do nothing
 				if font.plist['requiresUserID'] == False:
-					pass
+					api.response.uninstallFont.type = 'success'
+					return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
 				# Font is commercial, need to remove license from ledger
 				else:
