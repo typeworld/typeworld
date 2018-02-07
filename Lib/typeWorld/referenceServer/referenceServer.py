@@ -333,8 +333,6 @@ class ReferenceServer(object):
 	def api(self, command = None, userID = None, fontID = None, anonymousAppID = None, fontVersion = None):
 
 		api = typeWorld.api.APIRoot()
-		mimeType = None
-		content = None
 
 		# Update preferences
 		self.preferences = plistlib.readPlist(os.path.join(os.path.dirname(__file__), 'preferences.plist'))
@@ -515,7 +513,7 @@ class ReferenceServer(object):
 					# User still has seat allowance
 					if seatsInstalledForUser < seatsAllowedForUser:
 
-						fileName = '%s_%s.otf' % (font.keyword, fontVersion)
+						fileName = '%s_%s.%s' % (font.keyword, fontVersion, font.plist['type'])
 						fontPath = os.path.join(os.path.dirname(font.parent.plistPath), 'fontfiles', fileName)
 
 						# File exists
@@ -527,7 +525,7 @@ class ReferenceServer(object):
 							# Put out font
 							b = open(fontPath, 'rb').read()
 							response = flask.make_response(b)
-							response.headers['Content-Type'] = 'font/otf'
+							response.headers['Content-Type'] = MIMETYPEFORFONTTYPE[font.plist['type']]
 							response.headers['Content-Disposition'] = 'attachment; filename=%s' % fileName
 							return response
 
