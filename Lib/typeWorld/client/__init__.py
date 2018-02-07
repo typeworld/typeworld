@@ -463,11 +463,11 @@ class APIClient(object):
 
 		# Errors
 		if responses['errors']:
-			return False, '\n'.join(responses['errors'])
+			return False, '\n'.join(responses['errors']), None
 
 		# Check for installableFonts response support
 		if not 'installableFonts' in api.supportedCommands and not 'installFonts' in api.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % api.canonicalURL
+			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % api.canonicalURL, None
 
 		# Tweak url to include "installableFonts" command
 		url = self.addAttributeToURL(url, 'command', 'installableFonts')
@@ -487,7 +487,7 @@ class APIClient(object):
 		# Save
 		self.savePreferences()
 
-		return True, None
+		return True, None, self.endpoints[api.canonicalURL]
 
 
 if __name__ == '__main__':
