@@ -404,6 +404,7 @@ class InstallableFontsResponse(BaseResponse):
 		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
 
+
 	def getDesignerByKeyword(self, keyword):
 		if not hasattr(self, '_designersDict'):
 			self._designersDict = {}
@@ -419,6 +420,17 @@ class InstallableFontsResponse(BaseResponse):
 			return True
 
 		return False
+
+	def customValidation(self):
+		information, warnings, critical = [], [], []
+
+		if self.type == 'success' and not self.description.getText():
+			warnings.append('The response has no description value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.')
+
+		return information, warnings, critical
+
+
+
 
 
 class InstallableFontsResponseProxy(Proxy):
@@ -588,8 +600,10 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
 		'''
 		information, warnings, errors = self._validate()
+
 		if self.canonicalURL and not self.canonicalURL.startswith('https://'):
 			warnings.append('%s.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.' % (self))
+
 		return information, warnings, errors
 
 
