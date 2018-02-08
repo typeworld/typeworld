@@ -351,7 +351,7 @@ class ReferenceServer(object):
 			# User is given. Fetch all fonts that belong to user.
 			if userID:
 				user = self.usersByID[userID]
-				api.response.installableFonts.description.en = 'Commercial Fonts'
+				api.response.installableFonts.name.en = 'Commercial Fonts'
 				api.response.installableFonts.userName.en = user.plist['name']
 				api.response.installableFonts.userEmail = user.plist['email']
 				seatAllowances = user.plist['seatAllowances']
@@ -360,7 +360,7 @@ class ReferenceServer(object):
 				includeNonRestrictedFonts = self.preferences['includeNonRestrictedFontsForUser']
 			else:
 				user = None
-				api.response.installableFonts.description.en = 'Free Fonts'
+				api.response.installableFonts.name.en = 'Free Fonts'
 				seatAllowances = {}
 				includeNonRestrictedFonts = True
 
