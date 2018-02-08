@@ -5,7 +5,7 @@
 	<key>dataFolder</key>
 	<string>data</string>
 	<key>includeNonRestrictedFontsForUser</key>
-	<true/>
+	<false/>
 	<key>serverIP</key>
 	<string>127.0.0.1</string>
 	<key>serverPort</key>
