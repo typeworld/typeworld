@@ -130,7 +130,7 @@ class APIRepository(object):
 #						url = self.parent.parent.addAttributeToURL(url, 'fontVersion', version)
 
 						print 'Uninstalling %s in %s' % (fontID, folder)
-						# print url
+						print url
 
 						acceptableMimeTypes = UNINSTALLFONTCOMMAND['acceptableMimeTypes']
 
@@ -396,6 +396,12 @@ class APIClient(object):
 
 		self.loadPreferences()
 
+	def log(self, message):
+
+		from AppKit import NSLog
+		NSLog('Type.World Client: %s' % message)
+
+
 	def savePreferences(self):
 		if self.preferences:
 			_dict = self.dict()
@@ -443,6 +449,7 @@ class APIClient(object):
 
 			if not response.headers.type in acceptableMimeTypes:
 				d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes))
+				self.log('Received this response with an unexpected MIME type for the URL %s:\n\n%s' % (url, response.read()))
 
 			if response.getcode() == 200:
 
