@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import os, sys, json, platform, urllib2, re, traceback, json, time, base64
+import os, sys, json, platform, urllib, urllib2, re, traceback, json, time, base64
 
 import typeWorld.api, typeWorld.base
 from typeWorld.api import *
@@ -371,7 +371,7 @@ class APISubscription(object):
 						# Build URL
 						url = self.url
 						url = self.parent.parent.addAttributeToURL(url, 'command', 'uninstallFont')
-						url = self.parent.parent.addAttributeToURL(url, 'fontID', fontID)
+						url = self.parent.parent.addAttributeToURL(url, 'fontID', urllib.quote_plus(fontID))
 						url = self.parent.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.parent.anonymousAppID())
 #						url = self.parent.parent.addAttributeToURL(url, 'fontVersion', version)
 
@@ -444,7 +444,7 @@ class APISubscription(object):
 						# Build URL
 						url = self.url
 						url = self.parent.parent.addAttributeToURL(url, 'command', 'installFont')
-						url = self.parent.parent.addAttributeToURL(url, 'fontID', fontID)
+						url = self.parent.parent.addAttributeToURL(url, 'fontID', urllib.quote_plus(fontID))
 						url = self.parent.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.parent.anonymousAppID())
 						url = self.parent.parent.addAttributeToURL(url, 'fontVersion', str(version))
 
@@ -558,10 +558,10 @@ if __name__ == '__main__':
 
 	client = APIClient(preferences = AppKitNSUserDefaults('world.type.clientapp'))
 
-#	print client.addSubscription('http://192.168.56.102/type.world/api/wsqmRxRmY3C8vtrutfIr/?command=installableFonts&userID=K0TUTPgE4Kp6vjDOfT47')
+	print client.addSubscription('https://typeworldserver.com/api/toy6FQGX6c368JlntbxR/?command=installableFonts')
 
-	for endpoint in client.publishers():
-		print endpoint
-		for subscription in endpoint.subscriptions():
-			print subscription.latestVersion()
-#			subscription.update()
+# 	for endpoint in client.publishers():
+# 		print endpoint
+# 		for subscription in endpoint.subscriptions():
+# 			print subscription.latestVersion()
+# #			subscription.update()
