@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
 	# Add foundry to root of response
 	foundry = Foundry()
-	foundry.uniqueID = u'yanone'
+	foundry.uniqueID = 'yanone'
 	foundry.name.en = u'Awesome Fonts'
 	foundry.website = 'https://awesomefonts.com'
 	responseCommand.foundries.append(foundry)
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 	# Add font family to foundry
 	family = Family()
-	family.uniqueID = u'yanone-AwesomeSans'
+	family.uniqueID = 'yanone-AwesomeSans'
 	family.name.en = u'Awesome Sans'
 	family.designers.append(u'max')
 	foundry.families.append(family)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 	# Add font to family
 	font = Font()
-	font.uniqueID = u'yanone-NonameSans-Regular'
+	font.uniqueID = 'yanone-NonameSans-Regular'
 	font.name.en = u'Regular'
 	font.postScriptName = u'AwesomeSans-Regular'
 	font.licenseKeyword = u'awesomeFontsEULA'
