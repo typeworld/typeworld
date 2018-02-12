@@ -863,7 +863,7 @@ Required: False<br />
 
 An string that uniquely identifies this foundry within the publisher.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Foundry_attribute_website"></div>
 
@@ -963,7 +963,7 @@ Required: False<br />
 
 An string that uniquely identifies this family within the publisher.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Family_attribute_upgradeLicenseURL"></div>
 
@@ -1199,7 +1199,7 @@ Required: False<br />
 
 An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Font_attribute_upgradeLicenseURL"></div>
 

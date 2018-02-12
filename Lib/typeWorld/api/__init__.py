@@ -104,7 +104,7 @@ class Font(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	u'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-		'uniqueID':			[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
+		'uniqueID':			[StringDataType,		True, 	None, 	u'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	u'Complete PostScript name of font'],
 		'previewImage':		[WebURLDataType,		False, 	None, 	u'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'variantName':		[MultiLanguageTextProxy,		False, 	None, 	'Optional variant name of font. This is used to visually group fonts in the UI. Thinking "Office Fonts" and such.'],
@@ -224,7 +224,7 @@ class BillboardListProxy(ListProxy):
 class Family(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'uniqueID':					[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this family within the publisher.'],
+		'uniqueID':					[StringDataType,		True, 	None, 	u'An string that uniquely identifies this family within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	u'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	u'Description of font family'],
 		'billboards':	 			[BillboardListProxy,	False, 	None, 	u'List of URLs pointing at images to show for this typeface, specifications to follow'],
@@ -294,7 +294,7 @@ class FamiliesListProxy(ListProxy):
 class Foundry(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'uniqueID':					[UnicodeDataType,		True, 	None, 	u'An string that uniquely identifies this foundry within the publisher.'],
+		'uniqueID':					[StringDataType,		True, 	None, 	u'An string that uniquely identifies this foundry within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
 		'logo':	 					[WebURLDataType,		False, 	None, 	u'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
@@ -575,7 +575,6 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 	}
-
 
 	def difference(self, other):
 		from deepdiff import DeepDiff
