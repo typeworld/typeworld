@@ -30,9 +30,13 @@ class JSON(Preferences):
 
 
 class AppKitNSUserDefaults(Preferences):
-	def __init__(self, name):
+	def __init__(self, name = None):
 		from AppKit import NSUserDefaults
-		self.defaults = NSUserDefaults.alloc().initWithSuiteName_(name)
+		if name:
+			self.defaults = NSUserDefaults.alloc().initWithSuiteName_(name)
+		else:
+			self.defaults = NSUserDefaults.standardUserDefaults()
+
 
 	def get(self, key):
 		if self.defaults.objectForKey_(key):
