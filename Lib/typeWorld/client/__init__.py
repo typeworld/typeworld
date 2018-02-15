@@ -371,41 +371,60 @@ class APISubscription(object):
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
+
+						if font.requiresUserID:
 						
-						# Build URL
-						url = self.url
-						url = self.parent.parent.addAttributeToURL(url, 'command', 'uninstallFont')
-						url = self.parent.parent.addAttributeToURL(url, 'fontID', urllib.quote_plus(fontID))
-						url = self.parent.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.parent.anonymousAppID())
-#						url = self.parent.parent.addAttributeToURL(url, 'fontVersion', version)
+							# Build URL
+							url = self.url
+							url = self.parent.parent.addAttributeToURL(url, 'command', 'uninstallFont')
+							url = self.parent.parent.addAttributeToURL(url, 'fontID', urllib.quote_plus(fontID))
+							url = self.parent.parent.addAttributeToURL(url, 'anonymousAppID', self.parent.parent.anonymousAppID())
 
-						print 'Uninstalling %s in %s' % (fontID, folder)
-						print url
+							print 'Uninstalling %s in %s' % (fontID, folder)
+							print url
 
-						acceptableMimeTypes = UNINSTALLFONTCOMMAND['acceptableMimeTypes']
+							acceptableMimeTypes = UNINSTALLFONTCOMMAND['acceptableMimeTypes']
 
-						try:
-							response = urllib2.urlopen(url)
+							try:
+								response = urllib2.urlopen(url)
 
-							if response.getcode() != 200:
-								return False, 'Resource returned with HTTP code %s' % response.code
+								if response.getcode() != 200:
+									return False, 'Resource returned with HTTP code %s' % response.code
 
-							if not response.headers.type in acceptableMimeTypes:
-								return False, 'Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes)
+								if not response.headers.type in acceptableMimeTypes:
+									return False, 'Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers.type, acceptableMimeTypes)
 
 
-							api = APIRoot()
-							_json = response.read()
-							api.loadJSON(_json)
+								api = APIRoot()
+								_json = response.read()
+								api.loadJSON(_json)
 
-							# print _json
+								# print _json
 
-							if api.response.getCommand().type == 'error':
-								return False, api.response.getCommand().errorMessage
-							elif api.response.getCommand().type == 'seatAllowanceReached':
-								return False, 'seatAllowanceReached'
-							
+								if api.response.getCommand().type == 'error':
+									return False, api.response.getCommand().errorMessage
+								elif api.response.getCommand().type == 'seatAllowanceReached':
+									return False, 'seatAllowanceReached'
+								
 
+								# REMOVE
+								installedFontVersion = self.installedFontVersion(font.uniqueID)
+
+								if installedFontVersion:
+									# Delete file
+									filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.type)
+
+									if os.path.exists(os.path.join(folder, filename)):
+										os.remove(os.path.join(folder, filename))
+
+								return True, None
+
+
+							except:
+								exc_type, exc_value, exc_traceback = sys.exc_info()
+								return False, traceback.format_exc()
+
+						else:
 							# REMOVE
 							installedFontVersion = self.installedFontVersion(font.uniqueID)
 
@@ -417,11 +436,7 @@ class APISubscription(object):
 									os.remove(os.path.join(folder, filename))
 
 							return True, None
-
-
-						except:
-							exc_type, exc_value, exc_traceback = sys.exc_info()
-							return False, traceback.format_exc()
+							
 		return True, ''
 
 
