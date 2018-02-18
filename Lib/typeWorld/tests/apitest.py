@@ -61,6 +61,16 @@ if __name__ == '__main__':
 	font.type = u'otf'
 	family.fonts.append(font)
 
+	# Add font to family
+	font = Font()
+	font.uniqueID = 'yanone-NonameSans-Bold'
+	font.name.en = u'Regular'
+	font.postScriptName = u'AwesomeSans-Bold'
+	font.licenseKeyword = u'awesomeFontsEULA'
+	font.purpose = u'desktop'
+	font.type = u'otf'
+	family.fonts.append(font)
+
 	# Output API response as JSON
 	json = api.dumpJSON()
 
