@@ -290,6 +290,66 @@ class APIPublisher(object):
 
 		self.parent._publishers = {}
 
+class APIFont(object):
+	def __init__(self, parent, twObject = None):
+		self.parent = parent
+		self.twObject = twObject
+
+		if self.twObject:
+			for keyword in ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'type', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'variantName', 'versions']:
+				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+
+			self.getSortedVersions = self.twObject.getSortedVersions
+
+
+
+class APIFamily(object):
+	def __init__(self, parent, twObject = None):
+		self.parent = parent
+		self.twObject = twObject
+
+		if self.twObject:
+			for keyword in ['billboards', 'description', 'issueTrackerURL', 'name', 'sourceURL', 'timeFirstPublished', 'uniqueID', 'upgradeLicenseURL']:
+				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+
+
+	def fonts(self):
+
+		fonts = []
+
+		for font in self.twObject.fonts:
+			newFont = APIFont(self, font)
+			fonts.append(newFont)
+
+		return fonts
+
+
+	def versions(self):
+
+		return self.twObject.versions
+
+
+class APIFoundry(object):
+	def __init__(self, parent, twObject = None):
+		self.parent = parent
+		self.twObject = twObject
+
+		
+		if self.twObject:
+			for keyword in ['backgroundColor', 'description', 'email', 'facebook', 'instagram', 'logo', 'name', 'skype', 'supportEmail', 'telephone', 'twitter', 'website']:
+				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+
+
+	def families(self):
+
+		families = []
+		for family in self.twObject.families:
+			newFamily = APIFamily(self, family)
+			families.append(newFamily)
+
+		return families
+
+
 class APISubscription(object):
 	u"""\
 	Represents an API endpoint, identified and grouped by the canonical URL attribute of the API responses. This API endpoint class can then hold several repositories.
@@ -307,6 +367,25 @@ class APISubscription(object):
 				api.parent = self
 				api.loadDict(dictData)
 				self.versions.append(api)
+
+	def fontByID(self, ID):
+
+		for foundry in self.foundries():
+			for family in foundry.families():
+				for font in family.fonts():
+					if font.uniqueID == ID:
+						return font
+
+	def foundries(self):
+		foundries = []
+
+		for foundry in self.latestVersion().response.getCommand().foundries:
+
+			newFoundry = APIFoundry(self, twObject = foundry)
+
+			foundries.append(newFoundry)
+
+		return foundries
 
 
 	def amountInstalledFonts(self):
