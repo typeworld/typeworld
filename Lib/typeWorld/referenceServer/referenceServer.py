@@ -461,6 +461,14 @@ class ReferenceServer(object):
 				api.response.installFont.errorMessage.de = u'Keine fontVersion übergeben'
 				return flask.Response(api.dumpJSON(), mimetype = 'application/json')
 
+			# TODO: return error if font version is unknown
+			# # fontVersion is unknown
+			# elif not self.fontsByID[fontID]:
+			# 	api.response.installFont.type = 'error'
+			# 	api.response.installFont.errorMessage.en = 'No fontVersion supplied'
+			# 	api.response.installFont.errorMessage.de = u'Keine fontVersion übergeben'
+			# 	return flask.Response(api.dumpJSON(), mimetype = 'application/json')
+
 			# all set, output fonts
 			else:
 				font = self.fontsByID[fontID]
