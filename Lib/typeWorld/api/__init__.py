@@ -233,7 +233,7 @@ class Family(DictBasedObject):
 		'sourceURL':	 			[WebURLDataType,		False, 	None, 	u'URL pointing to the source of a font project, such as a GitHub repository'],
 		'issueTrackerURL':	 		[WebURLDataType,		False, 	None, 	u'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
 		'versions':	 				[VersionListProxy,		False, 	None, 	u'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
-		'fonts':	 				[FontListProxy,			True, 	None, 	u'List of ::Font:: objects.'],
+		'fonts':	 				[FontListProxy,			True, 	None, 	u'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'upgradeLicenseURL':		[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at ::Font.upgradeLicenseURL::.'],
 		'timeFirstPublished':		[IntegerDataType,		False, 	None, 	u'Timestamp of the initial release of the family. May be overriden on font level at ::Font.timeFirstPublished::.'],
 	}

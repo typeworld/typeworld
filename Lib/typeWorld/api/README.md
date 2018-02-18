@@ -921,7 +921,7 @@ Required: False<br />
 
 #### fonts
 
-List of [Font](#class_Font) objects.
+List of [Font](#class_Font) objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.
 
 Type: List of [Font](#class_Font) objects<br />
 Required: True<br />
