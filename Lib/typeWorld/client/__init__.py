@@ -138,7 +138,7 @@ class APIClient(object):
 		return api, d
 
 	def addAttributeToURL(self, url, key, value):
-		if not key in url:
+		if not key + '=' in url:
 			if '?' in url:
 				url += '&' + key + '=' + value
 			else:
