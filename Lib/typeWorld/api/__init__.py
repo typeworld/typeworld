@@ -427,6 +427,33 @@ class InstallableFontsResponse(BaseResponse):
 		if self.type == 'success' and not self.name.getText():
 			warnings.append('The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.')
 
+
+		# Check all uniqueIDs for duplicity
+		foundryIDs = []
+		familyIDs = []
+		fontIDs = []
+		for foundry in self.foundries:
+			foundryIDs.append(foundry.uniqueID)
+			for family in foundry.families:
+				familyIDs.append(family.uniqueID)
+				for font in family.fonts:
+					fontIDs.append(font.uniqueID)
+
+		import collections
+
+		duplicateFoundryIDs = [item for item, count in collections.Counter(foundryIDs).items() if count > 1]
+		if duplicateFoundryIDs:
+			critical.append('Duplicate unique foundry IDs: %s' % duplicateFoundryIDs)
+
+		duplicateFamilyIDs = [item for item, count in collections.Counter(familyIDs).items() if count > 1]
+		if duplicateFamilyIDs:
+			critical.append('Duplicate unique family IDs: %s' % duplicateFamilyIDs)
+
+		duplicateFontIDs = [item for item, count in collections.Counter(fontIDs).items() if count > 1]
+		if duplicateFontIDs:
+			critical.append('Duplicate unique family IDs: %s' % duplicateFontIDs)
+
+
 		return information, warnings, critical
 
 
@@ -602,32 +629,6 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 		if self.canonicalURL and not self.canonicalURL.startswith('https://'):
 			warnings.append('%s.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.' % (self))
-
-		# Check all uniqueIDs for duplicity
-		foundryIDs = []
-		familyIDs = []
-		fontIDs = []
-		for foundry in self.response.getCommand().foundries:
-			foundryIDs.append(foundry.uniqueID)
-			for family in foundry.families:
-				familyIDs.append(family.uniqueID)
-				for font in family.fonts:
-					fontIDs.append(font.uniqueID)
-
-		import collections
-
-		duplicateFoundryIDs = [item for item, count in collections.Counter(foundryIDs).items() if count > 1]
-		if duplicateFoundryIDs:
-			errors.append('Duplicate unique foundry IDs: %s' % duplicateFoundryIDs)
-
-		duplicateFamilyIDs = [item for item, count in collections.Counter(familyIDs).items() if count > 1]
-		if duplicateFamilyIDs:
-			errors.append('Duplicate unique family IDs: %s' % duplicateFamilyIDs)
-
-		duplicateFontIDs = [item for item, count in collections.Counter(fontIDs).items() if count > 1]
-		if duplicateFontIDs:
-			errors.append('Duplicate unique family IDs: %s' % duplicateFontIDs)
-
 
 		return information, warnings, errors
 
