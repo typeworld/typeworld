@@ -1061,7 +1061,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[type](#class_Font_attribute_type)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[variantName](#class_Font_attribute_variantName)<br />[versions](#class_Font_attribute_versions)<br />
+[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[setName](#class_Font_attribute_setName)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[type](#class_Font_attribute_type)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1169,6 +1169,14 @@ In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), num
 
 Type: Int<br />
 Required: False<br />
+<div id="class_Font_attribute_setName"></div>
+
+#### setName
+
+Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
 <div id="class_Font_attribute_timeAddedForUser"></div>
 
 #### timeAddedForUser
@@ -1216,14 +1224,6 @@ Required: False<br />
 Font is an OpenType Variable Font. For UI signaling
 
 Type: Bool<br />
-Required: False<br />
-<div id="class_Font_attribute_variantName"></div>
-
-#### variantName
-
-Optional variant name of font. This is used to visually group fonts in the UI. Thinking "Office Fonts" and such.
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Font_attribute_versions"></div>
 
