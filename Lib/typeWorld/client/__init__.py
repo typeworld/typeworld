@@ -296,7 +296,7 @@ class APIFont(object):
 		self.twObject = twObject
 
 		if self.twObject:
-			for keyword in ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'type', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'variantName', 'versions']:
+			for keyword in ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'format', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'setName', 'versions']:
 				exec('self.%s = self.twObject.%s' % (keyword, keyword))
 
 			self.getSortedVersions = self.twObject.getSortedVersions
@@ -327,6 +327,22 @@ class APIFamily(object):
 	def versions(self):
 
 		return self.twObject.versions
+
+	def setNames(self, locale):
+		setNames = []
+		for font in self.fonts():
+			if not font.setName.getText(locale) in setNames:
+				setNames.append(font.setName.getText(locale))
+		return setNames
+
+	def formatsForSetName(self, setName, locale):
+		formats = []
+		for font in self.fonts():
+			if font.setName.getText(locale) == setName:
+				if not font.format in formats:
+					formats.append(font.format)
+		return formats
+
 
 
 class APIFoundry(object):
@@ -415,7 +431,7 @@ class APISubscription(object):
 		# font given
 		if font:
 			for version in font.getSortedVersions():
-				filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
+				filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.format)
 				if os.path.exists(os.path.join(folder, filename)):
 					return version.number
 
@@ -427,7 +443,7 @@ class APISubscription(object):
 						if font.uniqueID == fontID:
 
 							for version in font.getSortedVersions():
-								filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.type)
+								filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.format)
 								if os.path.exists(os.path.join(folder, filename)):
 									return version.number
 
@@ -491,7 +507,7 @@ class APISubscription(object):
 
 								if installedFontVersion:
 									# Delete file
-									filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.type)
+									filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.format)
 
 									if os.path.exists(os.path.join(folder, filename)):
 										os.remove(os.path.join(folder, filename))
@@ -509,7 +525,7 @@ class APISubscription(object):
 
 							if installedFontVersion:
 								# Delete file
-								filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.type)
+								filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.format)
 
 								if os.path.exists(os.path.join(folder, filename)):
 									os.remove(os.path.join(folder, filename))
@@ -577,11 +593,11 @@ class APISubscription(object):
 
 							else:
 
-								if not font.type in MIMETYPES[response.headers.type]['fileExtensions']:
-									return False, "Returned MIME type (%s) does not match file type (%s)." % (response.headers.type, font.type)
+								if not font.format in MIMETYPES[response.headers.type]['fileExtensions']:
+									return False, "Returned MIME type (%s) does not match file type (%s)." % (response.headers.type, font.format)
 
 								# Write file
-								filename = '%s_%s.%s' % (font.uniqueID, version, font.type)
+								filename = '%s_%s.%s' % (font.uniqueID, version, font.format)
 
 								print 'filename', filename
 
@@ -653,6 +669,11 @@ class APISubscription(object):
 
 
 if __name__ == '__main__':
+
+	import inspect
+	classNames = []
+	for name, cls in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+		print inspect.getmro(cls)
 
 	client = APIClient(preferences = AppKitNSUserDefaults('world.type.clientapp'))
 
