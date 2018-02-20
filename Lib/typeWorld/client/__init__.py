@@ -239,7 +239,10 @@ class APIPublisher(object):
 		preferences[key] = value
 		self.parent.preferences.set(self.canonicalURL, preferences)
 
-
+	def path(self):
+		from os.path import expanduser
+		home = expanduser("~")
+		return os.path.join(home, 'Library', 'Fonts', 'Type.World App', self.subscriptions()[0].latestVersion().name.getText('en'))
 
 	def addSubscription(self, url, api):
 
@@ -297,11 +300,25 @@ class APIFont(object):
 
 		if self.twObject:
 			for keyword in ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'format', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'setName', 'versions']:
-				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+#				print keyword
+				setattr(self, keyword, getattr(self.twObject, keyword))
+#				exec('self.%s = getattr(self.twObject, keyword)' % (keyword))
+
+		
 
 			self.getSortedVersions = self.twObject.getSortedVersions
 
+	def filename(self, version):
+		return '%s_%s.%s' % (self.uniqueID, version, self.format)
 
+	def path(self, version, folder):
+
+		# User fonts folder
+		if not folder:
+			folder = self.parent.parent.parent.parent.path()
+			
+
+		return os.path.join(folder, self.filename(version))
 
 class APIFamily(object):
 	def __init__(self, parent, twObject = None):
@@ -384,6 +401,14 @@ class APISubscription(object):
 				api.loadDict(dictData)
 				self.versions.append(api)
 
+	def familyByID(self, ID):
+
+		for foundry in self.foundries():
+			for family in foundry.families():
+				if family.uniqueID == ID:
+					return family
+
+
 	def fontByID(self, ID):
 
 		for foundry in self.foundries():
@@ -407,64 +432,35 @@ class APISubscription(object):
 	def amountInstalledFonts(self):
 		amount = 0
 		# Get font
-		for foundry in self.latestVersion().response.getCommand().foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if self.installedFontVersion(font = font):
+		for foundry in self.foundries():
+			for family in foundry.families():
+				for font in family.fonts():
+					if self.installedFontVersion(font.uniqueID):
 						amount += 1
 		return amount
 
-	def installedFontVersion(self, fontID = None, font = None, folder = None):
+	def installedFontVersion(self, fontID = None, folder = None):
 
 		api = self.latestVersion()
 
-		# User fonts folder
-		if not folder:
-			from os.path import expanduser
-			home = expanduser("~")
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
+		for foundry in self.foundries():
+			for family in foundry.families():
+				for font in family.fonts():
+					if font.uniqueID == fontID:
 
-		# Create folder if it doesn't exist
-		if not os.path.exists(folder):
-			os.makedirs(folder)
-
-		# font given
-		if font:
-			for version in font.getSortedVersions():
-				filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.format)
-				if os.path.exists(os.path.join(folder, filename)):
-					return version.number
-
-		# fontID given
-		else:
-			for foundry in api.response.getCommand().foundries:
-				for family in foundry.families:
-					for font in family.fonts:
-						if font.uniqueID == fontID:
-
-							for version in font.getSortedVersions():
-								filename = filename = '%s_%s.%s' % (font.uniqueID, version.number, font.format)
-								if os.path.exists(os.path.join(folder, filename)):
-									return version.number
+						for version in font.getSortedVersions():
+							print 'installedFontVersion ', font.path(version.number, folder)
+							if os.path.exists(font.path(version.number, folder)):
+								return version.number
 
 	def removeFont(self, fontID, folder = None):
 
 		api = self.latestVersion()
 
-		# User fonts folder
-		if not folder:
-			from os.path import expanduser
-			home = expanduser("~")
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
-
-		# Create folder if it doesn't exist
-		if not os.path.exists(folder):
-			os.makedirs(folder)
-
 		# Get font
-		for foundry in api.response.getCommand().foundries:
-			for family in foundry.families:
-				for font in family.fonts:
+		for foundry in self.foundries():
+			for family in foundry.families():
+				for font in family.fonts():
 					if font.uniqueID == fontID:
 
 						if font.requiresUserID:
@@ -507,10 +503,11 @@ class APISubscription(object):
 
 								if installedFontVersion:
 									# Delete file
-									filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.format)
+									path = font.path(version, version)
 
-									if os.path.exists(os.path.join(folder, filename)):
-										os.remove(os.path.join(folder, filename))
+
+									if os.path.exists(path):
+										os.remove(path)
 
 								return True, None
 
@@ -525,10 +522,11 @@ class APISubscription(object):
 
 							if installedFontVersion:
 								# Delete file
-								filename = '%s_%s.%s' % (font.uniqueID, installedFontVersion, font.format)
 
-								if os.path.exists(os.path.join(folder, filename)):
-									os.remove(os.path.join(folder, filename))
+								path = font.path(installedFontVersion, folder)
+
+								if os.path.exists(path):
+									os.remove(path)
 
 							return True, None
 							
@@ -539,20 +537,11 @@ class APISubscription(object):
 
 		api = self.latestVersion()
 
-		# User fonts folder
-		if not folder:
-			from os.path import expanduser
-			home = expanduser("~")
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', api.name.getText('en'))
-
-		# Create folder if it doesn't exist
-		if not os.path.exists(folder):
-			os.makedirs(folder)
 
 		# Get font
-		for foundry in api.response.getCommand().foundries:
-			for family in foundry.families:
-				for font in family.fonts:
+		for foundry in self.foundries():
+			for family in foundry.families():
+				for font in family.fonts():
 					if font.uniqueID == fontID:
 						
 						# Build URL
@@ -597,12 +586,16 @@ class APISubscription(object):
 									return False, "Returned MIME type (%s) does not match file type (%s)." % (response.headers.type, font.format)
 
 								# Write file
-								filename = '%s_%s.%s' % (font.uniqueID, version, font.format)
+								path = font.path(version, folder)
 
-								print 'filename', filename
+								print 'path', path
+
+								# Create folder if it doesn't exist
+								if not os.path.exists(os.path.dirname(path)):
+									os.makedirs(os.path.dirname(path))
 
 								binary = response.read()
-								f = open(os.path.join(folder, filename), 'wb')
+								f = open(path, 'wb')
 								f.write(binary)
 								f.close()
 
