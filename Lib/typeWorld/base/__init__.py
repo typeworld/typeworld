@@ -76,6 +76,14 @@ FILEEXTENSIONS = []
 for mimeType in MIMETYPES.keys():
 	FILEEXTENSIONS = list(set(FILEEXTENSIONS) | set(MIMETYPES[mimeType]['fileExtensions']))
 
+FILEEXTENSIONNAMES = {
+	'otf': 'OpenType',
+	'ttf': 'TrueType',
+	'ttc': 'TrueType collection',
+	'woff': 'WOFF',
+	'woff2': 'WOFF2',
+}
+
 MIMETYPEFORFONTTYPE = {
 	'otf': 'font/otf',
 	'ttf': 'font/ttf',
