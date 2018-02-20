@@ -116,7 +116,7 @@ class Font(DictBasedObject):
 		'variableFont':		[BooleanDataType,		False, 	None, 	u'Font is an OpenType Variable Font. For UI signaling'],
 #		'public':			[BooleanDataType,		False, 	False, 	u'If false, signals restricted access to a commercial font only available to certain users. Download and installation may be restricted by the API point depending on the API point URL that needs to include the private key to identify the user.'],
 		'purpose':			[FontTypeDataType,		True, 	None, 	u'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (FONTTYPES.keys())],
-		'type':				[FontExtensionDataType,	False, 	None, 	u'Font file type. Required value in case of `desktop` font (see ::Font.fontPurpose::. Possible: %s' % FILEEXTENSIONS],
+		'format':			[FontExtensionDataType,	False, 	None, 	u'Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s' % FILEEXTENSIONS],
 		'requiresUserID':	[BooleanDataType,		False, 	False, 	u'Indication that the server requires a userID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.'],
 		'seatsAllowedForUser':[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.'],
 		'seatsInstalledByUser':	[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
@@ -142,8 +142,8 @@ class Font(DictBasedObject):
 		information, warnings, critical = [], [], []
 
 		# Checking font type/extension
-		if self.type == 'desktop' and not self.fileExtension:
-			critical.append('The font %s is a desktop font (see .purpose), but has no .type value.' % (self))
+		if self.format == 'desktop' and not self.fileExtension:
+			critical.append('The font %s is a desktop font (see .purpose), but has no .format value.' % (self))
 
 		# Checking version information
 		if not self.hasVersionInformation():

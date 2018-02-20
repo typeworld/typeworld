@@ -10,7 +10,7 @@
 	<array>
 		<string>yanone</string>
 	</array>
-	<key>type</key>
+	<key>format</key>
 	<string>otf</string>
 	<key>free</key>
 	<true/>
