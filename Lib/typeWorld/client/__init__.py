@@ -449,7 +449,7 @@ class APISubscription(object):
 					if font.uniqueID == fontID:
 
 						for version in font.getSortedVersions():
-							print 'installedFontVersion ', font.path(version.number, folder)
+#							print 'installedFontVersion ', font.path(version.number, folder)
 							if os.path.exists(font.path(version.number, folder)):
 								return version.number
 
