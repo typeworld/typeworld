@@ -41,7 +41,7 @@
 	<string></string>
 	<key>variableFont</key>
 	<false/>
-	<key>variantName</key>
+	<key>setName</key>
 	<string></string>
 </dict>
 </plist>
