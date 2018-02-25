@@ -4,9 +4,9 @@
 import os, sys, plistlib, traceback
 from glob import glob
 
-import typeWorld.api, typeWorld.base
+import typeWorld.api, typeWorld.api.base
 from typeWorld.api import *
-from typeWorld.base import *
+from typeWorld.api.base import *
 
 import flask
 

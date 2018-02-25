@@ -5,7 +5,7 @@ from optparse import OptionParser
 import semver
 
 import typeWorld.api
-import typeWorld.base
+import typeWorld.api.base
 
 # Response types (success, error, ...)
 SUCCESS = 'success'
@@ -391,7 +391,7 @@ class DictBasedObject(object):
 		elif 'typeWorld.api.' in ('%s' % class_.dataType):
 			return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
-		elif 'typeWorld.base.' in ('%s' % class_.dataType):
+		elif 'typeWorld.api.base.' in ('%s' % class_.dataType):
 			return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
 		return class_.dataType.__name__.title()

@@ -3,9 +3,9 @@
 
 import os, sys, json, platform, urllib, urllib2, re, traceback, json, time, base64
 
-import typeWorld.api, typeWorld.base
+import typeWorld.api, typeWorld.api.base
 from typeWorld.api import *
-from typeWorld.base import *
+from typeWorld.api.base import *
 
 
 
