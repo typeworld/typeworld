@@ -187,9 +187,11 @@ class APIClient(object):
 	def publisher(self, canonicalURL):
 		if not self._publishers.has_key(canonicalURL):
 			e = APIPublisher(self, canonicalURL)
-			if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
-				e.exists = True
 			self._publishers[canonicalURL] = e
+
+		if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
+			self._publishers[canonicalURL].exists = True
+
 		return self._publishers[canonicalURL]
 
 	def publishers(self):
@@ -259,9 +261,11 @@ class APIPublisher(object):
 	def subscription(self, url):
 		if not self._subscriptions.has_key(url):
 			e = APISubscription(self, url)
-			if self.get('subscriptions') and url in self.get('subscriptions'):
-				e.exists = True
 			self._subscriptions[url] = e
+
+		if self.get('subscriptions') and url in self.get('subscriptions'):
+			self._subscriptions[url].exists = True
+
 		return self._subscriptions[url]
 
 	def subscriptions(self):
@@ -588,7 +592,7 @@ class APISubscription(object):
 								# Write file
 								path = font.path(version, folder)
 
-								print 'path', path
+#								print 'path', path
 
 								# Create folder if it doesn't exist
 								if not os.path.exists(os.path.dirname(path)):
