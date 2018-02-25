@@ -70,7 +70,7 @@ class DesignersReferencesListProxy(ListProxy):
 class Version(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'number':	 				[FloatDataType,				True, 	None, 	'Font version number'],
+		'number':	 				[VersionDataType,			True, 	None, 	'Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.'],
 		'description':	 			[MultiLanguageTextProxy,	False, 	None, 	'Description of font version'],
 		'releaseDate':	 			[FloatDataType,				False, 	None, 	u'Timestamp of version’s release date.'],
 	}
@@ -170,17 +170,22 @@ class Font(DictBasedObject):
 		if not self.hasVersionInformation():
 			raise ValueError('Font %s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
 
+
+		def compare(a, b):
+			return semver.compare(makeSemVer(a.number), makeSemVer(b.number))
+
 		versions = []
 		haveVersionNumbers = []
 		for version in self.versions:
 			versions.append(version)
-			haveVersionNumbers.append(version.number)
+			haveVersionNumbers.append(makeSemVer(version.number))
 		for version in self.parent.versions:
 			if not version.number in haveVersionNumbers:
 				versions.append(version)
-				haveVersionNumbers.append(version.number)
+				haveVersionNumbers.append(makeSemVer(version.number))
 
-		versions.sort(key=lambda x: x.number, reverse=False)
+		versions = sorted(versions, cmp=compare)
+
 		return versions
 
 	def getDesigners(self):

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re
+import json, copy, types, inspect, re, traceback
 from optparse import OptionParser
+import semver
 
 import typeWorld.api
 import typeWorld.base
@@ -93,6 +94,21 @@ MIMETYPEFORFONTTYPE = {
 }
 
 
+def makeSemVer(version):
+	'Turn simple float number (0.1) into semver-compatible number for comparison by adding .0(s): (0.1.0)'
+
+	# Make string
+	version = str(version)
+
+	if version.count('.') < 2:
+
+		# Strip leading zeros
+		version = '.'.join(map(str, map(int, version.split('.'))))
+
+		# Add .0(s)
+		version = version + (2 - version.count('.')) * '.0'
+
+	return version
 
 def smartString(s, encoding='utf-8', errors='strict', from_encoding='utf-8'):
 	import types
@@ -189,6 +205,20 @@ class UnicodeDataType(DataType):
 
 	def shapeValue(self, value):
 		return unicode(value)
+
+class VersionDataType(StringDataType):
+	dataType = str
+
+	def valid(self):
+		
+		try:
+
+			# Append .0 for semver comparison
+			value = makeSemVer(self.value)
+			a = semver.parse(value)
+			return True
+		except:
+			return traceback.format_exc()
 
 
 class WebURLDataType(UnicodeDataType):

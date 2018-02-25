@@ -1026,9 +1026,9 @@ Required: False<br />
 
 #### number
 
-Font version number
+Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.
 
-Type: Float<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Version_attribute_releaseDate"></div>
 
