@@ -7,6 +7,7 @@ import typeWorld.api, typeWorld.api.base
 from typeWorld.api import *
 from typeWorld.api.base import *
 
+from AppKit import NSDictionary
 
 
 class Preferences(object):
@@ -40,10 +41,27 @@ class AppKitNSUserDefaults(Preferences):
 
 	def get(self, key):
 		if self.defaults.objectForKey_(key):
-			return json.loads(self.defaults.objectForKey_(key))
+#			return json.loads(self.defaults.objectForKey_(key))
+
+			o = self.defaults.objectForKey_(key)
+#
+			if 'Array' in o.__class__.__name__:
+				o = list(o)
+
+			elif 'Dictionary' in o.__class__.__name__:
+				o = dict(o)
+
+#			print type(o)
+
+			return o
 
 	def set(self, key, value):
-		self.defaults.setObject_forKey_(json.dumps(value), key)
+#		self.defaults.setObject_forKey_(json.dumps(value), key)
+		
+		# if type(value) == dict:
+		# 	value = NSDictionary.alloc().initWithDictionary_(value)
+
+		self.defaults.setObject_forKey_(value, key)
 
 	def remove(self, key):
 		self.defaults.removeObjectForKey_(key)
@@ -70,11 +88,12 @@ class APIClient(object):
 		NSLog('Type.World Client: %s' % message)
 
 
-	def resourceByURL(self, url, b64 = False):
+	def resourceByURL(self, url, binary = False):
+		u'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
-		key = 'resource(%s)' % url
+		resources = self.preferences.get('resources') or {}
 
-		if not self.preferences.get(key):
+		if not resources.has_key(url):
 
 			response = urllib2.urlopen(url)
 
@@ -83,19 +102,15 @@ class APIClient(object):
 
 			else:
 				content = response.read()
-				b64content = base64.b64encode(content)
-				self.preferences.set(key, b64content)
+				if binary:
+					content = base64.b64encode(content)
+				resources[url] = content
+				self.preferences.set('resources', resources)
 
-				if b64:
-					return True, b64content
-				else:
-					return True, content
+				return True, content
 
 		else:
-			if b64:
-				return True, self.preferences.get(key)
-			else:
-				return True, base64.b64decode(self.preferences.get(key))
+			return True, resources[url]
 
 
 	def readResponse(self, url, acceptableMimeTypes):
@@ -232,14 +247,23 @@ class APIPublisher(object):
 			return self.subscriptions()[0]
 
 	def get(self, key):
-		preferences = self.parent.preferences.get(self.canonicalURL) or {}
+		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('Publisher(%s)' % self.canonicalURL) or {})
 		if preferences.has_key(key):
-			return preferences[key]
+
+			o = preferences[key]
+
+			if 'Array' in o.__class__.__name__:
+				o = list(o)
+
+			elif 'Dictionary' in o.__class__.__name__:
+				o = dict(o)
+
+			return o
 
 	def set(self, key, value):
-		preferences = self.parent.preferences.get(self.canonicalURL) or {}
+		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('Publisher(%s)' % self.canonicalURL) or {})
 		preferences[key] = value
-		self.parent.preferences.set(self.canonicalURL, preferences)
+		self.parent.preferences.set('Publisher(%s)' % self.canonicalURL, preferences)
 
 	def path(self):
 		from os.path import expanduser
@@ -290,7 +314,11 @@ class APIPublisher(object):
 		for subscription in self.subscriptions():
 			subscription.delete(calledFromParent = True)
 
+		# Old
 		self.parent.preferences.remove(self.canonicalURL)
+		# New
+		self.parent.preferences.remove('Publisher(%s)' % self.canonicalURL)
+
 		publishers = self.parent.preferences.get('publishers')
 		publishers.remove(self.canonicalURL)
 		self.parent.preferences.set('publishers', publishers)
@@ -402,7 +430,7 @@ class APISubscription(object):
 			for dictData in self.get('versions'):
 				api = APIRoot()
 				api.parent = self
-				api.loadDict(dictData)
+				api.loadJSON(dictData)
 				self.versions.append(api)
 
 	def familyByID(self, ID):
@@ -623,15 +651,25 @@ class APISubscription(object):
 		self.addVersion(api)
 		return True, None
 
+
 	def get(self, key):
-		preferences = self.parent.parent.preferences.get(self.url) or {}
+		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('Subscription(%s)' % self.url) or {})
 		if preferences.has_key(key):
-			return preferences[key]
+
+			o = preferences[key]
+
+			if 'Array' in o.__class__.__name__:
+				o = list(o)
+
+			elif 'Dictionary' in o.__class__.__name__:
+				o = dict(o)
+
+			return o
 
 	def set(self, key, value):
-		preferences = self.parent.parent.preferences.get(self.url) or {}
+		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('Subscription(%s)' % self.url) or {})
 		preferences[key] = value
-		self.parent.parent.preferences.set(self.url, preferences)
+		self.parent.parent.preferences.set('Subscription(%s)' % self.url, preferences)
 
 	def save(self):
 		subscriptions = self.parent.get('subscriptions') or []
@@ -639,7 +677,7 @@ class APISubscription(object):
 			subscriptions.append(self.url)
 		self.parent.set('subscriptions', subscriptions)
 
-		self.set('versions', [x.dumpDict() for x in self.versions])
+		self.set('versions', [x.dumpJSON() for x in self.versions])
 
 	def addVersion(self, api):
 		if self.versions:
@@ -652,9 +690,13 @@ class APISubscription(object):
 	def delete(self, calledFromParent = False):
 
 		if self.parent.get('currentSubscription') == self.url:
-			self.parent.set('currentSubscription', None)
+			self.parent.set('currentSubscription', '')
 
+		# Old
 		self.parent.parent.preferences.remove(self.url)
+		# New
+		self.parent.parent.preferences.remove('Subscription(%s)' % self.url)
+
 		subscriptions = self.parent.get('subscriptions')
 		subscriptions.remove(self.url)
 		self.parent.set('subscriptions', subscriptions)
