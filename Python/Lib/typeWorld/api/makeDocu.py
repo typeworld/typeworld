@@ -334,4 +334,4 @@ for handle in handles:
 
 
 
-WriteToFile(os.path.join(os.path.dirname(__file__), 'README.md'), docstring)
+WriteToFile(os.path.join(os.path.dirname(__file__), '..', 'README.md'), docstring)
