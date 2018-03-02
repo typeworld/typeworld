@@ -12,6 +12,7 @@ SUCCESS = 'success'
 ERROR = 'error'
 SEATALLOWANCEREACHED = 'seatAllowanceReached'
 
+PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 
 # Commands
 INSTALLABLEFONTSCOMMAND = {
