@@ -1,0 +1,1 @@
+For now, please jump straight to the Python implementaion of API [→ here](Python/Lib/typeWorld/api)
