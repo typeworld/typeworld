@@ -204,14 +204,14 @@ class APIClient(object):
 			e = APIPublisher(self, canonicalURL)
 			self._publishers[canonicalURL] = e
 
-		if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
+		if self.preferences.get('JSONPublishers') and canonicalURL in self.preferences.get('JSONPublishers'):
 			self._publishers[canonicalURL].exists = True
 
 		return self._publishers[canonicalURL]
 
 	def publishers(self):
-		if self.preferences.get('publishers'):
-			return [self.publisher(canonicalURL) for canonicalURL in self.preferences.get('publishers')]
+		if self.preferences.get('JSONPublishers'):
+			return [self.publisher(canonicalURL) for canonicalURL in self.preferences.get('JSONPublishers')]
 		else:
 			return []
 
@@ -243,11 +243,9 @@ class APIPublisher(object):
 				return subscription
 			else:
 				return self.subscriptions()[0]
-		else:
-			return self.subscriptions()[0]
 
 	def get(self, key):
-		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('Publisher(%s)' % self.canonicalURL) or {})
+		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('JSONPublisher(%s)' % self.canonicalURL) or {})
 		if preferences.has_key(key):
 
 			o = preferences[key]
@@ -261,9 +259,9 @@ class APIPublisher(object):
 			return o
 
 	def set(self, key, value):
-		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('Publisher(%s)' % self.canonicalURL) or {})
+		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('JSONPublisher(%s)' % self.canonicalURL) or {})
 		preferences[key] = value
-		self.parent.preferences.set('Publisher(%s)' % self.canonicalURL, preferences)
+		self.parent.preferences.set('JSONPublisher(%s)' % self.canonicalURL, preferences)
 
 	def path(self):
 		from os.path import expanduser
@@ -276,7 +274,6 @@ class APIPublisher(object):
 
 		subscription = self.subscription(url)
 		subscription.addVersion(api)
-#		self.parent.preferences.set('currentPublisher', self.)
 		self.set('currentSubscription', url)
 		subscription.save()
 
@@ -304,10 +301,10 @@ class APIPublisher(object):
 		return True, None
 
 	def save(self):
-		publishers = self.parent.preferences.get('publishers') or []
+		publishers = self.parent.preferences.get('JSONPublishers') or []
 		if not self.canonicalURL in publishers:
 			publishers.append(self.canonicalURL)
-		self.parent.preferences.set('publishers', publishers)
+		self.parent.preferences.set('JSONPublishers', publishers)
 
 	def delete(self):
 
@@ -317,11 +314,12 @@ class APIPublisher(object):
 		# Old
 		self.parent.preferences.remove(self.canonicalURL)
 		# New
-		self.parent.preferences.remove('Publisher(%s)' % self.canonicalURL)
+		self.parent.preferences.remove('JSONPublisher(%s)' % self.canonicalURL)
 
-		publishers = self.parent.preferences.get('publishers')
+		publishers = self.parent.preferences.get('JSONPublishers')
 		publishers.remove(self.canonicalURL)
-		self.parent.preferences.set('publishers', publishers)
+		self.parent.preferences.set('JSONPublishers', publishers)
+		self.parent.preferences.set('currentPublisher', '')
 
 		self.parent._publishers = {}
 
@@ -330,13 +328,15 @@ class APIFont(object):
 		self.parent = parent
 		self.twObject = twObject
 
-		if self.twObject:
-			for keyword in ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'format', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'setName', 'versions']:
-#				print keyword
-				setattr(self, keyword, getattr(self.twObject, keyword))
-#				exec('self.%s = getattr(self.twObject, keyword)' % (keyword))
+		# Init attributes
+		self.keywords = ['beta', 'free', 'licenseAllowanceDescription', 'licenseKeyword', 'name', 'postScriptName', 'previewImage', 'purpose', 'requiresUserID', 'seatsAllowedForUser', 'seatsInstalledByUser', 'timeAddedForUser', 'timeFirstPublished', 'format', 'uniqueID', 'upgradeLicenseURL', 'variableFont', 'setName', 'versions']
+		for keyword in self.keywords:
+			setattr(self, keyword, None)
 
-		
+		# Take data from twObject
+		if self.twObject:
+			for keyword in self.keywords:
+				setattr(self, keyword, getattr(self.twObject, keyword))
 
 			self.getSortedVersions = self.twObject.getSortedVersions
 
@@ -357,9 +357,15 @@ class APIFamily(object):
 		self.parent = parent
 		self.twObject = twObject
 
+		# Init attributes
+		self.keywords = ['billboards', 'description', 'issueTrackerURL', 'name', 'sourceURL', 'timeFirstPublished', 'uniqueID', 'upgradeLicenseURL']
+		for keyword in self.keywords:
+			setattr(self, keyword, None)
+
+		# Take data from twObject
 		if self.twObject:
-			for keyword in ['billboards', 'description', 'issueTrackerURL', 'name', 'sourceURL', 'timeFirstPublished', 'uniqueID', 'upgradeLicenseURL']:
-				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+			for keyword in self.keywords:
+				setattr(self, keyword, getattr(self.twObject, keyword))
 
 
 	def fonts(self):
@@ -399,10 +405,15 @@ class APIFoundry(object):
 		self.parent = parent
 		self.twObject = twObject
 
-		
+		# Init attributes
+		self.keywords = ['backgroundColor', 'description', 'email', 'facebook', 'instagram', 'logo', 'name', 'skype', 'supportEmail', 'telephone', 'twitter', 'website']
+		for keyword in self.keywords:
+			setattr(self, keyword, None)
+
+		# Take data from twObject
 		if self.twObject:
-			for keyword in ['backgroundColor', 'description', 'email', 'facebook', 'instagram', 'logo', 'name', 'skype', 'supportEmail', 'telephone', 'twitter', 'website']:
-				exec('self.%s = self.twObject.%s' % (keyword, keyword))
+			for keyword in self.keywords:
+				setattr(self, keyword, getattr(self.twObject, keyword))
 
 
 	def families(self):
@@ -432,6 +443,19 @@ class APISubscription(object):
 				api.parent = self
 				api.loadJSON(dictData)
 				self.versions.append(api)
+
+	def resourceByURL(self, url, binary = False):
+		u'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
+
+		# Save resource
+		resourcesList = self.get('resources') or []
+		if not url in resourcesList:
+			resourcesList.append(url)
+			self.set('resources', resourcesList)
+
+		return self.parent.parent.resourceByURL(url, binary)
+
+
 
 	def familyByID(self, ID):
 
@@ -653,7 +677,7 @@ class APISubscription(object):
 
 
 	def get(self, key):
-		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('Subscription(%s)' % self.url) or {})
+		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('JSONSubscription(%s)' % self.url) or {})
 		if preferences.has_key(key):
 
 			o = preferences[key]
@@ -667,9 +691,9 @@ class APISubscription(object):
 			return o
 
 	def set(self, key, value):
-		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('Subscription(%s)' % self.url) or {})
+		preferences = dict(self.parent.parent.preferences.get(self.url) or self.parent.parent.preferences.get('JSONSubscription(%s)' % self.url) or {})
 		preferences[key] = value
-		self.parent.parent.preferences.set('Subscription(%s)' % self.url, preferences)
+		self.parent.parent.preferences.set('JSONSubscription(%s)' % self.url, preferences)
 
 	def save(self):
 		subscriptions = self.parent.get('subscriptions') or []
@@ -689,13 +713,29 @@ class APISubscription(object):
 
 	def delete(self, calledFromParent = False):
 
+		# Resources
+		resources = self.parent.parent.preferences.get('resources') or {}
+		for url in self.get('resources') or []:
+			if resources.has_key(url):
+				print 'Deleting resource', url
+				resources.pop(url)
+		self.parent.parent.preferences.set('resources', resources)
+
+
 		if self.parent.get('currentSubscription') == self.url:
 			self.parent.set('currentSubscription', '')
 
 		# Old
 		self.parent.parent.preferences.remove(self.url)
 		# New
-		self.parent.parent.preferences.remove('Subscription(%s)' % self.url)
+		self.parent.parent.preferences.remove('JSONSubscription(%s)' % self.url)
+
+		# Resources
+		resources = self.parent.parent.preferences.get('resources') or {}
+		for url in self.get('resources') or []:
+			if resources.has_key(url):
+				del resources[url]
+		self.parent.parent.preferences.set('resources', resources)
 
 		subscriptions = self.parent.get('subscriptions')
 		subscriptions.remove(self.url)
