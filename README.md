@@ -1,1 +1,1 @@
-For now, please jump straight to the Python implementation of API [→ here](Python/Lib/typeWorld/api)
+For now, please jump straight to the Python implementation of the API [→ here](Python/Lib/typeWorld/api)
