@@ -489,8 +489,25 @@ class InstallFontResponse(BaseResponse):
 		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
+		'font': 			[FontDataType,				False, 	None, 	'Binary font data encoded to a string using ::InstallFontResponse.encoding::'],
+		'encoding': 		[FontEncodingDataType,		False, 	None, 	'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
+		'fileName':			[UnicodeDataType, 			False, 	None, 	'Suggested file name of font. This may be ignored by the app in favour of a unique file name.'],
+
 		# Response-specific
 		}
+
+	def customValidation(self):
+
+		information, warnings, critical = [], [], []
+
+		if self.type == 'success' and not self.font:
+			critical.append('%s.type is set to success, but %s.font is missing' % (self, self))
+
+		if self.font and not self.encoding:
+			critical.append('%s.font is set, but %s.encoding is missing' % (self, self))
+
+		return information, warnings, critical
+
 
 class InstallFontResponseProxy(Proxy):
 	dataType = InstallFontResponse

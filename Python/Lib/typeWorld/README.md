@@ -1314,10 +1314,18 @@ Required: True<br />
 
 ### Attributes
 
-[errorMessage](#class_InstallFontResponse_attribute_errorMessage)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
+[encoding](#class_InstallFontResponse_attribute_encoding)<br />[errorMessage](#class_InstallFontResponse_attribute_errorMessage)<br />[fileName](#class_InstallFontResponse_attribute_fileName)<br />[font](#class_InstallFontResponse_attribute_font)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
+<div id="class_InstallFontResponse_attribute_encoding"></div>
+
+#### encoding
+
+Encoding type for binary font data. Currently supported: ['base64']
+
+Type: Str<br />
+Required: False<br />
 <div id="class_InstallFontResponse_attribute_errorMessage"></div>
 
 #### errorMessage
@@ -1325,6 +1333,22 @@ Required: True<br />
 Description of error in case of custom response type
 
 Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
+<div id="class_InstallFontResponse_attribute_fileName"></div>
+
+#### fileName
+
+Suggested file name of font. This may be ignored by the app in favour of a unique file name.
+
+Type: Unicode<br />
+Required: False<br />
+<div id="class_InstallFontResponse_attribute_font"></div>
+
+#### font
+
+Binary font data encoded to a string using [InstallFontResponse.encoding](#class_InstallFontResponse_attribute_encoding)
+
+Type: Str<br />
 Required: False<br />
 <div id="class_InstallFontResponse_attribute_licenseIdentifier"></div>
 

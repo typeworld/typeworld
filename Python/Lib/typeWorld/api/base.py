@@ -94,6 +94,8 @@ MIMETYPEFORFONTTYPE = {
 	'woff2': 'font/woff2',
 }
 
+FONTENCODINGS = ['base64']
+
 
 def makeSemVer(version):
 	'Turn simple float number (0.1) into semver-compatible number for comparison by adding .0(s): (0.1.0)'
@@ -206,6 +208,20 @@ class UnicodeDataType(DataType):
 
 	def shapeValue(self, value):
 		return unicode(value)
+
+
+class FontDataType(StringDataType):
+	pass
+
+
+class FontEncodingDataType(StringDataType):
+
+	def valid(self):
+		
+		if self.value not in FONTENCODINGS:
+			return 'Encoding %s is unknown. Known are: %s' % (self.value, FONTENCODINGS)
+
+		return True
 
 class VersionDataType(StringDataType):
 	dataType = str
