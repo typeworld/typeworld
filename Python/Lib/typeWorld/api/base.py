@@ -27,7 +27,7 @@ INSTALLFONTCOMMAND ={
 	'currentVersion': 0.1,
 	'versionHistory': [0.1],
 	'responseTypes': [SUCCESS, ERROR, SEATALLOWANCEREACHED],
-	'acceptableMimeTypes': ['application/json', 'font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'application/zip'],
+	'acceptableMimeTypes': ['application/json'],
 	}
 UNINSTALLFONTCOMMAND =	{
 	'keyword': 'uninstallFont',
