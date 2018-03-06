@@ -56,7 +56,7 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 
 ## Object model
 
-![](../../../object-model.png)
+![](../../object-model.png)
 
 
 

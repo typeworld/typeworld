@@ -54,7 +54,7 @@ __classTOC__
 
 ## Object model
 
-![](../../../object-model.png)
+![](../../object-model.png)
 
 
 
