@@ -398,7 +398,6 @@ class InstallableFontsResponse(BaseResponse):
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.'],
 		'errorMessage': 	[MultiLanguageTextProxy,				False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
 		'version': 			[FloatDataType,					True, 	INSTALLABLEFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
-		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
 		# Response-specific
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
@@ -487,7 +486,6 @@ class InstallFontResponse(BaseResponse):
 		'type': 			[InstallFontResponseType,	True, 	None, 	'Success or error.'],
 		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
-		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
 		'font': 			[FontDataType,				False, 	None, 	'Binary font data encoded to a string using ::InstallFontResponse.encoding::'],
 		'encoding': 		[FontEncodingDataType,		False, 	None, 	'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
@@ -531,7 +529,6 @@ class UninstallFontResponse(BaseResponse):
 		'type': 			[UninstallFontResponseType,	True, 	None, 	'Success or error.'],
 		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
-		'licenseIdentifier':[UnicodeDataType, 				False, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.'],
 
 		# Response-specific
 		}
@@ -615,7 +612,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 	_structure = {
 		'canonicalURL': 		[WebURLDataType, 			True, 	None, 	'Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.'],
 		'adminEmail': 			[EmailDataType, 			True, 	None, 	'API endpoint Administrator, to contact for technical problems and such'],
-		'licenseIdentifier':	[UnicodeDataType, 			True, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
+		'licenseIdentifier':	[OpenSourceLicenseIdentifierDataType,True, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],

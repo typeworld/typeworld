@@ -548,7 +548,7 @@ print api.response.get(api.response.command)
 
 ### Attributes
 
-[errorMessage](#class_UninstallFontResponse_attribute_errorMessage)<br />[licenseIdentifier](#class_UninstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
+[errorMessage](#class_UninstallFontResponse_attribute_errorMessage)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
@@ -560,16 +560,6 @@ Description of error in case of custom response type
 
 Type: [MultiLanguageText](#class_MultiLanguageText)<br />
 Required: False<br />
-<div id="class_UninstallFontResponse_attribute_licenseIdentifier"></div>
-
-#### licenseIdentifier
-
-Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.
-
-Type: Unicode<br />
-Required: False<br />
-Default value: CC-BY-NC-ND-4.0
-
 <div id="class_UninstallFontResponse_attribute_type"></div>
 
 #### type
@@ -608,7 +598,7 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[licenseIdentifier](#class_InstallableFontsResponse_attribute_licenseIdentifier)<br />[name](#class_InstallableFontsResponse_attribute_name)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[userEmail](#class_InstallableFontsResponse_attribute_userEmail)<br />[userName](#class_InstallableFontsResponse_attribute_userName)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
+[designers](#class_InstallableFontsResponse_attribute_designers)<br />[errorMessage](#class_InstallableFontsResponse_attribute_errorMessage)<br />[foundries](#class_InstallableFontsResponse_attribute_foundries)<br />[name](#class_InstallableFontsResponse_attribute_name)<br />[type](#class_InstallableFontsResponse_attribute_type)<br />[userEmail](#class_InstallableFontsResponse_attribute_userEmail)<br />[userName](#class_InstallableFontsResponse_attribute_userName)<br />[version](#class_InstallableFontsResponse_attribute_version)<br />
 
 ## Attributes
 
@@ -636,16 +626,6 @@ List of [Foundry](#class_Foundry) objects; foundries that this distributor suppo
 
 Type: List of [Foundry](#class_Foundry) objects<br />
 Required: True<br />
-<div id="class_InstallableFontsResponse_attribute_licenseIdentifier"></div>
-
-#### licenseIdentifier
-
-Identifier of license under which the API endpoint publishes this particular response, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.
-
-Type: Unicode<br />
-Required: False<br />
-Default value: CC-BY-NC-ND-4.0
-
 <div id="class_InstallableFontsResponse_attribute_name"></div>
 
 #### name
@@ -1314,7 +1294,7 @@ Required: True<br />
 
 ### Attributes
 
-[encoding](#class_InstallFontResponse_attribute_encoding)<br />[errorMessage](#class_InstallFontResponse_attribute_errorMessage)<br />[fileName](#class_InstallFontResponse_attribute_fileName)<br />[font](#class_InstallFontResponse_attribute_font)<br />[licenseIdentifier](#class_InstallFontResponse_attribute_licenseIdentifier)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
+[encoding](#class_InstallFontResponse_attribute_encoding)<br />[errorMessage](#class_InstallFontResponse_attribute_errorMessage)<br />[fileName](#class_InstallFontResponse_attribute_fileName)<br />[font](#class_InstallFontResponse_attribute_font)<br />[type](#class_InstallFontResponse_attribute_type)<br />[version](#class_InstallFontResponse_attribute_version)<br />
 
 ## Attributes
 
@@ -1350,16 +1330,6 @@ Binary font data encoded to a string using [InstallFontResponse.encoding](#class
 
 Type: Str<br />
 Required: False<br />
-<div id="class_InstallFontResponse_attribute_licenseIdentifier"></div>
-
-#### licenseIdentifier
-
-Identifier of license under which the API endpoint publishes this particular response, as per https://spdx.org/licenses/. This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. This license can be different from the license at the root of the response. The idea is that different responses can be issued under different licenses, depending on their use scenario. If not specified, the root license is assumed.
-
-Type: Unicode<br />
-Required: False<br />
-Default value: CC-BY-NC-ND-4.0
-
 <div id="class_InstallFontResponse_attribute_type"></div>
 
 #### type
