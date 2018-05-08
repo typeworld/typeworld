@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from typeWorld.api.base import *
+import functools
 
 
-WEBRESOURCEDESCRIPTION = u'\n\nIf you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401'
+WEBRESOURCEDESCRIPTION = '\n\nIf you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401'
 
 ####################################################################################################################################
 
@@ -41,7 +42,7 @@ class Designer(DictBasedObject):
 	_structure = {
 		'keyword':	 				[UnicodeDataType,		True, 	None, 	'Keyword under which the designer will be referenced from the individual fonts or font families'],
 		'name':	 					[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of designer'],
-		'website':	 				[WebURLDataType,		False, 	None, 	u'Designer’s web site'],
+		'website':	 				[WebURLDataType,		False, 	None, 	'Designer’s web site'],
 		'description':	 			[MultiLanguageTextProxy,		False, 	None, 	'Description of designer'],
 	}
 
@@ -72,14 +73,14 @@ class Version(DictBasedObject):
 	_structure = {
 		'number':	 				[VersionDataType,			True, 	None, 	'Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.'],
 		'description':	 			[MultiLanguageTextProxy,	False, 	None, 	'Description of font version'],
-		'releaseDate':	 			[FloatDataType,				False, 	None, 	u'Timestamp of version’s release date.'],
+		'releaseDate':	 			[FloatDataType,				False, 	None, 	'Timestamp of version’s release date.'],
 	}
 
 	def __repr__(self):
 		return '<Version %s (%s)>' % (self.number if self.number else 'None', 'font-specific' if self.isFontSpecific() else 'family-specific')
 
 	def isFontSpecific(self):
-		u'''\
+		'''\
 		Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
 		'''
 		return issubclass(self.parent.__class__, Font)
@@ -103,27 +104,27 @@ class VersionListProxy(ListProxy):
 class Font(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	u'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-		'uniqueID':			[StringDataType,		True, 	None, 	u'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
-		'postScriptName':	[UnicodeDataType,		True, 	None, 	u'Complete PostScript name of font'],
-		'previewImage':		[WebURLDataType,		False, 	None, 	u'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
+		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
+		'uniqueID':			[StringDataType,		True, 	None, 	'An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
+		'postScriptName':	[UnicodeDataType,		True, 	None, 	'Complete PostScript name of font'],
+		'previewImage':		[WebURLDataType,		False, 	None, 	'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'setName':			[MultiLanguageTextProxy,False, 	None, 	'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
-		'licenseKeyword':	[UnicodeDataType,		True, 	None, 	u'Keyword reference of font’s license. This license must be specified in the Foundry.Licenses'],
-		'versions':	 		[VersionListProxy,		False, 	None, 	u'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
-		'designers':	 	[DesignersReferencesListProxy,	False, 	None, 	u'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
-		'free':				[BooleanDataType,		False, 	None, 	u'Font is freeware. For UI signaling'],
-		'beta':				[BooleanDataType,		False, 	None, 	u'Font is in beta stage. For UI signaling'],
-		'variableFont':		[BooleanDataType,		False, 	None, 	u'Font is an OpenType Variable Font. For UI signaling'],
+		'licenseKeyword':	[UnicodeDataType,		True, 	None, 	'Keyword reference of font’s license. This license must be specified in the Foundry.Licenses'],
+		'versions':	 		[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
+		'designers':	 	[DesignersReferencesListProxy,	False, 	None, 	'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
+		'free':				[BooleanDataType,		False, 	None, 	'Font is freeware. For UI signaling'],
+		'beta':				[BooleanDataType,		False, 	None, 	'Font is in beta stage. For UI signaling'],
+		'variableFont':		[BooleanDataType,		False, 	None, 	'Font is an OpenType Variable Font. For UI signaling'],
 #		'public':			[BooleanDataType,		False, 	False, 	u'If false, signals restricted access to a commercial font only available to certain users. Download and installation may be restricted by the API point depending on the API point URL that needs to include the private key to identify the user.'],
-		'purpose':			[FontTypeDataType,		True, 	None, 	u'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (FONTTYPES.keys())],
-		'format':			[FontExtensionDataType,	False, 	None, 	u'Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s' % FILEEXTENSIONS],
-		'requiresUserID':	[BooleanDataType,		False, 	False, 	u'Indication that the server requires a userID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.'],
-		'seatsAllowedForUser':[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.'],
-		'seatsInstalledByUser':	[IntegerDataType,		False, 	None, 	u'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
-		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	u'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
-		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at ::Family.upgradeLicenseURL::.'],
-		'timeAddedForUser':	[IntegerDataType,		False, 	None, 	u'Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
-		'timeFirstPublished':[IntegerDataType,		False, 	None, 	u'Timestamp of the initial release of the font. May also be define family-wide at ::Family.timeFirstPublished::.'],
+		'purpose':			[FontTypeDataType,		True, 	None, 	'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (list(FONTTYPES.keys()))],
+		'format':			[FontExtensionDataType,	False, 	None, 	'Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s' % FILEEXTENSIONS],
+		'requiresUserID':	[BooleanDataType,		False, 	False, 	'Indication that the server requires a userID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.'],
+		'seatsAllowedForUser':[IntegerDataType,		False, 	None, 	'In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.'],
+		'seatsInstalledByUser':	[IntegerDataType,		False, 	None, 	'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
+		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
+		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at ::Family.upgradeLicenseURL::.'],
+		'timeAddedForUser':	[IntegerDataType,		False, 	None, 	'Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
+		'timeFirstPublished':[IntegerDataType,		False, 	None, 	'Timestamp of the initial release of the font. May also be define family-wide at ::Family.timeFirstPublished::.'],
 	}
 
 	def __repr__(self):
@@ -133,7 +134,7 @@ class Font(DictBasedObject):
 		return self.versions or self.parent.versions
 
 	def getLicense(self):
-		u'''\
+		'''\
 		Returns the ::License:: object that this font references.
 		'''
 		return self.parent.parent.getLicenseByKeyword(self.licenseKeyword)
@@ -161,7 +162,7 @@ class Font(DictBasedObject):
 		return information, warnings, critical
 
 	def getSortedVersions(self):
-		u'''\
+		'''\
 		Returns list of ::Version:: objects.
 
 		This is the final list based on the version information in this font object as well as in its parent ::Family:: object. Please read the section about [versioning](#versioning) above.
@@ -184,12 +185,12 @@ class Font(DictBasedObject):
 				versions.append(version)
 				haveVersionNumbers.append(makeSemVer(version.number))
 
-		versions = sorted(versions, cmp=compare)
+		versions = sorted(versions, key=functools.cmp_to_key(compare))
 
 		return versions
 
 	def getDesigners(self):
-		u'''\
+		'''\
 		Returns a list of ::Designer:: objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
 		'''
 		if not hasattr(self, '_designers'):
@@ -229,18 +230,18 @@ class BillboardListProxy(ListProxy):
 class Family(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'uniqueID':					[StringDataType,		True, 	None, 	u'An string that uniquely identifies this family within the publisher.'],
-		'name':	 					[MultiLanguageTextProxy,True, 	None, 	u'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
-		'description':	 			[MultiLanguageTextProxy,False, 	None, 	u'Description of font family'],
-		'billboards':	 			[BillboardListProxy,	False, 	None, 	u'List of URLs pointing at images to show for this typeface, specifications to follow'],
-		'designers':	 			[DesignersReferencesListProxy,	False, 	None, 	u'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
+		'uniqueID':					[StringDataType,		True, 	None, 	'An string that uniquely identifies this family within the publisher.'],
+		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
+		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of font family'],
+		'billboards':	 			[BillboardListProxy,	False, 	None, 	'List of URLs pointing at images to show for this typeface, specifications to follow'],
+		'designers':	 			[DesignersReferencesListProxy,	False, 	None, 	'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
 
-		'sourceURL':	 			[WebURLDataType,		False, 	None, 	u'URL pointing to the source of a font project, such as a GitHub repository'],
-		'issueTrackerURL':	 		[WebURLDataType,		False, 	None, 	u'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
-		'versions':	 				[VersionListProxy,		False, 	None, 	u'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
-		'fonts':	 				[FontListProxy,			True, 	None, 	u'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
-		'upgradeLicenseURL':		[WebURLDataType,		False, 	None, 	u'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at ::Font.upgradeLicenseURL::.'],
-		'timeFirstPublished':		[IntegerDataType,		False, 	None, 	u'Timestamp of the initial release of the family. May be overriden on font level at ::Font.timeFirstPublished::.'],
+		'sourceURL':	 			[WebURLDataType,		False, 	None, 	'URL pointing to the source of a font project, such as a GitHub repository'],
+		'issueTrackerURL':	 		[WebURLDataType,		False, 	None, 	'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
+		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
+		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
+		'upgradeLicenseURL':		[WebURLDataType,		False, 	None, 	'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at ::Font.upgradeLicenseURL::.'],
+		'timeFirstPublished':		[IntegerDataType,		False, 	None, 	'Timestamp of the initial release of the family. May be overriden on font level at ::Font.timeFirstPublished::.'],
 	}
 
 	def __repr__(self):
@@ -264,7 +265,7 @@ class Family(DictBasedObject):
 		return self._designers
 
 	def getAllDesigners(self):
-		u'''\
+		'''\
 		Returns a list of ::Designer:: objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
 		'''
 		if not hasattr(self, '_allDesigners'):
@@ -299,9 +300,9 @@ class FamiliesListProxy(ListProxy):
 class Foundry(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
-		'uniqueID':					[StringDataType,		True, 	None, 	u'An string that uniquely identifies this foundry within the publisher.'],
+		'uniqueID':					[StringDataType,		True, 	None, 	'An string that uniquely identifies this foundry within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
-		'logo':	 					[WebURLDataType,		False, 	None, 	u'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
+		'logo':	 					[WebURLDataType,		False, 	None, 	'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
 		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry'],
 		'supportEmail':	 			[EmailDataType,			False, 	None, 	'Support email address for this foundry'],
@@ -313,7 +314,7 @@ class Foundry(DictBasedObject):
 		'telephone':	 			[UnicodeDataType,		False, 	None, 	'Telephone number for this foundry'],
 
 		#styling
-		'backgroundColor': 			[HexColorDataType,		False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color'],
+		'backgroundColor': 			[HexColorDataType,		False, 	None, 	'Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color'],
 
 		# data
 		'licenses':					[LicensesListProxy,		True, 	None, 	'List of ::License:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.'],
@@ -329,7 +330,7 @@ class Foundry(DictBasedObject):
 			for license in self.licenses:
 				self._licensesDict[license.keyword] = license
 
-		if self._licensesDict.has_key(keyword):
+		if keyword in self._licensesDict:
 			return self._licensesDict[keyword]
 
 
@@ -379,7 +380,7 @@ class InstallableFontsResponseType(UnicodeDataType):
 			return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLABLEFONTSCOMMAND['responseTypes'])
 
 class InstallableFontsResponse(BaseResponse):
-	u'''\
+	'''\
 	This is the response expected to be returned when the API is invoked using the command parameter, such as `http://fontpublisher.com/api/?command=installableFonts`.
 
 	The response needs to be specified at the ::Response.command:: attribute, and then the ::Response:: object needs to carry the specific response command at the attribute of same name, in this case ::Reponse.installableFonts::.
@@ -403,7 +404,7 @@ class InstallableFontsResponse(BaseResponse):
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
 		'foundries':		[FoundryListProxy,				True, 	None, 	'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
 
-		'name':			[MultiLanguageTextProxy,		False, 	None, 	u'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
+		'name':			[MultiLanguageTextProxy,		False, 	None, 	'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
 		'userName':			[MultiLanguageTextProxy,		False, 	None, 	'The name of the user who these fonts are licensed to.'],
 		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
@@ -415,7 +416,7 @@ class InstallableFontsResponse(BaseResponse):
 			for designer in self.designers:
 				self._designersDict[designer.keyword] = designer
 
-		if self._designersDict.has_key(keyword):
+		if keyword in self._designersDict:
 			return self._designersDict[keyword]
 
 	def discardThisKey(self, key):
@@ -445,15 +446,15 @@ class InstallableFontsResponse(BaseResponse):
 
 		import collections
 
-		duplicateFoundryIDs = [item for item, count in collections.Counter(foundryIDs).items() if count > 1]
+		duplicateFoundryIDs = [item for item, count in list(collections.Counter(foundryIDs).items()) if count > 1]
 		if duplicateFoundryIDs:
 			critical.append('Duplicate unique foundry IDs: %s' % duplicateFoundryIDs)
 
-		duplicateFamilyIDs = [item for item, count in collections.Counter(familyIDs).items() if count > 1]
+		duplicateFamilyIDs = [item for item, count in list(collections.Counter(familyIDs).items()) if count > 1]
 		if duplicateFamilyIDs:
 			critical.append('Duplicate unique family IDs: %s' % duplicateFamilyIDs)
 
-		duplicateFontIDs = [item for item, count in collections.Counter(fontIDs).items() if count > 1]
+		duplicateFontIDs = [item for item, count in list(collections.Counter(fontIDs).items()) if count > 1]
 		if duplicateFontIDs:
 			critical.append('Duplicate unique family IDs: %s' % duplicateFontIDs)
 
@@ -550,7 +551,7 @@ class Response(DictBasedObject):
 		return '<Response>'
 
 	def getCommand(self):
-		u'''\
+		'''\
 Returns the specific response referenced in the .command attribute. This is a shortcut.
 
 ```python
@@ -589,7 +590,7 @@ class ResponseProxy(Proxy):
 	dataType = Response
 
 class APIRoot(DictBasedObject):
-	u'''\
+	'''\
 This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
 
 Any API response is expected to carry this minimum information, even when invoked without a particular command.
@@ -612,12 +613,12 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 	_structure = {
 		'canonicalURL': 		[WebURLDataType, 			True, 	None, 	'Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.'],
 		'adminEmail': 			[EmailDataType, 			True, 	None, 	'API endpoint Administrator, to contact for technical problems and such'],
-		'licenseIdentifier':	[OpenSourceLicenseIdentifierDataType,True, 	u'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
+		'licenseIdentifier':	[OpenSourceLicenseIdentifierDataType,True, 	'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
 		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
-		'backgroundColor': 		[HexColorDataType,			False, 	None, 	u'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
+		'backgroundColor': 		[HexColorDataType,			False, 	None, 	'Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 	}
@@ -627,7 +628,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
 
 	def sameContent(self, other):
-		u'''\
+		'''\
 		Compares the data structure of this object to the other object.
 
 		Requires deepdiff module.
@@ -639,7 +640,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		return '<API>'
 
 	def validate(self):
-		u'''\
+		'''\
 		Return three lists with informations, warnings, and errors.
 
 		An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.

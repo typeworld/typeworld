@@ -10,7 +10,7 @@ api = APIRoot()
 docstrings = api.docu()
 
 
-docstring = u'''
+docstring = '''
 
 # typeWorld.api Reference
 
@@ -307,18 +307,18 @@ for key in [x[0] for x in docstrings]:
 	if not key in handles:
 		handles.append(key)
 
-classTOC = u''
+classTOC = ''
 for handle in handles:
 	classTOC += '- [%s](#class_%s)<br />\n' % (handle, handle)
-classTOC += u'\n\n'
+classTOC += '\n\n'
 
-docstring = docstring.replace(u'__classTOC__', classTOC)
+docstring = docstring.replace('__classTOC__', classTOC)
 
 for handle in handles:
 	for className, string in docstrings:
 		if handle == className:
 			docstring += string
-			docstring += u'\n\n'
+			docstring += '\n\n'
 			break
 
 
