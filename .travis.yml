@@ -7,6 +7,7 @@ jobs:
 
 install:
   - pip install deepdiff
+  - pip install semver
 
 script:
   - python ./Python/Lib/test.py
