@@ -9,4 +9,4 @@ install:
   - pip install deepdiff
 
 script:
-  - python ./Python/Lib/typeWorld/tests/apitest.py
+  - python ./Python/Lib/test.py
