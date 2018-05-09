@@ -114,24 +114,6 @@ def makeSemVer(version):
 
     return version
 
-def smartString(s, encoding='utf-8', errors='strict', from_encoding='utf-8'):
-    import types
-    if type(s) in (int, int, float, type(None)):
-        return str(s)
-    elif type(s) is str:
-        if encoding != from_encoding:
-            return s.decode(from_encoding, errors).encode(encoding, errors)
-        else:
-            return s
-    elif type(s) is str:
-        return s.encode(encoding, errors)
-    elif hasattr(s, '__str__'):
-        return self.smartString(str(s), encoding, errors, from_encoding)
-    elif hasattr(s, '__unicode__'):
-        return self.smartString(str(s), encoding, errors, from_encoding)
-    else:
-        return self.smartString(str(s), encoding, errors, from_encoding)
-
 
 
 class DataType(object):
