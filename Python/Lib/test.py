@@ -31,13 +31,24 @@ if __name__ == '__main__':
 	print(designer)
 	assert designer.parent == responseCommand
 
+	responseCommand.designers.extend([designer])
+	responseCommand.designers.remove(responseCommand.designers[-1])
+	assert len(responseCommand.designers) == 1
+	print(responseCommand.designers)
+
 	# Add foundry to root of response
 	foundry = Foundry()
 	foundry.uniqueID = 'yanone'
 	foundry.name.en = 'Awesome Fonts'
+	foundry.name.de = 'Tolle Schriften'
 	foundry.website = 'https://awesomefonts.com'
 	responseCommand.foundries.append(foundry)
 	print(foundry)
+	print(foundry.name.getTextAndLocale('en'))
+	assert foundry.name.getTextAndLocale('en') == ('Awesome Fonts', 'en')
+	assert foundry.name.getTextAndLocale(['en']) == ('Awesome Fonts', 'en')
+	assert foundry.name.getTextAndLocale('de') == ('Tolle Schriften', 'de')
+	assert foundry.name.getTextAndLocale(['de']) == ('Tolle Schriften', 'de')
 
 	# Add license to foundry
 	license = License()
@@ -93,7 +104,7 @@ if __name__ == '__main__':
 	font.postScriptName = 'AwesomeSans-Bold'
 	font.licenseKeyword = 'awesomeFontsEULA'
 	font.purpose = 'desktop'
-	font.type = 'otf'
+	font.format = 'otf'
 	family.fonts.append(font)
 	assert type(font.getSortedVersions()) == list
 	assert type(font.getDesigners()) == list
@@ -110,6 +121,36 @@ if __name__ == '__main__':
 
 	# Let’s see if they are identical
 	assert api.sameContent(api2) == True
+
+
+
+
+	# Check for errors
+
+	try: 
+		api.licenseIdentifier = 'abc'
+	except ValueError:
+	 	pass
+	api.licenseIdentifier = 'CC-BY-NC-ND-4.0'
+
+	try: 
+		font.format = 'abc'
+	except ValueError:
+		pass
+
+	try: 
+		response.command = 'abc'
+	except ValueError:
+		pass
+	response.command = 'installableFonts'
+
+	try:
+		foundry.name.en = 'abc' * 1000
+	except ValueError:
+		pass
+
+
+	
 
 
 
