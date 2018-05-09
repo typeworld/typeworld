@@ -8,6 +8,10 @@ jobs:
 install:
   - pip install deepdiff
   - pip install semver
+  - pip install codecov
 
 script:
   - python ./Python/Lib/test.py
+
+after_success:
+  codecov
