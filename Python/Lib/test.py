@@ -22,6 +22,7 @@ if __name__ == '__main__':
 	response.installableFonts = responseCommand
 	api.response = response
 	print(response)
+	print(responseCommand)
 
 	# Add designer to root of response
 	designer = Designer()
@@ -86,16 +87,10 @@ if __name__ == '__main__':
 	font.licenseKeyword = 'awesomeFontsEULA'
 	font.purpose = 'desktop'
 	font.type = 'otf'
+	font.designers.append('max')
 	family.fonts.append(font)
 	print(font)
 
-	# Add version to font
-	version = Version()
-	version.number = 0.2
-	font.versions.append(version)
-	print(version)
-	assert version.isFontSpecific() == True
-	assert version.parent == font
 
 	# Add font to family
 	font = Font()
@@ -106,7 +101,16 @@ if __name__ == '__main__':
 	font.purpose = 'desktop'
 	font.format = 'otf'
 	family.fonts.append(font)
-	assert type(font.getSortedVersions()) == list
+
+	# Add version to font
+	version = Version()
+	version.number = 0.2
+	font.versions.append(version)
+	print(version)
+	assert version.isFontSpecific() == True
+	assert version.parent == font
+
+	assert len(font.getSortedVersions()) == 2
 	assert type(font.getDesigners()) == list
 
 	# Output API response as JSON, includes validation
@@ -145,11 +149,13 @@ if __name__ == '__main__':
 	response.command = 'installableFonts'
 
 	try:
+		# Too long name
 		foundry.name.en = 'abc' * 1000
+
+		# Output API response as JSON, includes validation
+		json = api.dumpJSON()
 	except ValueError:
 		pass
-
-
 	
 
 
@@ -176,6 +182,7 @@ if __name__ == '__main__':
 	response.installFont = responseCommand
 	api.response = response
 	print(response)
+	print(responseCommand)
 
 	responseCommand.font = b'ABC'
 	responseCommand.encoding = 'base64'
@@ -206,6 +213,7 @@ if __name__ == '__main__':
 	response.uninstallFont = responseCommand
 	api.response = response
 	print(response)
+	print(responseCommand)
 
 	# Output API response as JSON, includes validation
 	json = api.dumpJSON()
