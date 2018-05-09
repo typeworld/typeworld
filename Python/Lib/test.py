@@ -151,16 +151,12 @@ if __name__ == '__main__':
 	try:
 		# Too long name
 		foundry.name.en = 'abc' * 1000
-
 		# Output API response as JSON, includes validation
 		json = api.dumpJSON()
 	except ValueError:
 		pass
+	foundry.name.en = 'abc'
 	
-
-
-
-
 
 
 	# InstallFont
@@ -226,3 +222,53 @@ if __name__ == '__main__':
 
 	# Docu
 	docu = api.docu()
+
+
+
+
+	# Data types
+	try:
+		BooleanDataType().put('abc')
+	except ValueError:
+		pass
+
+	try:
+		IntegerDataType().put('abc')
+	except ValueError:
+		pass
+
+	try:
+		FloatDataType().put('abc')
+	except ValueError:
+		pass
+
+	try:
+		FontEncodingDataType().put('abc')
+	except ValueError:
+		pass
+
+	try:
+		VersionDataType().put('0.1.2.3')
+	except ValueError:
+		pass
+
+	try:
+		WebURLDataType().put('yanone.de')
+	except ValueError:
+		pass
+
+	try:
+		EmailDataType().put('post@yanone')
+	except ValueError:
+		pass
+
+	try:
+		HexColorDataType().put('ABCDEX')
+	except ValueError:
+		pass
+
+	try:
+		HexColorDataType().put('012345678')
+	except ValueError:
+		pass
+
