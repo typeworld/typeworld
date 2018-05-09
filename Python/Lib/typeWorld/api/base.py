@@ -803,7 +803,7 @@ class DictBasedObject(object):
 
 class Proxy(DataType):
     
-    def _valid(self):
+    def _validate(self):
         if hasattr(self, 'value') and hasattr(object.__getattribute__(self, 'value'), 'valid') and isinstance(object.__getattribute__(self, 'value').valid, types.MethodType):
             return object.__getattribute__(self, 'value').valid()
         else:
