@@ -83,3 +83,6 @@ if __name__ == '__main__':
 
 	# Let’s see if they are identical
 	print(api.sameContent(api2))
+
+	# Docu
+	print(api.docu())
