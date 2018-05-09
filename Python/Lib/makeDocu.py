@@ -3,7 +3,6 @@
 import os
 from typeWorld.api import *
 from typeWorld.api.base import *
-from ynlib.files import WriteToFile
 
 api = APIRoot()
 
@@ -309,4 +308,5 @@ for handle in handles:
 
 
 if not 'TRAVIS' in os.environ:
+	from ynlib.files import WriteToFile
 	WriteToFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'README.md'), docstring)
