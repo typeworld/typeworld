@@ -14,6 +14,7 @@ install:
 
 script:
   - coverage run ./Python/Lib/test.py
+  - coverage run ./Python/Lib/makeDocu.py
 
 after_success:
   - codecov

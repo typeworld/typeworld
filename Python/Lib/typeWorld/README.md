@@ -38,15 +38,15 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 - [APIRoot](#class_APIRoot)<br />
 - [MultiLanguageText](#class_MultiLanguageText)<br />
 - [Response](#class_Response)<br />
-- [UninstallFontResponse](#class_UninstallFontResponse)<br />
 - [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
 - [Designer](#class_Designer)<br />
 - [Foundry](#class_Foundry)<br />
+- [License](#class_License)<br />
 - [Family](#class_Family)<br />
 - [Version](#class_Version)<br />
 - [Font](#class_Font)<br />
-- [License](#class_License)<br />
 - [InstallFontResponse](#class_InstallFontResponse)<br />
+- [UninstallFontResponse](#class_UninstallFontResponse)<br />
 
 
 
@@ -187,70 +187,70 @@ Will output the following JSON code:
   "adminEmail": "admin@fontpublisher.com", 
   "public": false, 
   "supportedCommands": [
-    "installableFonts", 
-    "installFonts", 
-    "uninstallFonts"
+	"installableFonts", 
+	"installFonts", 
+	"uninstallFonts"
   ], 
   "licenseIdentifier": "CC-BY-NC-ND-4.0", 
   "response": {
-    "command": "installableFonts", 
-    "installableFonts": {
-      "designers": [
-        {
-          "name": {
-            "en": "Max Mustermann"
-          }, 
-          "keyword": "max"
-        }
-      ], 
-      "version": 0.1, 
-      "type": "success", 
-      "foundries": [
-        {
-          "website": "https://awesomefonts.com", 
-          "licenses": [
-            {
-              "URL": "https://awesomefonts.com/eula/", 
-              "name": {
-                "en": "Awesome Fonts Desktop EULA"
-              }, 
-              "keyword": "awesomeFontsEULA"
-            }
-          ], 
-          "families": [
-            {
-              "designers": [
-                "max"
-              ], 
-              "fonts": [
-                {
-                  "postScriptName": "AwesomeSans-Regular", 
-                  "licenseKeyword": "awesomeFontsEULA", 
-                  "name": {
-                    "en": "Regular"
-                  }, 
-                  "type": "desktop"
-                }
-              ], 
-              "name": {
-                "en": "Awesome Sans"
-              }, 
-              "versions": [
-                {
-                  "number": 0.1
-                }
-              ]
-            }
-          ], 
-          "name": {
-            "en": "Awesome Fonts"
-          }
-        }
-      ]
-    }
+	"command": "installableFonts", 
+	"installableFonts": {
+	  "designers": [
+		{
+		  "name": {
+			"en": "Max Mustermann"
+		  }, 
+		  "keyword": "max"
+		}
+	  ], 
+	  "version": 0.1, 
+	  "type": "success", 
+	  "foundries": [
+		{
+		  "website": "https://awesomefonts.com", 
+		  "licenses": [
+			{
+			  "URL": "https://awesomefonts.com/eula/", 
+			  "name": {
+				"en": "Awesome Fonts Desktop EULA"
+			  }, 
+			  "keyword": "awesomeFontsEULA"
+			}
+		  ], 
+		  "families": [
+			{
+			  "designers": [
+				"max"
+			  ], 
+			  "fonts": [
+				{
+				  "postScriptName": "AwesomeSans-Regular", 
+				  "licenseKeyword": "awesomeFontsEULA", 
+				  "name": {
+					"en": "Regular"
+				  }, 
+				  "type": "desktop"
+				}
+			  ], 
+			  "name": {
+				"en": "Awesome Sans"
+			  }, 
+			  "versions": [
+				{
+				  "number": 0.1
+				}
+			  ]
+			}
+		  ], 
+		  "name": {
+			"en": "Awesome Fonts"
+		  }
+		}
+	  ]
+	}
   }, 
   "name": {
-    "en": "Font Publisher"
+	"en": "Font Publisher"
   }
 }
 ```
@@ -319,7 +319,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 API endpoint Administrator, to contact for technical problems and such
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_APIRoot_attribute_backgroundColor"></div>
 
@@ -335,7 +335,7 @@ Required: False<br />
 
 Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_APIRoot_attribute_licenseIdentifier"></div>
 
@@ -343,7 +343,7 @@ Required: True<br />
 
 Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 Default value: CC-BY-NC-ND-4.0
 
@@ -355,7 +355,7 @@ URL of logo of API endpoint, for publication. Specifications to follow.
 
 If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_APIRoot_attribute_name"></div>
 
@@ -389,7 +389,7 @@ Required: False<br />
 
 List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
 
-Type: List of Unicode objects<br />
+Type: List of Str objects<br />
 Required: True<br />
 <div id="class_APIRoot_attribute_website"></div>
 
@@ -397,7 +397,7 @@ Required: True<br />
 
 URL of human-visitable website of API endpoint, for publication
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 
 
@@ -443,10 +443,10 @@ If you are loading language information from an external source, you may use the
 ```python
 # Simulating external data source
 for languageCode, text in (
-                ('en': u'Font Publisher XYZ'),
-                ('de': u'Schriftenhaus XYZ'),
-        )
-        api.name.set(languageCode, text)
+        ('en': u'Font Publisher XYZ'),
+        ('de': u'Schriftenhaus XYZ'),
+    )
+    api.name.set(languageCode, text)
 ```
 
 ### Methods
@@ -493,7 +493,7 @@ Like getText(), but additionally returns the language of whatever text was found
 
 Command code of the response. The specific response must then be present under an attribute of same name.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Response_attribute_installFont"></div>
 
@@ -535,48 +535,6 @@ print api.response.get(api.response.command)
 # will print:
 <InstallableFontsResponse>
 ```
-
-
-
-
-
-<div id="class_UninstallFontResponse"></div>
-
-# _class_ UninstallFontResponse()
-
-
-
-### Attributes
-
-[errorMessage](#class_UninstallFontResponse_attribute_errorMessage)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
-
-## Attributes
-
-<div id="class_UninstallFontResponse_attribute_errorMessage"></div>
-
-#### errorMessage
-
-Description of error in case of custom response type
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
-<div id="class_UninstallFontResponse_attribute_type"></div>
-
-#### type
-
-Success or error.
-
-Type: Unicode<br />
-Required: True<br />
-<div id="class_UninstallFontResponse_attribute_version"></div>
-
-#### version
-
-Version of "uninstallFont" response
-
-Type: Float<br />
-Required: True<br />
-Default value: 0.1
 
 
 
@@ -640,7 +598,7 @@ Required: False<br />
 
 Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#class_InstallableFontsResponse_attribute_errorMessage).
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_InstallableFontsResponse_attribute_userEmail"></div>
 
@@ -648,7 +606,7 @@ Required: True<br />
 
 The email address of the user who these fonts are licensed to.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_userName"></div>
 
@@ -698,7 +656,7 @@ Required: False<br />
 
 Keyword under which the designer will be referenced from the individual fonts or font families
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Designer_attribute_name"></div>
 
@@ -714,7 +672,7 @@ Required: True<br />
 
 Designer’s web site
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 
 
@@ -754,7 +712,7 @@ Required: False<br />
 
 General email address for this foundry
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_facebook"></div>
 
@@ -762,7 +720,7 @@ Required: False<br />
 
 Facebook page URL handle for this foundry. The URL 
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_families"></div>
 
@@ -778,7 +736,7 @@ Required: True<br />
 
 Instagram handle for this foundry, without the @
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_licenses"></div>
 
@@ -796,7 +754,7 @@ URL of foundry’s logo. Specifications to follow.
 
 If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_name"></div>
 
@@ -812,7 +770,7 @@ Required: True<br />
 
 Skype handle for this foundry
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_supportEmail"></div>
 
@@ -820,7 +778,7 @@ Required: False<br />
 
 Support email address for this foundry
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_telephone"></div>
 
@@ -828,7 +786,7 @@ Required: False<br />
 
 Telephone number for this foundry
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_twitter"></div>
 
@@ -836,7 +794,7 @@ Required: False<br />
 
 Twitter handle for this foundry, without the @
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Foundry_attribute_uniqueID"></div>
 
@@ -852,8 +810,48 @@ Required: True<br />
 
 Website for this foundry
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
+
+
+
+
+<div id="class_License"></div>
+
+# _class_ License()
+
+
+
+### Attributes
+
+[URL](#class_License_attribute_URL)<br />[keyword](#class_License_attribute_keyword)<br />[name](#class_License_attribute_name)<br />
+
+## Attributes
+
+<div id="class_License_attribute_URL"></div>
+
+#### URL
+
+URL where the font license can be viewed online
+
+Type: Str<br />
+Required: True<br />
+<div id="class_License_attribute_keyword"></div>
+
+#### keyword
+
+Keyword under which the license will be referenced from the individual fonts.
+
+Type: Str<br />
+Required: True<br />
+<div id="class_License_attribute_name"></div>
+
+#### name
+
+Human-readable name of font license
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: True<br />
 
 
 
@@ -880,7 +878,7 @@ Required: False<br />
 
 List of URLs pointing at images to show for this typeface, specifications to follow
 
-Type: List of Unicode objects<br />
+Type: List of Str objects<br />
 Required: False<br />
 <div id="class_Family_attribute_description"></div>
 
@@ -896,7 +894,7 @@ Required: False<br />
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#class_InstallableFontsResponse_attribute_designers). In case designers differ between fonts within the same family, they can also be defined at the font level at [Font.designers](#class_Font_attribute_designers). The font-level references take precedence over the family-level references.
 
-Type: List of Unicode objects<br />
+Type: List of Str objects<br />
 Required: False<br />
 <div id="class_Family_attribute_fonts"></div>
 
@@ -912,7 +910,7 @@ Required: True<br />
 
 URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Family_attribute_name"></div>
 
@@ -928,7 +926,7 @@ Required: True<br />
 
 URL pointing to the source of a font project, such as a GitHub repository
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Family_attribute_timeFirstPublished"></div>
 
@@ -952,7 +950,7 @@ Required: True<br />
 
 URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at [Font.upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL).
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Family_attribute_versions"></div>
 
@@ -1064,15 +1062,15 @@ Required: False<br />
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#class_InstallableFontsResponse_attribute_designers). This attribute overrides the designer definitions at the family level at [Family.designers](#class_Family_attribute_designers).
 
-Type: List of Unicode objects<br />
+Type: List of Str objects<br />
 Required: False<br />
 <div id="class_Font_attribute_format"></div>
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'woff2', 'otf', 'ttc', 'ttf']
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Font_attribute_free"></div>
 
@@ -1096,7 +1094,7 @@ Required: False<br />
 
 Keyword reference of font’s license. This license must be specified in the Foundry.Licenses
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Font_attribute_name"></div>
 
@@ -1112,7 +1110,7 @@ Required: True<br />
 
 Complete PostScript name of font
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Font_attribute_previewImage"></div>
 
@@ -1122,15 +1120,15 @@ URL of preview image of font, specifications to follow.
 
 If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Font_attribute_purpose"></div>
 
 #### purpose
 
-Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['web', 'app', 'desktop']
+Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['desktop', 'web', 'app']
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_Font_attribute_requiresUserID"></div>
 
@@ -1196,7 +1194,7 @@ Required: True<br />
 
 URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at [Family.upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL).
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_Font_attribute_variableFont"></div>
 
@@ -1246,46 +1244,6 @@ This is the final list based on the version information in this font object as w
 
 
 
-<div id="class_License"></div>
-
-# _class_ License()
-
-
-
-### Attributes
-
-[URL](#class_License_attribute_URL)<br />[keyword](#class_License_attribute_keyword)<br />[name](#class_License_attribute_name)<br />
-
-## Attributes
-
-<div id="class_License_attribute_URL"></div>
-
-#### URL
-
-URL where the font license can be viewed online
-
-Type: Unicode<br />
-Required: True<br />
-<div id="class_License_attribute_keyword"></div>
-
-#### keyword
-
-Keyword under which the license will be referenced from the individual fonts.
-
-Type: Unicode<br />
-Required: True<br />
-<div id="class_License_attribute_name"></div>
-
-#### name
-
-Human-readable name of font license
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: True<br />
-
-
-
-
 <div id="class_InstallFontResponse"></div>
 
 # _class_ InstallFontResponse()
@@ -1320,7 +1278,7 @@ Required: False<br />
 
 Suggested file name of font. This may be ignored by the app in favour of a unique file name.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: False<br />
 <div id="class_InstallFontResponse_attribute_font"></div>
 
@@ -1336,13 +1294,55 @@ Required: False<br />
 
 Success or error.
 
-Type: Unicode<br />
+Type: Str<br />
 Required: True<br />
 <div id="class_InstallFontResponse_attribute_version"></div>
 
 #### version
 
 Version of "installFont" response
+
+Type: Float<br />
+Required: True<br />
+Default value: 0.1
+
+
+
+
+
+<div id="class_UninstallFontResponse"></div>
+
+# _class_ UninstallFontResponse()
+
+
+
+### Attributes
+
+[errorMessage](#class_UninstallFontResponse_attribute_errorMessage)<br />[type](#class_UninstallFontResponse_attribute_type)<br />[version](#class_UninstallFontResponse_attribute_version)<br />
+
+## Attributes
+
+<div id="class_UninstallFontResponse_attribute_errorMessage"></div>
+
+#### errorMessage
+
+Description of error in case of custom response type
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
+<div id="class_UninstallFontResponse_attribute_type"></div>
+
+#### type
+
+Success or error.
+
+Type: Str<br />
+Required: True<br />
+<div id="class_UninstallFontResponse_attribute_version"></div>
+
+#### version
+
+Version of "uninstallFont" response
 
 Type: Float<br />
 Required: True<br />

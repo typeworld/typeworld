@@ -185,70 +185,70 @@ Will output the following JSON code:
   "adminEmail": "admin@fontpublisher.com", 
   "public": false, 
   "supportedCommands": [
-    "installableFonts", 
-    "installFonts", 
-    "uninstallFonts"
+	"installableFonts", 
+	"installFonts", 
+	"uninstallFonts"
   ], 
   "licenseIdentifier": "CC-BY-NC-ND-4.0", 
   "response": {
-    "command": "installableFonts", 
-    "installableFonts": {
-      "designers": [
-        {
-          "name": {
-            "en": "Max Mustermann"
-          }, 
-          "keyword": "max"
-        }
-      ], 
-      "version": 0.1, 
-      "type": "success", 
-      "foundries": [
-        {
-          "website": "https://awesomefonts.com", 
-          "licenses": [
-            {
-              "URL": "https://awesomefonts.com/eula/", 
-              "name": {
-                "en": "Awesome Fonts Desktop EULA"
-              }, 
-              "keyword": "awesomeFontsEULA"
-            }
-          ], 
-          "families": [
-            {
-              "designers": [
-                "max"
-              ], 
-              "fonts": [
-                {
-                  "postScriptName": "AwesomeSans-Regular", 
-                  "licenseKeyword": "awesomeFontsEULA", 
-                  "name": {
-                    "en": "Regular"
-                  }, 
-                  "type": "desktop"
-                }
-              ], 
-              "name": {
-                "en": "Awesome Sans"
-              }, 
-              "versions": [
-                {
-                  "number": 0.1
-                }
-              ]
-            }
-          ], 
-          "name": {
-            "en": "Awesome Fonts"
-          }
-        }
-      ]
-    }
+	"command": "installableFonts", 
+	"installableFonts": {
+	  "designers": [
+		{
+		  "name": {
+			"en": "Max Mustermann"
+		  }, 
+		  "keyword": "max"
+		}
+	  ], 
+	  "version": 0.1, 
+	  "type": "success", 
+	  "foundries": [
+		{
+		  "website": "https://awesomefonts.com", 
+		  "licenses": [
+			{
+			  "URL": "https://awesomefonts.com/eula/", 
+			  "name": {
+				"en": "Awesome Fonts Desktop EULA"
+			  }, 
+			  "keyword": "awesomeFontsEULA"
+			}
+		  ], 
+		  "families": [
+			{
+			  "designers": [
+				"max"
+			  ], 
+			  "fonts": [
+				{
+				  "postScriptName": "AwesomeSans-Regular", 
+				  "licenseKeyword": "awesomeFontsEULA", 
+				  "name": {
+					"en": "Regular"
+				  }, 
+				  "type": "desktop"
+				}
+			  ], 
+			  "name": {
+				"en": "Awesome Sans"
+			  }, 
+			  "versions": [
+				{
+				  "number": 0.1
+				}
+			  ]
+			}
+		  ], 
+		  "name": {
+			"en": "Awesome Fonts"
+		  }
+		}
+	  ]
+	}
   }, 
   "name": {
-    "en": "Font Publisher"
+	"en": "Font Publisher"
   }
 }
 ```
@@ -287,21 +287,6 @@ True
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 handles = []
 for key in [x[0] for x in docstrings]:
 	if not key in handles:
@@ -323,15 +308,5 @@ for handle in handles:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-WriteToFile(os.path.join(os.path.dirname(__file__), '..', 'README.md'), docstring)
+if not 'TRAVIS' in os.environ:
+	WriteToFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'README.md'), docstring)
