@@ -612,7 +612,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'canonicalURL': 		[WebURLDataType, 			True, 	None, 	'Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.'],
-		'adminEmail': 			[EmailDataType, 			True, 	None, 	'API endpoint Administrator, to contact for technical problems and such'],
+		'adminEmail': 			[EmailDataType, 			True, 	None, 	'API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.'],
 		'licenseIdentifier':	[OpenSourceLicenseIdentifierDataType,True, 	'CC-BY-NC-ND-4.0', 	'Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.'],
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
