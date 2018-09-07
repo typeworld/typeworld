@@ -317,7 +317,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 #### adminEmail
 
-API endpoint Administrator, to contact for technical problems and such
+API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.
 
 Type: Str<br />
 Required: True<br />
@@ -1068,7 +1068,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'woff2', 'otf', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'ttc', 'otf', 'ttf', 'woff2']
 
 Type: Str<br />
 Required: False<br />
