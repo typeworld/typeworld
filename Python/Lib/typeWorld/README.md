@@ -6,8 +6,9 @@
 2. [List of Classes](#classTOC)
 3. [Object model](#objectmodel)
 4. [Versioning](#versioning)
-5. [Example Code](#example)
-6. [Class Reference](#classreference)
+5. [Use of Languages/Scripts](#languages)
+6. [Example Code](#example)
+7. [Class Reference](#classreference)
 
 
 
@@ -103,6 +104,42 @@ Additionally, individual font-level definitions may add versions not defined at 
 #### Use [Font.getSortedVersions()](#class_Font_method_getSortedVersions)
 
 Because in the end the versions matter only at the font level, the [Font.getSortedVersions()](#class_Font_method_getSortedVersions) method will output the final list of versions in the above combinations, with font-level definitions taking precedence over family-level definitions.
+
+
+<div id="languages"></div>
+
+## Use of Languages/Scripts
+
+All text definitions in the Type.World JSON Protocol are multi-lingual by default using the [MultiLanguageText](#class_MultiLanguageText) class. The application will then decide which language to pick to display to the user, should several languages be defined for one attribute, based on the user’s OS language and app preferences.
+
+It is important to note that the languages used here are bound to their commonly used *scripts*. German and English are expected to be written in the Latin script, while Arabic and Hebrew, for instance, are expected to be written in the Arabic and Hebrew script, respectively. 
+
+Therefore, the user interface will make styling decisions based on the used language. Most prominently, Arabic and Hebrew content (where useful) will be rendered right-to-left (being right-justified), while most other scripts will be rendered left-to-right.
+The text direction choice is *implicit* in the language choice. 
+
+Other than in HTML, where one normally defines the language and the writing direction separately and explicitly, the Type.World App inferres the writing direction from the displayed language. The common and most widely read script should be used for each language.
+
+Therefore, if a publisher wants their Arabic name to be displayed in the Latin script, the language *English* (or any other Latin-based language) should be used in the data.
+
+In the following example, the Arabic string written in the Arabic script will be displayed to Arabic users:
+
+```python
+api.name.en = 'Levatine Fonts'
+api.name.ar = 'خط الشامي'
+```
+
+Here, the publisher decides to display a Latin name only, and therefore needs to use a Latin-based language definition:
+
+```python
+api.name.en = 'Khatt Al-Shami'
+```
+
+This is wrong and will lead to improper text rendering
+
+```python
+api.name.ar = 'Khatt Al-Shami'
+```
+
 
 
 <div id="example"></div>
@@ -1068,7 +1105,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'ttf', 'otf', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'woff', 'ttf', 'woff2', 'otf']
 
 Type: Str<br />
 Required: False<br />
