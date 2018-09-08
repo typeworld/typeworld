@@ -133,11 +133,13 @@ Here, the publisher decides to display a Latin name only, and therefore needs to
 api.name.en = 'Khatt Al-Shami'
 ```
 
-This is wrong and will lead to improper text rendering:
+This is wrong and will lead to improper text rendering, even though the text is actually showing the Arabic *language*, but not the Arabic *script*:
 
 ```python
 api.name.ar = 'Khatt Al-Shami'
 ```
+
+
 
 
 

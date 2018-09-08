@@ -136,11 +136,13 @@ Here, the publisher decides to display a Latin name only, and therefore needs to
 api.name.en = 'Khatt Al-Shami'
 ```
 
-This is wrong and will lead to improper text rendering:
+This is wrong and will lead to improper text rendering, even though the text is actually showing the Arabic *language*, but not the Arabic *script*:
 
 ```python
 api.name.ar = 'Khatt Al-Shami'
 ```
+
+
 
 
 
@@ -1109,7 +1111,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'ttf', 'woff2', 'ttc', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'woff2', 'ttf', 'otf', 'ttc']
 
 Type: Str<br />
 Required: False<br />
