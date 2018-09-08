@@ -694,7 +694,7 @@ Required: False<br />
 
 #### backgroundColor
 
-Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color
+Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
 
 Type: Str<br />
 Required: False<br />
@@ -1068,7 +1068,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'ttc', 'otf', 'ttf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'ttf', 'otf', 'woff', 'woff2']
 
 Type: Str<br />
 Required: False<br />

@@ -314,7 +314,7 @@ class Foundry(DictBasedObject):
 		'telephone':	 			[UnicodeDataType,		False, 	None, 	'Telephone number for this foundry'],
 
 		#styling
-		'backgroundColor': 			[HexColorDataType,		False, 	None, 	'Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color'],
+		'backgroundColor': 			[HexColorDataType,		False, 	None, 	'Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color. This is meant to go as a background color to the logo at ::Foundry.logo::'],
 
 		# data
 		'licenses':					[LicensesListProxy,		True, 	None, 	'List of ::License:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.'],
