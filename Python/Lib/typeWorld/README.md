@@ -2,6 +2,16 @@
 
 # typeWorld.api Reference
 
+
+## Preamble
+
+The Type.World protocol and software is in **alpha** stage. Changes to the protocol may still occur at any time.
+
+The protocol and app are expected to stabilize by the end of 2018.
+
+
+## Contents
+
 1. [Introduction](#introduction)
 2. [List of Classes](#classTOC)
 3. [Object model](#objectmodel)
@@ -1111,7 +1121,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'woff2', 'ttf', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'ttf', 'ttc', 'woff', 'woff2']
 
 Type: Str<br />
 Required: False<br />
