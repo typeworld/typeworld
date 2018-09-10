@@ -17,7 +17,6 @@ docstring = '''
 ## Preamble
 
 The Type.World protocol and software is in **alpha** stage. Changes to the protocol may still occur at any time.
-
 The protocol and app are expected to stabilize by the end of 2018.
 
 
