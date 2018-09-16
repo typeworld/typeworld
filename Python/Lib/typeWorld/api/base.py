@@ -267,8 +267,7 @@ class HexColorDataType(StringDataType):
 
     def valid(self):
         if \
-            len(self.value) == 3 or \
-            len(self.value) == 6 or \
+            (len(self.value) == 3 or len(self.value) == 6) and \
             re.match("^[A-Fa-f0-9]*$", self.value):
 
             return True
