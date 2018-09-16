@@ -377,10 +377,10 @@ Required: True<br />
 
 #### backgroundColor
 
-Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
+Hex color value for publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
 
 Type: Str<br />
-Format: RRGGBB<br />
+Format: RRGGBB (without leading #)<br />
 Required: False<br />
 <div id="class_APIRoot_attribute_canonicalURL"></div>
 
@@ -747,10 +747,10 @@ Required: False<br />
 
 #### backgroundColor
 
-Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
+Hex color value for foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
 
 Type: Str<br />
-Format: RRGGBB<br />
+Format: RRGGBB (without leading #)<br />
 Required: False<br />
 <div id="class_Foundry_attribute_description"></div>
 
@@ -1143,7 +1143,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff2', 'woff', 'ttc', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'woff2', 'ttf', 'woff', 'otf']
 
 Type: Str<br />
 Required: False<br />

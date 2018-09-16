@@ -276,7 +276,7 @@ class HexColorDataType(StringDataType):
             return 'Not a valid hex color of format RRGGBB (like FF0000 for red): %s' % self.value
 
     def formatHint(self):
-        return 'RRGGBB'
+        return 'RRGGBB (without leading #)'
 
 
 
