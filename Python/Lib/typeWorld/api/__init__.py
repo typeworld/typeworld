@@ -73,7 +73,7 @@ class Version(DictBasedObject):
 	_structure = {
 		'number':	 				[VersionDataType,			True, 	None, 	'Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.'],
 		'description':	 			[MultiLanguageTextProxy,	False, 	None, 	'Description of font version'],
-		'releaseDate':	 			[FloatDataType,				False, 	None, 	'Timestamp of version’s release date.'],
+		'releaseDate':	 			[DateDataType,				False, 	None, 	'Font version’s release date.'],
 	}
 
 	def __repr__(self):
@@ -123,8 +123,8 @@ class Font(DictBasedObject):
 		'seatsInstalledByUser':	[IntegerDataType,		False, 	None, 	'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
 		'licenseAllowanceDescription':	[MultiLanguageTextProxy,		False, 	None, 	'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
 		'upgradeLicenseURL':[WebURLDataType,		False, 	None, 	'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at ::Family.upgradeLicenseURL::.'],
-		'timeAddedForUser':	[IntegerDataType,		False, 	None, 	'Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
-		'timeFirstPublished':[IntegerDataType,		False, 	None, 	'Timestamp of the initial release of the font. May also be define family-wide at ::Family.timeFirstPublished::.'],
+		'dateAddedForUser':	[DateDataType,		False, 	None, 	'Date that the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
+		'dateFirstPublished':[DateDataType,		False, 	None, 	'Date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
 	}
 
 	def __repr__(self):
@@ -241,7 +241,7 @@ class Family(DictBasedObject):
 		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'upgradeLicenseURL':		[WebURLDataType,		False, 	None, 	'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at ::Font.upgradeLicenseURL::.'],
-		'timeFirstPublished':		[IntegerDataType,		False, 	None, 	'Timestamp of the initial release of the family. May be overriden on font level at ::Font.timeFirstPublished::.'],
+		'dateFirstPublished':		[DateDataType,			False, 	None, 	'Date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
 	}
 
 	def __repr__(self):

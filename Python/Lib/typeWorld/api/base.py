@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback
+import json, copy, types, inspect, re, traceback, datetime
 from optparse import OptionParser
 import semver
 
@@ -164,6 +164,10 @@ class DataType(object):
     def isEmpty(self):
         return self.value == None or self.value == [] or self.value == ''
 
+    def formatHint(self):
+        return None
+
+
 class BooleanDataType(DataType):
     dataType = bool
 
@@ -219,6 +223,21 @@ class VersionDataType(StringDataType):
             return True
         except:
             return traceback.format_exc()
+
+
+class DateDataType(StringDataType):
+
+    def valid(self):
+
+        try:
+            date_obj = datetime.datetime.strptime(self.value, '%Y-%m-%d')
+            return True
+
+        except ValueError:
+            return traceback.format_exc().splitlines()[-1]
+
+    def formatHint(self):
+        return 'YYYY-MM-DD'
 
 
 class WebURLDataType(UnicodeDataType):

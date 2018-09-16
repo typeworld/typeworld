@@ -88,6 +88,7 @@ if __name__ == '__main__':
 	font.purpose = 'desktop'
 	font.type = 'otf'
 	font.designers.append('max')
+	font.dateAddedForUser = '2018-04-01'
 	family.fonts.append(font)
 	print(font)
 
