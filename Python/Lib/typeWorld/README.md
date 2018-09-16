@@ -380,6 +380,7 @@ Required: True<br />
 Six-digit RRGGBB hex color value (without leading "#") for publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
 
 Type: Str<br />
+Format: RRGGBB<br />
 Required: False<br />
 <div id="class_APIRoot_attribute_canonicalURL"></div>
 
@@ -749,6 +750,7 @@ Required: False<br />
 Six-digit RRGGBB hex color value (without leading "#") for foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
 
 Type: Str<br />
+Format: RRGGBB<br />
 Required: False<br />
 <div id="class_Foundry_attribute_description"></div>
 
@@ -916,7 +918,7 @@ Required: True<br />
 
 ### Attributes
 
-[billboards](#class_Family_attribute_billboards)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[timeFirstPublished](#class_Family_attribute_timeFirstPublished)<br />[uniqueID](#class_Family_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
+[billboards](#class_Family_attribute_billboards)<br />[dateFirstPublished](#class_Family_attribute_dateFirstPublished)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[uniqueID](#class_Family_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
 
 ### Methods
 
@@ -931,6 +933,15 @@ Required: True<br />
 List of URLs pointing at images to show for this typeface, specifications to follow
 
 Type: List of Str objects<br />
+Required: False<br />
+<div id="class_Family_attribute_dateFirstPublished"></div>
+
+#### dateFirstPublished
+
+Date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#class_Font_attribute_dateFirstPublished).
+
+Type: Str<br />
+Format: YYYY-MM-DD<br />
 Required: False<br />
 <div id="class_Family_attribute_description"></div>
 
@@ -979,14 +990,6 @@ Required: True<br />
 URL pointing to the source of a font project, such as a GitHub repository
 
 Type: Str<br />
-Required: False<br />
-<div id="class_Family_attribute_timeFirstPublished"></div>
-
-#### timeFirstPublished
-
-Timestamp of the initial release of the family. May be overriden on font level at [Font.timeFirstPublished](#class_Font_attribute_timeFirstPublished).
-
-Type: Int<br />
 Required: False<br />
 <div id="class_Family_attribute_uniqueID"></div>
 
@@ -1060,14 +1063,16 @@ Required: False<br />
 Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.
 
 Type: Str<br />
+Format: Simple float number (1.01) or semantic versioning (2.0.0-rc.1)<br />
 Required: True<br />
 <div id="class_Version_attribute_releaseDate"></div>
 
 #### releaseDate
 
-Timestamp of version’s release date.
+Font version’s release date.
 
-Type: Float<br />
+Type: Str<br />
+Format: YYYY-MM-DD<br />
 Required: False<br />
 
 
@@ -1092,7 +1097,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class_Font_attribute_beta)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[setName](#class_Font_attribute_setName)<br />[timeAddedForUser](#class_Font_attribute_timeAddedForUser)<br />[timeFirstPublished](#class_Font_attribute_timeFirstPublished)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
+[beta](#class_Font_attribute_beta)<br />[dateAddedForUser](#class_Font_attribute_dateAddedForUser)<br />[dateFirstPublished](#class_Font_attribute_dateFirstPublished)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[setName](#class_Font_attribute_setName)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1108,6 +1113,24 @@ Font is in beta stage. For UI signaling
 
 Type: Bool<br />
 Required: False<br />
+<div id="class_Font_attribute_dateAddedForUser"></div>
+
+#### dateAddedForUser
+
+Date that the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#class_Version_attribute_releaseDate), although they could be identical.
+
+Type: Str<br />
+Format: YYYY-MM-DD<br />
+Required: False<br />
+<div id="class_Font_attribute_dateFirstPublished"></div>
+
+#### dateFirstPublished
+
+Date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#class_Family_attribute_dateFirstPublished).
+
+Type: Str<br />
+Format: YYYY-MM-DD<br />
+Required: False<br />
 <div id="class_Font_attribute_designers"></div>
 
 #### designers
@@ -1120,7 +1143,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff', 'woff2', 'ttf', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff2', 'woff', 'ttc', 'otf', 'ttf']
 
 Type: Str<br />
 Required: False<br />
@@ -1215,22 +1238,6 @@ Required: False<br />
 Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".
 
 Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
-<div id="class_Font_attribute_timeAddedForUser"></div>
-
-#### timeAddedForUser
-
-Timestamp of the time the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#class_Version_attribute_releaseDate), although they could be identical.
-
-Type: Int<br />
-Required: False<br />
-<div id="class_Font_attribute_timeFirstPublished"></div>
-
-#### timeFirstPublished
-
-Timestamp of the initial release of the font. May also be define family-wide at [Family.timeFirstPublished](#class_Family_attribute_timeFirstPublished).
-
-Type: Int<br />
 Required: False<br />
 <div id="class_Font_attribute_uniqueID"></div>
 
