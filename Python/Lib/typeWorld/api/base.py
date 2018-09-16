@@ -224,6 +224,8 @@ class VersionDataType(StringDataType):
         except:
             return traceback.format_exc()
 
+    def formatHint(self):
+        return 'Simple float number (1.01) or semantic versioning (2.0.0-rc.1)'
 
 class DateDataType(StringDataType):
 
@@ -272,6 +274,9 @@ class HexColorDataType(StringDataType):
             return True
         else:
             return 'Not a valid hex color of format RRGGBB (like FF0000 for red): %s' % self.value
+
+    def formatHint(self):
+        return 'RRGGBB'
 
 
 
@@ -447,10 +452,17 @@ class DictBasedObject(object):
             attributes += '<div id="class_%s_attribute_%s"></div>\n\n' % (self.__class__.__name__, key)
             attributes += '#### %s\n\n' % key
 
+            # Description
             if self._structure[key][3]:
                 attributes += self.linkDocuText(self._structure[key][3]) + '\n\n'
 
             attributes += 'Type: %s' % self.typeDescription(self._structure[key][0]) + '<br />\n'
+
+            # Format Hint
+            hint = self._structure[key][0]().formatHint()
+            if hint:
+                attributes += 'Format: %s' % hint + '<br />\n'
+
             attributes += 'Required: %s' % self._structure[key][1] + '<br />\n'
 
             if self._structure[key][2] != None:
