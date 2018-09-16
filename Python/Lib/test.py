@@ -273,3 +273,7 @@ if __name__ == '__main__':
 	except ValueError:
 		pass
 
+	try:
+		DateDataType().put('2018-02-30')
+	except ValueError:
+		pass
