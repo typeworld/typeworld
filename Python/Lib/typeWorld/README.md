@@ -1127,7 +1127,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'ttc', 'woff2', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'woff2', 'ttc', 'woff', 'ttf']
 
 Type: Str<br />
 Required: False<br />
@@ -1309,7 +1309,7 @@ Required: False<br />
 
 #### upgradeURL
 
-URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific.
+URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.
 
 Type: Str<br />
 Required: False<br />
