@@ -919,7 +919,7 @@ Required: True<br />
 
 ### Attributes
 
-[billboards](#class_Family_attribute_billboards)<br />[dateFirstPublished](#class_Family_attribute_dateFirstPublished)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[uniqueID](#class_Family_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL)<br />[versions](#class_Family_attribute_versions)<br />
+[billboards](#class_Family_attribute_billboards)<br />[dateFirstPublished](#class_Family_attribute_dateFirstPublished)<br />[description](#class_Family_attribute_description)<br />[designers](#class_Family_attribute_designers)<br />[fonts](#class_Family_attribute_fonts)<br />[issueTrackerURL](#class_Family_attribute_issueTrackerURL)<br />[name](#class_Family_attribute_name)<br />[sourceURL](#class_Family_attribute_sourceURL)<br />[uniqueID](#class_Family_attribute_uniqueID)<br />[versions](#class_Family_attribute_versions)<br />
 
 ### Methods
 
@@ -1000,14 +1000,6 @@ An string that uniquely identifies this family within the publisher.
 
 Type: Str<br />
 Required: True<br />
-<div id="class_Family_attribute_upgradeLicenseURL"></div>
-
-#### upgradeLicenseURL
-
-URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is for the entire fmaily. You may instead or additionally define a family-specific value at [Font.upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL).
-
-Type: Str<br />
-Required: False<br />
 <div id="class_Family_attribute_versions"></div>
 
 #### versions
@@ -1135,7 +1127,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'woff2', 'woff', 'ttf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'ttc', 'woff2', 'woff', 'ttf']
 
 Type: Str<br />
 Required: False<br />
@@ -1317,7 +1309,7 @@ Required: False<br />
 
 #### upgradeURL
 
-URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at [Family.upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL).
+URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific.
 
 Type: Str<br />
 Required: False<br />
