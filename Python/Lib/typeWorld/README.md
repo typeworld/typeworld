@@ -51,10 +51,11 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 - [InstallableFontsResponse](#class_InstallableFontsResponse)<br />
 - [Designer](#class_Designer)<br />
 - [Foundry](#class_Foundry)<br />
-- [License](#class_License)<br />
+- [LicenseDefinition](#class_LicenseDefinition)<br />
 - [Family](#class_Family)<br />
 - [Version](#class_Version)<br />
 - [Font](#class_Font)<br />
+- [LicenseUsage](#class_LicenseUsage)<br />
 - [InstallFontResponse](#class_InstallFontResponse)<br />
 - [UninstallFontResponse](#class_UninstallFontResponse)<br />
 
@@ -377,7 +378,7 @@ Required: True<br />
 
 #### backgroundColor
 
-Hex color value for publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
+Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#class_APIRoot_attribute_logo)
 
 Type: Str<br />
 Format: Hex RRGGBB (without leading #)<br />
@@ -707,7 +708,7 @@ Required: False<br />
 
 #### keyword
 
-Keyword under which the designer will be referenced from the individual fonts or font families
+Machine-readable keyword under which the designer will be referenced from the individual fonts or font families
 
 Type: Str<br />
 Required: True<br />
@@ -747,7 +748,7 @@ Required: False<br />
 
 #### backgroundColor
 
-Hex color value for foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
+Foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#class_Foundry_attribute_logo)
 
 Type: Str<br />
 Format: Hex RRGGBB (without leading #)<br />
@@ -796,9 +797,9 @@ Required: False<br />
 
 #### licenses
 
-List of [License](#class_License) objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.
+List of [LicenseDefinition](#class_LicenseDefinition) objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.
 
-Type: List of [License](#class_License) objects<br />
+Type: List of [LicenseDefinition](#class_LicenseDefinition) objects<br />
 Required: True<br />
 <div id="class_Foundry_attribute_logo"></div>
 
@@ -870,35 +871,35 @@ Required: False<br />
 
 
 
-<div id="class_License"></div>
+<div id="class_LicenseDefinition"></div>
 
-# _class_ License()
+# _class_ LicenseDefinition()
 
 
 
 ### Attributes
 
-[URL](#class_License_attribute_URL)<br />[keyword](#class_License_attribute_keyword)<br />[name](#class_License_attribute_name)<br />
+[URL](#class_LicenseDefinition_attribute_URL)<br />[keyword](#class_LicenseDefinition_attribute_keyword)<br />[name](#class_LicenseDefinition_attribute_name)<br />
 
 ## Attributes
 
-<div id="class_License_attribute_URL"></div>
+<div id="class_LicenseDefinition_attribute_URL"></div>
 
 #### URL
 
-URL where the font license can be viewed online
+URL where the font license text can be viewed online
 
 Type: Str<br />
 Required: True<br />
-<div id="class_License_attribute_keyword"></div>
+<div id="class_LicenseDefinition_attribute_keyword"></div>
 
 #### keyword
 
-Keyword under which the license will be referenced from the individual fonts.
+Machine-readable keyword under which the license will be referenced from the individual fonts.
 
 Type: Str<br />
 Required: True<br />
-<div id="class_License_attribute_name"></div>
+<div id="class_LicenseDefinition_attribute_name"></div>
 
 #### name
 
@@ -1097,11 +1098,11 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class_Font_attribute_beta)<br />[dateAddedForUser](#class_Font_attribute_dateAddedForUser)<br />[dateFirstPublished](#class_Font_attribute_dateFirstPublished)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[licenseAllowanceDescription](#class_Font_attribute_licenseAllowanceDescription)<br />[licenseKeyword](#class_Font_attribute_licenseKeyword)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[seatsAllowedForUser](#class_Font_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_Font_attribute_seatsInstalledByUser)<br />[setName](#class_Font_attribute_setName)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[upgradeLicenseURL](#class_Font_attribute_upgradeLicenseURL)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
+[beta](#class_Font_attribute_beta)<br />[dateFirstPublished](#class_Font_attribute_dateFirstPublished)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[setName](#class_Font_attribute_setName)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[usedLicenses](#class_Font_attribute_usedLicenses)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
-[getDesigners()](#class_Font_method_getDesigners)<br />[getLicense()](#class_Font_method_getLicense)<br />[getSortedVersions()](#class_Font_method_getSortedVersions)<br />
+[getDesigners()](#class_Font_method_getDesigners)<br />[getSortedVersions()](#class_Font_method_getSortedVersions)<br />
 
 ## Attributes
 
@@ -1112,15 +1113,6 @@ Returns True if this version is defined at the font level. Returns False if this
 Font is in beta stage. For UI signaling
 
 Type: Bool<br />
-Required: False<br />
-<div id="class_Font_attribute_dateAddedForUser"></div>
-
-#### dateAddedForUser
-
-Date that the user has purchased this font or the font has become available to the user otherwise, like a new font within a foundry’s beta font repository. Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#class_Version_attribute_releaseDate), although they could be identical.
-
-Type: Str<br />
-Format: YYYY-MM-DD<br />
 Required: False<br />
 <div id="class_Font_attribute_dateFirstPublished"></div>
 
@@ -1143,7 +1135,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['ttc', 'woff2', 'otf', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'woff2', 'woff', 'ttf', 'ttc']
 
 Type: Str<br />
 Required: False<br />
@@ -1155,22 +1147,6 @@ Font is freeware. For UI signaling
 
 Type: Bool<br />
 Required: False<br />
-<div id="class_Font_attribute_licenseAllowanceDescription"></div>
-
-#### licenseAllowanceDescription
-
-In case of non-desktop font (see [Font.purpose](#class_Font_attribute_purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
-
-Type: [MultiLanguageText](#class_MultiLanguageText)<br />
-Required: False<br />
-<div id="class_Font_attribute_licenseKeyword"></div>
-
-#### licenseKeyword
-
-Keyword reference of font’s license. This license must be specified in the Foundry.Licenses
-
-Type: Str<br />
-Required: True<br />
 <div id="class_Font_attribute_name"></div>
 
 #### name
@@ -1215,22 +1191,6 @@ Type: Bool<br />
 Required: False<br />
 Default value: False
 
-<div id="class_Font_attribute_seatsAllowedForUser"></div>
-
-#### seatsAllowedForUser
-
-In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations permitted by the user’s license.
-
-Type: Int<br />
-Required: False<br />
-<div id="class_Font_attribute_seatsInstalledByUser"></div>
-
-#### seatsInstalledByUser
-
-In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded.
-
-Type: Int<br />
-Required: False<br />
 <div id="class_Font_attribute_setName"></div>
 
 #### setName
@@ -1243,18 +1203,18 @@ Required: False<br />
 
 #### uniqueID
 
-An string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.
 
 Type: Str<br />
 Required: True<br />
-<div id="class_Font_attribute_upgradeLicenseURL"></div>
+<div id="class_Font_attribute_usedLicenses"></div>
 
-#### upgradeLicenseURL
+#### usedLicenses
 
-URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at [Family.upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL).
+List of [LicenseUsage](#class_LicenseUsage) objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses are identical to purchases.
 
-Type: Str<br />
-Required: False<br />
+Type: List of [LicenseUsage](#class_LicenseUsage) objects<br />
+Required: True<br />
 <div id="class_Font_attribute_variableFont"></div>
 
 #### variableFont
@@ -1284,13 +1244,6 @@ Required: False<br />
 Returns a list of [Designer](#class_Designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
                 
 
-<div id="class_Font_method_getLicense"></div>
-
-#### getLicense()
-
-Returns the [License](#class_License) object that this font references.
-                
-
 <div id="class_Font_method_getSortedVersions"></div>
 
 #### getSortedVersions()
@@ -1298,6 +1251,86 @@ Returns the [License](#class_License) object that this font references.
 Returns list of [Version](#class_Version) objects.
 
 This is the final list based on the version information in this font object as well as in its parent [Family](#class_Family) object. Please read the section about [versioning](#versioning) above.
+
+
+
+
+
+<div id="class_LicenseUsage"></div>
+
+# _class_ LicenseUsage()
+
+
+
+### Attributes
+
+[allowanceDescription](#class_LicenseUsage_attribute_allowanceDescription)<br />[dateAddedForUser](#class_LicenseUsage_attribute_dateAddedForUser)<br />[keyword](#class_LicenseUsage_attribute_keyword)<br />[seatsAllowedForUser](#class_LicenseUsage_attribute_seatsAllowedForUser)<br />[seatsInstalledByUser](#class_LicenseUsage_attribute_seatsInstalledByUser)<br />[upgradeURL](#class_LicenseUsage_attribute_upgradeURL)<br />
+
+### Methods
+
+[getLicense()](#class_LicenseUsage_method_getLicense)<br />
+
+## Attributes
+
+<div id="class_LicenseUsage_attribute_allowanceDescription"></div>
+
+#### allowanceDescription
+
+In case of non-desktop font (see [Font.purpose](#class_Font_attribute_purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
+
+Type: [MultiLanguageText](#class_MultiLanguageText)<br />
+Required: False<br />
+<div id="class_LicenseUsage_attribute_dateAddedForUser"></div>
+
+#### dateAddedForUser
+
+Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#class_Version_attribute_releaseDate), although they could be identical.
+
+Type: Str<br />
+Format: YYYY-MM-DD<br />
+Required: False<br />
+<div id="class_LicenseUsage_attribute_keyword"></div>
+
+#### keyword
+
+Keyword reference of font’s license. This license must be specified in [Foundry.licenses](#class_Foundry_attribute_licenses)
+
+Type: Str<br />
+Required: True<br />
+<div id="class_LicenseUsage_attribute_seatsAllowedForUser"></div>
+
+#### seatsAllowedForUser
+
+In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations permitted by the user’s license.
+
+Type: Int<br />
+Required: False<br />
+<div id="class_LicenseUsage_attribute_seatsInstalledByUser"></div>
+
+#### seatsInstalledByUser
+
+In case of desktop font (see [Font.purpose](#class_Font_attribute_purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
+
+Type: Int<br />
+Required: False<br />
+<div id="class_LicenseUsage_attribute_upgradeURL"></div>
+
+#### upgradeURL
+
+URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible. This attribute here is font-specific. You may instead define a family-specific value at [Family.upgradeLicenseURL](#class_Family_attribute_upgradeLicenseURL).
+
+Type: Str<br />
+Required: False<br />
+
+
+## Methods
+
+<div id="class_LicenseUsage_method_getLicense"></div>
+
+#### getLicense()
+
+Returns the [License](#class_License) object that this font references.
+                
 
 
 
