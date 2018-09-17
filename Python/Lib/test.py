@@ -52,7 +52,7 @@ if __name__ == '__main__':
 	assert foundry.name.getTextAndLocale(['de']) == ('Tolle Schriften', 'de')
 
 	# Add license to foundry
-	license = License()
+	license = LicenseDefinition()
 	license.keyword = 'awesomeFontsEULA'
 	license.name.en = 'Awesome Fonts Desktop EULA'
 	license.URL = 'https://awesomefonts.com/EULA/'
@@ -84,13 +84,16 @@ if __name__ == '__main__':
 	font.uniqueID = 'yanone-NonameSans-Regular'
 	font.name.en = 'Regular'
 	font.postScriptName = 'AwesomeSans-Regular'
-	font.licenseKeyword = 'awesomeFontsEULA'
 	font.purpose = 'desktop'
 	font.type = 'otf'
 	font.designers.append('max')
 	font.dateAddedForUser = '2018-04-01'
 	family.fonts.append(font)
+	usedLicense = LicenseUsage()
+	usedLicense.keyword = 'awesomeFontsEULA'
+	font.usedLicenses.append(usedLicense)
 	print(font)
+	assert usedLicense.parent == font
 
 
 	# Add font to family
@@ -98,10 +101,13 @@ if __name__ == '__main__':
 	font.uniqueID = 'yanone-NonameSans-Bold'
 	font.name.en = 'Regular'
 	font.postScriptName = 'AwesomeSans-Bold'
-	font.licenseKeyword = 'awesomeFontsEULA'
 	font.purpose = 'desktop'
 	font.format = 'otf'
+	usedLicense = LicenseUsage()
+	usedLicense.keyword = 'awesomeFontsEULA'
+	font.usedLicenses.append(usedLicense)
 	family.fonts.append(font)
+	assert usedLicense.parent == font
 
 	# Add version to font
 	version = Version()
