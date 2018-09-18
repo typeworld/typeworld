@@ -1094,7 +1094,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Methods
 
-[getDesigners()](#class_Font_method_getDesigners)<br />[getSortedVersions()](#class_Font_method_getSortedVersions)<br />
+[getDesigners()](#class_Font_method_getDesigners)<br />[getVersions()](#class_Font_method_getVersions)<br />
 
 ## Attributes
 
@@ -1127,7 +1127,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['woff2', 'otf', 'ttc', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#class_Font_attribute_purpose). Possible: ['otf', 'ttc', 'woff', 'woff2', 'ttf']
 
 Type: Str<br />
 Required: False<br />
@@ -1236,9 +1236,9 @@ Required: False<br />
 Returns a list of [Designer](#class_Designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
                 
 
-<div id="class_Font_method_getSortedVersions"></div>
+<div id="class_Font_method_getVersions"></div>
 
-#### getSortedVersions()
+#### getVersions()
 
 Returns list of [Version](#class_Version) objects.
 

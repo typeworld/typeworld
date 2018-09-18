@@ -200,7 +200,7 @@ class Font(DictBasedObject):
 
 		return information, warnings, critical
 
-	def getSortedVersions(self):
+	def getVersions(self):
 		'''\
 		Returns list of ::Version:: objects.
 
