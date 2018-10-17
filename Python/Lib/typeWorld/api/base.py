@@ -373,6 +373,18 @@ class DictBasedObject(object):
     _dataType_for_possible_keys = None
 
 
+    def nonListProxyBasedKeys(self):
+
+        _list = []
+
+        for keyword in self._structure.keys():
+            if not typeWorld.api.base.ListProxy in inspect.getmro(self._structure[keyword][0]):
+                _list.append(keyword)
+
+        return _list
+
+
+
     def linkDocuText(self, text):
 
 #       print text
