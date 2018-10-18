@@ -117,7 +117,7 @@ if __name__ == '__main__':
 	assert version.isFontSpecific() == True
 	assert version.parent == font
 
-	assert len(font.getSortedVersions()) == 2
+	assert len(font.getVersions()) == 2
 	assert type(font.getDesigners()) == list
 
 	# Output API response as JSON, includes validation
