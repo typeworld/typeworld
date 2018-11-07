@@ -81,9 +81,9 @@ The app will ask for the JSON responses at your API endpoint `https://awesomefon
 
 #### `GET` requests
 
-When your server replies to a `GET` request, serve only the [APIRoot](#class_ APIRoot) and reject serving protected font (meta) data.
+For simplicity’s sake, you should reject incoming `GET` requests altogether to force the requester into using `POST` requests. This is for your own protection, as `GET` requests complete with the `subscriptionID` and `secretKey` might show up in server logs and therefore pose an attack vector to your protected fonts and meta data.
 
-In fact, when you receive a `GET` request complete with a `command` parameter, you should return an HTTP error (such as `400 Bad Request`) to notify the requester that the request is malformed.
+I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` requests.
 
 
 <div id="classTOC"></div>
@@ -1167,7 +1167,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['ttf', 'otf', 'woff2', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['ttc', 'woff2', 'otf', 'woff', 'ttf']
 
 Type: Str<br />
 Required: False<br />
