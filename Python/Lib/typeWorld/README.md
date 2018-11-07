@@ -69,13 +69,13 @@ The URL parts in detail:
 
 To avoid the subscription URL complete with the `subscriptionID` and `secretKey` showing up in server logs, your server should serve protected font (meta) data only when replying to `POST` requests, as request attributes will then be transmitted in the HTTP headers and will be invisible in server logs.
 
-The app will ask for the JSON responses at your API endpoint `https://awesomefonts.com/api/` and will hand over the some or all of the following parameters through HTTP headers:
+The app will ask for the JSON responses at your API endpoint `https://awesomefonts.com/api/` and will hand over some or all of the following parameters through HTTP headers:
 
 * `command` The command to reply to, such as `installableFonts`.
 * `subscriptionID` The aforementioned ID to uniquely identify the fonts you serve.
 * `secretKey` The aforementioned secret key to authenticate the requester.
-* `anonymousAppID` is a key that uniquely identifies the Type.World app installation. You should use this to track how often fonts have been installed through the app and reject requests once the limit has been reached.
-* `fontID` identifying the font to install
+* `anonymousAppID` is a key that uniquely identifies the Type.World app installation. You should use this to track how often fonts have been installed through the app for a certain user and reject requests once the limit has been reached.
+* `fontID` identifying the font to install or uninstall
 * `fontVersion` identifying the font’s version to install
 * `userEmail` and `userName` in case the user has a Type.World user account and has explicitly agreed to reveal his/her identity on a per-subscription basis. This only makes sense in a trusted custom type development environment where the type designers may want to get in touch personally with the font’s users in a small work group, for instance in a branding agency. This tremendously streamlines everyone’s workflow. If necessary, a publisher in a trusted custom type development environment could reject the serving of subscriptions to requesters who are unidentified.
 
@@ -1167,7 +1167,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['otf', 'woff', 'ttf', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['woff2', 'ttf', 'otf', 'woff', 'ttc']
 
 Type: Str<br />
 Required: False<br />
