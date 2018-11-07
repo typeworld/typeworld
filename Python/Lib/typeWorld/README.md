@@ -48,7 +48,7 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 
 By clicking the *Install in Type.World App* button on your SSL-encrypted website, a URL of the following scheme gets handed off to the app through a custom protocol handler:
 
-**typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/**
+`typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/`
 
 *Note: Even though this notation suggests the use of HTTP authentication, we will not make use of it. See [Serving JSON responses](#user-content-servingjsonresponses) below for more information.*
 
@@ -1167,7 +1167,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['woff2', 'woff', 'ttf', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['ttf', 'otf', 'woff2', 'ttc', 'woff']
 
 Type: Str<br />
 Required: False<br />
