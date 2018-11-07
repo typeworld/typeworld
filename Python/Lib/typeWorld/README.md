@@ -92,6 +92,10 @@ For simplicity’s sake, you should reject incoming `GET` requests altogether to
 
 I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` requests.
 
+#### WARNING:
+
+Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
+
 
 <div id="classTOC"></div>
 
@@ -1174,7 +1178,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['woff', 'ttc', 'ttf', 'woff2', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['woff2', 'otf', 'woff', 'ttc', 'ttf']
 
 Type: Str<br />
 Required: False<br />
