@@ -48,9 +48,16 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 
 By clicking the *Install in Type.World App* button on your SSL-encrypted website, a URL of the following scheme gets handed off to the app through a custom protocol handler:
 
-`typeworldjson://https//[subscriptionID[:secretKey]]@awesomefonts.com/api/`
+`typeworldjson://https//[subscriptionID[:secretKey]@]awesomefonts.com/api/`
 
 *Note: Even though this notation suggests the use of HTTP authentication, we will not make use of it. See [Serving JSON responses](#user-content-servingjsonresponses) below for more information.*
+
+Example for a protected subscription:
+`typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/`
+
+Example for a publicly accessible subscription without `secretKey`, but `subscriptionID` still used to identify a particular subscription: `typeworldjson://https//subscriptionID@awesomefonts.com/api/`
+
+Example for a publicly accessible subscription without `secretKey` or `subscriptionID`. This API endpoint has exactly one subscription to serve: `typeworldjson://https//awesomefonts.com/api/`
 
 The URL parts in detail:
 
