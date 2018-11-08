@@ -20,7 +20,7 @@ for key in [x[0] for x in docstrings]:
 
 classTOC = ''
 for handle in handles:
-	classTOC += '- [%s](#user-content-class_%s)<br />\n' % (handle, handle)
+	classTOC += '- [%s](#user-content-class-%s)<br />\n' % (handle, handle)
 classTOC += '\n\n'
 
 docstring = docstring.replace('__classTOC__', classTOC)

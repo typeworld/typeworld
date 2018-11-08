@@ -11,9 +11,9 @@ The protocol and app are expected to stabilize by the end of 2018.
 
 1. [Introduction](#user-content-introduction)
 1. [Server Interaction](#user-content-serverinteraction)
-1. [Response Flow Chart](#user-content-responseflowchrt)
+1. [Response Flow Chart](#user-content-responseflowchart)
 1. [Protocol Changes](#user-content-protocolchanges)
-1. [List of Classes](#user-content-classTOC)
+1. [List of Classes](#user-content-classtoc)
 1. [Object model](#user-content-objectmodel)
 1. [Versioning](#user-content-versioning)
 1. [Use of Languages/Scripts](#user-content-languages)
@@ -116,23 +116,23 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 * `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class_Font_attribute_protected)
 
 
-<div id="classTOC"></div>
+<div id="classtoc"></div>
 
 ## List of Classes
 
-- [APIRoot](#user-content-class_APIRoot)<br />
-- [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
-- [Response](#user-content-class_Response)<br />
-- [InstallableFontsResponse](#user-content-class_InstallableFontsResponse)<br />
-- [Designer](#user-content-class_Designer)<br />
-- [Foundry](#user-content-class_Foundry)<br />
-- [LicenseDefinition](#user-content-class_LicenseDefinition)<br />
-- [Family](#user-content-class_Family)<br />
-- [Version](#user-content-class_Version)<br />
-- [Font](#user-content-class_Font)<br />
-- [LicenseUsage](#user-content-class_LicenseUsage)<br />
-- [InstallFontResponse](#user-content-class_InstallFontResponse)<br />
-- [UninstallFontResponse](#user-content-class_UninstallFontResponse)<br />
+- [APIRoot](#user-content-class-APIRoot)<br />
+- [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
+- [Response](#user-content-class-Response)<br />
+- [InstallableFontsResponse](#user-content-class-InstallableFontsResponse)<br />
+- [Designer](#user-content-class-Designer)<br />
+- [Foundry](#user-content-class-Foundry)<br />
+- [LicenseDefinition](#user-content-class-LicenseDefinition)<br />
+- [Family](#user-content-class-Family)<br />
+- [Version](#user-content-class-Version)<br />
+- [Font](#user-content-class-Font)<br />
+- [LicenseUsage](#user-content-class-LicenseUsage)<br />
+- [InstallFontResponse](#user-content-class-InstallFontResponse)<br />
+- [UninstallFontResponse](#user-content-class-UninstallFontResponse)<br />
 
 
 
@@ -154,13 +154,13 @@ Every type producer has different habits when it comes to versioning of fonts. M
 
 To accommodate all of these habits, the Type.World API supports version information in two places. However, the entire system relies on version numbers being specified as float numbers, making them mathematically comparable for sorting. Higher numbers mean newer versions.
 
-#### Versions at the [Family](#user-content-class_Family) level
+#### Versions at the [Family](#user-content-class-Family) level
 
-The [Family.versions](#user-content-class_Family_attribute_versions) attribute can carry a list of [Version](#user-content-class_Version) objects. Versions that you specify here are expected to be present throughout the entire family; meaning that the complete amount of all fonts in all versions is the result of a multiplication of the number of fonts with the number of versions.
+The [Family.versions](#user-content-class-Family-attribute-versions) attribute can carry a list of [Version](#user-content-class-Version) objects. Versions that you specify here are expected to be present throughout the entire family; meaning that the complete amount of all fonts in all versions is the result of a multiplication of the number of fonts with the number of versions.
 
-#### Versions at the [Font](#user-content-class_Font) level
+#### Versions at the [Font](#user-content-class-Font) level
 
-In addition to that, you may also specify a list of [Version](#user-content-class_Version) objects at the [Font.versions](#user-content-class_Font_attribute_versions) attribute. Versions that you specify here are expected to be available only for this font. 
+In addition to that, you may also specify a list of [Version](#user-content-class-Version) objects at the [Font.versions](#user-content-class-Font-attribute-versions) attribute. Versions that you specify here are expected to be available only for this font. 
 
 When versions defined here carry the same version number as versions defined at the family level, the font-specific versions take precedence over the family-specific versions.
 
@@ -186,9 +186,9 @@ Additionally, font-level definitions can overwrite versions defined at family le
 
 Additionally, individual font-level definitions may add versions not defined at the family level.
 
-#### Use [Font.getSortedVersions()](#user-content-class_Font_method_getSortedVersions)
+#### Use [Font.getSortedVersions()](#user-content-class-Font-method-getSortedVersions)
 
-Because in the end the versions matter only at the font level, the [Font.getSortedVersions()](#user-content-class_Font_method_getSortedVersions) method will output the final list of versions in the above combinations, with font-level definitions taking precedence over family-level definitions.
+Because in the end the versions matter only at the font level, the [Font.getSortedVersions()](#user-content-class-Font-method-getSortedVersions) method will output the final list of versions in the above combinations, with font-level definitions taking precedence over family-level definitions.
 
 
 
@@ -197,7 +197,7 @@ Because in the end the versions matter only at the font level, the [Font.getSort
 
 ## Use of Languages/Scripts
 
-All text definitions in the Type.World JSON Protocol are multi-lingual by default using the [MultiLanguageText](#user-content-class_MultiLanguageText) class. The application will then decide which language to pick to display to the user in case several languages are defined for one attribute, based on the user’s OS language and app preferences.
+All text definitions in the Type.World JSON Protocol are multi-lingual by default using the [MultiLanguageText](#user-content-class-MultiLanguageText) class. The application will then decide which language to pick to display to the user in case several languages are defined for one attribute, based on the user’s OS language and app preferences.
 
 It is important to note that the languages used here are bound to their commonly used *scripts*. German and English are expected to be written in the Latin script, while Arabic and Hebrew, for instance, are expected to be written in the Arabic and Hebrew script, respectively. 
 
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-Font-attribute-purpose). Possible: ['ttf', 'woff2', 'woff', 'ttc', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-Font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'ttf', 'otf']
 
 Type: Str<br />
 Required: False<br />
