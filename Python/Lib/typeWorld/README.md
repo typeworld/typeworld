@@ -120,19 +120,19 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 
 ## List of Classes
 
-- [APIRoot](#user-content-class-APIRoot)<br />
-- [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
-- [Response](#user-content-class-Response)<br />
-- [InstallableFontsResponse](#user-content-class-InstallableFontsResponse)<br />
-- [Designer](#user-content-class-Designer)<br />
-- [Foundry](#user-content-class-Foundry)<br />
-- [LicenseDefinition](#user-content-class-LicenseDefinition)<br />
-- [Family](#user-content-class-Family)<br />
-- [Version](#user-content-class-Version)<br />
-- [Font](#user-content-class-Font)<br />
-- [LicenseUsage](#user-content-class-LicenseUsage)<br />
-- [InstallFontResponse](#user-content-class-InstallFontResponse)<br />
-- [UninstallFontResponse](#user-content-class-UninstallFontResponse)<br />
+- [APIRoot](#user-content-class-apiroot)<br />
+- [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+- [Response](#user-content-class-response)<br />
+- [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
+- [Designer](#user-content-class-designer)<br />
+- [Foundry](#user-content-class-foundry)<br />
+- [LicenseDefinition](#user-content-class-licensedefinition)<br />
+- [Family](#user-content-class-family)<br />
+- [Version](#user-content-class-version)<br />
+- [Font](#user-content-class-font)<br />
+- [LicenseUsage](#user-content-class-licenseusage)<br />
+- [InstallFontResponse](#user-content-class-installfontresponse)<br />
+- [UninstallFontResponse](#user-content-class-uninstallfontresponse)<br />
 
 
 
@@ -405,7 +405,7 @@ True
 
 <div id="classreference"></div>
 
-## Class Reference<div id="class_APIRoot"></div>
+## Class Reference<div id="class-apiroot"></div>
 
 # _class_ APIRoot()
 
@@ -547,7 +547,7 @@ An empty errors list is regarded as a successful validation, otherwise the valid
 
 
 
-<div id="class_MultiLanguageText"></div>
+<div id="class-multilanguagetext"></div>
 
 # _class_ MultiLanguageText()
 
@@ -595,7 +595,7 @@ Like getText(), but additionally returns the language of whatever text was found
 
 
 
-<div id="class_Response"></div>
+<div id="class-response"></div>
 
 # _class_ Response()
 
@@ -664,7 +664,7 @@ print api.response.get(api.response.command)
 
 
 
-<div id="class_InstallableFontsResponse"></div>
+<div id="class-installablefontsresponse"></div>
 
 # _class_ InstallableFontsResponse()
 
@@ -754,7 +754,7 @@ Default value: 0.1
 
 
 
-<div id="class_Designer"></div>
+<div id="class-designer"></div>
 
 # _class_ Designer()
 
@@ -802,7 +802,7 @@ Required: False<br />
 
 
 
-<div id="class_Foundry"></div>
+<div id="class-foundry"></div>
 
 # _class_ Foundry()
 
@@ -941,7 +941,7 @@ Required: False<br />
 
 
 
-<div id="class_LicenseDefinition"></div>
+<div id="class-licensedefinition"></div>
 
 # _class_ LicenseDefinition()
 
@@ -981,7 +981,7 @@ Required: True<br />
 
 
 
-<div id="class_Family"></div>
+<div id="class-family"></div>
 
 # _class_ Family()
 
@@ -1095,7 +1095,7 @@ Returns a list of [Designer](#user-content-class-designer) objects that represen
 
 
 
-<div id="class_Version"></div>
+<div id="class-version"></div>
 
 # _class_ Version()
 
@@ -1152,7 +1152,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 
 
-<div id="class_Font"></div>
+<div id="class-font"></div>
 
 # _class_ Font()
 
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'ttc', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'woff2', 'ttc', 'ttf', 'otf']
 
 Type: Str<br />
 Required: False<br />
@@ -1318,7 +1318,7 @@ This is the final list based on the version information in this font object as w
 
 
 
-<div id="class_LicenseUsage"></div>
+<div id="class-licenseusage"></div>
 
 # _class_ LicenseUsage()
 
@@ -1398,7 +1398,7 @@ Returns the [License](#user-content-class-license) object that this font referen
 
 
 
-<div id="class_InstallFontResponse"></div>
+<div id="class-installfontresponse"></div>
 
 # _class_ InstallFontResponse()
 
@@ -1464,7 +1464,7 @@ Default value: 0.1
 
 
 
-<div id="class_UninstallFontResponse"></div>
+<div id="class-uninstallfontresponse"></div>
 
 # _class_ UninstallFontResponse()
 

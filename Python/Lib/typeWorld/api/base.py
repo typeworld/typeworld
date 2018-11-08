@@ -444,7 +444,7 @@ class DictBasedObject(object):
         methodsList = []
 
 
-        head += '<div id="class_%s"></div>\n\n' % self.__class__.__name__
+        head += '<div id="class-%s"></div>\n\n' % self.__class__.__name__.lower()
 
         head += '# _class_ %s()\n\n' % self.__class__.__name__
 
