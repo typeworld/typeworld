@@ -105,8 +105,6 @@ Whatever you do with your server, bear in mind that the parameters attached to t
 
 A high-resolution version of this flow chart can be viewed as a PDF [here](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf).
 
-![](../../Request-flow-chart.png)
-
 
 
 <div id="protocolchanges"></div>
