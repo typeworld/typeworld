@@ -398,12 +398,12 @@ class DictBasedObject(object):
 
                 if '()' in attributeName:
                     attributeName = attributeName[:-2]
-                    match = '[%s.%s()](#user-content-class-%s-method-%s)' % (className, attributeName, className, attributeName)
+                    match = '[%s.%s()](#user-content-class-%s-method-%s)' % (className, attributeName, className.lower(), attributeName.lower())
                 else:
-                    match = '[%s.%s](#user-content-class-%s-attribute-%s)' % (className, attributeName, className, attributeName)
+                    match = '[%s.%s](#user-content-class-%s-attribute-%s)' % (className, attributeName, className.lower(), attributeName.lower())
             else:
                 className = match
-                match = '[%s](#user-content-class-%s)' % (className, className)
+                match = '[%s](#user-content-class-%s)' % (className, className.lower())
 
 
             return match
@@ -460,7 +460,7 @@ class DictBasedObject(object):
 
 
             attributesList.append(key)
-            attributes += '<div id="class_%s_attribute_%s"></div>\n\n' % (self.__class__.__name__, key)
+            attributes += '<div id="class-%s-attribute-%s"></div>\n\n' % (self.__class__.__name__.lower(), key)
             attributes += '#### %s\n\n' % key
 
             # Description
@@ -488,7 +488,7 @@ class DictBasedObject(object):
             for methodName in method_list:
 
                 methodsList.append(methodName)
-                methods += '<div id="class_%s_method_%s"></div>\n\n' % (self.__class__.__name__, methodName)
+                methods += '<div id="class-%s-method-%s"></div>\n\n' % (self.__class__.__name__.lower(), methodName.lower())
 
                 args = inspect.getargspec(getattr(self, methodName))
                 if args.args != ['self']:
@@ -514,13 +514,13 @@ class DictBasedObject(object):
         if attributesList:
             docstring += '### Attributes\n\n'
             for attribute in attributesList:
-                docstring += '[%s](#class_%s_attribute_%s)<br />' % (attribute, self.__class__.__name__, attribute)
+                docstring += '[%s](#class-%s-attribute-%s)<br />' % (attribute, self.__class__.__name__.lower(), attribute.lower())
             docstring += '\n\n'
 
         if methodsList:
             docstring += '### Methods\n\n'
             for methodName in methodsList:
-                docstring += '[%s()](#class_%s_method_%s)<br />' % (methodName, self.__class__.__name__, methodName)
+                docstring += '[%s()](#class-%s-method-%s)<br />' % (methodName, self.__class__.__name__.lower(), methodName.lower())
             docstring += '\n\n'
 
         if attributesList:
