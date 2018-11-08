@@ -398,12 +398,12 @@ class DictBasedObject(object):
 
                 if '()' in attributeName:
                     attributeName = attributeName[:-2]
-                    match = '[%s.%s()](#user-content-class_%s_method_%s)' % (className, attributeName, className, attributeName)
+                    match = '[%s.%s()](#user-content-class-%s-method-%s)' % (className, attributeName, className, attributeName)
                 else:
-                    match = '[%s.%s](#user-content-class_%s_attribute_%s)' % (className, attributeName, className, attributeName)
+                    match = '[%s.%s](#user-content-class-%s-attribute-%s)' % (className, attributeName, className, attributeName)
             else:
                 className = match
-                match = '[%s](#user-content-class_%s)' % (className, className)
+                match = '[%s](#user-content-class-%s)' % (className, className)
 
 
             return match

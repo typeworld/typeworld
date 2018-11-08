@@ -413,7 +413,7 @@ This is the main class that sits at the root of all API responses. It contains s
 
 Any API response is expected to carry this minimum information, even when invoked without a particular command.
 
-In case the API endpoint has been invoked with a particular command, the response data is attached to the [APIRoot.response](#user-content-class_APIRoot_attribute_response) attribute.
+In case the API endpoint has been invoked with a particular command, the response data is attached to the [APIRoot.response](#user-content-class-APIRoot-attribute-response) attribute.
 
 
 ```python
@@ -448,7 +448,7 @@ Required: True<br />
 
 #### backgroundColor
 
-Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class_APIRoot_attribute_logo)
+Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class-APIRoot-attribute-logo)
 
 Type: Str<br />
 Format: Hex RRGGBB (without leading #)<br />
@@ -487,7 +487,7 @@ Required: False<br />
 
 Human-readable name of API endpoint
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 <div id="class_APIRoot_attribute_public"></div>
 
@@ -505,7 +505,7 @@ Default value: False
 
 Response of the API call
 
-Type: [Response](#user-content-class_Response)<br />
+Type: [Response](#user-content-class-Response)<br />
 Required: False<br />
 <div id="class_APIRoot_attribute_supportedCommands"></div>
 
@@ -553,7 +553,7 @@ An empty errors list is regarded as a successful validation, otherwise the valid
 
 Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
-The GUI app will then calculate the language data to be displayed using [MultiLanguageText.getText()](#user-content-class_MultiLanguageText_method_getText) with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+The GUI app will then calculate the language data to be displayed using [MultiLanguageText.getText()](#user-content-class-MultiLanguageText-method-getText) with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
 
 These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
 
@@ -623,19 +623,19 @@ Required: True<br />
 
 #### installFont
 
-Type: [InstallFontResponse](#user-content-class_InstallFontResponse)<br />
+Type: [InstallFontResponse](#user-content-class-InstallFontResponse)<br />
 Required: False<br />
 <div id="class_Response_attribute_installableFonts"></div>
 
 #### installableFonts
 
-Type: [InstallableFontsResponse](#user-content-class_InstallableFontsResponse)<br />
+Type: [InstallableFontsResponse](#user-content-class-InstallableFontsResponse)<br />
 Required: False<br />
 <div id="class_Response_attribute_uninstallFont"></div>
 
 #### uninstallFont
 
-Type: [UninstallFontResponse](#user-content-class_UninstallFontResponse)<br />
+Type: [UninstallFontResponse](#user-content-class-UninstallFontResponse)<br />
 Required: False<br />
 
 
@@ -670,7 +670,7 @@ print api.response.get(api.response.command)
 
 This is the response expected to be returned when the API is invoked using the command parameter, such as `http://fontpublisher.com/api/?command=installableFonts`.
 
-The response needs to be specified at the [Response.command](#user-content-class_Response_attribute_command) attribute, and then the [Response](#user-content-class_Response) object needs to carry the specific response command at the attribute of same name, in this case [Reponse.installableFonts](#user-content-class_Reponse_attribute_installableFonts).
+The response needs to be specified at the [Response.command](#user-content-class-Response-attribute-command) attribute, and then the [Response](#user-content-class-Response) object needs to carry the specific response command at the attribute of same name, in this case [Reponse.installableFonts](#user-content-class-Reponse-attribute-installableFonts).
 
 ```python
 api.response = Response()
@@ -688,25 +688,25 @@ api.response.installableFonts = InstallableFontsResponse()
 
 #### designers
 
-List of [Designer](#user-content-class_Designer) objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.
+List of [Designer](#user-content-class-Designer) objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.
 
-Type: List of [Designer](#user-content-class_Designer) objects<br />
+Type: List of [Designer](#user-content-class-Designer) objects<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_errorMessage"></div>
 
 #### errorMessage
 
-Description of error in case of [InstallableFontsResponse.type](#user-content-class_InstallableFontsResponse_attribute_type) being "custom".
+Description of error in case of [InstallableFontsResponse.type](#user-content-class-InstallableFontsResponse-attribute-type) being "custom".
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_foundries"></div>
 
 #### foundries
 
-List of [Foundry](#user-content-class_Foundry) objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.
+List of [Foundry](#user-content-class-Foundry) objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.
 
-Type: List of [Foundry](#user-content-class_Foundry) objects<br />
+Type: List of [Foundry](#user-content-class-Foundry) objects<br />
 Required: True<br />
 <div id="class_InstallableFontsResponse_attribute_name"></div>
 
@@ -714,13 +714,13 @@ Required: True<br />
 
 A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_type"></div>
 
 #### type
 
-Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class_InstallableFontsResponse_attribute_errorMessage).
+Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-InstallableFontsResponse-attribute-errorMessage).
 
 Type: Str<br />
 Required: True<br />
@@ -738,7 +738,7 @@ Required: False<br />
 
 The name of the user who these fonts are licensed to.
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallableFontsResponse_attribute_version"></div>
 
@@ -772,7 +772,7 @@ Default value: 0.1
 
 Description of designer
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Designer_attribute_keyword"></div>
 
@@ -788,7 +788,7 @@ Required: True<br />
 
 Human-readable name of designer
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 <div id="class_Designer_attribute_website"></div>
 
@@ -818,7 +818,7 @@ Required: False<br />
 
 #### backgroundColor
 
-Foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#user-content-class_Foundry_attribute_logo)
+Foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#user-content-class-Foundry-attribute-logo)
 
 Type: Str<br />
 Format: Hex RRGGBB (without leading #)<br />
@@ -829,7 +829,7 @@ Required: False<br />
 
 Description of foundry
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Foundry_attribute_email"></div>
 
@@ -851,9 +851,9 @@ Required: False<br />
 
 #### families
 
-List of [Family](#user-content-class_Family) objects.
+List of [Family](#user-content-class-Family) objects.
 
-Type: List of [Family](#user-content-class_Family) objects<br />
+Type: List of [Family](#user-content-class-Family) objects<br />
 Required: True<br />
 <div id="class_Foundry_attribute_instagram"></div>
 
@@ -867,9 +867,9 @@ Required: False<br />
 
 #### licenses
 
-List of [LicenseDefinition](#user-content-class_LicenseDefinition) objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.
+List of [LicenseDefinition](#user-content-class-LicenseDefinition) objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.
 
-Type: List of [LicenseDefinition](#user-content-class_LicenseDefinition) objects<br />
+Type: List of [LicenseDefinition](#user-content-class-LicenseDefinition) objects<br />
 Required: True<br />
 <div id="class_Foundry_attribute_logo"></div>
 
@@ -887,7 +887,7 @@ Required: False<br />
 
 Name of foundry
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 <div id="class_Foundry_attribute_skype"></div>
 
@@ -975,7 +975,7 @@ Required: True<br />
 
 Human-readable name of font license
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 
 
@@ -1009,7 +1009,7 @@ Required: False<br />
 
 #### dateFirstPublished
 
-Date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#user-content-class_Font_attribute_dateFirstPublished).
+Date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#user-content-class-Font-attribute-dateFirstPublished).
 
 Type: Str<br />
 Format: YYYY-MM-DD<br />
@@ -1020,13 +1020,13 @@ Required: False<br />
 
 Description of font family
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Family_attribute_designers"></div>
 
 #### designers
 
-List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class_InstallableFontsResponse_attribute_designers). In case designers differ between fonts within the same family, they can also be defined at the font level at [Font.designers](#user-content-class_Font_attribute_designers). The font-level references take precedence over the family-level references.
+List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-InstallableFontsResponse-attribute-designers). In case designers differ between fonts within the same family, they can also be defined at the font level at [Font.designers](#user-content-class-Font-attribute-designers). The font-level references take precedence over the family-level references.
 
 Type: List of Str objects<br />
 Required: False<br />
@@ -1034,9 +1034,9 @@ Required: False<br />
 
 #### fonts
 
-List of [Font](#user-content-class_Font) objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.
+List of [Font](#user-content-class-Font) objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.
 
-Type: List of [Font](#user-content-class_Font) objects<br />
+Type: List of [Font](#user-content-class-Font) objects<br />
 Required: True<br />
 <div id="class_Family_attribute_issueTrackerURL"></div>
 
@@ -1052,7 +1052,7 @@ Required: False<br />
 
 Human-readable name of font family. This may include any additions that you find useful to communicate to your users.
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 <div id="class_Family_attribute_sourceURL"></div>
 
@@ -1074,11 +1074,11 @@ Required: True<br />
 
 #### versions
 
-List of [Version](#user-content-class_Version) objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the [Font](#user-content-class_Font) object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
+List of [Version](#user-content-class-Version) objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the [Font](#user-content-class-Font) object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
 
 Please also read the section on [versioning](#versioning) above.
 
-Type: List of [Version](#user-content-class_Version) objects<br />
+Type: List of [Version](#user-content-class-Version) objects<br />
 Required: False<br />
 
 
@@ -1088,7 +1088,7 @@ Required: False<br />
 
 #### getAllDesigners()
 
-Returns a list of [Designer](#user-content-class_Designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
+Returns a list of [Designer](#user-content-class-Designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
                 
 
 
@@ -1117,7 +1117,7 @@ Returns a list of [Designer](#user-content-class_Designer) objects that represen
 
 Description of font version
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Version_attribute_number"></div>
 
@@ -1180,7 +1180,7 @@ Required: False<br />
 
 #### dateFirstPublished
 
-Date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#user-content-class_Family_attribute_dateFirstPublished).
+Date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#user-content-class-Family-attribute-dateFirstPublished).
 
 Type: Str<br />
 Format: YYYY-MM-DD<br />
@@ -1189,7 +1189,7 @@ Required: False<br />
 
 #### designers
 
-List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class_InstallableFontsResponse_attribute_designers). This attribute overrides the designer definitions at the family level at [Family.designers](#user-content-class_Family_attribute_designers).
+List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-InstallableFontsResponse-attribute-designers). This attribute overrides the designer definitions at the family level at [Family.designers](#user-content-class-Family-attribute-designers).
 
 Type: List of Str objects<br />
 Required: False<br />
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['otf', 'woff2', 'ttf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-Font-attribute-purpose). Possible: ['ttf', 'woff2', 'woff', 'ttc', 'otf']
 
 Type: Str<br />
 Required: False<br />
@@ -1215,7 +1215,7 @@ Required: False<br />
 
 Human-readable name of font. This may include any additions that you find useful to communicate to your users.
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: True<br />
 <div id="class_Font_attribute_postScriptName"></div>
 
@@ -1259,7 +1259,7 @@ Required: True<br />
 
 Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_Font_attribute_uniqueID"></div>
 
@@ -1273,9 +1273,9 @@ Required: True<br />
 
 #### usedLicenses
 
-List of [LicenseUsage](#user-content-class_LicenseUsage) objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.
+List of [LicenseUsage](#user-content-class-LicenseUsage) objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.
 
-Type: List of [LicenseUsage](#user-content-class_LicenseUsage) objects<br />
+Type: List of [LicenseUsage](#user-content-class-LicenseUsage) objects<br />
 Required: True<br />
 <div id="class_Font_attribute_variableFont"></div>
 
@@ -1289,11 +1289,11 @@ Required: False<br />
 
 #### versions
 
-List of [Version](#user-content-class_Version) objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under [Family.versions](#user-content-class_Family_attribute_versions), which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
+List of [Version](#user-content-class-Version) objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under [Family.versions](#user-content-class-Family-attribute-versions), which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
 
 Please also read the section on [versioning](#versioning) above.
 
-Type: List of [Version](#user-content-class_Version) objects<br />
+Type: List of [Version](#user-content-class-Version) objects<br />
 Required: False<br />
 
 
@@ -1303,16 +1303,16 @@ Required: False<br />
 
 #### getDesigners()
 
-Returns a list of [Designer](#user-content-class_Designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
+Returns a list of [Designer](#user-content-class-Designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
                 
 
 <div id="class_Font_method_getVersions"></div>
 
 #### getVersions()
 
-Returns list of [Version](#user-content-class_Version) objects.
+Returns list of [Version](#user-content-class-Version) objects.
 
-This is the final list based on the version information in this font object as well as in its parent [Family](#user-content-class_Family) object. Please read the section about [versioning](#versioning) above.
+This is the final list based on the version information in this font object as well as in its parent [Family](#user-content-class-Family) object. Please read the section about [versioning](#versioning) above.
 
 
 
@@ -1338,15 +1338,15 @@ This is the final list based on the version information in this font object as w
 
 #### allowanceDescription
 
-In case of non-desktop font (see [Font.purpose](#user-content-class_Font_attribute_purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
+In case of non-desktop font (see [Font.purpose](#user-content-class-Font-attribute-purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_LicenseUsage_attribute_dateAddedForUser"></div>
 
 #### dateAddedForUser
 
-Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#user-content-class_Version_attribute_releaseDate), although they could be identical.
+Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#user-content-class-Version-attribute-releaseDate), although they could be identical.
 
 Type: Str<br />
 Format: YYYY-MM-DD<br />
@@ -1355,7 +1355,7 @@ Required: False<br />
 
 #### keyword
 
-Keyword reference of font’s license. This license must be specified in [Foundry.licenses](#user-content-class_Foundry_attribute_licenses)
+Keyword reference of font’s license. This license must be specified in [Foundry.licenses](#user-content-class-Foundry-attribute-licenses)
 
 Type: Str<br />
 Required: True<br />
@@ -1363,7 +1363,7 @@ Required: True<br />
 
 #### seatsAllowedForUser
 
-In case of desktop font (see [Font.purpose](#user-content-class_Font_attribute_purpose)), number of installations permitted by the user’s license.
+In case of desktop font (see [Font.purpose](#user-content-class-Font-attribute-purpose)), number of installations permitted by the user’s license.
 
 Type: Int<br />
 Required: False<br />
@@ -1371,7 +1371,7 @@ Required: False<br />
 
 #### seatsInstalledByUser
 
-In case of desktop font (see [Font.purpose](#user-content-class_Font_attribute_purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
+In case of desktop font (see [Font.purpose](#user-content-class-Font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
 
 Type: Int<br />
 Required: False<br />
@@ -1391,7 +1391,7 @@ Required: False<br />
 
 #### getLicense()
 
-Returns the [License](#user-content-class_License) object that this font references.
+Returns the [License](#user-content-class-License) object that this font references.
                 
 
 
@@ -1424,7 +1424,7 @@ Required: False<br />
 
 Description of error in case of custom response type
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_InstallFontResponse_attribute_fileName"></div>
 
@@ -1438,7 +1438,7 @@ Required: False<br />
 
 #### font
 
-Binary font data encoded to a string using [InstallFontResponse.encoding](#user-content-class_InstallFontResponse_attribute_encoding)
+Binary font data encoded to a string using [InstallFontResponse.encoding](#user-content-class-InstallFontResponse-attribute-encoding)
 
 Type: Str<br />
 Required: False<br />
@@ -1482,7 +1482,7 @@ Default value: 0.1
 
 Description of error in case of custom response type
 
-Type: [MultiLanguageText](#user-content-class_MultiLanguageText)<br />
+Type: [MultiLanguageText](#user-content-class-MultiLanguageText)<br />
 Required: False<br />
 <div id="class_UninstallFontResponse_attribute_type"></div>
 
