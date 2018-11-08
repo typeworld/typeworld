@@ -105,8 +105,6 @@ Whatever you do with your server, bear in mind that the parameters attached to t
 
 A high-resolution version of this flow chart can be viewed as a PDF [here](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf).
 
-![](../../Request-flow-chart.png)
-
 
 
 <div id="protocolchanges"></div>
@@ -1199,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['ttc', 'ttf', 'woff2', 'otf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['otf', 'woff2', 'ttf', 'ttc', 'woff']
 
 Type: Str<br />
 Required: False<br />
