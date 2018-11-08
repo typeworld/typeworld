@@ -113,7 +113,7 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 
 #### Version 0.1.4-alpha
 
-* `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class_font_attribute_protected)
+* `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class-font-attribute-protected)
 
 
 <div id="classtoc"></div>
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'ttc', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
 
 Type: Str<br />
 Required: False<br />
