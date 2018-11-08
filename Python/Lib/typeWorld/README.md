@@ -108,11 +108,14 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 ![](../../Request-flow-chart.png)
 
 
-protected
 
 <div id="protocolchanges"></div>
 
 ## Protocol Changes
+
+#### Version 0.1.4-alpha
+
+* `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class_Font_attribute_protected)
 
 
 <div id="classTOC"></div>
