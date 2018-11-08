@@ -10,14 +10,15 @@ The protocol and app are expected to stabilize by the end of 2018.
 ## Contents
 
 1. [Introduction](#user-content-introduction)
-2. [Server Interaction](#user-content-serverinteraction)
-3. [Response Flow Chart](#user-content-responseflowchrt)
-4. [List of Classes](#user-content-classTOC)
-5. [Object model](#user-content-objectmodel)
-6. [Versioning](#user-content-versioning)
-7. [Use of Languages/Scripts](#user-content-languages)
-8. [Example Code](#user-content-example)
-9. [Class Reference](#user-content-classreference)
+1. [Server Interaction](#user-content-serverinteraction)
+1. [Response Flow Chart](#user-content-responseflowchrt)
+1. [Protocol Changes](#user-content-protocolchanges)
+1. [List of Classes](#user-content-classTOC)
+1. [Object model](#user-content-objectmodel)
+1. [Versioning](#user-content-versioning)
+1. [Use of Languages/Scripts](#user-content-languages)
+1. [Example Code](#user-content-example)
+1. [Class Reference](#user-content-classreference)
 
 
 
@@ -105,6 +106,13 @@ Whatever you do with your server, bear in mind that the parameters attached to t
 A high-resolution version of this flow chart can be viewed as a PDF [here](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf).
 
 ![](../../Request-flow-chart.png)
+
+
+protected
+
+<div id="protocolchanges"></div>
+
+## Protocol Changes
 
 
 <div id="classTOC"></div>

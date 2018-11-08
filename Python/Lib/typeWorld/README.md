@@ -10,14 +10,15 @@ The protocol and app are expected to stabilize by the end of 2018.
 ## Contents
 
 1. [Introduction](#user-content-introduction)
-2. [Server Interaction](#user-content-serverinteraction)
-3. [Response Flow Chart](#user-content-responseflowchrt)
-4. [List of Classes](#user-content-classTOC)
-5. [Object model](#user-content-objectmodel)
-6. [Versioning](#user-content-versioning)
-7. [Use of Languages/Scripts](#user-content-languages)
-8. [Example Code](#user-content-example)
-9. [Class Reference](#user-content-classreference)
+1. [Server Interaction](#user-content-serverinteraction)
+1. [Response Flow Chart](#user-content-responseflowchrt)
+1. [Protocol Changes](#user-content-protocolchanges)
+1. [List of Classes](#user-content-classTOC)
+1. [Object model](#user-content-objectmodel)
+1. [Versioning](#user-content-versioning)
+1. [Use of Languages/Scripts](#user-content-languages)
+1. [Example Code](#user-content-example)
+1. [Class Reference](#user-content-classreference)
 
 
 
@@ -105,6 +106,13 @@ Whatever you do with your server, bear in mind that the parameters attached to t
 A high-resolution version of this flow chart can be viewed as a PDF [here](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf).
 
 ![](../../Request-flow-chart.png)
+
+
+protected
+
+<div id="protocolchanges"></div>
+
+## Protocol Changes
 
 
 <div id="classTOC"></div>
@@ -1151,7 +1159,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class_Font_attribute_beta)<br />[dateFirstPublished](#class_Font_attribute_dateFirstPublished)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[purpose](#class_Font_attribute_purpose)<br />[requiresUserID](#class_Font_attribute_requiresUserID)<br />[setName](#class_Font_attribute_setName)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[usedLicenses](#class_Font_attribute_usedLicenses)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
+[beta](#class_Font_attribute_beta)<br />[dateFirstPublished](#class_Font_attribute_dateFirstPublished)<br />[designers](#class_Font_attribute_designers)<br />[format](#class_Font_attribute_format)<br />[free](#class_Font_attribute_free)<br />[name](#class_Font_attribute_name)<br />[postScriptName](#class_Font_attribute_postScriptName)<br />[previewImage](#class_Font_attribute_previewImage)<br />[protected](#class_Font_attribute_protected)<br />[purpose](#class_Font_attribute_purpose)<br />[setName](#class_Font_attribute_setName)<br />[uniqueID](#class_Font_attribute_uniqueID)<br />[usedLicenses](#class_Font_attribute_usedLicenses)<br />[variableFont](#class_Font_attribute_variableFont)<br />[versions](#class_Font_attribute_versions)<br />
 
 ### Methods
 
@@ -1188,7 +1196,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['otf', 'ttc', 'ttf', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class_Font_attribute_purpose). Possible: ['ttc', 'ttf', 'woff2', 'otf', 'woff']
 
 Type: Str<br />
 Required: False<br />
@@ -1226,6 +1234,16 @@ If you want to make sure that the app loads the latest version of this resource,
 
 Type: Str<br />
 Required: False<br />
+<div id="class_Font_attribute_protected"></div>
+
+#### protected
+
+Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.
+
+Type: Bool<br />
+Required: False<br />
+Default value: False
+
 <div id="class_Font_attribute_purpose"></div>
 
 #### purpose
@@ -1234,16 +1252,6 @@ Technical purpose of font. This influences how the app handles the font. For ins
 
 Type: Str<br />
 Required: True<br />
-<div id="class_Font_attribute_requiresUserID"></div>
-
-#### requiresUserID
-
-Indication that the server requires a userID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway.
-
-Type: Bool<br />
-Required: False<br />
-Default value: False
-
 <div id="class_Font_attribute_setName"></div>
 
 #### setName
