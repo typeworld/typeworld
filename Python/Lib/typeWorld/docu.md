@@ -11,12 +11,13 @@ The protocol and app are expected to stabilize by the end of 2018.
 
 1. [Introduction](#user-content-introduction)
 2. [Server Interaction](#user-content-serverinteraction)
-3. [List of Classes](#user-content-classTOC)
-4. [Object model](#user-content-objectmodel)
-5. [Versioning](#user-content-versioning)
-6. [Use of Languages/Scripts](#user-content-languages)
-7. [Example Code](#user-content-example)
-8. [Class Reference](#user-content-classreference)
+3. [Response Flow Chart](#user-content-responseflowchrt)
+4. [List of Classes](#user-content-classTOC)
+5. [Object model](#user-content-objectmodel)
+6. [Versioning](#user-content-versioning)
+7. [Use of Languages/Scripts](#user-content-languages)
+8. [Example Code](#user-content-example)
+9. [Class Reference](#user-content-classreference)
 
 
 
@@ -95,6 +96,15 @@ I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` reque
 #### WARNING:
 
 Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
+
+
+<div id="responseflowchart"></div>
+
+## Response Flow Chart
+
+A high-resolution version of this flow chart can be viewed as a PDF [here]().
+
+![](../../Request-flow-chart.png)
 
 
 <div id="classTOC"></div>
