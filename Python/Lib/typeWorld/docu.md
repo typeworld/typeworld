@@ -84,7 +84,7 @@ The app will ask for the JSON responses at your API endpoint `https://awesomefon
 * `subscriptionID` The aforementioned ID to uniquely identify the fonts you serve.
 * `secretKey` The aforementioned secret key to authenticate the requester.
 * `anonymousAppID` is a key that uniquely identifies the Type.World app installation. You should use this to track how often fonts have been installed through the app for a certain user and reject requests once the limit has been reached.
-* `fontID` identifying the font to install or uninstall
+* `fontID` identifying the font to install or uninstall. This will be taken from the [Font.uniqueID](#user-content-class-font-attribute-uniqueid) attribute.
 * `fontVersion` identifying the font’s version to install
 * `userEmail` and `userName` in case the user has a Type.World user account and has explicitly agreed to reveal his/her identity on a per-subscription basis. This only makes sense in a trusted custom type development environment where the type designers may want to get in touch personally with the font’s users in a small work group, for instance in a branding agency. This tremendously streamlines everyone’s workflow. If necessary, a publisher in a trusted custom type development environment could reject the serving of subscriptions to requesters who are unidentified.
 
