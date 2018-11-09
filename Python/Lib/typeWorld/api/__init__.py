@@ -195,6 +195,14 @@ class Font(DictBasedObject):
 			if not self.parent.parent.parent.getDesignerByKeyword(designerKeyword):
 				critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
 
+		# Checking uniqueID for file name contradictions:
+		forbidden = '/?<>\\:*|^'
+		for char in forbidden:
+			if self.uniqueID.count(char):
+				criticial.append('uniqueID must not contain the character %s because it will be used for the font’s file name on disk.' % char)
+		if len(self.uniqueID) > 251:
+			criticial.append('uniqueID must not longer than 251 characters because it will be used for the font’s file name on disk. (255 characters minus 4 for .ttf/.otf etc.)' % char)
+
 		return information, warnings, critical
 
 	def getVersions(self):
