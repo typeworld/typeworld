@@ -133,7 +133,7 @@ if __name__ == '__main__':
 	# Let’s see if they are identical
 	assert api.sameContent(api2) == True
 
-
+	api.validate()
 
 
 	# Check for errors
@@ -148,6 +148,26 @@ if __name__ == '__main__':
 		font.format = 'abc'
 	except ValueError:
 		pass
+
+	try: 
+		font.uniqueID = 'a' * 255
+	except ValueError:
+		pass
+
+
+	font.uniqueID = 'a' * 255
+	information, warnings, critical = api.validate()
+	assert critical != []
+
+	font.uniqueID = 'abc:def'
+	information, warnings, critical = api.validate()
+	assert critical != []
+
+	# Back to normal
+	font.uniqueID = 'yanone-NonameSans-Bold'
+	information, warnings, critical = api.validate()
+	assert critical == []
+
 
 	try: 
 		response.command = 'abc'

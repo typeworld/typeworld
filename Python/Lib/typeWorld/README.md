@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'woff', 'ttc', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'ttc', 'woff2']
 
 Type: Str<br />
 Required: False<br />
@@ -1265,7 +1265,7 @@ Required: False<br />
 
 #### uniqueID
 
-A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and there must not be longer than 251 characters and must not contain the following characters: / ? < > \ : * | ^
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and therefore must not be longer than 251 characters and must not contain the following characters: / ? < > \ : * | ^
 
 Type: Str<br />
 Required: True<br />

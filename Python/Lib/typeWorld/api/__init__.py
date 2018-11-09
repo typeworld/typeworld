@@ -157,7 +157,7 @@ class Font(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-		'uniqueID':			[StringDataType,		True, 	None, 	'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and there must not be longer than 251 characters and must not contain the following characters: / ? < > \\ : * | ^'],
+		'uniqueID':			[StringDataType,		True, 	None, 	'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and therefore must not be longer than 251 characters and must not contain the following characters: / ? < > \\ : * | ^'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	'Complete PostScript name of font'],
 		'previewImage':		[WebURLDataType,		False, 	None, 	'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'setName':			[MultiLanguageTextProxy,False, 	None, 	'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
@@ -198,10 +198,10 @@ class Font(DictBasedObject):
 		# Checking uniqueID for file name contradictions:
 		forbidden = '/?<>\\:*|^'
 		for char in forbidden:
-			if self.uniqueID.count(char):
-				criticial.append('uniqueID must not contain the character %s because it will be used for the font’s file name on disk.' % char)
+			if self.uniqueID.count(char) > 0:
+				critical.append("uniqueID must not contain the character %s because it will be used for the font's file name on disk." % char)
 		if len(self.uniqueID) > 251:
-			criticial.append('uniqueID must not longer than 251 characters because it will be used for the font’s file name on disk. (255 characters minus 4 for .ttf/.otf etc.)' % char)
+			critical.append("uniqueID must not longer than 251 characters because it will be used for the font's file name on disk. (255 characters minus 4 for .ttf/.otf etc.)")
 
 		return information, warnings, critical
 
