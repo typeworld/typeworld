@@ -369,6 +369,7 @@ class ListProxy(DataType):
 
 class DictBasedObject(object):
     _structure = {}
+    _deprecatedKeys = []
     _possible_keys = []
     _dataType_for_possible_keys = None
 
@@ -380,6 +381,8 @@ class DictBasedObject(object):
         for keyword in self._structure.keys():
             if not typeWorld.api.base.ListProxy in inspect.getmro(self._structure[keyword][0]):
                 _list.append(keyword)
+
+        _list.extend(self._deprecatedKeys)
 
         return _list
 

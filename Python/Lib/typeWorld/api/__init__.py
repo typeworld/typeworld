@@ -157,7 +157,7 @@ class Font(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-		'uniqueID':			[StringDataType,		True, 	None, 	'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands.'],
+		'uniqueID':			[StringDataType,		True, 	None, 	'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and there must not be longer than 251 characters and must not contain the following characters: / ? < > \\ : * | ^'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	'Complete PostScript name of font'],
 		'previewImage':		[WebURLDataType,		False, 	None, 	'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'setName':			[MultiLanguageTextProxy,False, 	None, 	'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
@@ -171,9 +171,6 @@ class Font(DictBasedObject):
 		'protected':		[BooleanDataType,		False, 	False, 	'Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.'],
 		'dateFirstPublished':[DateDataType,			False, 	None, 	'Date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
 		'usedLicenses':	 	[LicenseUsageListProxy,	True, 	None, 	'List of ::LicenseUsage:: objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.'],
-
-
-
 	}
 
 	def __repr__(self):
