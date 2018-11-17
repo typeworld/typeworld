@@ -1164,7 +1164,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Methods
 
-[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
+[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
 
 ## Attributes
 
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttf', 'otf', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff', 'ttc', 'woff2']
 
 Type: Str<br />
 Required: False<br />
@@ -1265,7 +1265,7 @@ Required: False<br />
 
 #### uniqueID
 
-A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, and therefore must not be longer than 251 characters and must not contain the following characters: / ? < > \ : * | ^
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \ : * | ^
 
 Type: Str<br />
 Required: True<br />
@@ -1298,6 +1298,14 @@ Required: False<br />
 
 
 ## Methods
+
+<div id="class-font-method-filename"></div>
+
+#### filename()
+
+Returns the recommended font file name to be used to store the font on disk.
+
+It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 255 characters.
 
 <div id="class-font-method-getdesigners"></div>
 
