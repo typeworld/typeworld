@@ -20,21 +20,21 @@ INSTALLABLEFONTSCOMMAND = {
     'currentVersion': 0.1,
     'versionHistory': [0.1],
     'responseTypes': [SUCCESS, ERROR],
-    'acceptableMimeTypes': ['application/json'],
+    'acceptableMimeTypes': ['application/json', 'application/json; charset=utf-8'],
     }
 INSTALLFONTCOMMAND ={
     'keyword': 'installFont',
     'currentVersion': 0.1,
     'versionHistory': [0.1],
     'responseTypes': [SUCCESS, ERROR, SEATALLOWANCEREACHED],
-    'acceptableMimeTypes': ['application/json'],
+    'acceptableMimeTypes': ['application/json', 'application/json; charset=utf-8'],
     }
 UNINSTALLFONTCOMMAND =  {
     'keyword': 'uninstallFont',
     'currentVersion': 0.1,
     'versionHistory': [0.1],
     'responseTypes': [SUCCESS, ERROR],
-    'acceptableMimeTypes': ['application/json'],
+    'acceptableMimeTypes': ['application/json', 'application/json; charset=utf-8'],
     }
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
 
