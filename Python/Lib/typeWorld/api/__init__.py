@@ -548,7 +548,6 @@ class InstallFontResponse(BaseResponse):
 		'encoding': 		[FontEncodingDataType,		False, 	None, 	'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
 		'fileName':			[UnicodeDataType, 			False, 	None, 	'Suggested file name of font. This may be ignored by the app in favour of a unique file name.'],
 
-		# Response-specific
 		}
 
 	def customValidation(self):

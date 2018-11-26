@@ -558,6 +558,7 @@ class DictBasedObject(object):
         super(DictBasedObject, self).__init__()
 
         object.__setattr__(self, '_content', {})
+        object.__setattr__(self, '_allowedKeys', set(self._structure.keys()) | set(self._possible_keys))
 
         # Add base structure to main structure:
 #       if hasattr(self, '_base_structure') and self._base_structure:
@@ -595,7 +596,7 @@ class DictBasedObject(object):
     def __getattr__(self, key):
 
 
-        if key in self.allowedKeys():
+        if key in self._allowedKeys:
             self.initAttr(key)
 #           print '__getattr__', self, key, self._content[key]
             return self._content[key].get()
@@ -607,7 +608,8 @@ class DictBasedObject(object):
             raise AttributeError('%s does not have an attribute "%s".' % (self.__class__.__name__, key))
 
     def __setattr__(self, key, value):
-        if key in self.allowedKeys():
+
+        if key in self._allowedKeys:
             self.initAttr(key)
 
             if issubclass(value.__class__, (DictBasedObject, ListProxy, Proxy, DataType)):
@@ -627,10 +629,6 @@ class DictBasedObject(object):
 
     def get(self, key):
         return self.__getattr__(key)
-
-    def allowedKeys(self):
-        allowed = set(self._structure.keys()) | set(self._possible_keys)
-        return allowed
 
     def validateData(self, key, data):
         information = []
@@ -808,10 +806,9 @@ class DictBasedObject(object):
 
     def loadDict(self, d):
 
-        allowedKeys = self.allowedKeys()
 
         for key in list(d.keys()):
-            if key in allowedKeys:
+            if key in self._allowedKeys:
 
 #               print 'Load key %s' % key
 
