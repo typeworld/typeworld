@@ -10,7 +10,13 @@ import typeWorld.api.base
 # Response types (success, error, ...)
 SUCCESS = 'success'
 ERROR = 'error'
+
+UNKNOWNFONT = 'unknownFont'
+INSUFFICIENTPERMISSION = 'insufficientPermission'
+DUPLICATEINSTALLATION = 'duplicateInstallation'
 SEATALLOWANCEREACHED = 'seatAllowanceReached'
+UNKNOWNINSTALLATION = 'unknownInstallation'
+NOFONTSAVAILABLE = 'noFontsAvailable'
 
 PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 
@@ -19,21 +25,21 @@ INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': 0.1,
     'versionHistory': [0.1],
-    'responseTypes': [SUCCESS, ERROR],
+    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
     'keyword': 'installFont',
     'currentVersion': 0.1,
     'versionHistory': [0.1],
-    'responseTypes': [SUCCESS, ERROR, SEATALLOWANCEREACHED],
+    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, DUPLICATEINSTALLATION, SEATALLOWANCEREACHED],
     'acceptableMimeTypes': ['application/json'],
     }
 UNINSTALLFONTCOMMAND =  {
     'keyword': 'uninstallFont',
     'currentVersion': 0.1,
     'versionHistory': [0.1],
-    'responseTypes': [SUCCESS, ERROR],
+    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, UNKNOWNINSTALLATION],
     'acceptableMimeTypes': ['application/json'],
     }
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]

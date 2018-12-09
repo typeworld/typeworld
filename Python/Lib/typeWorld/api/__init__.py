@@ -452,7 +452,7 @@ class InstallableFontsResponse(BaseResponse):
 	_structure = {
 
 		# Root
-		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.'],
+		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.' % INSTALLABLEFONTSCOMMAND['responseTypes']],
 		'errorMessage': 	[MultiLanguageTextProxy,				False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
 		'version': 			[FloatDataType,					True, 	INSTALLABLEFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
 
@@ -540,7 +540,7 @@ class InstallFontResponse(BaseResponse):
 	_structure = {
 
 		# Root
-		'type': 			[InstallFontResponseType,	True, 	None, 	'Success or error.'],
+		'type': 			[InstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % INSTALLFONTCOMMAND['responseTypes']],
 		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 
@@ -582,7 +582,7 @@ class UninstallFontResponse(BaseResponse):
 	_structure = {
 
 		# Root
-		'type': 			[UninstallFontResponseType,	True, 	None, 	'Success or error.'],
+		'type': 			[UninstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::UninstallFontResponse.errorMessage::.' % UNINSTALLFONTCOMMAND['responseTypes']],
 		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[FloatDataType,					True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 

@@ -720,7 +720,7 @@ Required: False<br />
 
 #### type
 
-Type of response. This can be "success", "error", or "custom". In case of "custom", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'noFontsAvailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
 
 Type: Str<br />
 Required: True<br />
@@ -1197,7 +1197,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'ttc', 'woff', 'woff2']
 
 Type: Str<br />
 Required: False<br />
@@ -1454,7 +1454,7 @@ Required: False<br />
 
 #### type
 
-Success or error.
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 Type: Str<br />
 Required: True<br />
@@ -1496,7 +1496,7 @@ Required: False<br />
 
 #### type
 
-Success or error.
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
 
 Type: Str<br />
 Required: True<br />
