@@ -261,7 +261,7 @@ class WebURLDataType(UnicodeDataType):
 class WebResourceURLDataType(WebURLDataType):
 
     def formatHint(self):
-        return 'This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/family_xy/regular/speciment.pdf?timestamp=1548239062'
+        return 'This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062'
 
 class EmailDataType(UnicodeDataType):
 
