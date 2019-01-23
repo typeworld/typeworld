@@ -171,6 +171,7 @@ class Font(DictBasedObject):
 		'protected':		[BooleanDataType,		False, 	False, 	'Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.'],
 		'dateFirstPublished':[DateDataType,			False, 	None, 	'Date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
 		'usedLicenses':	 	[LicenseUsageListProxy,	True, 	None, 	'List of ::LicenseUsage:: objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.'],
+		'pdf':				[WebURLDataType,		False, 	None, 	'URL of PDF file with type specimen and/or instructions for this particular. (See also: ::Family.pdf::'],
 	}
 
 	def __repr__(self):
@@ -298,6 +299,7 @@ class Family(DictBasedObject):
 		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'dateFirstPublished':		[DateDataType,			False, 	None, 	'Date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
+		'pdf':						[WebURLDataType,		False, 	None, 	'URL of PDF file with type specimen and/or instructions for entire family. (See also: ::Font.pdf::'],
 	}
 
 	def __repr__(self):

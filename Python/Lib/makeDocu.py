@@ -11,8 +11,6 @@ docstrings = api.docu()
 docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'docu.md'))
 
 
-
-
 handles = []
 for key in [x[0] for x in docstrings]:
 	if not key in handles:

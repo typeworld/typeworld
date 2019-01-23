@@ -989,7 +989,7 @@ Required: True<br />
 
 ### Attributes
 
-[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designers](#class-family-attribute-designers)<br />[fonts](#class-family-attribute-fonts)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
+[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designers](#class-family-attribute-designers)<br />[fonts](#class-family-attribute-fonts)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
 
 ### Methods
 
@@ -1054,6 +1054,14 @@ Human-readable name of font family. This may include any additions that you find
 
 Type: [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 Required: True<br />
+<div id="class-family-attribute-pdf"></div>
+
+#### pdf
+
+URL of PDF file with type specimen and/or instructions for entire family. (See also: [Font.pdf](#user-content-class-font-attribute-pdf)
+
+Type: Str<br />
+Required: False<br />
 <div id="class-family-attribute-sourceURL"></div>
 
 #### sourceURL
@@ -1160,7 +1168,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class-font-attribute-beta)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[beta](#class-font-attribute-beta)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1197,7 +1205,7 @@ Required: False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'ttc', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'otf', 'woff2', 'woff']
 
 Type: Str<br />
 Required: False<br />
@@ -1217,6 +1225,14 @@ Human-readable name of font. This may include any additions that you find useful
 
 Type: [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 Required: True<br />
+<div id="class-font-attribute-pdf"></div>
+
+#### pdf
+
+URL of PDF file with type specimen and/or instructions for this particular. (See also: [Family.pdf](#user-content-class-family-attribute-pdf)
+
+Type: Str<br />
+Required: False<br />
 <div id="class-font-attribute-postScriptName"></div>
 
 #### postScriptName
