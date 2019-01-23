@@ -483,14 +483,14 @@ class DictBasedObject(object):
             if self._structure[key][3]:
                 attributes += self.linkDocuText(self._structure[key][3]) + '\n\n'
 
-            attributes += 'Type: %s' % self.typeDescription(self._structure[key][0]) + '<br />\n'
+            attributes += '_Type:_ %s' % self.typeDescription(self._structure[key][0]) + '<br />\n'
 
             # Format Hint
             hint = self._structure[key][0]().formatHint()
             if hint:
-                attributes += 'Format: %s' % hint + '<br />\n'
+                attributes += '_Format:_ %s' % hint + '<br />\n'
 
-            attributes += 'Required: %s' % self._structure[key][1] + '<br />\n'
+            attributes += '_Required:_ %s' % self._structure[key][1] + '<br />\n'
 
             if self._structure[key][2] != None:
                 attributes += 'Default value: %s' % self._structure[key][2] + '\n\n'
