@@ -248,6 +248,8 @@ class DateDataType(StringDataType):
         return 'YYYY-MM-DD'
 
 
+
+
 class WebURLDataType(UnicodeDataType):
 
     def valid(self):
@@ -255,6 +257,11 @@ class WebURLDataType(UnicodeDataType):
             return 'Needs to start with http:// or https://'
         else:
             return True
+
+class WebResourceURLDataType(WebURLDataType):
+
+    def formatHint(self):
+        return 'This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/family_xy/regular/speciment.pdf?timestamp=1548239062'
 
 class EmailDataType(UnicodeDataType):
 

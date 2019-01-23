@@ -159,7 +159,7 @@ class Font(DictBasedObject):
 		'name':	 			[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
 		'uniqueID':			[StringDataType,		True, 	None, 	'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \\ : * | ^'],
 		'postScriptName':	[UnicodeDataType,		True, 	None, 	'Complete PostScript name of font'],
-		'previewImage':		[WebURLDataType,		False, 	None, 	'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
+		'previewImage':		[WebResourceURLDataType,False, 	None, 	'URL of preview image of font, specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'setName':			[MultiLanguageTextProxy,False, 	None, 	'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
 		'versions':	 		[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'designers':	 	[DesignersReferencesListProxy,	False, 	None, 	'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
@@ -171,7 +171,7 @@ class Font(DictBasedObject):
 		'protected':		[BooleanDataType,		False, 	False, 	'Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.'],
 		'dateFirstPublished':[DateDataType,			False, 	None, 	'Date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
 		'usedLicenses':	 	[LicenseUsageListProxy,	True, 	None, 	'List of ::LicenseUsage:: objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.'],
-		'pdf':				[WebURLDataType,		False, 	None, 	'URL of PDF file with type specimen and/or instructions for this particular. (See also: ::Family.pdf::'],
+		'pdf':				[WebResourceURLDataType,False, 	None, 	'URL of PDF file with type specimen and/or instructions for this particular font. (See also: ::Family.pdf::'],
 	}
 
 	def __repr__(self):
@@ -283,7 +283,7 @@ class FontListProxy(ListProxy):
 # Font Family
 
 class BillboardListProxy(ListProxy):
-	dataType = WebURLDataType
+	dataType = WebResourceURLDataType
 
 class Family(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
@@ -299,7 +299,7 @@ class Family(DictBasedObject):
 		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'dateFirstPublished':		[DateDataType,			False, 	None, 	'Date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
-		'pdf':						[WebURLDataType,		False, 	None, 	'URL of PDF file with type specimen and/or instructions for entire family. (See also: ::Font.pdf::'],
+		'pdf':						[WebResourceURLDataType,False, 	None, 	'URL of PDF file with type specimen and/or instructions for entire family. (See also: ::Font.pdf::'],
 	}
 
 	def __repr__(self):
@@ -360,7 +360,7 @@ class Foundry(DictBasedObject):
 	_structure = {
 		'uniqueID':					[StringDataType,		True, 	None, 	'An string that uniquely identifies this foundry within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
-		'logo':	 					[WebURLDataType,		False, 	None, 	'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
+		'logo':	 					[WebResourceURLDataType,False, 	None, 	'URL of foundry’s logo. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
 		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry'],
 		'supportEmail':	 			[EmailDataType,			False, 	None, 	'Support email address for this foundry'],
@@ -674,7 +674,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'supportedCommands': 	[SupportedAPICommandsListProxy, True, 	None, 	'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
 		'name': 				[MultiLanguageTextProxy, 	True, 	None, 	'Human-readable name of API endpoint'],
 		'public': 				[BooleanDataType, 			True, 	False, 	'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
-		'logo': 				[WebURLDataType, 			False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
+		'logo': 				[WebResourceURLDataType, 	False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow. %s' % WEBRESOURCEDESCRIPTION],
 		'backgroundColor': 		[HexColorDataType,			False, 	None, 	'Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
