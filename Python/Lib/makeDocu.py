@@ -30,7 +30,5 @@ for handle in handles:
 			docstring += '\n\n'
 			break
 
-
-
 if not 'TRAVIS' in os.environ:
 	WriteToFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'README.md'), docstring)
