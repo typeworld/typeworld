@@ -477,7 +477,7 @@ class DictBasedObject(object):
 
             attributesList.append(key)
             attributes += '<div id="class-%s-attribute-%s"></div>\n\n' % (self.__class__.__name__.lower(), key)
-            attributes += '#### %s\n\n' % key
+            attributes += '#### __%s__\n\n' % key
 
             # Description
             if self._structure[key][3]:

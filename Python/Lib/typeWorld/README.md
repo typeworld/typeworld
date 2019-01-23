@@ -438,7 +438,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 <div id="class-apiroot-attribute-adminEmail"></div>
 
-#### adminEmail
+#### __adminEmail__
 
 API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.
 
@@ -446,7 +446,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-apiroot-attribute-backgroundColor"></div>
 
-#### backgroundColor
+#### __backgroundColor__
 
 Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class-apiroot-attribute-logo)
 
@@ -455,7 +455,7 @@ _Format: Hex RRGGBB (without leading #)_<br />
 _Required: False_<br />
 <div id="class-apiroot-attribute-canonicalURL"></div>
 
-#### canonicalURL
+#### __canonicalURL__
 
 Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.
 
@@ -463,7 +463,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-apiroot-attribute-licenseIdentifier"></div>
 
-#### licenseIdentifier
+#### __licenseIdentifier__
 
 Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.
 
@@ -473,7 +473,7 @@ Default value: CC-BY-NC-ND-4.0
 
 <div id="class-apiroot-attribute-logo"></div>
 
-#### logo
+#### __logo__
 
 URL of logo of API endpoint, for publication. Specifications to follow.
 
@@ -482,7 +482,7 @@ _Format: This resource may get downloaded and cached on the client computer. To 
 _Required: False_<br />
 <div id="class-apiroot-attribute-name"></div>
 
-#### name
+#### __name__
 
 Human-readable name of API endpoint
 
@@ -490,7 +490,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: True_<br />
 <div id="class-apiroot-attribute-public"></div>
 
-#### public
+#### __public__
 
 API endpoint is meant to be publicly visible and its existence may be publicized within the project
 
@@ -500,7 +500,7 @@ Default value: False
 
 <div id="class-apiroot-attribute-response"></div>
 
-#### response
+#### __response__
 
 Response of the API call
 
@@ -508,7 +508,7 @@ _Type: [Response](#user-content-class-response)_<br />
 _Required: False_<br />
 <div id="class-apiroot-attribute-supportedCommands"></div>
 
-#### supportedCommands
+#### __supportedCommands__
 
 List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
 
@@ -516,7 +516,7 @@ _Type: List of Str objects_<br />
 _Required: True_<br />
 <div id="class-apiroot-attribute-website"></div>
 
-#### website
+#### __website__
 
 URL of human-visitable website of API endpoint, for publication
 
@@ -612,7 +612,7 @@ Like getText(), but additionally returns the language of whatever text was found
 
 <div id="class-response-attribute-command"></div>
 
-#### command
+#### __command__
 
 Command code of the response. The specific response must then be present under an attribute of same name.
 
@@ -620,19 +620,19 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-response-attribute-installFont"></div>
 
-#### installFont
+#### __installFont__
 
 _Type: [InstallFontResponse](#user-content-class-installfontresponse)_<br />
 _Required: False_<br />
 <div id="class-response-attribute-installableFonts"></div>
 
-#### installableFonts
+#### __installableFonts__
 
 _Type: [InstallableFontsResponse](#user-content-class-installablefontsresponse)_<br />
 _Required: False_<br />
 <div id="class-response-attribute-uninstallFont"></div>
 
-#### uninstallFont
+#### __uninstallFont__
 
 _Type: [UninstallFontResponse](#user-content-class-uninstallfontresponse)_<br />
 _Required: False_<br />
@@ -685,7 +685,7 @@ api.response.installableFonts = InstallableFontsResponse()
 
 <div id="class-installablefontsresponse-attribute-designers"></div>
 
-#### designers
+#### __designers__
 
 List of [Designer](#user-content-class-designer) objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.
 
@@ -693,7 +693,7 @@ _Type: List of [Designer](#user-content-class-designer) objects_<br />
 _Required: False_<br />
 <div id="class-installablefontsresponse-attribute-errorMessage"></div>
 
-#### errorMessage
+#### __errorMessage__
 
 Description of error in case of [InstallableFontsResponse.type](#user-content-class-installablefontsresponse-attribute-type) being "custom".
 
@@ -701,7 +701,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-installablefontsresponse-attribute-foundries"></div>
 
-#### foundries
+#### __foundries__
 
 List of [Foundry](#user-content-class-foundry) objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.
 
@@ -709,7 +709,7 @@ _Type: List of [Foundry](#user-content-class-foundry) objects_<br />
 _Required: True_<br />
 <div id="class-installablefontsresponse-attribute-name"></div>
 
-#### name
+#### __name__
 
 A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.
 
@@ -717,7 +717,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-installablefontsresponse-attribute-type"></div>
 
-#### type
+#### __type__
 
 Type of response. This can be any of ['success', 'error', 'noFontsAvailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
 
@@ -725,7 +725,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-installablefontsresponse-attribute-userEmail"></div>
 
-#### userEmail
+#### __userEmail__
 
 The email address of the user who these fonts are licensed to.
 
@@ -733,7 +733,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-installablefontsresponse-attribute-userName"></div>
 
-#### userName
+#### __userName__
 
 The name of the user who these fonts are licensed to.
 
@@ -741,7 +741,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-installablefontsresponse-attribute-version"></div>
 
-#### version
+#### __version__
 
 Version of "installableFonts" response
 
@@ -767,7 +767,7 @@ Default value: 0.1
 
 <div id="class-designer-attribute-description"></div>
 
-#### description
+#### __description__
 
 Description of designer
 
@@ -775,7 +775,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-designer-attribute-keyword"></div>
 
-#### keyword
+#### __keyword__
 
 Machine-readable keyword under which the designer will be referenced from the individual fonts or font families
 
@@ -783,7 +783,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-designer-attribute-name"></div>
 
-#### name
+#### __name__
 
 Human-readable name of designer
 
@@ -791,7 +791,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: True_<br />
 <div id="class-designer-attribute-website"></div>
 
-#### website
+#### __website__
 
 Designer’s web site
 
@@ -815,7 +815,7 @@ _Required: False_<br />
 
 <div id="class-foundry-attribute-backgroundColor"></div>
 
-#### backgroundColor
+#### __backgroundColor__
 
 Foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#user-content-class-foundry-attribute-logo)
 
@@ -824,7 +824,7 @@ _Format: Hex RRGGBB (without leading #)_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-description"></div>
 
-#### description
+#### __description__
 
 Description of foundry
 
@@ -832,7 +832,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-email"></div>
 
-#### email
+#### __email__
 
 General email address for this foundry
 
@@ -840,7 +840,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-facebook"></div>
 
-#### facebook
+#### __facebook__
 
 Facebook page URL handle for this foundry. The URL 
 
@@ -848,7 +848,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-families"></div>
 
-#### families
+#### __families__
 
 List of [Family](#user-content-class-family) objects.
 
@@ -856,7 +856,7 @@ _Type: List of [Family](#user-content-class-family) objects_<br />
 _Required: True_<br />
 <div id="class-foundry-attribute-instagram"></div>
 
-#### instagram
+#### __instagram__
 
 Instagram handle for this foundry, without the @
 
@@ -864,7 +864,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-licenses"></div>
 
-#### licenses
+#### __licenses__
 
 List of [LicenseDefinition](#user-content-class-licensedefinition) objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.
 
@@ -872,7 +872,7 @@ _Type: List of [LicenseDefinition](#user-content-class-licensedefinition) object
 _Required: True_<br />
 <div id="class-foundry-attribute-logo"></div>
 
-#### logo
+#### __logo__
 
 URL of foundry’s logo. Specifications to follow.
 
@@ -881,7 +881,7 @@ _Format: This resource may get downloaded and cached on the client computer. To 
 _Required: False_<br />
 <div id="class-foundry-attribute-name"></div>
 
-#### name
+#### __name__
 
 Name of foundry
 
@@ -889,7 +889,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: True_<br />
 <div id="class-foundry-attribute-skype"></div>
 
-#### skype
+#### __skype__
 
 Skype handle for this foundry
 
@@ -897,7 +897,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-supportEmail"></div>
 
-#### supportEmail
+#### __supportEmail__
 
 Support email address for this foundry
 
@@ -905,7 +905,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-telephone"></div>
 
-#### telephone
+#### __telephone__
 
 Telephone number for this foundry
 
@@ -913,7 +913,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-twitter"></div>
 
-#### twitter
+#### __twitter__
 
 Twitter handle for this foundry, without the @
 
@@ -921,7 +921,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-foundry-attribute-uniqueID"></div>
 
-#### uniqueID
+#### __uniqueID__
 
 An string that uniquely identifies this foundry within the publisher.
 
@@ -929,7 +929,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-foundry-attribute-website"></div>
 
-#### website
+#### __website__
 
 Website for this foundry
 
@@ -953,7 +953,7 @@ _Required: False_<br />
 
 <div id="class-licensedefinition-attribute-URL"></div>
 
-#### URL
+#### __URL__
 
 URL where the font license text can be viewed online
 
@@ -961,7 +961,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-licensedefinition-attribute-keyword"></div>
 
-#### keyword
+#### __keyword__
 
 Machine-readable keyword under which the license will be referenced from the individual fonts.
 
@@ -969,7 +969,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-licensedefinition-attribute-name"></div>
 
-#### name
+#### __name__
 
 Human-readable name of font license
 
@@ -997,7 +997,7 @@ _Required: True_<br />
 
 <div id="class-family-attribute-billboards"></div>
 
-#### billboards
+#### __billboards__
 
 List of URLs pointing at images to show for this typeface, specifications to follow
 
@@ -1005,7 +1005,7 @@ _Type: List of Str objects_<br />
 _Required: False_<br />
 <div id="class-family-attribute-dateFirstPublished"></div>
 
-#### dateFirstPublished
+#### __dateFirstPublished__
 
 Date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#user-content-class-font-attribute-datefirstpublished).
 
@@ -1014,7 +1014,7 @@ _Format: YYYY-MM-DD_<br />
 _Required: False_<br />
 <div id="class-family-attribute-description"></div>
 
-#### description
+#### __description__
 
 Description of font family
 
@@ -1022,7 +1022,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-family-attribute-designers"></div>
 
-#### designers
+#### __designers__
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-installablefontsresponse-attribute-designers). In case designers differ between fonts within the same family, they can also be defined at the font level at [Font.designers](#user-content-class-font-attribute-designers). The font-level references take precedence over the family-level references.
 
@@ -1030,7 +1030,7 @@ _Type: List of Str objects_<br />
 _Required: False_<br />
 <div id="class-family-attribute-fonts"></div>
 
-#### fonts
+#### __fonts__
 
 List of [Font](#user-content-class-font) objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.
 
@@ -1038,7 +1038,7 @@ _Type: List of [Font](#user-content-class-font) objects_<br />
 _Required: True_<br />
 <div id="class-family-attribute-issueTrackerURL"></div>
 
-#### issueTrackerURL
+#### __issueTrackerURL__
 
 URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities
 
@@ -1046,7 +1046,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-family-attribute-name"></div>
 
-#### name
+#### __name__
 
 Human-readable name of font family. This may include any additions that you find useful to communicate to your users.
 
@@ -1054,7 +1054,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: True_<br />
 <div id="class-family-attribute-pdf"></div>
 
-#### pdf
+#### __pdf__
 
 URL of PDF file with type specimen and/or instructions for entire family. (See also: [Font.pdf](#user-content-class-font-attribute-pdf)
 
@@ -1063,7 +1063,7 @@ _Format: This resource may get downloaded and cached on the client computer. To 
 _Required: False_<br />
 <div id="class-family-attribute-sourceURL"></div>
 
-#### sourceURL
+#### __sourceURL__
 
 URL pointing to the source of a font project, such as a GitHub repository
 
@@ -1071,7 +1071,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-family-attribute-uniqueID"></div>
 
-#### uniqueID
+#### __uniqueID__
 
 An string that uniquely identifies this family within the publisher.
 
@@ -1079,7 +1079,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-family-attribute-versions"></div>
 
-#### versions
+#### __versions__
 
 List of [Version](#user-content-class-version) objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the [Font](#user-content-class-font) object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
 
@@ -1120,7 +1120,7 @@ Returns a list of [Designer](#user-content-class-designer) objects that represen
 
 <div id="class-version-attribute-description"></div>
 
-#### description
+#### __description__
 
 Description of font version
 
@@ -1128,7 +1128,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-version-attribute-number"></div>
 
-#### number
+#### __number__
 
 Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.
 
@@ -1137,7 +1137,7 @@ _Format: Simple float number (1.01) or semantic versioning (2.0.0-rc.1)_<br />
 _Required: True_<br />
 <div id="class-version-attribute-releaseDate"></div>
 
-#### releaseDate
+#### __releaseDate__
 
 Font version’s release date.
 
@@ -1177,7 +1177,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 <div id="class-font-attribute-beta"></div>
 
-#### beta
+#### __beta__
 
 Font is in beta stage. For UI signaling
 
@@ -1185,7 +1185,7 @@ _Type: Bool_<br />
 _Required: False_<br />
 <div id="class-font-attribute-dateFirstPublished"></div>
 
-#### dateFirstPublished
+#### __dateFirstPublished__
 
 Date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#user-content-class-family-attribute-datefirstpublished).
 
@@ -1194,7 +1194,7 @@ _Format: YYYY-MM-DD_<br />
 _Required: False_<br />
 <div id="class-font-attribute-designers"></div>
 
-#### designers
+#### __designers__
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-installablefontsresponse-attribute-designers). This attribute overrides the designer definitions at the family level at [Family.designers](#user-content-class-family-attribute-designers).
 
@@ -1202,15 +1202,15 @@ _Type: List of Str objects_<br />
 _Required: False_<br />
 <div id="class-font-attribute-format"></div>
 
-#### format
+#### __format__
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'woff2', 'woff', 'otf']
 
 _Type: Str_<br />
 _Required: False_<br />
 <div id="class-font-attribute-free"></div>
 
-#### free
+#### __free__
 
 Font is freeware. For UI signaling
 
@@ -1218,7 +1218,7 @@ _Type: Bool_<br />
 _Required: False_<br />
 <div id="class-font-attribute-name"></div>
 
-#### name
+#### __name__
 
 Human-readable name of font. This may include any additions that you find useful to communicate to your users.
 
@@ -1226,7 +1226,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: True_<br />
 <div id="class-font-attribute-pdf"></div>
 
-#### pdf
+#### __pdf__
 
 URL of PDF file with type specimen and/or instructions for this particular font. (See also: [Family.pdf](#user-content-class-family-attribute-pdf)
 
@@ -1235,7 +1235,7 @@ _Format: This resource may get downloaded and cached on the client computer. To 
 _Required: False_<br />
 <div id="class-font-attribute-postScriptName"></div>
 
-#### postScriptName
+#### __postScriptName__
 
 Complete PostScript name of font
 
@@ -1243,7 +1243,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-font-attribute-previewImage"></div>
 
-#### previewImage
+#### __previewImage__
 
 URL of preview image of font, specifications to follow.
 
@@ -1252,7 +1252,7 @@ _Format: This resource may get downloaded and cached on the client computer. To 
 _Required: False_<br />
 <div id="class-font-attribute-protected"></div>
 
-#### protected
+#### __protected__
 
 Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.
 
@@ -1262,7 +1262,7 @@ Default value: False
 
 <div id="class-font-attribute-purpose"></div>
 
-#### purpose
+#### __purpose__
 
 Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: ['desktop', 'web', 'app']
 
@@ -1270,7 +1270,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-font-attribute-setName"></div>
 
-#### setName
+#### __setName__
 
 Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".
 
@@ -1278,7 +1278,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-font-attribute-uniqueID"></div>
 
-#### uniqueID
+#### __uniqueID__
 
 A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \ : * | ^
 
@@ -1286,7 +1286,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-font-attribute-usedLicenses"></div>
 
-#### usedLicenses
+#### __usedLicenses__
 
 List of [LicenseUsage](#user-content-class-licenseusage) objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.
 
@@ -1294,7 +1294,7 @@ _Type: List of [LicenseUsage](#user-content-class-licenseusage) objects_<br />
 _Required: True_<br />
 <div id="class-font-attribute-variableFont"></div>
 
-#### variableFont
+#### __variableFont__
 
 Font is an OpenType Variable Font. For UI signaling
 
@@ -1302,7 +1302,7 @@ _Type: Bool_<br />
 _Required: False_<br />
 <div id="class-font-attribute-versions"></div>
 
-#### versions
+#### __versions__
 
 List of [Version](#user-content-class-version) objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under [Family.versions](#user-content-class-family-attribute-versions), which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
 
@@ -1359,7 +1359,7 @@ This is the final list based on the version information in this font object as w
 
 <div id="class-licenseusage-attribute-allowanceDescription"></div>
 
-#### allowanceDescription
+#### __allowanceDescription__
 
 In case of non-desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
 
@@ -1367,7 +1367,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-licenseusage-attribute-dateAddedForUser"></div>
 
-#### dateAddedForUser
+#### __dateAddedForUser__
 
 Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the [Version.releaseDate](#user-content-class-version-attribute-releasedate), although they could be identical.
 
@@ -1376,7 +1376,7 @@ _Format: YYYY-MM-DD_<br />
 _Required: False_<br />
 <div id="class-licenseusage-attribute-keyword"></div>
 
-#### keyword
+#### __keyword__
 
 Keyword reference of font’s license. This license must be specified in [Foundry.licenses](#user-content-class-foundry-attribute-licenses)
 
@@ -1384,7 +1384,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-licenseusage-attribute-seatsAllowedForUser"></div>
 
-#### seatsAllowedForUser
+#### __seatsAllowedForUser__
 
 In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations permitted by the user’s license.
 
@@ -1392,7 +1392,7 @@ _Type: Int_<br />
 _Required: False_<br />
 <div id="class-licenseusage-attribute-seatsInstalledByUser"></div>
 
-#### seatsInstalledByUser
+#### __seatsInstalledByUser__
 
 In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
 
@@ -1400,7 +1400,7 @@ _Type: Int_<br />
 _Required: False_<br />
 <div id="class-licenseusage-attribute-upgradeURL"></div>
 
-#### upgradeURL
+#### __upgradeURL__
 
 URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.
 
@@ -1435,7 +1435,7 @@ Returns the [License](#user-content-class-license) object that this font referen
 
 <div id="class-installfontresponse-attribute-encoding"></div>
 
-#### encoding
+#### __encoding__
 
 Encoding type for binary font data. Currently supported: ['base64']
 
@@ -1443,7 +1443,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-installfontresponse-attribute-errorMessage"></div>
 
-#### errorMessage
+#### __errorMessage__
 
 Description of error in case of custom response type
 
@@ -1451,7 +1451,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-installfontresponse-attribute-fileName"></div>
 
-#### fileName
+#### __fileName__
 
 Suggested file name of font. This may be ignored by the app in favour of a unique file name.
 
@@ -1459,7 +1459,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-installfontresponse-attribute-font"></div>
 
-#### font
+#### __font__
 
 Binary font data encoded to a string using [InstallFontResponse.encoding](#user-content-class-installfontresponse-attribute-encoding)
 
@@ -1467,7 +1467,7 @@ _Type: Str_<br />
 _Required: False_<br />
 <div id="class-installfontresponse-attribute-type"></div>
 
-#### type
+#### __type__
 
 Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
@@ -1475,7 +1475,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-installfontresponse-attribute-version"></div>
 
-#### version
+#### __version__
 
 Version of "installFont" response
 
@@ -1501,7 +1501,7 @@ Default value: 0.1
 
 <div id="class-uninstallfontresponse-attribute-errorMessage"></div>
 
-#### errorMessage
+#### __errorMessage__
 
 Description of error in case of custom response type
 
@@ -1509,7 +1509,7 @@ _Type: [MultiLanguageText](#user-content-class-multilanguagetext)_<br />
 _Required: False_<br />
 <div id="class-uninstallfontresponse-attribute-type"></div>
 
-#### type
+#### __type__
 
 Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
 
@@ -1517,7 +1517,7 @@ _Type: Str_<br />
 _Required: True_<br />
 <div id="class-uninstallfontresponse-attribute-version"></div>
 
-#### version
+#### __version__
 
 Version of "uninstallFont" response
 
