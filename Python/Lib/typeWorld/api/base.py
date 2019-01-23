@@ -477,20 +477,20 @@ class DictBasedObject(object):
 
             attributesList.append(key)
             attributes += '<div id="class-%s-attribute-%s"></div>\n\n' % (self.__class__.__name__.lower(), key)
-            attributes += '#### __%s__\n\n' % key
+            attributes += '### %s\n\n' % key
 
             # Description
             if self._structure[key][3]:
                 attributes += self.linkDocuText(self._structure[key][3]) + '\n\n'
 
-            attributes += '_Type: %s_' % self.typeDescription(self._structure[key][0]) + '<br />\n'
+            attributes += '__Type:__ %s' % self.typeDescription(self._structure[key][0]) + '<br />\n'
 
             # Format Hint
             hint = self._structure[key][0]().formatHint()
             if hint:
-                attributes += '_Format: %s_' % hint + '<br />\n'
+                attributes += '__Format:__ %s' % hint + '<br />\n'
 
-            attributes += '_Required: %s_' % self._structure[key][1] + '<br />\n'
+            attributes += '__Required:__ %s' % self._structure[key][1] + '<br />\n'
 
             if self._structure[key][2] != None:
                 attributes += 'Default value: %s' % self._structure[key][2] + '\n\n'
