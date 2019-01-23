@@ -475,9 +475,7 @@ Default value: CC-BY-NC-ND-4.0
 
 #### logo
 
-URL of logo of API endpoint, for publication. Specifications to follow. 
-
-If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
+URL of logo of API endpoint, for publication. Specifications to follow.
 
 _Type:_ Str<br />
 _Format:_ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
@@ -876,9 +874,7 @@ _Required:_ True<br />
 
 #### logo
 
-URL of foundry’s logo. Specifications to follow. 
-
-If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
+URL of foundry’s logo. Specifications to follow.
 
 _Type:_ Str<br />
 _Format:_ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
@@ -1208,7 +1204,7 @@ _Required:_ False<br />
 
 #### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttc', 'woff2', 'ttf']
 
 _Type:_ Str<br />
 _Required:_ False<br />
@@ -1249,9 +1245,7 @@ _Required:_ True<br />
 
 #### previewImage
 
-URL of preview image of font, specifications to follow. 
-
-If you want to make sure that the app loads the latest version of this resource, consider making the URL unique. You could enforce it by adding a unique string to it, such as the time the resource was added to your server, e.g. http://awesomefonts.com/images/logo.svgz?timeadded=1516886401
+URL of preview image of font, specifications to follow.
 
 _Type:_ Str<br />
 _Format:_ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
