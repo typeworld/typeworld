@@ -92,6 +92,7 @@ if __name__ == '__main__':
 	font.designers.append('max')
 	font.dateAddedForUser = '2018-04-01'
 	family.fonts.append(font)
+	print(font.getDesigners())
 	usedLicense = LicenseUsage()
 	usedLicense.keyword = 'awesomeFontsEULA'
 	font.usedLicenses.append(usedLicense)
@@ -195,12 +196,12 @@ if __name__ == '__main__':
 
 
 	# Root of API
-	api = APIRoot()
-	api.name.en = 'Font Publisher'
-	api.canonicalURL = 'https://fontpublisher.com/api/'
-	api.adminEmail = 'admin@fontpublisher.com'
-	api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-	print(api)
+	api2 = APIRoot()
+	api2.name.en = 'Font Publisher'
+	api2.canonicalURL = 'https://fontpublisher.com/api/'
+	api2.adminEmail = 'admin@fontpublisher.com'
+	api2.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+	print(api2)
 
 	# Response for 'availableFonts' command
 	response = Response()
@@ -208,7 +209,7 @@ if __name__ == '__main__':
 	responseCommand = InstallFontResponse()
 	responseCommand.type = 'success'
 	response.installFont = responseCommand
-	api.response = response
+	api2.response = response
 	print(response)
 	print(responseCommand)
 
@@ -216,7 +217,7 @@ if __name__ == '__main__':
 	responseCommand.encoding = 'base64'
 
 	# Output API response as JSON, includes validation
-	json = api.dumpJSON()
+	json = api2.dumpJSON()
 
 
 
@@ -226,12 +227,12 @@ if __name__ == '__main__':
 
 
 	# Root of API
-	api = APIRoot()
-	api.name.en = 'Font Publisher'
-	api.canonicalURL = 'https://fontpublisher.com/api/'
-	api.adminEmail = 'admin@fontpublisher.com'
-	api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-	print(api)
+	api3 = APIRoot()
+	api3.name.en = 'Font Publisher'
+	api3.canonicalURL = 'https://fontpublisher.com/api/'
+	api3.adminEmail = 'admin@fontpublisher.com'
+	api3.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+	print(api3)
 
 	# Response for 'availableFonts' command
 	response = Response()
@@ -239,12 +240,12 @@ if __name__ == '__main__':
 	responseCommand = UninstallFontResponse()
 	responseCommand.type = 'success'
 	response.uninstallFont = responseCommand
-	api.response = response
+	api3.response = response
 	print(response)
 	print(responseCommand)
 
 	# Output API response as JSON, includes validation
-	json = api.dumpJSON()
+	json = api3.dumpJSON()
 
 
 
@@ -340,11 +341,32 @@ if __name__ == '__main__':
 	font.name = MultiLanguageText()
 	font.name.en = None
 	print(font.name.parent)
-	print(font.validate())
+	try:
+		print(api.validate())
+	except:
+		pass
 
 
 	usedLicense = LicenseUsage()
 	usedLicense.keyword = 'awesomeFontsEULAAAAA'
 	font.usedLicenses.append(usedLicense)
-	print(font.validate())
+	try:
+		print(api.validate())
+	except:
+		pass
+
+
+	font.versions = []
+	font.parent.versions = []
+	try:
+		print(api.validate())
+	except:
+		pass
+
+
+	font.designers.append('maxx')
+	try:
+		print(api.validate())
+	except:
+		pass
 
