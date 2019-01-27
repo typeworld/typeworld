@@ -149,8 +149,9 @@ if __name__ == '__main__':
 	except ValueError:
 		pass
 
+
 	try: 
-		font.uniqueID = 'a' * 255
+		font.uniqueID = 'a' * 500
 	except ValueError:
 		pass
 
@@ -290,7 +291,8 @@ if __name__ == '__main__':
 		pass
 
 	try:
-		HexColorDataType().put('ABCDEX')
+		HexColorDataType().put('ABCDEF') # pass
+		HexColorDataType().put('ABCDEX') # error
 	except ValueError:
 		pass
 
@@ -300,6 +302,28 @@ if __name__ == '__main__':
 		pass
 
 	try:
-		DateDataType().put('2018-02-30')
+		DateDataType().put('2018-02-28') # pass
+		DateDataType().put('2018-02-30') # error
 	except ValueError:
 		pass
+
+	# __repr__
+	print(font.uniqueID)
+
+	l = FontListProxy()
+	print(l)
+	l.append(Font())
+	l[0] = Font()
+
+	l = font.nonListProxyBasedKeys()
+
+
+
+	try:
+		print(font.doesntHaveThisAttribute)
+	except:
+		pass
+
+
+	font.postScriptName = ''
+	print(font.validate())

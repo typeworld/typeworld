@@ -123,11 +123,8 @@ class DataType(object):
     initialData = None
     dataType = None
 
-    def __init__(self, value = None):
-        if value:
-            self.value = value
-        else:
-            self.value = copy.copy(self.initialData)
+    def __init__(self):
+        self.value = copy.copy(self.initialData)
 
         if issubclass(self.__class__, (MultiLanguageText, MultiLanguageTextProxy)):
             self.value = self.dataType()
@@ -137,13 +134,10 @@ class DataType(object):
         return '<%s "%s">' % (self.__class__.__name__, self.get())
 
     def valid(self):
-        if self.dataType != None:
-            if type(self.value) == self.dataType:
-                return True
-            else:
-                return 'Wrong data type. Is %s, should be: %s.' % (type(self.value), self.dataType)
-        else:
+        if type(self.value) == self.dataType:
             return True
+        else:
+            return 'Wrong data type. Is %s, should be: %s.' % (type(self.value), self.dataType)
 
     def get(self):
         return self.value
@@ -431,15 +425,12 @@ class DictBasedObject(object):
     def typeDescription(self, class_):
 
         if issubclass(class_, ListProxy):
-            try:
-                return 'List of %s objects' % self.typeDescription(class_.dataType)
-            except:
-                return 'List of %s objects' % class_.dataType.dataType.__name__
-
-        elif 'typeWorld.api.' in ('%s' % class_.dataType):
-            return self.linkDocuText('::%s::' % class_.dataType.__name__)
+            return 'List of %s objects' % self.typeDescription(class_.dataType)
 
         elif 'typeWorld.api.base.' in ('%s' % class_.dataType):
+            return self.linkDocuText('::%s::' % class_.dataType.__name__)
+
+        elif 'typeWorld.api.' in ('%s' % class_.dataType):
             return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
         return class_.dataType.__name__.title()
@@ -653,11 +644,8 @@ class DictBasedObject(object):
                 if valid == True:
                     pass
 
-                elif type(valid) == str or type(valid) == str:
-                    critical.append('%s.%s is invalid: %s' % (self, key, valid))
-
                 else:
-                    critical.append('%s.%s is invalid for an unknown reason' % (self, key))
+                    critical.append('%s.%s is invalid: %s' % (self, key, valid))
 
 
         return information, warnings, critical
