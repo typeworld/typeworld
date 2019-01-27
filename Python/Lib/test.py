@@ -318,7 +318,6 @@ if __name__ == '__main__':
 
 	l = font.nonListProxyBasedKeys()
 
-
 	font.doesntHaveThisAttribute = 'a'
 	print(font.doesntHaveThisAttribute)
 	try:
@@ -328,4 +327,7 @@ if __name__ == '__main__':
 
 
 	font.postScriptName = ''
+
+	font.name = MultiLanguageText()
+	font.name.en = None
 	print(font.validate())

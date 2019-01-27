@@ -591,11 +591,8 @@ class DictBasedObject(object):
 #           print '__getattr__', self, key, self._content[key]
             return self._content[key].get()
 
-        elif object.__getattribute__(self, key):
-            return object.__getattribute__(self, key)
-
         else:
-            raise AttributeError('%s does not have an attribute "%s".' % (self.__class__.__name__, key))
+            return object.__getattribute__(self, key)
 
     def __setattr__(self, key, value):
 
@@ -927,27 +924,24 @@ for languageCode, text in (
         return information, warnings, critical
 
     def isEmpty(self):
+
         # Check for existence of languages
         hasAtLeastOneLanguage = False
         for langId in self._possible_keys:
-            if langId in self._content:
+            if langId in self._content and self.getText([langId]):
                 hasAtLeastOneLanguage = True
                 break
 
-#       print self, self._parent._parent, 'hasAtLeastOneLanguage', hasAtLeastOneLanguage
-        if hasAtLeastOneLanguage:
-            return False
-        else:
-            return True
+        return not bool(hasAtLeastOneLanguage)
 
-    def valid(self):
-        # Check for text length
-        for langId in self._possible_keys:
-            if langId in self._content:
-                if len(getattr(self, langId)) > self._length:
-                    return '%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length)
+    # def valid(self):
+    #     # Check for text length
+    #     for langId in self._possible_keys:
+    #         if langId in self._content:
+    #             if len(getattr(self, langId)) > self._length:
+    #                 return '%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length)
 
-        return True
+    #     return True
 
 
 
