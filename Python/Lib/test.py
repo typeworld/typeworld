@@ -86,6 +86,7 @@ if __name__ == '__main__':
 	font.name.en = 'Regular'
 	font.postScriptName = 'AwesomeSans-Regular'
 	font.purpose = 'desktop'
+	print(font.format)
 	print(font.validate())
 	font.format = 'otf'
 	font.designers.append('max')

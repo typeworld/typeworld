@@ -165,7 +165,7 @@ class Font(DictBasedObject):
 		'free':				[BooleanDataType,		False, 	None, 	'Font is freeware. For UI signaling'],
 		'beta':				[BooleanDataType,		False, 	None, 	'Font is in beta stage. For UI signaling'],
 		'variableFont':		[BooleanDataType,		False, 	None, 	'Font is an OpenType Variable Font. For UI signaling'],
-		'purpose':			[FontTypeDataType,		True, 	None, 	'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (list(FONTTYPES.keys()))],
+		'purpose':			[FontPurposeDataType,	True, 	None, 	'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (list(FONTPURPOSES.keys()))],
 		'format':			[FontExtensionDataType,	False, 	None, 	'Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s' % FILEEXTENSIONS],
 		'protected':		[BooleanDataType,		False, 	False, 	'Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.'],
 		'dateFirstPublished':[DateDataType,			False, 	None, 	'Date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
@@ -194,7 +194,7 @@ class Font(DictBasedObject):
 		information, warnings, critical = [], [], []
 
 		# Checking font type/extension
-		if self.format == 'desktop' and self.format == None:
+		if self.purpose == 'desktop' and not self.format:
 			critical.append('The font %s is a desktop font (see .purpose), but has no .format value.' % (self))
 
 		# Checking version information

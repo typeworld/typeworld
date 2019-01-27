@@ -41,7 +41,7 @@ UNINSTALLFONTCOMMAND =  {
     }
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
 
-FONTTYPES = {
+FONTPURPOSES = {
     'desktop': {
         'acceptableMimeTypes': ['font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'application/zip'],
     },
@@ -994,12 +994,12 @@ class SupportedAPICommandsListProxy(ListProxy):
     dataType = SupportedAPICommandsDataType
 
 
-class FontTypeDataType(UnicodeDataType):
+class FontPurposeDataType(UnicodeDataType):
     def valid(self):
-        if self.value in list(FONTTYPES.keys()):
+        if self.value in list(FONTPURPOSES.keys()):
             return True
         else:
-            return 'Unknown font type: "%s". Possible: %s' % (self.value, list(FONTTYPES.keys()))
+            return 'Unknown font type: "%s". Possible: %s' % (self.value, list(FONTPURPOSES.keys()))
 
 
 class FontExtensionDataType(UnicodeDataType):
