@@ -46,6 +46,7 @@ if __name__ == '__main__':
 	responseCommand.foundries.append(foundry)
 	print(foundry)
 	print(foundry.name.getTextAndLocale('en'))
+	print(foundry.name.getTextAndLocale('ar'))
 	assert foundry.name.getTextAndLocale('en') == ('Awesome Fonts', 'en')
 	assert foundry.name.getTextAndLocale(['en']) == ('Awesome Fonts', 'en')
 	assert foundry.name.getTextAndLocale('de') == ('Tolle Schriften', 'de')
@@ -318,9 +319,10 @@ if __name__ == '__main__':
 	l = font.nonListProxyBasedKeys()
 
 
-
+	font.doesntHaveThisAttribute = 'a'
+	print(font.doesntHaveThisAttribute)
 	try:
-		print(font.doesntHaveThisAttribute)
+		print(font.doesntHaveThatAttribute)
 	except:
 		pass
 

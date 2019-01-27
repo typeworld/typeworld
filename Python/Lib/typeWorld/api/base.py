@@ -321,13 +321,7 @@ class ListProxy(DataType):
         return len(self.value)
 
     def get(self):
-
         return self
-
-        _list = []
-        for data in self.value:
-            _list.append(data.get())
-        return _list
 
     def put(self, values):
         self.value = []
@@ -342,13 +336,8 @@ class ListProxy(DataType):
 
         self.value.append(newData)
 
-        if issubclass(self.value.__class__, (DictBasedObject, Proxy, ListProxy, DataType)):
-            object.__setattr__(self.value, '_parent', self)
-#           print 'Setting _parent of %s to %s (in .append())' % (value, self)
-
         if issubclass(newData.__class__, (DictBasedObject, Proxy, ListProxy, DataType)):
             object.__setattr__(newData, '_parent', self)
-#           print 'Setting _parent of %s to %s (in .append())' % (value, self)
 
 
     def extend(self, values):
