@@ -469,7 +469,7 @@ Identifier of license under which the API endpoint publishes its data, as per [h
 
 __Type:__ Str<br />
 __Required:__ True<br />
-Default value: CC-BY-NC-ND-4.0
+__Default value:__ CC-BY-NC-ND-4.0
 
 <div id="class-apiroot-attribute-logo"></div>
 
@@ -496,7 +496,7 @@ API endpoint is meant to be publicly visible and its existence may be publicized
 
 __Type:__ Bool<br />
 __Required:__ True<br />
-Default value: False
+__Default value:__ False
 
 <div id="class-apiroot-attribute-response"></div>
 
@@ -749,7 +749,7 @@ Version of "installableFonts" response
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1.6
+__Default value:__ 0.1.6
 
 
 
@@ -1206,7 +1206,7 @@ __Required:__ False<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'woff2', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttf', 'otf', 'woff', 'ttc']
 
 __Type:__ Str<br />
 __Required:__ False<br />
@@ -1260,7 +1260,7 @@ Indication that the server requires a valid subscriptionID to be used for authen
 
 __Type:__ Bool<br />
 __Required:__ False<br />
-Default value: False
+__Default value:__ False
 
 <div id="class-font-attribute-purpose"></div>
 
@@ -1485,7 +1485,7 @@ Version of "installFont" response
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1.6
+__Default value:__ 0.1.6
 
 
 
@@ -1529,7 +1529,7 @@ Version of "uninstallFont" response
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1.6
+__Default value:__ 0.1.6
 
 
 

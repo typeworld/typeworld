@@ -490,7 +490,7 @@ class DictBasedObject(object):
             attributes += '__Required:__ %s' % self._structure[key][1] + '<br />\n'
 
             if self._structure[key][2] != None:
-                attributes += 'Default value: %s' % self._structure[key][2] + '\n\n'
+                attributes += '__Default value:__ %s' % self._structure[key][2] + '\n\n'
 
 
         method_list = [func for func in dir(self) if callable(getattr(self, func)) and not func.startswith("__") and inspect.getdoc(getattr(self, func))]
