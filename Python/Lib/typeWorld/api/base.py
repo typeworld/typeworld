@@ -866,6 +866,11 @@ class Proxy(DataType):
     #         return True
 
 
+class ResponseCommandDataType(UnicodeDataType):
+
+    def formatHint(self):
+        return 'To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.'
+
 
 class MultiLanguageText(DictBasedObject):
     """\

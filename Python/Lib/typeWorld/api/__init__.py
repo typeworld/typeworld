@@ -429,7 +429,7 @@ def BaseResponse_Parent(self):
 BaseResponse.parent = property(lambda self: BaseResponse_Parent(self))
 
 
-class InstallableFontsResponseType(UnicodeDataType):
+class InstallableFontsResponseType(ResponseCommandDataType):
 	def valid(self):
 		if self.value in INSTALLABLEFONTSCOMMAND['responseTypes']:
 			return True
@@ -529,7 +529,7 @@ class InstallableFontsResponseProxy(Proxy):
 
 #  InstallFont
 
-class InstallFontResponseType(UnicodeDataType):
+class InstallFontResponseType(ResponseCommandDataType):
 	def valid(self):
 		if self.value in INSTALLFONTCOMMAND['responseTypes']:
 			return True
@@ -542,8 +542,8 @@ class InstallFontResponse(BaseResponse):
 
 		# Root
 		'type': 			[InstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % INSTALLFONTCOMMAND['responseTypes']],
-		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
-		'version': 			[FloatDataType,					True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
+		'errorMessage': 	[MultiLanguageTextProxy,	False, 	None, 	'Description of error in case of custom response type'],
+		'version': 			[FloatDataType,				True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 
 		'font': 			[FontDataType,				False, 	None, 	'Binary font data encoded to a string using ::InstallFontResponse.encoding::'],
 		'encoding': 		[FontEncodingDataType,		False, 	None, 	'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
@@ -571,7 +571,7 @@ class InstallFontResponseProxy(Proxy):
 
 #  Uninstall Fonts
 
-class UninstallFontResponseType(UnicodeDataType):
+class UninstallFontResponseType(ResponseCommandDataType):
 	def valid(self):
 		if self.value in UNINSTALLFONTCOMMAND['responseTypes']:
 			return True

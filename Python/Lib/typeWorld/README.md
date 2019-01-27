@@ -722,6 +722,7 @@ __Required:__ False<br />
 Type of response. This can be any of ['success', 'error', 'noFontsAvailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
 
 __Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
 __Required:__ True<br />
 <div id="class-installablefontsresponse-attribute-userEmail"></div>
 
@@ -1204,7 +1205,7 @@ __Required:__ False<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'otf', 'ttf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'otf', 'woff', 'woff2']
 
 __Type:__ Str<br />
 __Required:__ False<br />
@@ -1472,6 +1473,7 @@ __Required:__ False<br />
 Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 __Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
 __Required:__ True<br />
 <div id="class-installfontresponse-attribute-version"></div>
 
@@ -1514,6 +1516,7 @@ __Required:__ False<br />
 Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
 
 __Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
 __Required:__ True<br />
 <div id="class-uninstallfontresponse-attribute-version"></div>
 
