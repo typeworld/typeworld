@@ -194,7 +194,7 @@ class Font(DictBasedObject):
 		information, warnings, critical = [], [], []
 
 		# Checking font type/extension
-		if self.format == 'desktop' and not self.fileExtension:
+		if self.format == 'desktop' and self.format == None:
 			critical.append('The font %s is a desktop font (see .purpose), but has no .format value.' % (self))
 
 		# Checking version information

@@ -9,7 +9,7 @@ if __name__ == '__main__':
 	# Root of API
 	api = APIRoot()
 	api.name.en = 'Font Publisher'
-	api.canonicalURL = 'https://fontpublisher.com/api/'
+	api.canonicalURL = 'http://fontpublisher.com/api/'
 	api.adminEmail = 'admin@fontpublisher.com'
 	api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
 	print(api)
@@ -86,13 +86,15 @@ if __name__ == '__main__':
 	font.name.en = 'Regular'
 	font.postScriptName = 'AwesomeSans-Regular'
 	font.purpose = 'desktop'
-	font.type = 'otf'
+	print(font.validate())
+	font.format = 'otf'
 	font.designers.append('max')
 	font.dateAddedForUser = '2018-04-01'
 	family.fonts.append(font)
 	usedLicense = LicenseUsage()
 	usedLicense.keyword = 'awesomeFontsEULA'
 	font.usedLicenses.append(usedLicense)
+	print(usedLicense)
 	print(font)
 	assert usedLicense.parent == font
 
@@ -308,6 +310,12 @@ if __name__ == '__main__':
 	except ValueError:
 		pass
 
+
+	try:
+		font.type = 'abc'
+	except:
+		pass
+
 	# __repr__
 	print(font.uniqueID)
 
@@ -330,4 +338,12 @@ if __name__ == '__main__':
 
 	font.name = MultiLanguageText()
 	font.name.en = None
+	print(font.name.parent)
 	print(font.validate())
+
+
+	usedLicense = LicenseUsage()
+	usedLicense.keyword = 'awesomeFontsEULAAAAA'
+	font.usedLicenses.append(usedLicense)
+	print(font.validate())
+

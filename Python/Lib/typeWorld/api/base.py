@@ -928,7 +928,7 @@ for languageCode, text in (
         # Check for existence of languages
         hasAtLeastOneLanguage = False
         for langId in self._possible_keys:
-            if langId in self._content and self.getText([langId]):
+            if langId in self._content and self.getText([langId]) != None:
                 hasAtLeastOneLanguage = True
                 break
 
