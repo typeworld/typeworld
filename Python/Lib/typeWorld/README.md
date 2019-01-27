@@ -746,9 +746,10 @@ __Required:__ False<br />
 
 Version of "installableFonts" response
 
-__Type:__ Float<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1
+Default value: 0.1.6
 
 
 
@@ -1134,7 +1135,7 @@ __Required:__ False<br />
 Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.
 
 __Type:__ Str<br />
-__Format:__ Simple float number (1.01) or semantic versioning (2.0.0-rc.1)<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
 <div id="class-version-attribute-releaseDate"></div>
 
@@ -1205,7 +1206,7 @@ __Required:__ False<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'otf', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'woff2', 'otf', 'ttf']
 
 __Type:__ Str<br />
 __Required:__ False<br />
@@ -1481,9 +1482,10 @@ __Required:__ True<br />
 
 Version of "installFont" response
 
-__Type:__ Float<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1
+Default value: 0.1.6
 
 
 
@@ -1524,9 +1526,10 @@ __Required:__ True<br />
 
 Version of "uninstallFont" response
 
-__Type:__ Float<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Required:__ True<br />
-Default value: 0.1
+Default value: 0.1.6
 
 
 

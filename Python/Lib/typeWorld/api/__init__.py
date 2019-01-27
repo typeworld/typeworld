@@ -454,14 +454,14 @@ class InstallableFontsResponse(BaseResponse):
 
 		# Root
 		'type': 			[InstallableFontsResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.' % INSTALLABLEFONTSCOMMAND['responseTypes']],
-		'errorMessage': 	[MultiLanguageTextProxy,				False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
-		'version': 			[FloatDataType,					True, 	INSTALLABLEFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
+		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
+		'version': 			[VersionDataType,				True, 	INSTALLABLEFONTSCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
 
 		# Response-specific
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
 		'foundries':		[FoundryListProxy,				True, 	None, 	'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
 
-		'name':			[MultiLanguageTextProxy,		False, 	None, 	'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
+		'name':			[MultiLanguageTextProxy,			False, 	None, 	'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
 		'userName':			[MultiLanguageTextProxy,		False, 	None, 	'The name of the user who these fonts are licensed to.'],
 		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
@@ -543,7 +543,7 @@ class InstallFontResponse(BaseResponse):
 		# Root
 		'type': 			[InstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % INSTALLFONTCOMMAND['responseTypes']],
 		'errorMessage': 	[MultiLanguageTextProxy,	False, 	None, 	'Description of error in case of custom response type'],
-		'version': 			[FloatDataType,				True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
+		'version': 			[VersionDataType,			True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 
 		'font': 			[FontDataType,				False, 	None, 	'Binary font data encoded to a string using ::InstallFontResponse.encoding::'],
 		'encoding': 		[FontEncodingDataType,		False, 	None, 	'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
@@ -584,8 +584,8 @@ class UninstallFontResponse(BaseResponse):
 
 		# Root
 		'type': 			[UninstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::UninstallFontResponse.errorMessage::.' % UNINSTALLFONTCOMMAND['responseTypes']],
-		'errorMessage': 	[MultiLanguageTextProxy,		False, 	None, 	'Description of error in case of custom response type'],
-		'version': 			[FloatDataType,					True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
+		'errorMessage': 	[MultiLanguageTextProxy,	False, 	None, 	'Description of error in case of custom response type'],
+		'version': 			[VersionDataType,			True, 	UNINSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 
 		# Response-specific
 		}

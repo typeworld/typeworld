@@ -23,22 +23,19 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 # Commands
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
-    'currentVersion': 0.1,
-    'versionHistory': [0.1],
+    'currentVersion': '0.1.6',
     'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
     'keyword': 'installFont',
-    'currentVersion': 0.1,
-    'versionHistory': [0.1],
+    'currentVersion': '0.1.6',
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, DUPLICATEINSTALLATION, SEATALLOWANCEREACHED],
     'acceptableMimeTypes': ['application/json'],
     }
 UNINSTALLFONTCOMMAND =  {
     'keyword': 'uninstallFont',
-    'currentVersion': 0.1,
-    'versionHistory': [0.1],
+    'currentVersion': '0.1.6',
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, UNKNOWNINSTALLATION],
     'acceptableMimeTypes': ['application/json'],
     }
@@ -231,7 +228,7 @@ class VersionDataType(StringDataType):
             return traceback.format_exc()
 
     def formatHint(self):
-        return 'Simple float number (1.01) or semantic versioning (2.0.0-rc.1)'
+        return 'Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)'
 
 class DateDataType(StringDataType):
 
