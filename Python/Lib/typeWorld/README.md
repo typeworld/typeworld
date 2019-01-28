@@ -989,7 +989,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### Attributes
 
-[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designers](#class-family-attribute-designers)<br />[fonts](#class-family-attribute-fonts)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
+[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designers](#class-family-attribute-designers)<br />[fonts](#class-family-attribute-fonts)<br />[inUseURL](#class-family-attribute-inuseurl)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
 
 ### Methods
 
@@ -1038,6 +1038,14 @@ List of [Font](#user-content-class-font) objects. The order will be displayed un
 
 __Required:__ True<br />
 __Type:__ List of [Font](#user-content-class-font) objects<br />
+<div id="class-family-attribute-inUseURL"></div>
+
+### inUseURL
+
+URL pointing to a web site that shows real world examples of the fonts in use.
+
+__Required:__ False<br />
+__Type:__ Str<br />
 <div id="class-family-attribute-issueTrackerURL"></div>
 
 ### issueTrackerURL
@@ -1206,7 +1214,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'otf', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'otf', 'ttf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />

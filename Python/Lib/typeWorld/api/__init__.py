@@ -295,6 +295,7 @@ class Family(DictBasedObject):
 
 		'sourceURL':	 			[WebURLDataType,		False, 	None, 	'URL pointing to the source of a font project, such as a GitHub repository'],
 		'issueTrackerURL':	 		[WebURLDataType,		False, 	None, 	'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
+		'inUseURL':	 				[WebURLDataType,		False, 	None, 	'URL pointing to a web site that shows real world examples of the fonts in use.'],
 		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'dateFirstPublished':		[DateDataType,			False, 	None, 	'Date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
