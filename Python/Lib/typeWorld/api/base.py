@@ -17,6 +17,7 @@ DUPLICATEINSTALLATION = 'duplicateInstallation'
 SEATALLOWANCEREACHED = 'seatAllowanceReached'
 UNKNOWNINSTALLATION = 'unknownInstallation'
 NOFONTSAVAILABLE = 'noFontsAvailable'
+TEMPORARILYUNAVAILABLE = 'temporarilyUnavailable'
 
 PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 
@@ -24,7 +25,7 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': '0.1.6',
-    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE],
+    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, TEMPORARILYUNAVAILABLE],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
