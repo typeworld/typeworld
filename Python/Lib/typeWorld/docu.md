@@ -115,7 +115,9 @@ As an additional voluntary security measure to prevent unauthorized access, the 
 Upon first access of the JSON API endpoint, the `anonymousAppID` parameter appended to the API call will be saved as a valid app ID on the publisher’s server, and the single-use access token will be invalidated. From then onwards, only requests carrying a valid known `anonymousAppID` will be granted access.
 
 This first access of the publisher’s API endpoint is expected to happen instantly, as the app will be triggered by clicking on the activation link on the publisher’s web site and the subscription’s content will be loaded.
+
 This prevents the subscription URL from being passed on in unauthorized ways, as its use in other unauthorized app instances will then carry either an invalid access token or an unknown `anonymousAppID`.
+
 Passing on subscriptions to other users will be possible through the central Type.World server under the using its JSON API under the `inviteUserToSubscription` command.
 
 ### Access restriction to users with Type.World user account
@@ -123,6 +125,7 @@ Passing on subscriptions to other users will be possible through the central Typ
 As an additional voluntary security measure, the publisher could decide to grant access to their API endpoint only to users with a registered Type.World user account. Because API calls will also carry an `anonymousTypeWorldUserID` parameter (in case the user’s app instance is linked to a Type.World user account), this user ID can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command.
 
 After verification, the `anonymousTypeWorldUserID` should be saved together with the valid `anonymousAppID` on the publisher’s server and not be verified upon every access to the API endpoint to speed up the responses and reduce server strain on the central server.
+
 Because subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then chose to reject access to its API endpoint for invalidated `anonymousAppID`s.
 
 The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce server strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
