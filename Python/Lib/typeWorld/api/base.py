@@ -25,7 +25,7 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': '0.1.6',
-    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, TEMPORARILYUNAVAILABLE],
+    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={

@@ -773,7 +773,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'noFontsAvailable', 'temporarilyUnavailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'noFontsAvailable', 'insufficientPermission', 'temporarilyUnavailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1268,7 +1268,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttc', 'woff2', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
