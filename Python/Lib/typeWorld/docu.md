@@ -126,9 +126,15 @@ As an additional voluntary security measure, the publisher could decide to grant
 
 After verification, the `anonymousTypeWorldUserID` should be saved together with the valid `anonymousAppID` on the publisher’s server and not be verified upon every access to the API endpoint to speed up the responses and reduce server strain on the central server.
 
-Because subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+### De-authorization of app instances by the user
+
+Subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+
+The main incentive for the user to de-authorize his/her older app instances that are not accessible any more is to free up font installations, because the font installations of the lost computer are still counted in the publisher's tracking of installed seats with redards to each font license. 
 
 The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce server strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
+
+Should the de-authorized app regain access to the internet, all fonts and subscriptions will be deleted from it instantly, and because all referenced publishers have already been informed of the de-authorization, new font installations thereafter will also be rejected.
 
 ### Central subscription invitation infrastructure
 
