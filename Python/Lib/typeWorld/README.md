@@ -126,7 +126,7 @@ As an additional voluntary security measure, the publisher could decide to grant
 
 After verification, the `anonymousTypeWorldUserID` should be saved together with the valid `anonymousAppID` on the publisher’s server and not be verified upon every access to the API endpoint to speed up the responses and reduce server strain on the central server.
 
-Because subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then chose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+Because subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
 
 The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce server strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
 
@@ -139,6 +139,14 @@ When a subscription gets activated after an invitation, the central server will 
 ### Central server authorization
 
 API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site.
+
+### Splitting of responsibility, server unavailability.
+
+Because the central Type.World server cannot always be available for querying (although it should, of course), and because the the whole Type.World project is an excercize of self-empowerment for independent type publishers, publishers are requested to keep track of the `anonymousAppID`/`anonymousTypeWorldUserID` pairs for a subscription. Since the central server will proactively inform the publisher’s server of newly added (invitation) or invalidated (de-authorization) `anonymousAppID`s, the only truly necessary verification with the central server is upon first subscription access by an app (through the `installableFonts` command), to check for a user ID’s validity.
+
+Should the central server then not respond, the publisher’s API endpoint should respond with a `temporarilyUnavailable` response, of which the user will be notified in the user interface.
+
+User verification with the central server for the `installFont` and `uninstallFont` commands is unnecessary, because these commands will always succeed  a prior `installableFonts` command, upon which the publisher’s API endpoint received knowledge of the `anonymousAppID` and `anonymousTypeWorldUserID` pairs.
 
 
 <div id="responseflowchart"></div>
@@ -1256,7 +1264,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'ttf', 'woff', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
