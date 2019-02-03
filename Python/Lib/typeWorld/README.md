@@ -140,13 +140,15 @@ When a subscription gets activated after an invitation, the central server will 
 
 API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site.
 
-### Splitting of responsibility, server unavailability.
+### Splitting of responsibility and server unavailability
 
-Because the central Type.World server cannot always be available for querying (although it should, of course), and because the the whole Type.World project is an excercize of self-empowerment for independent type publishers, publishers are requested to keep track of the `anonymousAppID`/`anonymousTypeWorldUserID` pairs for a subscription. Since the central server will proactively inform the publisher’s server of newly added (invitation) or invalidated (de-authorization) `anonymousAppID`s, the only truly necessary verification with the central server is upon first subscription access by an app (through the `installableFonts` command), to check for a user ID’s validity.
+Because the central Type.World server cannot always be available for querying (although it should, of course), and because the the whole Type.World project is an exercise in self-empowerment for independent type publishers, publishers are requested to keep track of the `anonymousAppID`/`anonymousTypeWorldUserID` pairs for a subscription. Since the central server will proactively inform the publisher’s server of newly added (invitation) or invalidated (de-authorization) `anonymousAppID`s, the only truly necessary verification with the central server is upon first subscription access by an app (through the `installableFonts` command), to check for a user ID’s validity.
 
 Should the central server then not respond, the publisher’s API endpoint should respond with a `temporarilyUnavailable` response, of which the user will be notified in the user interface.
 
-User verification with the central server for the `installFont` and `uninstallFont` commands is unnecessary, because these commands will always succeed  a prior `installableFonts` command, upon which the publisher’s API endpoint received knowledge of the `anonymousAppID` and `anonymousTypeWorldUserID` pairs.
+User verification with the central server for the `installFont` and `uninstallFont` commands is unnecessary, because these commands will always succeed a prior `installableFonts` command, upon which the publisher’s API endpoint received knowledge of the `anonymousAppID` and `anonymousTypeWorldUserID` pairs.
+
+I will monitor and potentially restrict the user verification calls on the central server.
 
 
 <div id="responseflowchart"></div>
@@ -1264,7 +1266,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'ttf', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'otf', 'ttf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
