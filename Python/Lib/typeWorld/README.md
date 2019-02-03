@@ -11,6 +11,7 @@ The protocol and app are expected to stabilize by the end of 2018.
 
 1. [Introduction](#user-content-introduction)
 1. [Server Interaction](#user-content-serverinteraction)
+1. [Security Design](#user-content-securitydesign)
 1. [Response Flow Chart](#user-content-responseflowchart)
 1. [Protocol Changes](#user-content-protocolchanges)
 1. [List of Classes](#user-content-classtoc)
@@ -97,6 +98,44 @@ I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` reque
 #### WARNING:
 
 Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
+
+
+<div id="securitydesign"></div>
+
+## Security Design
+
+
+For protected subscriptions, the publisher provides a subscription link that contains a subscription ID and a secret key to identify a subscription. The secret key is only used on the client computer and stored invisibly in the OS’s keychain, to prevent reading out all subscriptions on a client's computer by third party software. An additional single-use token may be appended to the URL.
+
+`typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/[?token=singleusetoken]`
+
+### Single-use access tokens to authorize access by the publisher
+
+As an additional voluntary security measure to prevent unauthorized access, the publisher may append a single-use access token to the URL. This access token will only be available to customers that are logged in to the publisher’s web site. 
+Upon first access of the JSON API endpoint, the `anonymousAppID` parameter appended to the API call will be saved as a valid app ID on the publisher’s server, and the single-use access token will be invalidated. From then onwards, only requests carrying a valid known `anonymousAppID` will be granted access.
+
+This first access of the publisher’s API endpoint is expected to happen instantly, as the app will be triggered by clicking on the activation link on the publisher’s web site and the subscription’s content will be loaded.
+This prevents the subscription URL from being passed on in unauthorized ways, as its use in other unauthorized app instances will then carry either an invalid access token or an unknown `anonymousAppID`.
+Passing on subscriptions to other users will be possible through the central Type.World server under the using its JSON API under the `inviteUserToSubscription` command.
+
+### Access restriction to users with Type.World user account
+
+As an additional voluntary security measure, the publisher could decide to grant access to their API endpoint only to users with a registered Type.World user account. Because API calls will also carry an `anonymousTypeWorldUserID` parameter (in case the user’s app instance is linked to a Type.World user account), this user ID can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command.
+
+After verification, the `anonymousTypeWorldUserID` should be saved together with the valid `anonymousAppID` on the publisher’s server and not be verified upon every access to the API endpoint to speed up the responses and reduce server strain on the central server.
+Because subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then chose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+
+The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce server strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
+
+### Central subscription invitation infrastructure
+
+Because spreading subscription URLs by email (or other means) is potentially unsafe from eavesropping, the central Type.World server provides an invitation API using its JSON API under the `inviteUserToSubscription` command (or directly in the app’s GUI). Therefore, only users with a registered Type.World user account can be invited. Here, users will be identified by the email address of their Type.World user account (like Dropbox or Google Documents). There is no way to search the Type.World user database for users. Only valid registered email addresses will be accepted.
+
+When a subscription gets activated after an invitation, the central server will inform the publisher’s API endpoint of the successful invitation under the `setAnonymousAppIDStatus` command. The publisher’s server will then save the newly introduced `anonymousAppID` to be valid in combination with the `anonymousTypeWorldUserID` parameter.
+
+### Central server authorization
+
+API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site.
 
 
 <div id="responseflowchart"></div>
@@ -1214,7 +1253,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'otf', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'woff2', 'otf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
