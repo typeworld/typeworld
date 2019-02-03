@@ -128,13 +128,15 @@ After verification, the `anonymousTypeWorldUserID` should be saved together with
 
 ### De-authorization of app instances by the user
 
-Subscriptions get synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example), a publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+Subscriptions are synchronized with the central server for registered users and users can de-authorize the subscriptions for an entire app instance through the Type.World web site (when a computer got stolen for example). 
 
 The main incentive for the user to de-authorize his/her older app instances that are not accessible any more is to free up font installations, because the font installations of the lost computer are still counted in the publisher's tracking of installed seats with redards to each font license. 
 
 The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce server strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
 
-Should the de-authorized app regain access to the internet, all fonts and subscriptions will be deleted from it instantly, and because all referenced publishers have already been informed of the de-authorization, new font installations thereafter will also be rejected.
+A publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
+
+Should the de-authorized app instance regain access to the internet (in case it’s actually stolen and not lost), all fonts and subscriptions will be deleted from it instantly, and because all referenced publishers have already been informed of the de-authorization, new font installations thereafter will also be rejected (by the publishers directly).
 
 ### Central subscription invitation infrastructure
 
@@ -1275,7 +1277,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'ttc', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'woff', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
