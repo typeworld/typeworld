@@ -120,7 +120,7 @@ In detail:
 ### Layer 1: Single-use access tokens to authorize access by the publisher
 
 As a voluntary security measure to prevent unauthorized access, the publisher may append a single-use access token to the URL. This access token will only be available to customers that are logged in to the publisher’s web site. 
-Upon first access of the JSON API endpoint, the `anonymousAppID` parameter appended to the API call will be saved as a valid app ID on the publisher’s server, and the single-use access token will be invalidated. From then onwards, only requests carrying a valid known `anonymousAppID` will be granted access.
+Upon first access of the JSON API endpoint, the `anonymousAppID` parameter appended to the API call will be saved as a valid app ID on the publisher’s server, and the single-use access token will be invalidated. A new single-use access token will be generated and provided for future access of the subscription link on the publisher’s website. Only requests carrying a valid known `anonymousAppID` will be granted access.
 
 This first access of the publisher’s API endpoint is expected to happen instantly, as the app will be triggered by clicking on the activation link on the publisher’s web site and the subscription’s content will be loaded.
 
