@@ -126,7 +126,7 @@ This first access of the publisher’s API endpoint is expected to happen instan
 
 This prevents the subscription URL from being passed on in unauthorized ways, as its use in other unauthorized app instances will then carry either an invalid access token or an unknown `anonymousAppID`.
 
-(Passing on subscriptions to other users will be possible through the central Type.World server using its JSON API under the `inviteUserToSubscription` command), see below.)
+(Passing on subscriptions to other users will be possible through the central Type.World server using its JSON API under the `inviteTypeWorldUserToSubscription` command), see below.)
 
 ### Layer 2: Access restriction to users with Type.World user account
 
@@ -150,7 +150,7 @@ Should the de-authorized app instance regain access to the internet (in case the
 
 ### Central subscription invitation infrastructure
 
-Because spreading subscription URLs by email (or other means) is potentially unsafe from eavesropping, the central Type.World server provides an invitation API using its JSON API under the `inviteUserToSubscription` command (or directly in the app’s GUI). Therefore, only users with a registered Type.World user account can be invited. Here, users will be identified by the email address of their Type.World user account (like Dropbox or Google Documents). There is no way to search the Type.World user database for users. Only valid registered email addresses will be accepted.
+Because spreading subscription URLs by email (or other means) is potentially unsafe from eavesropping, the central Type.World server provides an invitation API using its JSON API under the `inviteTypeWorldUserToSubscription` command (or directly in the app’s GUI). Therefore, only users with a registered Type.World user account can be invited. Here, users will be identified by the email address of their Type.World user account (like Dropbox or Google Documents). There is no way to search the Type.World user database for users. Only valid registered email addresses will be accepted.
 
 When a subscription gets activated after an invitation, the central server will inform the publisher’s API endpoint of the successful invitation under the `setAnonymousAppIDStatus` command. The publisher’s server will then save the newly introduced `anonymousAppID` to be valid in combination with the `anonymousTypeWorldUserID` parameter.
 
@@ -1289,7 +1289,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'ttc', 'otf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
