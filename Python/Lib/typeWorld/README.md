@@ -182,6 +182,8 @@ I will monitor and potentially restrict the user verification calls on the centr
 
 ## Response Flow Chart
 
+![](../../Request-flow-chart.png)
+
 A high-resolution version of this flow chart can be viewed as a PDF [here](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf).
 
 
@@ -1293,7 +1295,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'woff', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'ttc', 'otf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
