@@ -130,7 +130,7 @@ This prevents the subscription URL from being passed on in unauthorized ways, as
 
 ### Layer 2: Access restriction to users with Type.World user account
 
-As yet another additional voluntary security measure, the publisher could decide to grant access to their API endpoint only to users with a registered Type.World user account. Because API calls will also carry an `anonymousTypeWorldUserID` parameter (in case the user’s app instance is linked to a Type.World user account), this user ID can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command.
+As yet another additional voluntary security measure, the publisher could decide to grant access to their API endpoint only to users with a registered Type.World user account. Because API calls will also carry an `anonymousTypeWorldUserID` parameter (in case the user’s app instance is linked to a Type.World user account), this user ID can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. If no `anonymousTypeWorldUserID` parameter is attached to the request or the `anonymousAppID` was found to be invalid, the `validTypeWorldUserAccountRequired` response will be returned, so that the user can be informed to get him/herself a valid user account first, then try again.
 
 After verification, the `anonymousTypeWorldUserID` should be saved together with the valid `anonymousAppID` on the publisher’s server and not be verified upon every access to the API endpoint to speed up the responses and reduce strain on the central server.
 
