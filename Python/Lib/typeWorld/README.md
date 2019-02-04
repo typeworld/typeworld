@@ -115,6 +115,8 @@ The first layer restricts initial access to a subscription to users who are legi
 
 The second layer restricts access to a subscription to verified users. The publisher’s server keeps a ledger of which users and app instances are legitimate. The central server and the publisher’s server are in communication with each other over who is legitimate. This second layer serves the purpose of being able to invalidate certain app instances once a computer gets stolen (and continued to be used). This is only possible if app instances get recorded in a Type.World user profile.
 
+In detail:
+
 ### Layer 1: Single-use access tokens to authorize access by the publisher
 
 As a voluntary security measure to prevent unauthorized access, the publisher may append a single-use access token to the URL. This access token will only be available to customers that are logged in to the publisher’s web site. 
@@ -1287,7 +1289,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'ttf', 'woff2', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'otf', 'woff', 'ttf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
