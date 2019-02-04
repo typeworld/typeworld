@@ -109,9 +109,15 @@ For protected subscriptions, the publisher provides a subscription link that con
 
 `typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/[?token=singleusetoken]`
 
-### Single-use access tokens to authorize access by the publisher
+The security design outlined below consists of two optional layers.
 
-As an additional voluntary security measure to prevent unauthorized access, the publisher may append a single-use access token to the URL. This access token will only be available to customers that are logged in to the publisher’s web site. 
+The first layer restricts initial access to a subscription to users who are legitimately logged in to a website. Through the website, the subscription link will contain a single-use access token that gets invalidated on first access of the subscription. This way it is preventable that subscription links spread and get accessed by users other than the legitimate user.
+
+The second layer restricts access to a subscription to verified users. The publisher’s server keeps a ledger of which users and app instances are legitimate. The central server and the publisher’s server are in communication with each other over who is legitimate. This second layer serves the purpose of being able to invalidate certain app instances once a computer gets stolen (and continued to be used). This is only possible if app instances get recorded in a Type.World user profile.
+
+### Layer 1: Single-use access tokens to authorize access by the publisher
+
+As a voluntary security measure to prevent unauthorized access, the publisher may append a single-use access token to the URL. This access token will only be available to customers that are logged in to the publisher’s web site. 
 Upon first access of the JSON API endpoint, the `anonymousAppID` parameter appended to the API call will be saved as a valid app ID on the publisher’s server, and the single-use access token will be invalidated. From then onwards, only requests carrying a valid known `anonymousAppID` will be granted access.
 
 This first access of the publisher’s API endpoint is expected to happen instantly, as the app will be triggered by clicking on the activation link on the publisher’s web site and the subscription’s content will be loaded.
@@ -120,7 +126,7 @@ This prevents the subscription URL from being passed on in unauthorized ways, as
 
 (Passing on subscriptions to other users will be possible through the central Type.World server using its JSON API under the `inviteUserToSubscription` command), see below.)
 
-### Access restriction to users with Type.World user account
+### Layer 2: Access restriction to users with Type.World user account
 
 As yet another additional voluntary security measure, the publisher could decide to grant access to their API endpoint only to users with a registered Type.World user account. Because API calls will also carry an `anonymousTypeWorldUserID` parameter (in case the user’s app instance is linked to a Type.World user account), this user ID can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command.
 

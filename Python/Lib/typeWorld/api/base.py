@@ -18,6 +18,7 @@ SEATALLOWANCEREACHED = 'seatAllowanceReached'
 UNKNOWNINSTALLATION = 'unknownInstallation'
 NOFONTSAVAILABLE = 'noFontsAvailable'
 TEMPORARILYUNAVAILABLE = 'temporarilyUnavailable'
+VALIDTYPEWORLDUSERACCOUNTREQUIRED = 'validTypeWorldUserAccountRequired'
 
 PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 
@@ -25,7 +26,7 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': '0.1.6',
-    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE],
+    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
