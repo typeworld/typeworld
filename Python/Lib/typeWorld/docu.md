@@ -154,6 +154,10 @@ Because spreading subscription URLs by email (or other means) is potentially uns
 
 When a subscription gets activated after an invitation, the central server will inform the publisher’s API endpoint of the successful invitation under the `setAnonymousAppIDStatus` command. The publisher’s server will then save the newly introduced `anonymousAppID` to be valid in combination with the `anonymousTypeWorldUserID` parameter.
 
+It is not possible to provide this invitation infrastructure to users without a Type.World user account, because otherwise a notification about the invitation needs to be sent out which can be intercepted and accessed before the legitimate user gets access. 
+
+Without a Type.World user account, this notification, however formed, would be the key to the subscription. With a Type.World user account, the account itself is the key, and any form of notification of the invitation, such as by email, is meaningless without the previously existing user account.
+
 ### Central server authorization
 
 API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
