@@ -162,7 +162,7 @@ Without a Type.World user account, this notification, however formed, would be t
 
 API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
 
-Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that API.
+Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that same secret API key.
 
 ### Splitting of responsibility and server unavailability
 

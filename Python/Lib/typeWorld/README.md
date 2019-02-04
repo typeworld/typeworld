@@ -162,7 +162,7 @@ Without a Type.World user account, this notification, however formed, would be t
 
 API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
 
-Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that API.
+Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that same secret API key.
 
 ### Splitting of responsibility and server unavailability
 
@@ -1293,7 +1293,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'otf', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'woff', 'woff2', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
