@@ -19,6 +19,7 @@ UNKNOWNINSTALLATION = 'unknownInstallation'
 NOFONTSAVAILABLE = 'noFontsAvailable'
 TEMPORARILYUNAVAILABLE = 'temporarilyUnavailable'
 VALIDTYPEWORLDUSERACCOUNTREQUIRED = 'validTypeWorldUserAccountRequired'
+ACCESSTOKENEXPIRED = 'accessTokenExpired'
 
 PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 
@@ -26,7 +27,7 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': '0.1.6',
-    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
+    'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, ACCESSTOKENEXPIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
@@ -877,6 +878,9 @@ for languageCode, text in (
 
     def __repr__(self):
         return '<MultiLanguageText>'
+
+    def __str__(self):
+        return self.getText()
 
     def getTextAndLocale(self, locale = ['en']):
         '''Like getText(), but additionally returns the language of whatever text was found first.'''
