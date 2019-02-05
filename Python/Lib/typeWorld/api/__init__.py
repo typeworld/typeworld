@@ -520,9 +520,6 @@ class InstallableFontsResponse(BaseResponse):
 		return information, warnings, critical
 
 
-
-
-
 class InstallableFontsResponseProxy(Proxy):
 	dataType = InstallableFontsResponse
 
@@ -595,6 +592,36 @@ class UninstallFontResponseProxy(Proxy):
 	dataType = UninstallFontResponse
 
 
+####################################################################################################################################
+
+#  SetAnonymousAppIDStatus
+
+class SetAnonymousAppIDStatusResponseType(ResponseCommandDataType):
+	def valid(self):
+		if self.value in SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']:
+			return True
+		else:
+			return 'Unknown response type: "%s". Possible: %s' % (self.value, SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes'])
+
+class SetAnonymousAppIDStatusResponse(BaseResponse):
+	# 	key: 					[data type, required, default value, description]
+	_structure = {
+
+		# Root
+		'type': 			[InstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']],
+		'errorMessage': 	[MultiLanguageTextProxy,	False, 	None, 	'Description of error in case of custom response type'],
+		'version': 			[VersionDataType,			True, 	SETANONYMOUSAPPIDSTATUSCOMMAND['currentVersion'], 	'Version of "%s" response' % SETANONYMOUSAPPIDSTATUSCOMMAND['keyword']],
+		}
+
+
+class SetAnonymousAppIDStatusResponseProxy(Proxy):
+	dataType = SetAnonymousAppIDStatusResponse
+
+
+
+####################################################################################################################################
+
+
 class Response(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
@@ -602,6 +629,7 @@ class Response(DictBasedObject):
 		INSTALLABLEFONTSCOMMAND['keyword']:	[InstallableFontsResponseProxy, 	False, 	None, 	''],
 		INSTALLFONTCOMMAND['keyword']:		[InstallFontResponseProxy, 	False, 	None, 	''],
 		UNINSTALLFONTCOMMAND['keyword']:	[UninstallFontResponseProxy, 	False, 	None, 	''],
+		SETANONYMOUSAPPIDSTATUSCOMMAND['keyword']:	[SetAnonymousAppIDStatusResponseProxy, 	False, 	None, 	''],
 	}
 
 	def __repr__(self):
@@ -708,6 +736,5 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 			warnings.append('%s.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.' % (self))
 
 		return information, warnings, errors
-
 
 

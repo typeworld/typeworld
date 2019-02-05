@@ -214,6 +214,7 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 - [LicenseUsage](#user-content-class-licenseusage)<br />
 - [InstallFontResponse](#user-content-class-installfontresponse)<br />
 - [UninstallFontResponse](#user-content-class-uninstallfontresponse)<br />
+- [SetAnonymousAppIDStatusResponse](#user-content-class-setanonymousappidstatusresponse)<br />
 
 
 
@@ -591,7 +592,7 @@ __Type:__ [Response](#user-content-class-response)<br />
 
 ### supportedCommands
 
-List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
+List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont', 'setAnonymousAppIDStatus']
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
@@ -683,7 +684,7 @@ Like getText(), but additionally returns the language of whatever text was found
 
 ### Attributes
 
-[command](#class-response-attribute-command)<br />[installFont](#class-response-attribute-installfont)<br />[installableFonts](#class-response-attribute-installablefonts)<br />[uninstallFont](#class-response-attribute-uninstallfont)<br />
+[command](#class-response-attribute-command)<br />[installFont](#class-response-attribute-installfont)<br />[installableFonts](#class-response-attribute-installablefonts)<br />[setAnonymousAppIDStatus](#class-response-attribute-setanonymousappidstatus)<br />[uninstallFont](#class-response-attribute-uninstallfont)<br />
 
 ### Methods
 
@@ -711,6 +712,12 @@ __Type:__ [InstallFontResponse](#user-content-class-installfontresponse)<br />
 
 __Required:__ False<br />
 __Type:__ [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
+<div id="class-response-attribute-setAnonymousAppIDStatus"></div>
+
+### setAnonymousAppIDStatus
+
+__Required:__ False<br />
+__Type:__ [SetAnonymousAppIDStatusResponse](#user-content-class-setanonymousappidstatusresponse)<br />
 <div id="class-response-attribute-uninstallFont"></div>
 
 ### uninstallFont
@@ -1295,7 +1302,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'ttf', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'otf', 'woff', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1614,6 +1621,50 @@ __Format:__ To ensure the proper function of the entire Type.World protocol, you
 ### version
 
 Version of "uninstallFont" response
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
+__Default value:__ 0.1.6
+
+
+
+
+
+<div id="class-setanonymousappidstatusresponse"></div>
+
+# _class_ SetAnonymousAppIDStatusResponse()
+
+
+
+### Attributes
+
+[errorMessage](#class-setanonymousappidstatusresponse-attribute-errormessage)<br />[type](#class-setanonymousappidstatusresponse-attribute-type)<br />[version](#class-setanonymousappidstatusresponse-attribute-version)<br />
+
+## Attributes
+
+<div id="class-setanonymousappidstatusresponse-attribute-errorMessage"></div>
+
+### errorMessage
+
+Description of error in case of custom response type
+
+__Required:__ False<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+<div id="class-setanonymousappidstatusresponse-attribute-type"></div>
+
+### type
+
+Type of response. This can be any of ['success', 'error', 'insufficientPermission']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
+<div id="class-setanonymousappidstatusresponse-attribute-version"></div>
+
+### version
+
+Version of "setAnonymousAppIDStatus" response
 
 __Required:__ True<br />
 __Type:__ Str<br />
