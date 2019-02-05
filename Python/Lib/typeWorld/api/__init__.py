@@ -462,7 +462,7 @@ class InstallableFontsResponse(BaseResponse):
 		'designers':		[DesignersListProxy,			False, 	None, 	'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
 		'foundries':		[FoundryListProxy,				True, 	None, 	'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
 
-		'name':			[MultiLanguageTextProxy,			False, 	None, 	'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
+		'name':				[MultiLanguageTextProxy,			False, 	None, 	'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
 		'userName':			[MultiLanguageTextProxy,		False, 	None, 	'The name of the user who these fonts are licensed to.'],
 		'userEmail':		[EmailDataType,					False, 	None, 	'The email address of the user who these fonts are licensed to.'],
 	}
@@ -479,7 +479,7 @@ class InstallableFontsResponse(BaseResponse):
 
 	def discardThisKey(self, key):
 		
-		if key in ['foundries', 'designers', 'licenseIdentifier'] and self.type == 'error':
+		if key in ['foundries', 'designers', 'licenseIdentifier'] and self.type != 'success':
 			return True
 
 		return False
