@@ -192,10 +192,13 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 
 ## Protocol Changes
 
+#### Version 0.1.6-alpha
+
+* `Font.beta` renamed to [`Font.prelease`](#user-content-class-font-attribute-prerelease)
+
 #### Version 0.1.4-alpha
 
 * `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class-font-attribute-protected)
-
 
 <div id="classtoc"></div>
 
@@ -1265,7 +1268,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[beta](#class-font-attribute-beta)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[prerelease](#class-font-attribute-prerelease)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1273,14 +1276,6 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ## Attributes
 
-<div id="class-font-attribute-beta"></div>
-
-### beta
-
-Font is in beta stage. For UI signaling
-
-__Required:__ False<br />
-__Type:__ Bool<br />
 <div id="class-font-attribute-dateFirstPublished"></div>
 
 ### dateFirstPublished
@@ -1302,7 +1297,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'otf', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'woff2', 'woff', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1339,6 +1334,14 @@ Complete PostScript name of font
 
 __Required:__ True<br />
 __Type:__ Str<br />
+<div id="class-font-attribute-prerelease"></div>
+
+### prerelease
+
+Font is in prerelease stage. For UI signaling
+
+__Required:__ False<br />
+__Type:__ Bool<br />
 <div id="class-font-attribute-previewImage"></div>
 
 ### previewImage

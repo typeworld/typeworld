@@ -163,7 +163,7 @@ class Font(DictBasedObject):
 		'versions':	 		[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'designers':	 	[DesignersReferencesListProxy,	False, 	None, 	'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
 		'free':				[BooleanDataType,		False, 	None, 	'Font is freeware. For UI signaling'],
-		'beta':				[BooleanDataType,		False, 	None, 	'Font is in beta stage. For UI signaling'],
+		'prerelease':		[BooleanDataType,		False, 	None, 	'Font is in prerelease stage. For UI signaling'],
 		'variableFont':		[BooleanDataType,		False, 	None, 	'Font is an OpenType Variable Font. For UI signaling'],
 		'purpose':			[FontPurposeDataType,	True, 	None, 	'Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s' % (list(FONTPURPOSES.keys()))],
 		'format':			[FontExtensionDataType,	False, 	None, 	'Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s' % FILEEXTENSIONS],

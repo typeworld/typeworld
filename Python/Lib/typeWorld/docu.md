@@ -192,10 +192,13 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 
 ## Protocol Changes
 
+#### Version 0.1.6-alpha
+
+* `Font.beta` renamed to [`Font.prelease`](#user-content-class-font-attribute-prerelease)
+
 #### Version 0.1.4-alpha
 
 * `Font.requiresUserID` renamed to [`Font.protected`](#user-content-class-font-attribute-protected)
-
 
 <div id="classtoc"></div>
 
