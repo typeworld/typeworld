@@ -553,7 +553,7 @@ class DictBasedObject(object):
 
         return classes
 
-    def __init__(self):
+    def __init__(self, json = None):
 
         super(DictBasedObject, self).__init__()
 
@@ -573,6 +573,8 @@ class DictBasedObject(object):
             if self._structure[key][1] and self._structure[key][2] is not None:
                 setattr(self, key, self._structure[key][2])
 
+        if json:
+            self.loadJSON(json)
 
     def initAttr(self, key):
 
