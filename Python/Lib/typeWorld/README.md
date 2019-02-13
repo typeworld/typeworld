@@ -1268,7 +1268,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[prerelease](#class-font-attribute-prerelease)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1297,7 +1297,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'otf', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff', 'ttc', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1334,14 +1334,6 @@ Complete PostScript name of font
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-font-attribute-prerelease"></div>
-
-### prerelease
-
-Font is in prerelease stage. For UI signaling
-
-__Required:__ False<br />
-__Type:__ Bool<br />
 <div id="class-font-attribute-previewImage"></div>
 
 ### previewImage
@@ -1377,6 +1369,16 @@ Optional set name of font. This is used to group fonts in the UI. Think of fonts
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+<div id="class-font-attribute-status"></div>
+
+### status
+
+Font status. For UI signaling. Possible values are: ['alpha', 'beta', 'stable']
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Default value:__ stable
+
 <div id="class-font-attribute-uniqueID"></div>
 
 ### uniqueID
