@@ -113,6 +113,9 @@ OPENSOURCELICENSES = ['0BSD', 'AAL', 'Abstyles', 'Adobe-2006', 'Adobe-Glyph', 'A
 
 FONTSTATUSES = ['alpha', 'beta', 'stable']
 
+PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ['active', 'deleted', 'deauthorized']
+
+
 def makeSemVer(version):
     'Turn simple float number (0.1) into semver-compatible number for comparison by adding .0(s): (0.1.0)'
 
