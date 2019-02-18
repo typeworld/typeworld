@@ -1307,7 +1307,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'otf', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'otf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1582,7 +1582,7 @@ __Type:__ Str<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired', 'revealedUserIdentityRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
