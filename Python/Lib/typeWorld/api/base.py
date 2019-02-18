@@ -7,6 +7,8 @@ import semver
 import typeWorld.api
 import typeWorld.api.base
 
+VERSION = '0.1.6'
+
 # Response types (success, error, ...)
 SUCCESS = 'success'
 ERROR = 'error'
@@ -26,25 +28,25 @@ PROTOCOLS = ['typeworldjson', 'typeworldgithub']
 # Commands
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
-    'currentVersion': '0.1.6',
+    'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, ACCESSTOKENEXPIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 INSTALLFONTCOMMAND ={
     'keyword': 'installFont',
-    'currentVersion': '0.1.6',
+    'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, DUPLICATEINSTALLATION, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 UNINSTALLFONTCOMMAND =  {
     'keyword': 'uninstallFont',
-    'currentVersion': '0.1.6',
+    'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, UNKNOWNINSTALLATION, INSUFFICIENTPERMISSION, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 SETANONYMOUSAPPIDSTATUSCOMMAND =  {
     'keyword': 'setAnonymousAppIDStatus',
-    'currentVersion': '0.1.6',
+    'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, INSUFFICIENTPERMISSION],
     'acceptableMimeTypes': ['application/json'],
     }
