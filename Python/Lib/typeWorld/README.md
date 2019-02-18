@@ -770,7 +770,7 @@ api.response.installableFonts = InstallableFontsResponse()
 
 ### Attributes
 
-[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[type](#class-installablefontsresponse-attribute-type)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />[version](#class-installablefontsresponse-attribute-version)<br />
+[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[type](#class-installablefontsresponse-attribute-type)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />[version](#class-installablefontsresponse-attribute-version)<br />
 
 ## Attributes
 
@@ -806,6 +806,16 @@ A name of this response and its contents. This is needed to manage subscriptions
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+<div id="class-installablefontsresponse-attribute-prefersRevealedUserIdentity"></div>
+
+### prefersRevealedUserIdentity
+
+Indicates that the publisher prefers to have the user reveal his/her identity to the publisher when installing fonts. In the app, the user will be asked via a dialog to turn the setting on, but is not required to do so.
+
+__Required:__ True<br />
+__Type:__ Bool<br />
+__Default value:__ False
+
 <div id="class-installablefontsresponse-attribute-type"></div>
 
 ### type
@@ -1297,7 +1307,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'otf', 'woff2', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
