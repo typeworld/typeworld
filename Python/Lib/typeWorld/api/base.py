@@ -51,6 +51,7 @@ SETANONYMOUSAPPIDSTATUSCOMMAND =  {
     'responseTypes': [SUCCESS, ERROR, INSUFFICIENTPERMISSION],
     'acceptableMimeTypes': ['application/json'],
     }
+
 COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND, SETANONYMOUSAPPIDSTATUSCOMMAND]
 
 
@@ -116,7 +117,7 @@ OPENSOURCELICENSES = ['0BSD', 'AAL', 'Abstyles', 'Adobe-2006', 'Adobe-Glyph', 'A
 
 FONTSTATUSES = ['alpha', 'beta', 'stable']
 
-PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ['active', 'deleted', 'deauthorized']
+PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ['active', 'deleted', 'revoked']
 
 
 def makeSemVer(version):
