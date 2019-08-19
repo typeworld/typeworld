@@ -579,8 +579,10 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 URL of human-readable Privacy Declaration of API endpoint. This will be displayed to the user for consent when adding a subscription.
 
-__Required:__ False<br />
+__Required:__ True<br />
 __Type:__ Str<br />
+__Default value:__ https://type.world/legal/default/PrivacyDeclaration.html
+
 <div id="class-apiroot-attribute-public"></div>
 
 ### public
@@ -613,8 +615,10 @@ __Type:__ List of Str objects<br />
 
 URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription.
 
-__Required:__ False<br />
+__Required:__ True<br />
 __Type:__ Str<br />
+__Default value:__ https://type.world/legal/default/TermsOfService.html
+
 <div id="class-apiroot-attribute-website"></div>
 
 ### website
@@ -1323,7 +1327,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'woff2', 'otf', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'ttf', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />

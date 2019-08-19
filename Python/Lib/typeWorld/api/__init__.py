@@ -707,8 +707,8 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'backgroundColor': 		[HexColorDataType,			False, 	None, 	'Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
 		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
-		'privacyDeclaration': 	[WebURLDataType, 			False, 	None, 	'URL of human-readable Privacy Declaration of API endpoint. This will be displayed to the user for consent when adding a subscription.'],
-		'termsOfServiceAgreement': [WebURLDataType, 		False, 	None, 	'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription.'],
+		'privacyDeclaration': 	[WebURLDataType, 			True, 	'https://type.world/legal/default/PrivacyDeclaration.html', 	'URL of human-readable Privacy Declaration of API endpoint. This will be displayed to the user for consent when adding a subscription.'],
+		'termsOfServiceAgreement': [WebURLDataType, 		True, 	'https://type.world/legal/default/TermsOfService.html', 	'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription.'],
 	}
 
 	def difference(self, other):
