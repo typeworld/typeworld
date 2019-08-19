@@ -513,7 +513,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 ### Attributes
 
-[adminEmail](#class-apiroot-attribute-adminemail)<br />[backgroundColor](#class-apiroot-attribute-backgroundcolor)<br />[canonicalURL](#class-apiroot-attribute-canonicalurl)<br />[licenseIdentifier](#class-apiroot-attribute-licenseidentifier)<br />[logo](#class-apiroot-attribute-logo)<br />[name](#class-apiroot-attribute-name)<br />[public](#class-apiroot-attribute-public)<br />[response](#class-apiroot-attribute-response)<br />[supportedCommands](#class-apiroot-attribute-supportedcommands)<br />[website](#class-apiroot-attribute-website)<br />
+[adminEmail](#class-apiroot-attribute-adminemail)<br />[backgroundColor](#class-apiroot-attribute-backgroundcolor)<br />[canonicalURL](#class-apiroot-attribute-canonicalurl)<br />[licenseIdentifier](#class-apiroot-attribute-licenseidentifier)<br />[logo](#class-apiroot-attribute-logo)<br />[name](#class-apiroot-attribute-name)<br />[privacyDeclaration](#class-apiroot-attribute-privacydeclaration)<br />[public](#class-apiroot-attribute-public)<br />[response](#class-apiroot-attribute-response)<br />[supportedCommands](#class-apiroot-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-apiroot-attribute-termsofserviceagreement)<br />[website](#class-apiroot-attribute-website)<br />
 
 ### Methods
 
@@ -573,6 +573,14 @@ Human-readable name of API endpoint
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+<div id="class-apiroot-attribute-privacyDeclaration"></div>
+
+### privacyDeclaration
+
+URL of human-readable Privacy Declaration of API endpoint. This will be displayed to the user for consent when adding a subscription.
+
+__Required:__ False<br />
+__Type:__ Str<br />
 <div id="class-apiroot-attribute-public"></div>
 
 ### public
@@ -599,6 +607,14 @@ List of commands this API endpoint supports: ['installableFonts', 'installFont',
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
+<div id="class-apiroot-attribute-termsOfServiceAgreement"></div>
+
+### termsOfServiceAgreement
+
+URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription.
+
+__Required:__ False<br />
+__Type:__ Str<br />
 <div id="class-apiroot-attribute-website"></div>
 
 ### website
@@ -1307,7 +1323,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'woff2', 'otf', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
