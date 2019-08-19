@@ -513,7 +513,7 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 
 ### Attributes
 
-[adminEmail](#class-apiroot-attribute-adminemail)<br />[backgroundColor](#class-apiroot-attribute-backgroundcolor)<br />[canonicalURL](#class-apiroot-attribute-canonicalurl)<br />[licenseIdentifier](#class-apiroot-attribute-licenseidentifier)<br />[logo](#class-apiroot-attribute-logo)<br />[name](#class-apiroot-attribute-name)<br />[privacyDeclaration](#class-apiroot-attribute-privacydeclaration)<br />[public](#class-apiroot-attribute-public)<br />[response](#class-apiroot-attribute-response)<br />[supportedCommands](#class-apiroot-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-apiroot-attribute-termsofserviceagreement)<br />[website](#class-apiroot-attribute-website)<br />
+[adminEmail](#class-apiroot-attribute-adminemail)<br />[backgroundColor](#class-apiroot-attribute-backgroundcolor)<br />[canonicalURL](#class-apiroot-attribute-canonicalurl)<br />[licenseIdentifier](#class-apiroot-attribute-licenseidentifier)<br />[logo](#class-apiroot-attribute-logo)<br />[name](#class-apiroot-attribute-name)<br />[privacyPolicy](#class-apiroot-attribute-privacypolicy)<br />[public](#class-apiroot-attribute-public)<br />[response](#class-apiroot-attribute-response)<br />[supportedCommands](#class-apiroot-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-apiroot-attribute-termsofserviceagreement)<br />[website](#class-apiroot-attribute-website)<br />
 
 ### Methods
 
@@ -573,15 +573,15 @@ Human-readable name of API endpoint
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-<div id="class-apiroot-attribute-privacyDeclaration"></div>
+<div id="class-apiroot-attribute-privacyPolicy"></div>
 
-### privacyDeclaration
+### privacyPolicy
 
-URL of human-readable Privacy Declaration of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
+URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
 
 __Required:__ True<br />
 __Type:__ Str<br />
-__Default value:__ https://type.world/legal/default/PrivacyDeclaration.html
+__Default value:__ https://type.world/legal/default/PrivacyPolicy.html
 
 <div id="class-apiroot-attribute-public"></div>
 
@@ -1327,7 +1327,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'ttc', 'woff2', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'otf', 'woff', 'ttf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
