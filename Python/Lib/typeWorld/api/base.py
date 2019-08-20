@@ -24,7 +24,7 @@ VALIDTYPEWORLDUSERACCOUNTREQUIRED = 'validTypeWorldUserAccountRequired'
 REVEALEDUSERIDENTITYREQUIRED = 'revealedUserIdentityRequired'
 ACCESSTOKENEXPIRED = 'accessTokenExpired'
 
-PROTOCOLS = ['typeworldjson', 'typeworldgithub']
+PROTOCOLS = ['typeworld']
 
 # Commands
 INSTALLABLEFONTSCOMMAND = {

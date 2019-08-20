@@ -51,21 +51,22 @@ Any such mistakes will not pass. That’s because I don’t want to be dealing w
 
 By clicking the *Install in Type.World App* button on your SSL-encrypted website, a URL of the following scheme gets handed off to the app through a custom protocol handler:
 
-`typeworldjson://https//[subscriptionID[:secretKey]@]awesomefonts.com/api/`
+`typeworld://json+https//[subscriptionID[:secretKey]@]awesomefonts.com/api/`
 
 *Note: Even though this notation suggests the use of HTTP authentication, we will not make use of it. See [Serving JSON responses](#user-content-servingjsonresponses) below for more information.*
 
 Example for a protected subscription:
-`typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/`
+`typeworld://json+https//subscriptionID:secretKey@awesomefonts.com/api/`
 
-Example for a publicly accessible subscription without `secretKey`, but `subscriptionID` still used to identify a particular subscription: `typeworldjson://https//subscriptionID@awesomefonts.com/api/`
+Example for a publicly accessible subscription without `secretKey`, but `subscriptionID` still used to identify a particular subscription: `typeworld://json+https//subscriptionID@awesomefonts.com/api/`
 
-Example for a publicly accessible subscription without `secretKey` or `subscriptionID`. This API endpoint has exactly one subscription to serve: `typeworldjson://https//awesomefonts.com/api/`
+Example for a publicly accessible subscription without `secretKey` or `subscriptionID`. This API endpoint has exactly one subscription to serve: `typeworld://json+https//awesomefonts.com/api/`
 
 The URL parts in detail:
 
-* `typeworldjson://` This is one of the two custom protocol handlers used by the Type.World app. The app advertises the handler to the operating system, and upon clicking such a link, the operating system calls the app and hands over the link.
-* `https//` The transport protocol to be used, in this case SSL-encrypted HTTPS. *Note:* because URLs are only allowed to contain one `://` sequence which is already in use to denote the custom protocol handler `typeworldjson://`, the colon `:` will be stripped off of the URL in the browser, even if you define it a second time. The Type.World app will internally convert `https//` back to `https://`.
+* `typeworld://` This is the protocol handler used by the Type.World app. The app advertises the handler to the operating system, and upon clicking such a link, the operating system calls the app and hands over the link.
+* `json` The protocol to be used within the Type.World app. Currently, only the Type.World JSON Protocol is available to use.
+* `https//` The transport protocol to be used, in this case SSL-encrypted HTTPS. *Note:* because valid URLs are only allowed to contain one `://` sequence which is already in use to denote the custom protocol handler `typeworld://`, the colon `:` will be stripped off of the URL in the browser, even if you define it there a second time. The Type.World app will internally convert `https//` back to `https://`.
 * `subscriptionID` uniquely identifies a subscription. In case of per-user subscriptions, you would probably use it to identify a user and then decide which fonts to serve him/her. The `subscriptionID` should be an anonymous string and must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts).
 * `secretKey` matches with the `subscriptionID` and is used to authenticate the request. This secret key is saved in the OS’s keychain. The `secretKey ` must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts). The secret key is actually not necessary to authenticate the request against the server. Instead it’s necessary to store a secret key in the user’s OS keychain so that complete URLs are not openly visible.
 * `awesomefonts.com/api/` is where your API endpoint sits and waits to serve fonts to your customers.
@@ -107,7 +108,7 @@ Whatever you do with your server, bear in mind that the parameters attached to t
 
 For protected subscriptions, the publisher provides a subscription link that contains a subscription ID and a secret key to identify a subscription. The secret key is only used on the client computer and stored invisibly in the OS’s keychain, to prevent reading out all subscriptions on a client's computer by third party software. An additional single-use token may be appended to the URL.
 
-`typeworldjson://https//subscriptionID:secretKey@awesomefonts.com/api/[?token=singleusetoken]`
+`typeworld://json+https//subscriptionID:secretKey@awesomefonts.com/api/[?token=singleusetoken]`
 
 The security design outlined below consists of two optional layers.
 
@@ -1331,7 +1332,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
