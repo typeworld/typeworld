@@ -937,7 +937,7 @@ __Type:__ Str<br />
 
 ### Attributes
 
-[backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
 
 ## Attributes
 
@@ -962,7 +962,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### email
 
-General email address for this foundry
+General email address for this foundry.
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1027,7 +1027,23 @@ __Type:__ Str<br />
 
 ### supportEmail
 
-Support email address for this foundry
+Support email address for this foundry.
+
+__Required:__ False<br />
+__Type:__ Str<br />
+<div id="class-foundry-attribute-supportTelephone"></div>
+
+### supportTelephone
+
+Support telephone number for this foundry.
+
+__Required:__ False<br />
+__Type:__ Str<br />
+<div id="class-foundry-attribute-supportWebsite"></div>
+
+### supportWebsite
+
+Support website for this foundry, such as a chat room, forum, online service desk.
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1332,7 +1348,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'otf', 'woff', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />

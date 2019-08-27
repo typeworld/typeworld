@@ -362,14 +362,16 @@ class Foundry(DictBasedObject):
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
 		'logo':	 					[WebResourceURLDataType,False, 	None, 	'URL of foundry’s logo. Specifications to follow.'],
 		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
-		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry'],
-		'supportEmail':	 			[EmailDataType,			False, 	None, 	'Support email address for this foundry'],
+		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry.'],
 		'website':	 				[WebURLDataType,		False, 	None, 	'Website for this foundry'],
 		'twitter':	 				[UnicodeDataType,		False, 	None, 	'Twitter handle for this foundry, without the @'],
 		'facebook':	 				[WebURLDataType,		False, 	None, 	'Facebook page URL handle for this foundry. The URL '],
 		'instagram':	 			[UnicodeDataType,		False, 	None, 	'Instagram handle for this foundry, without the @'],
 		'skype':	 				[UnicodeDataType,		False, 	None, 	'Skype handle for this foundry'],
 		'telephone':	 			[UnicodeDataType,		False, 	None, 	'Telephone number for this foundry'],
+		'supportEmail':	 			[EmailDataType,			False, 	None, 	'Support email address for this foundry.'],
+		'supportWebsite':	 		[WebURLDataType,		False, 	None, 	'Support website for this foundry, such as a chat room, forum, online service desk.'],
+		'supportTelephone':	 		[UnicodeDataType,		False, 	None, 	'Support telephone number for this foundry.'],
 
 		#styling
 		'backgroundColor': 			[HexColorDataType,		False, 	None, 	'Foundry’s preferred background color. This is meant to go as a background color to the logo at ::Foundry.logo::'],
