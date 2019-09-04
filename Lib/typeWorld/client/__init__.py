@@ -38,6 +38,8 @@ class DummyKeyring(object):
 
 if 'TRAVIS' in os.environ:
 	dummyKeyRing = DummyKeyring()
+	import tempfile
+	tempFolder = tempfile.mkdtemp()
 
 
 def readJSONResponse(url, acceptableMimeTypes, data = {}, JSON = None):
@@ -1274,13 +1276,17 @@ class APIPublisher(object):
 		if WIN:
 			return os.path.join(os.environ['WINDIR'], 'Fonts')
 
-		if MAC:
+		elif MAC:
 
 			from os.path import expanduser
 			home = expanduser("~")
 			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (self.subscriptions()[0].protocol.rootCommand().name.getText(), self.subscriptions()[0].protocol.protocolName()))
 
 			return folder
+
+		else:
+			return tempFolder
+
 
 	def stillUpdating(self):
 		return len(self._updatingSubscriptions) > 0
