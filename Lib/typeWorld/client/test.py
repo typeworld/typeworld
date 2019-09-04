@@ -35,6 +35,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
 		self.assertEqual(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Yanone', 'en'))
 
+		client.downloadSubscriptions()
+
 		for subscription in publisher.subscriptions():
 			subscription.delete()
 
@@ -48,5 +50,3 @@ if __name__ == '__main__':
 if not 'TRAVIS' in os.environ:
 	os.remove(prefFile)
 	os.rmdir(tempFolder)
-
-
