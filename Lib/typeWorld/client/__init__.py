@@ -1719,28 +1719,28 @@ class APISubscription(object):
 			command = payload
 
 
-			if MAC or WIN:
+			# if MAC or WIN:
 
-				try:
-					# Create folder if it doesn't exist
-					if not os.path.exists(os.path.dirname(path)):
-						os.makedirs(os.path.dirname(path))
+			try:
+				# Create folder if it doesn't exist
+				if not os.path.exists(os.path.dirname(path)):
+					os.makedirs(os.path.dirname(path))
 
-					# Put future encoding switches here
-					f = open(path, 'wb')
-					f.write(base64.b64decode(command.font))
-					f.close()
-				except PermissionError:
-					return False, "Insufficient permission to install font."
+				# Put future encoding switches here
+				f = open(path, 'wb')
+				f.write(base64.b64decode(command.font))
+				f.close()
+			except PermissionError:
+				return False, "Insufficient permission to install font."
 
 
-				# Ping
-				self.parent.stillAlive()
+			# Ping
+			self.parent.stillAlive()
 
-				if os.path.exists(path):
-					return True, None
-				else:
-					return False, 'Font file could not be written: %s' % path
+			if os.path.exists(path):
+				return True, None
+			else:
+				return False, 'Font file could not be written: %s' % path
 
 		else:
 			return False, payload
