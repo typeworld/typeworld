@@ -1,4 +1,10 @@
-[![Build Status](https://travis-ci.org/typeWorld/api.svg?branch=master)](https://travis-ci.org/typeWorld/api)
-[![codecov](https://codecov.io/gh/typeWorld/api/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/api)
+[![Build Status](https://travis-ci.org/typeWorld/typeWorld.svg?branch=master)](https://travis-ci.org/typeWorld/typeWorld)
+[![codecov](https://codecov.io/gh/typeWorld/typeWorld/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/typeWorld)
 
-For now, please jump straight to the Python implementation of the API [→ here](Python/Lib/typeWorld)
+# API
+
+For the documentation of the official API, jump [→ here](Lib/typeWorld/api).
+
+# Client
+
+For the documentation of the client, jump [→ here](Lib/typeWorld/client).
