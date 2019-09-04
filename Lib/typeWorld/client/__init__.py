@@ -761,7 +761,8 @@ class APIClient(object):
 
 		# Set secret key now, so it doesn't show up in preferences when offline
 		keyring = self.keyring()
-		keyring.set_password('https://type.world', userID, secretKey)
+		if keyring:
+			keyring.set_password('https://type.world', userID, secretKey)
 
 		self.appendCommands('linkUser', userID)
 		self.syncSubscriptions(performCommands = False)
