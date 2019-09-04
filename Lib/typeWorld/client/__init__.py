@@ -311,6 +311,10 @@ class APIClient(object):
 
 
 	def online(self, server = None):
+
+		if 'TRAVIS' in os.environ:
+			return True
+
 		if not server:
 			server = 'type.world'
 #		print('Pinging %s' % server)
