@@ -951,9 +951,9 @@ class APIClient(object):
 
 	def keyring(self):
 
-		return dummyKeyRing
+		
 		if 'TRAVIS' in os.environ:
-			return DummyKeyring()
+			return dummyKeyRing
 
 		try:
 			import keyring
