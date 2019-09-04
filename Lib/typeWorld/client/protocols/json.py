@@ -1,4 +1,4 @@
-from typeWorldClient.protocols import *
+from typeWorld.client.protocols import *
 
 
 

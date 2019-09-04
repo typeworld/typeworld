@@ -1,5 +1,5 @@
 
-from typeWorldClient import *
+from typeWorld.client import *
 
 
 
