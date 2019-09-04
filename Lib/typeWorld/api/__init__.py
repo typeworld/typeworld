@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from typeWorld.api.base import *
-import functools
+import functools, os
 
+import platform
+WIN = platform.system() == 'Windows'
+MAC = platform.system() == 'Darwin'
 
 
 ####################################################################################################################################
@@ -338,6 +341,22 @@ class Family(DictBasedObject):
 						self._allDesigners.append(self.parent.parent.getDesignerByKeyword(designerKeyword))
 						self._allDesignersKeywords.append(designerKeyword)
 		return self._allDesigners
+
+	def setNames(self, locale):
+		setNames = []
+		for font in self.fonts:
+			if not font.setName.getText(locale) in setNames:
+				setNames.append(font.setName.getText(locale))
+		return setNames
+
+	def formatsForSetName(self, setName, locale):
+		formats = []
+		for font in self.fonts:
+			if font.setName.getText(locale) == setName:
+				if not font.format in formats:
+					formats.append(font.format)
+		return formats
+
 
 def Family_Parent(self):
 	if hasattr(self, '_parent') and hasattr(self._parent, '_parent') and hasattr(self._parent._parent, '_parent'):

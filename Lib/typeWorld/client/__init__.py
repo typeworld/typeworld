@@ -85,8 +85,6 @@ def readJSONResponse(url, acceptableMimeTypes, data = {}, JSON = None):
 
 
 
-
-
 def validURL(url):
 
 	protocol = url.split('://')[0]
@@ -539,6 +537,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
+			print(response)
+
 			if response['errors']:
 				return False, '\n'.join(response['errors'])
 
@@ -827,11 +827,11 @@ class APIClient(object):
 		# Uninstall all protected fonts
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
-				for foundry in subscription.foundries():
-					for family in foundry.families():
-						for font in family.fonts():
-							if font.twObject.protected:
-								font.delete()
+				for foundry in subscription.protocol.installableFontsCommand().foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.protected:
+								subscription.removeFont(font.uniqueID)
 
 
 	def performUnlinkUser(self):
@@ -1245,6 +1245,19 @@ class APIPublisher(object):
 
 		self._updatingSubscriptions = []
 
+	def folder(self):
+
+		if WIN:
+			return os.path.join(os.environ['WINDIR'], 'Fonts')
+
+		if MAC:
+
+			from os.path import expanduser
+			home = expanduser("~")
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (self.subscriptions()[0].protocol.rootCommand().name.getText(), self.subscriptions()[0].protocol.protocolName()))
+
+			return folder
+
 	def stillUpdating(self):
 		return len(self._updatingSubscriptions) > 0
 
@@ -1403,11 +1416,6 @@ class APIPublisher(object):
 		preferences[key] = value
 		self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
 
-	def path(self):
-		from os.path import expanduser
-		home = expanduser("~")
-		return os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (self.name()[0], self.get('type')))
-
 
 	def addGitHubSubscription(self, url, commits):
 
@@ -1501,254 +1509,6 @@ class APIPublisher(object):
 
 		self.parent._publishers = {}
 
-class APIFont(object):
-	def __init__(self, parent, twObject = None, gitHubContent = None):
-		self.parent = parent
-		self.twObject = twObject
-		self.gitHubContent = gitHubContent
-
-		# Init attributes
-		self.keywords = self.twObject.nonListProxyBasedKeys()
-		for keyword in self.keywords:
-			setattr(self, keyword, None)
-
-		# Take data from twObject
-		if self.twObject:
-			for keyword in self.keywords:
-				setattr(self, keyword, getattr(self.twObject, keyword))
-
-		if self.gitHubContent:
-			self.postScriptName = self.gitHubContent['name'].split('.')[0]
-			self.name = typeWorld.api.MultiLanguageText()
-			self.name.en = self.postScriptName.split('-')[1]
-			self.purpose = 'desktop'
-			self.format = self.gitHubContent['name'].split('.')[-1]
-			self.uniqueID = self.gitHubContent['name']
-
-			# set name
-			self.setName = typeWorld.api.MultiLanguageText()
-			if len(self.postScriptName.split('-')[0]) > len(self.parent.parent.parent.name()):
-				self.setName.en = self.postScriptName.split('-')[0][len(self.parent.name())+1:]
-
-
-	def isOutdated(self):
-
-		installedVersion = self.installedVersion()
-		return installedVersion and installedVersion != self.getVersions()[-1].number
-
-
-	def installedVersion(self, folder = None):
-		for version in self.getVersions():
-			if os.path.exists(self.path(version.number, folder)):
-				return version.number
-
-
-
-
-	def delete(self):
-		self.parent.parent.parent.removeFont(self.uniqueID)
-
-
-	def getVersions(self):
-		if self.twObject:
-			return self.twObject.getVersions()
-
-		elif self.gitHubContent:
-
-			owner = self.parent.parent.parent.url.split('/')[3]
-			repo = self.parent.parent.parent.url.split('/')[4]
-			path = '/'.join(self.parent.parent.parent.url.split('/')[7:])
-
-			# commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s/fonts/%s.%s' % (owner, repo, path, self.postScriptName, self.format)
-			# print 'commitsURL', commitsURL
-
-			# # Read response
-			# commits, responses = self.parent.parent.parent.parent.parent.readGitHubResponse(commitsURL)
-			# commits = json.loads(commits)
-			# if commits.has_key('message'):
-			# 	return []
-
-			commits = self.parent.parent.parent.get('commits')
-			commits = reversed(json.loads(commits))
-
-
-
-			
-			versions = []
-			for commit in commits:
-
-				if 'version' in commit['commit']['message'].lower() and ':' in commit['commit']['message']:
-					number = commit['commit']['message'].split('\n')[0].split(':')[1].strip()
-					newVersion = typeWorld.api.Version()
-					newVersion.number = number
-					versions.append(newVersion)
-			return versions
-
-
-
-	def filename(self, version):
-		return self.twObject.filename(version)
-
-	def path(self, version, folder = None):
-
-		if WIN:
-			return os.path.join(os.environ['WINDIR'], 'Fonts', self.filename(version))
-
-		if MAC:
-
-			# User fonts folder
-			if not folder:
-				folder = self.parent.parent.parent.parent.path()
-				
-			return os.path.join(folder, self.filename(version))
-
-
-class APIFamily(object):
-	def __init__(self, parent, twObject = None):
-		self.parent = parent
-		self.twObject = twObject
-
-		# Init attributes
-		self.keywords = self.twObject.nonListProxyBasedKeys()
-		for keyword in self.keywords:
-			setattr(self, keyword, None)
-
-		# Take data from twObject
-		if self.twObject:
-			for keyword in self.keywords:
-				setattr(self, keyword, getattr(self.twObject, keyword))
-
-		# GitHub
-		if self.parent.parent.parent.get('type') == 'GitHub':
-
-			self.name = typeWorld.api.MultiLanguageText()
-			self.name.en = self.parent.parent.name()
-			self.uniqueID = self.parent.parent.name()
-			self.sourceURL = self.parent.parent.url
-
-			return
-
-	# 		url = 'https://api.github.com/users/%s' % self.parent.parent.parent.canonicalURL.split('/')[-1]
-	# 		success, content, mimeType = self.parent.parent.parent.resourceByURL(url)
-	# 		if success:
-	# 			userInfo = json.loads(content)
-	# 			self.name = typeWorld.api.MultiLanguageText()
-	# 			self.name.en = userInfo['name']
-	# 			self.logo = userInfo['avatar_url']
-	# 			self.website = userInfo['html_url']
-	# 			if userInfo['email']: 
-	# 				self.email = userInfo['email']
-	# 			if userInfo['bio']: 
-	# 				self.description = typeWorld.api.MultiLanguageText()
-	# 				self.description.en = userInfo['bio']
-
-	# def gitHubFonts(self):
-
-
-	# 	if not hasattr(self, '_githubfonts'):
-
-	# 		# print('gitHubFonts()')
-
-	# 		url = self.parent.parent.url
-	# 		owner = url.split('/')[3]
-	# 		repo = url.split('/')[4]
-	# 		path = '/'.join(url.split('/')[5:]) + '/fonts'
-
-	# 		# print(url)
-
-			
-	# 		# owner = self.parent.parent.parent.canonicalURL.split('/')[-1]
-	# 		# repo = self.parent.parent.url.split('/')[-1]
-	# 		# path = '/'.join(self.parent.parent.url.split('/')[-2:-1])
-
-	# 		url = 'https://api.github.com/repos/%s/%s/contents/%s' % (owner, repo, path)
-
-	# 		if self.parent.parent.parent.get('username') and self.parent.parent.parent.getPassword(self.parent.parent.parent.get('username')):
-	# 			success, content, mimeType = self.parent.parent.parent.parent.resourceByURL(url, username = self.parent.parent.parent.get('username'), password = self.parent.parent.parent.getPassword(self.parent.parent.parent.get('username')))
-	# 		else:
-	# 			success, content, mimeType = self.parent.parent.parent.parent.resourceByURL(url)
-
-	# #		success, content, mimeType = self.parent.parent.parent.resourceByURL(url)
-
-	# 		self._githubfonts = json.loads(content)
-
-	# 	return self._githubfonts
-
-	def fonts(self):
-
-		fonts = []
-
-		for font in self.twObject.fonts:
-			newFont = APIFont(self, font)
-			fonts.append(newFont)
-
-		return fonts
-
-
-	def versions(self):
-
-		return self.twObject.versions
-
-	def setNames(self, locale):
-		setNames = []
-		for font in self.fonts():
-			if not font.setName.getText(locale) in setNames:
-				setNames.append(font.setName.getText(locale))
-		return setNames
-
-	def formatsForSetName(self, setName, locale):
-		formats = []
-		for font in self.fonts():
-			if font.setName.getText(locale) == setName:
-				if not font.format in formats:
-					formats.append(font.format)
-		return formats
-
-
-
-class APIFoundry(object):
-	def __init__(self, parent, twObject = None):
-		self.parent = parent
-		self.twObject = twObject
-
-		self._families = []
-
-		# Init attributes
-		self.keywords = ['backgroundColor', 'description', 'email', 'facebook', 'instagram', 'logo', 'name', 'skype', 'supportEmail', 'telephone', 'twitter', 'website']
-		for keyword in self.keywords:
-			setattr(self, keyword, None)
-
-		# Take data from twObject
-		if self.twObject:
-			for keyword in self.keywords:
-				setattr(self, keyword, getattr(self.twObject, keyword))
-
-		# # GitHub
-		# if self.parent.parent.get('type') == 'GitHub':
-		# 	url = 'https://api.github.com/users/%s' % self.parent.parent.canonicalURL.split('/')[-1]
-		# 	success, content, mimeType = self.parent.parent.resourceByURL(url)
-		# 	if success:
-		# 		userInfo = json.loads(content)
-		# 		self.name = typeWorld.api.MultiLanguageText()
-		# 		self.name.en = userInfo['name']
-		# 		self.logo = userInfo['avatar_url']
-		# 		self.website = userInfo['html_url']
-		# 		if userInfo['email']: 
-		# 			self.email = userInfo['email']
-		# 		if userInfo['bio']: 
-		# 			self.description = typeWorld.api.MultiLanguageText()
-		# 			self.description.en = userInfo['bio']
-
-
-	def families(self):
-
-		if not self._families:
-
-			for family in self.twObject.families:
-				newFamily = APIFamily(self, family)
-				self._families.append(newFamily)
-
-		return self._families
 
 
 class APISubscription(object):
@@ -1767,9 +1527,6 @@ class APISubscription(object):
 		self._updatingProblem = None
 
 		# print('<API SUbscription %s>' % self.url)
-
-		self._foundries = []
-
 
 	def invitationAccepted(self):
 
@@ -1805,28 +1562,17 @@ class APISubscription(object):
 
 
 	def familyByID(self, ID):
-		for foundry in self.foundries():
-			for family in foundry.families():
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
 				if family.uniqueID == ID:
 					return family
 
 	def fontByID(self, ID):
-		for foundry in self.foundries():
-			for family in foundry.families():
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == ID:
 						return family
-
-	def foundries(self):
-		if not self._foundries:
-
-			for foundry in self.protocol.installableFontsCommand().foundries:
-
-				newFoundry = APIFoundry(self, twObject = foundry)
-				self._foundries.append(newFoundry)
-
-		return self._foundries
-
 
 	def amountInstalledFonts(self):
 		return len(self.installedFonts())
@@ -1834,10 +1580,10 @@ class APISubscription(object):
 	def installedFonts(self):
 		l = []
 		# Get font
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
-					if font.installedVersion():
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if self.installedFontVersion(font.uniqueID):
 						if not font in l:
 							l.append(font.uniqueID)
 		return l
@@ -1848,32 +1594,47 @@ class APISubscription(object):
 	def outdatedFonts(self):
 		l = []
 		# Get font
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
-					installedFontVersion = font.installedVersion()
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					installedFontVersion = self.installedFontVersion(font.uniqueID)
 					if installedFontVersion and installedFontVersion != font.getVersions()[-1].number:
 						if not font in l:
 							l.append(font.uniqueID)
 		return l
 
-	def installedFontVersion(self, fontID = None, folder = None):
+	def installedFontVersion(self, fontID = None):
 
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
+		folder = self.parent.folder()
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
 					if font.uniqueID == fontID:
-						return font.installedVersion()
+
+						for version in font.getVersions():
+							path = os.path.join(folder, font.filename(version.number))
+							if os.path.exists(path):
+								return version.number
+
+	def fontIsOutdated(self, fontID):
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.uniqueID == fontID:
+
+						installedVersion = self.installedFontVersion(fontID)
+						return installedVersion and installedVersion != font.getVersions()[-1].number
 
 
 	def removeFont(self, fontID, folder = None):
 
+		folder = self.parent.folder()
 		path = None
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
 					if font.uniqueID == fontID:
-						path = font.path(font.installedVersion(), folder)
+						path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
@@ -1909,15 +1670,15 @@ class APISubscription(object):
 			return False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']
 
 
+		folder = self.parent.folder()
 		path = None
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
 					if font.uniqueID == fontID:
-						path = font.path(version, folder)
+						path = os.path.join(folder, font.filename(version))
 		if not path:
 			return False, 'Font path couldn’t be determined'
-
 
 
 		success, payload = self.protocol.installFont(fontID, version)		
@@ -1940,6 +1701,7 @@ class APISubscription(object):
 					f.close()
 				except PermissionError:
 					return False, "Insufficient permission to install font."
+
 
 				# Ping
 				self.parent.stillAlive()
@@ -1998,9 +1760,6 @@ class APISubscription(object):
 
 
 		# return False, 'No font was found to install.'
-
-	def latestVersion(self):
-		return self.protocol.latestVersion()
 
 
 	def update(self):
@@ -2078,11 +1837,10 @@ class APISubscription(object):
 		self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
 
 		# Delete all fonts
-		for foundry in self.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
-					font.delete()
-
+		for foundry in self.protocol.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					self.removeFont(font.uniqueID)
 
 		# Key
 		try:

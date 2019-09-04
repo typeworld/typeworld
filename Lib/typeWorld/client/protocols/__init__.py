@@ -25,28 +25,25 @@ class TypeWorldProtocolBase(object):
 		Human readable name of protocol'''
 		return self.__class__.__name__
 
-	def rootCommand(self):
+	def returnRootCommand(self):
 		'''Overwrite this
 		Return the root of the API call'''
 		pass
 
-	def installableFontsCommand(self):
+	def returnInstallableFontsCommand(self):
 		'''Overwrite this
 		Return the root of the InstallableFonts command'''
 		pass
 
-	# def familyByID(self, ID):
-	# 	for foundry in self.foundries():
-	# 		for family in foundry.families():
-	# 			if family.uniqueID == ID:
-	# 				return family
+	def rootCommand(self):
+		command = self.returnRootCommand()
+#		command.parent = self
+		return command
 
-	# def fontByID(self, ID):
-	# 	for foundry in self.foundries():
-	# 		for family in foundry.families():
-	# 			for font in family.fonts():
-	# 				if font.uniqueID == ID:
-	# 					return font
+	def installableFontsCommand(self):
+		command = self.returnInstallableFontsCommand()
+#		command.parent = self
+		return command
 
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
 		'''Overwrite this.
@@ -77,6 +74,9 @@ class TypeWorldProtocolBase(object):
 
 	def removeFont(self, fontID):
 		pass
+
+	def path(self):
+		return self.parent.path()
 
 	def urlIsValid(self):
 

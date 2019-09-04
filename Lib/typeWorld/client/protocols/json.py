@@ -22,14 +22,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if self.versions:
 			return self.versions[-1]
 
-	def installableFontsCommand(self):
+	def returnRootCommand(self):
+		return self.latestVersion()
+
+	def returnInstallableFontsCommand(self):
 		return self.latestVersion().response.getCommand()
 
 	def protocolName(self):
 		return 'Type.World JSON Protocol'
 
-	def rootCommand(self):
-		return self.latestVersion()
 
 	def update(self):
 
@@ -68,9 +69,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 	def removeFont(self, fontID):
 
 		# Get font
-		for foundry in self.parent.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
+		for foundry in self.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
 					if font.uniqueID == fontID:
 
 						# TODO: remove this for final version
@@ -117,9 +118,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 	def installFont(self, fontID, version):
 
 		# Get font
-		for foundry in self.parent.foundries():
-			for family in foundry.families():
-				for font in family.fonts():
+		for foundry in self.installableFontsCommand().foundries:
+			for family in foundry.families:
+				for font in family.fonts:
 					if font.uniqueID == fontID:
 						
 						# Build URL

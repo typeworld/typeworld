@@ -117,6 +117,7 @@ if __name__ == '__main__':
 	font.usedLicenses.append(usedLicense)
 	family.fonts.append(font)
 	assert usedLicense.parent == font
+	assert font.parent == family
 
 	# Add version to font
 	version = Version()
