@@ -8,13 +8,13 @@ from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults
 import tempfile, os, traceback
 tempFolder = tempfile.mkdtemp()
 prefFile = os.path.join(tempFolder, 'preferences.json')
+prefs = JSON(prefFile)
+client = APIClient(preferences = prefs)
 
 class TestStringMethods(unittest.TestCase):
 
 	def test_normalSubscription(self):
 
-		prefs = JSON(prefFile)
-		client = APIClient(preferences = prefs)
 		success, message, publisher, subscription = client.addSubscription('typeworld://json+https//typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
 		print(success, message, publisher, subscription)
 
@@ -37,7 +37,7 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertEqual(success, True)
 		self.assertEqual(publisher.canonicalURL, 'https://typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
-		self.assertEqual(len(publisher.subscriptions()), 2)
+		self.assertEqual(len(publisher.subscriptions()), 1)
 		self.assertEqual(len(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
 		self.assertEqual(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Yanone', 'en'))
 
@@ -48,10 +48,15 @@ class TestStringMethods(unittest.TestCase):
 		font = publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
 		self.assertEqual(publisher.subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
 		publisher.subscriptions()[-1].set('acceptedTermsOfService', True)
+		self.assertEqual(publisher.subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
+		publisher.subscriptions()[-1].set('revealIdentity', True)
 		self.assertEqual(publisher.subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (True, None))
+
 		publisher.subscriptions()[-1].removeFont(font.uniqueID)
 
-		for subscription in publisher.subscriptions():
+	def test_takedown(self):
+
+		for subscription in client.publishers()[0].subscriptions():
 			subscription.delete()
 
 		client.unlinkUser()
