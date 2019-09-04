@@ -11,6 +11,7 @@ install:
   - pip install deepdiff
   - pip install semver
   - pip install codecov
+  - pip install certifi
 
 script:
   - coverage run ./Lib/typeWorld/api/test.py
