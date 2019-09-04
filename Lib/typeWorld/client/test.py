@@ -16,6 +16,7 @@ class TestStringMethods(unittest.TestCase):
 		client = APIClient(preferences = prefs)
 
 		success, message, publisher, subscription = client.addSubscription('typeworld://json+https//typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
+		print(success, message, publisher, subscription) 
 
 		self.assertEqual(success, True)
 		self.assertEqual(publisher.canonicalURL, 'https://typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
