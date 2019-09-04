@@ -8,7 +8,7 @@ from ynlib.files import WriteToFile, ReadFromFile
 api = APIRoot()
 
 docstrings = api.docu()
-docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'docu.md'))
+docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'docu.md'))
 
 
 handles = []
@@ -31,4 +31,4 @@ for handle in handles:
 			break
 
 if not 'TRAVIS' in os.environ:
-	WriteToFile(os.path.join(os.path.dirname(__file__), 'typeWorld', 'README.md'), docstring)
+	WriteToFile(os.path.join(os.path.dirname(__file__), 'README.md'), docstring)

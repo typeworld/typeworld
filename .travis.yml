@@ -13,7 +13,7 @@ install:
   - pip install codecov
 
 script:
-  - coverage run ./Python/Lib/test.py
+  - coverage run ./Lib/typeWorld/api/test.py
 
 after_success:
   - codecov
