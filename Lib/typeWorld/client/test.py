@@ -16,6 +16,7 @@ class TestStringMethods(unittest.TestCase):
 		prefs = JSON(prefFile)
 		client = APIClient(preferences = prefs)
 		success, message, publisher, subscription = client.addSubscription('typeworld://json+https//typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
+		print(success, message, publisher, subscription)
 
 		self.assertEqual(success, True)
 		self.assertEqual(publisher.canonicalURL, 'https://typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
@@ -26,6 +27,7 @@ class TestStringMethods(unittest.TestCase):
 		client.linkUser('736b524a-cf24-11e9-9f62-901b0ecbcc7a', 'AApCEfatt6vE5H4m0pevPsQA9P7fYG8Q1uhsNFYV')
 
 		success, message, publisher, subscription = client.addSubscription('typeworld://json+https//SeQQvpPEo9MxfBLmiGOm:AxYZcH9MV4vFrttVFEKY@typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
+		print(success, message, publisher, subscription)
 
 		self.assertEqual(success, True)
 		self.assertEqual(publisher.canonicalURL, 'https://typeworldserver.com/api/toy6FQGX6c368JlntbxR/')
