@@ -21,6 +21,25 @@ if MAC:
 	from AppKit import NSDictionary
 
 
+class DummyKeyring(object):
+	def __init__(self):
+		self.passwords = {}
+
+	def set_password(self, key, username, password):
+		self.passwords[key] = [username, password]
+
+	def get_password(self, key, username):
+		if key in self.passwords and self.passwords[key][0] == username:
+			return self.passwords[key][1]
+
+	def delete_password(self, key, username):
+		if key in self.passwords and self.passwords[key][0] == username:
+			del self.passwords[key]
+
+if 'TRAVIS' in os.environ:
+	dummyKeyRing = DummyKeyring()
+
+
 def readJSONResponse(url, acceptableMimeTypes, data = {}, JSON = None):
 	d = {}
 	d['errors'] = []
@@ -929,6 +948,10 @@ class APIClient(object):
 
 
 	def keyring(self):
+
+		return dummyKeyRing
+		if 'TRAVIS' in os.environ:
+			return DummyKeyring()
 
 		try:
 			import keyring
