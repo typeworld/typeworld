@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import sys, os
+if 'TRAVIS' in os.environ:
+	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 from typeWorld.api import *
 
 if __name__ == '__main__':
