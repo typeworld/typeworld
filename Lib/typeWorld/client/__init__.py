@@ -558,8 +558,6 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-			print(response)
-
 			if response['errors']:
 				return False, '\n'.join(response['errors'])
 
