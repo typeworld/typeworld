@@ -1488,7 +1488,7 @@ class APIPublisher(object):
 
 	def update(self):
 
-		if self.online():
+		if self.parent.online():
 
 			for subscription in self.subscriptions():
 				success, message = subscription.update()
@@ -1814,8 +1814,8 @@ class APISubscription(object):
 			# 	commits, responses = self.parent.readGitHubResponse(commitsURL)
 			# 	self.set('commits', commits)
 
-
-			self.parent._updatingSubscriptions.remove(self.url)
+			if self.url in self.parent._updatingSubscriptions:
+				self.parent._updatingSubscriptions.remove(self.url)
 			self._updatingProblem = None
 			self.parent.parent._subscriptionsUpdated.append(self.url)
 
