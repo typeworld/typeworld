@@ -464,10 +464,10 @@ class TestStringMethods(unittest.TestCase):
 		print(result)
 		self.assertEqual(result, (True, None))
 
-		# Uninstall font on second client
+		# Uninstall font on second client, must fail because deleting same font file
 		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
 		print(result)
-		self.assertEqual(result, (True, None))
+		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
 
 		# Try again on second client
 		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[-1].number), (True, None))
