@@ -432,6 +432,8 @@ class TestStringMethods(unittest.TestCase):
 
 		client.downloadSubscriptions()
 
+		client.publishers()[0].update()
+
 		# Install Font
 		font = client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
 		self.assertEqual(client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
