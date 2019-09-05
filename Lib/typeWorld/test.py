@@ -460,16 +460,22 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[-1].number), (False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)']))
 
 		# Uninstall font on first client
-		client.publishers()[0].subscriptions()[-1].removeFont(font.uniqueID)
+		result = client.publishers()[0].subscriptions()[-1].removeFont(font.uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
 
 		# Uninstall font on second client
-		client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
 
 		# Try again on second client
 		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[-1].number), (True, None))
 
 		# Uninstall font on second client
-		client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
 
 		# Install older version on second client
 		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[0].number), (True, None))
@@ -478,7 +484,9 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(client2.amountOutdatedFonts(), 1)
 
 		# Uninstall font on second client
-		client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
 
 
 

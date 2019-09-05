@@ -102,7 +102,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									if not api.response.getCommand().type in proceed:
 										return False, '#(response.%s)' % api.response.getCommand().type
 
-								return True, font.path(font.installedVersion(), folder)
+								return True, None
 
 							except:
 								exc_type, exc_value, exc_traceback = sys.exc_info()
