@@ -1,4 +1,7 @@
 import sys, os
+
+print(sys.version)
+
 if 'TRAVIS' in os.environ:
 	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
