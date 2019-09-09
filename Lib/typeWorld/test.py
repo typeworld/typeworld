@@ -25,7 +25,7 @@ class User(object):
 	def __init__(self, login = None):
 		self.login = login
 		self.prefFile = os.path.join(tempFolder, str(id(self)) + '.json')
-		self.client = APIClient(preferences = JSON(self.prefFile))
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
 
 		if self.login:
 			self.linkUser()

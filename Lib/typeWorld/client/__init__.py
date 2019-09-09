@@ -393,11 +393,14 @@ class APIClient(object):
 		if not server:
 			server = 'type.world'
 #		print('Pinging %s' % server)
-		if MAC:
+		if MAC or LINUX:
 			return os.system('ping %s -c 1 -t 3' % server) == 0
 		if WIN:
 			CREATE_NO_WINDOW = 0x08000000
 			return subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW) == 0
+
+		return True
+
 
 
 	def appendCommands(self, commandName, commandsList = ['pending']):
