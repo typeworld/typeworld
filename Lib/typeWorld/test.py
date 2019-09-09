@@ -72,6 +72,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
+		self.assertTrue(typeWorld.client.validURL(freeSubscription))
 
 
 
@@ -136,6 +137,9 @@ class TestStringMethods(unittest.TestCase):
 
 		user1.client.downloadSubscriptions()
 		user1.client.publishers()[0].update()
+		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
+		print(user1.client.publishers()[0].updatingProblem())
+		self.assertEqual(user1.client.allSubscriptionsUpdated(), True)
 
 		# Install Font
 		# First it's meant to fail because the user hasn't accepted the Terms & Conditions
@@ -196,6 +200,9 @@ class TestStringMethods(unittest.TestCase):
 
 		# Install older version on second client
 		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[0].number), (True, None))
+
+		# Check amount
+		self.assertEqual(user2.client.publishers()[0].amountInstalledFonts(), 1)
 
 		# One font must be outdated
 		self.assertEqual(user2.client.amountOutdatedFonts(), 1)

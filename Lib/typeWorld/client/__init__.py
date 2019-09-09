@@ -117,6 +117,8 @@ def validURL(url):
 	if not protocol in typeWorld.api.base.PROTOCOLS:
 		return False
 
+	return True
+
 
 def splitJSONURL(url):
 
@@ -385,8 +387,8 @@ class APIClient(object):
 
 	def online(self, server = None):
 
-		if 'TRAVIS' in os.environ:
-			return True
+		# if 'TRAVIS' in os.environ:
+		# 	return True
 
 		if not server:
 			server = 'type.world'
@@ -1139,16 +1141,16 @@ class APIClient(object):
 	# 	return json, d
 
 
-	def addAttributeToURL(self, url, key, value):
-		if not key + '=' in url:
-			if '?' in url:
-				url += '&' + key + '=' + value
-			else:
-				url += '?' + key + '=' + value
-		else:
-			url = re.sub(key + '=(\w*)', key + '=' + value, url)
+	# def addAttributeToURL(self, url, key, value):
+	# 	if not key + '=' in url:
+	# 		if '?' in url:
+	# 			url += '&' + key + '=' + value
+	# 		else:
+	# 			url += '?' + key + '=' + value
+	# 	else:
+	# 		url = re.sub(key + '=(\w*)', key + '=' + value, url)
 
-		return url
+	# 	return url
 
 	def anonymousAppID(self):
 		anonymousAppID = self.preferences.get('anonymousAppID')
@@ -1186,6 +1188,7 @@ class APIClient(object):
 		try:
 
 			# Check for correct protocol
+
 			found = False
 			for protocol in typeWorld.api.base.PROTOCOLS:
 				if url.startswith(protocol + '://'):
@@ -1429,27 +1432,27 @@ class APIPublisher(object):
 	def name(self, locale = ['en']):
 		return self.subscriptions()[0].protocol.rootCommand().name.getTextAndLocale(locale = locale)
 
-	def getPassword(self, username):
-		keyring = self.parent.keyring()
-		return keyring.get_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username)
+	# def getPassword(self, username):
+	# 	keyring = self.parent.keyring()
+	# 	return keyring.get_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username)
 
-	def setPassword(self, username, password):
-		keyring = self.parent.keyring()
-		keyring.set_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username, password)
+	# def setPassword(self, username, password):
+	# 	keyring = self.parent.keyring()
+	# 	keyring.set_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username, password)
 
-	def resourceByURL(self, url, binary = False, update = False):
-		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
+	# def resourceByURL(self, url, binary = False, update = False):
+	# 	'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
-		# Save resource
-		resourcesList = self.get('resources') or []
-		if not url in resourcesList:
-			resourcesList.append(url)
-			self.set('resources', resourcesList)
+	# 	# Save resource
+	# 	resourcesList = self.get('resources') or []
+	# 	if not url in resourcesList:
+	# 		resourcesList.append(url)
+	# 		self.set('resources', resourcesList)
 
-		if self.get('username') and self.getPassword(self.get('username')):
-			return self.parent.resourceByURL(url, binary = binary, update = update, username = self.get('username'), password = self.getPassword(self.get('username')))
-		else:
-			return self.parent.resourceByURL(url, binary = binary, update = update)
+	# 	if self.get('username') and self.getPassword(self.get('username')):
+	# 		return self.parent.resourceByURL(url, binary = binary, update = update, username = self.get('username'), password = self.getPassword(self.get('username')))
+	# 	else:
+	# 		return self.parent.resourceByURL(url, binary = binary, update = update)
 
 	def amountInstalledFonts(self):
 		return len(self.installedFonts())
