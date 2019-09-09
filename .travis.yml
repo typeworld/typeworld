@@ -27,9 +27,8 @@ jobs:
       before_install:
         - choco install python
         - python -m pip install --upgrade pip
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
       python: &latest_py3 3.6
-      env: BADGE=windows
 
 install:
   - pip install deepdiff
