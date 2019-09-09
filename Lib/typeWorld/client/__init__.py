@@ -26,16 +26,17 @@ class DummyKeyring(object):
 		self.passwords = {}
 
 	def set_password(self, key, username, password):
-		self.passwords[key] = [username, password]
+		self.passwords[(key, username)] = password
 
 	def get_password(self, key, username):
-		if key in self.passwords and self.passwords[key][0] == username:
-			return self.passwords[key][1]
+		if (key, username) in self.passwords:
+			return self.passwords[(key, username)]
 
 	def delete_password(self, key, username):
-		if key in self.passwords and self.passwords[key][0] == username:
-			del self.passwords[key]
+		if (key, username) in self.passwords:
+			del self.passwords[(key, username)]
 
+dummyKeyRing = DummyKeyring()
 if 'TRAVIS' in os.environ:
 	import tempfile
 	tempFolder = tempfile.mkdtemp()
@@ -307,9 +308,6 @@ class APIClient(object):
 		self.onlineCommandsQueue = []
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
-
-		if 'TRAVIS' in os.environ:
-			self.dummyKeyRing = DummyKeyring()
 
 
 		self._systemLocale = None
@@ -1006,7 +1004,7 @@ class APIClient(object):
 
 		
 		if 'TRAVIS' in os.environ:
-			return self.dummyKeyRing
+			return dummyKeyRing
 
 		try:
 			import keyring
