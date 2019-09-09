@@ -1007,10 +1007,7 @@ class APIClient(object):
 		# if 'TRAVIS' in os.environ:
 		# 	return dummyKeyRing
 
-		try:
-			import keyring
-		except:
-			return None
+		import keyring
 
 		if MAC:
 			from keyring.backends.OS_X import Keyring
