@@ -7,6 +7,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 	def initialize(self):
 		self.versions = []
+		self._rootCommand = None
 
 	def loadFromDB(self):
 		'''Overwrite this'''
@@ -23,7 +24,24 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return self.versions[-1]
 
 	def returnRootCommand(self):
-		return self.latestVersion()
+
+		if not self._rootCommand:
+
+			# Read response
+			data = {
+			}
+			api, responses = readJSONResponse(self.url, typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			
+			# Errors
+			if responses['errors']:
+				return False, responses['errors'][0]
+
+			self._rootCommand = api
+	#		self.save()
+
+		# Success
+		return self._rootCommand
+
 
 	def returnInstallableFontsCommand(self):
 		return self.latestVersion().response.getCommand()
