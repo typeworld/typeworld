@@ -12,18 +12,26 @@ jobs:
     #   env: BADGE=linux
     - stage: osx
       os: osx
-      osx_image: xcode11    # Python 3.7.4 running on macOS 10.14.4
-      language: shell       # 'language: python' is an error on Travis CI macOS
-      python: "3.6"
-      env: BADGE=osx TOXENV=py3
+      language: sh
+      env:
+        - TOXENV=py3
+        - HOMEBREW_NO_INSTALL_CLEANUP=1
+        - HOMEBREW_NO_ANALYTICS=1
+      before_cache:
+        # - brew cleanup
+        - rm -f "$HOME/Library/Caches/pip/log/debug.log"
+      cache:
+        directories:
+          # - "$HOME/Library/Caches/Homebrew"
+          - "$HOME/Library/Caches/pip"
       addons:
         homebrew:
-          update: true
+          # update: true
           packages: python3
       before_install:
-        - pip3 install virtualenv
-        - virtualenv -p python3 ~/venv
-        - source ~/venv/bin/activate    
+        - python3 -m pip install --upgrade virtualenv
+        - virtualenv -p python3 --system-site-packages "$HOME/venv"
+        - source "$HOME/venv/bin/activate"
     - stage: windows
       os: windows           # Windows 10.0.17134 N/A Build 17134
       language: shell       # 'language: python' is an error on Travis CI Windows
