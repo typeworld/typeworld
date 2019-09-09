@@ -1001,7 +1001,7 @@ class APIClient(object):
 
 	def keyring(self):
 
-		if LINUX and 'TRAVIS' in os.environ:
+		if (LINUX or WIN) and 'TRAVIS' in os.environ:
 			return dummyKeyRing
 
 		import keyring
@@ -1026,7 +1026,7 @@ class APIClient(object):
 			# keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 
 
-		return keyring
+		# return keyring
 
 
 	def log(self, *argv):
