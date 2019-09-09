@@ -10,58 +10,58 @@ jobs:
       python: 3.7           # this works for Linux but is ignored on macOS or Windows
       env: BADGE=linux
       install:
-        - sudo apt-get install python3-dbus
         - pip install deepdiff
         - pip install semver
         - pip install codecov
         - pip install certifi
         - pip install keyring
 
-    # - stage: osx
-    #   os: osx
-    #   language: sh
-    #   env:
-    #     - TOXENV=py3
-    #     - HOMEBREW_NO_INSTALL_CLEANUP=1
-    #     - HOMEBREW_NO_ANALYTICS=1
-    #     - BADGE=osx
-    #   before_cache:
-    #     # - brew cleanup
-    #     - rm -f "$HOME/Library/Caches/pip/log/debug.log"
-    #   cache:
-    #     directories:
-    #       # - "$HOME/Library/Caches/Homebrew"
-    #       - "$HOME/Library/Caches/pip"
-    #   addons:
-    #     homebrew:
-    #       # update: true
-    #       packages: python3
-    #   before_install:
-    #     - python3 -m pip install --upgrade virtualenv
-    #     - virtualenv -p python3 --system-site-packages "$HOME/venv"
-    #     - source "$HOME/venv/bin/activate"
-    #   install:
-    #     - pip install deepdiff
-    #     - pip install semver
-    #     - pip install codecov
-    #     - pip install certifi
-    #     - pip install pyobjc
+    - stage: osx
+      os: osx
+      language: sh
+      env:
+        - TOXENV=py3
+        - HOMEBREW_NO_INSTALL_CLEANUP=1
+        - HOMEBREW_NO_ANALYTICS=1
+        - BADGE=osx
+      before_cache:
+        # - brew cleanup
+        - rm -f "$HOME/Library/Caches/pip/log/debug.log"
+      cache:
+        directories:
+          # - "$HOME/Library/Caches/Homebrew"
+          - "$HOME/Library/Caches/pip"
+      addons:
+        homebrew:
+          # update: true
+          packages: python3
+      before_install:
+        - python3 -m pip install --upgrade virtualenv
+        - virtualenv -p python3 --system-site-packages "$HOME/venv"
+        - source "$HOME/venv/bin/activate"
+      install:
+        - pip install deepdiff
+        - pip install semver
+        - pip install codecov
+        - pip install certifi
+        - pip install pyobjc
+        - pip install keyring
 
-    # - stage: windows
-    #   os: windows           # Windows 10.0.17134 N/A Build 17134
-    #   language: shell       # 'language: python' is an error on Travis CI Windows
-    #   before_install:
-    #     - choco install python
-    #     - python -m pip install --upgrade pip
-    #   env: PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
-    #   python: &latest_py3 3.6
+    - stage: windows
+      os: windows           # Windows 10.0.17134 N/A Build 17134
+      language: shell       # 'language: python' is an error on Travis CI Windows
+      before_install:
+        - choco install python
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
+      python: &latest_py3 3.6
+      install:
+        - pip install deepdiff
+        - pip install semver
+        - pip install codecov
+        - pip install certifi
+        - pip install keyring
 
-install:
-  - pip install deepdiff
-  - pip install semver
-  - pip install codecov
-  - pip install certifi
-  - pip install keyring
 
 script: coverage run ./Lib/typeWorld/test.py
 

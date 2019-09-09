@@ -1004,8 +1004,8 @@ class APIClient(object):
 	def keyring(self):
 
 		
-		# if 'TRAVIS' in os.environ:
-		# 	return dummyKeyRing
+		if 'TRAVIS' in os.environ:
+			return dummyKeyRing
 
 		import keyring
 
