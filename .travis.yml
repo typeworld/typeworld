@@ -10,7 +10,7 @@ jobs:
       python: 3.7           # this works for Linux but is ignored on macOS or Windows
       env: BADGE=linux
       install:
-        - sudo apt-get install python-dbus
+        - sudo apt-get install python3-dbus
         - pip install deepdiff
         - pip install semver
         - pip install codecov
