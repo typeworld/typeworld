@@ -47,7 +47,6 @@ install:
   - pip install semver
   - pip install codecov
   - pip install certifi
-  - pip install pyobjc
 
 script: coverage run ./Lib/typeWorld/test.py
 

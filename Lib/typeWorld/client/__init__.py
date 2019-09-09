@@ -17,8 +17,7 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 
 if MAC:
-	import objc
-	from AppKit import NSDictionary
+	from AppKit import NSDictionary, NSUserDefaults
 
 
 class DummyKeyring(object):
@@ -205,7 +204,7 @@ class JSON(Preferences):
 
 class AppKitNSUserDefaults(Preferences):
 	def __init__(self, name = None):
-		NSUserDefaults = objc.lookUpClass('NSUserDefaults')
+#		NSUserDefaults = objc.lookUpClass('NSUserDefaults')
 		if name:
 			self.defaults = NSUserDefaults.alloc().initWithSuiteName_(name)
 		else:
