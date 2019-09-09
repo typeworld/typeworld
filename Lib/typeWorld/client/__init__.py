@@ -37,7 +37,6 @@ class DummyKeyring(object):
 			del self.passwords[key]
 
 if 'TRAVIS' in os.environ:
-	dummyKeyRing = DummyKeyring()
 	import tempfile
 	tempFolder = tempfile.mkdtemp()
 
@@ -308,6 +307,9 @@ class APIClient(object):
 		self.onlineCommandsQueue = []
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
+
+		if 'TRAVIS' in os.environ:
+			self.dummyKeyRing = DummyKeyring()
 
 
 		self._systemLocale = None
@@ -1004,7 +1006,7 @@ class APIClient(object):
 
 		
 		if 'TRAVIS' in os.environ:
-			return dummyKeyRing
+			return self.dummyKeyRing
 
 		try:
 			import keyring
