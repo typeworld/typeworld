@@ -37,6 +37,14 @@ def Execute(command):
 		return response
 
 
+
+def get_registry_value(key, subkey, value):
+	import winreg
+	key = getattr(winreg, key)
+	handle = winreg.OpenKey(key, subkey)
+	(value, type) = winreg.QueryValueEx(handle, value)
+	return value
+
 	else:
 
 		import subprocess
@@ -55,7 +63,6 @@ def MachineName():
 
 	if platform.system() == 'Windows':
 
-		from ynlib.windows import get_registry_value
 		specsDescription = get_registry_value(
             "HKEY_LOCAL_MACHINE", 
             "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
@@ -139,7 +146,6 @@ def OSName():
 
 	elif platform.system() == 'Windows':
 
-		from ynlib.windows import get_registry_value
 		return get_registry_value(
             "HKEY_LOCAL_MACHINE", 
             "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",

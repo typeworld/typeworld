@@ -15,8 +15,10 @@ from typeWorld.client.helpers import *
 import platform
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
+LINUX = platform.system() == 'Linux'
 
 if MAC:
+	import objc
 	from AppKit import NSDictionary, NSUserDefaults
 
 
