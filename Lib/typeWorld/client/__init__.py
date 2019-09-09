@@ -270,6 +270,32 @@ class AppKitNSUserDefaults(Preferences):
 
 
 
+class APIInvitation(object):
+	keywords = ()
+
+	def __init__(self, d):
+		for key in self.keywords:
+			if key in d:
+				setattr(self, key, d[key])
+			else:
+				setattr(self, key, None)
+
+class APIPendingInvitation(APIInvitation):
+	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
+
+	def accept(self):
+		self.parent.acceptInvitation(self.ID)
+
+	def decline(self):
+		self.parent.declineInvitation(self.ID)
+
+class APIAcceptedInvitation(APIInvitation):
+	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
+
+class APISentInvitation(APIInvitation):
+	keywords = ('url', 'invitedUserName', 'invitedUserEmail', 'invitedTime', 'acceptedTime', 'confirmed')
+
+
 class APIClient(object):
 	"""\
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
@@ -285,6 +311,33 @@ class APIClient(object):
 
 
 		self._systemLocale = None
+
+	def pendingInvitations(self):
+		_list = []
+		if self.preferences.get('pendingInvitations'):
+			for invitation in self.preferences.get('pendingInvitations'):
+				invitation = APIPendingInvitation(invitation)
+				invitation.parent = self
+				_list.append(invitation)
+		return _list
+
+	def acceptedInvitations(self):
+		_list = []
+		if self.preferences.get('acceptedInvitations'):
+			for invitation in self.preferences.get('acceptedInvitations'):
+				invitation = APIAcceptedInvitation(invitation)
+				invitation.parent = self
+				_list.append(invitation)
+		return _list
+
+	def sentInvitations(self):
+		_list = []
+		if self.preferences.get('sentInvitations'):
+			for invitation in self.preferences.get('sentInvitations'):
+				invitation = APISentInvitation(invitation)
+				invitation.parent = self
+				_list.append(invitation)
+		return _list
 
 	def completeSubscriptionURLs(self):
 
@@ -561,7 +614,7 @@ class APIClient(object):
 			if response['errors']:
 				return False, '\n'.join(response['errors'])
 
-			self.log('Downloading subscriptions: %s' % response['subscriptions'])
+#			self.log('Downloading subscriptions: %s' % response)
 
 			return self.executeDownloadSubscriptions(response)
 
@@ -570,12 +623,12 @@ class APIClient(object):
 
 	def preloadLogos(self):
 
-		for invitation in self.preferences.get('acceptedInvitations'):
-			if 'logoURL' in invitation:
-				success, logo, mimeType = self.resourceByURL(invitation['logoURL'], binary = True)
-		for invitation in self.preferences.get('pendingInvitations'):
-			if 'logoURL' in invitation:
-				success, logo, mimeType = self.resourceByURL(invitation['logoURL'], binary = True)
+		for invitation in self.acceptedInvitations():
+			if invitation.logoURL:
+				success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
+		for invitation in self.pendingInvitations():
+			if invitation.logoURL:
+				success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
 
 	def executeDownloadSubscriptions(self, response):
 
@@ -1556,12 +1609,84 @@ class APISubscription(object):
 
 		# print('<API SUbscription %s>' % self.url)
 
+	def inviteUser(self, targetEmail):
+
+		if not self.parent.parent.userEmail():
+			return False, 'No source user linked.'
+
+		parameters = {
+			'command': 'inviteUserToSubscription',
+			'targetUserEmail': targetEmail,
+			'sourceUserEmail': self.parent.parent.userEmail(),
+			'subscriptionURL': self.protocol.completeURL(),
+		}
+
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = 'https://type.world/jsonAPI/'
+
+		try:
+			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+		except urllib.error.HTTPError as e:
+			return False, 'API endpoint alive HTTP error: %s' % e
+
+		response = json.loads(response.read().decode())
+
+		if response['response'] == 'success':
+			return True, None
+
+		else:
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+
+
+		# if response['response'] == 'invalidSubscriptionURL':
+		# 	return False, 'The subscription URL %s is invalid.' % subscription.protocol.completeURL()
+
+		# elif response['response'] == 'unknownTargetEmail':
+		# 	return False, 'The invited user doesn’t have a valid Type.World user account as %s.' % email
+
+		# elif response['response'] == 'invalidSource':
+		# 	return False, 'The source user could not be identified or doesn’t hold this subscription.'
+
+		# elif response['response'] == 'success':
+		# 	return True, None
+
+
+	def revokeUser(self, targetEmail):
+
+		if not self.parent.parent.userEmail():
+			return False, 'No source user linked.'
+
+		parameters = {
+			'command': 'revokeSubscriptionInvitation',
+			'targetUserEmail': targetEmail,
+			'sourceUserEmail': self.parent.parent.userEmail(),
+			'subscriptionURL': self.protocol.completeURL(),
+		}
+
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = 'https://type.world/jsonAPI/'
+
+		try:
+			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+		except urllib.error.HTTPError as e:
+			return False, 'API endpoint alive HTTP error: %s' % e
+
+		response = json.loads(response.read().decode())
+
+		if response['response'] == 'success':
+			return True, None
+
+		else:
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
 	def invitationAccepted(self):
 
 		if self.parent.parent.user():
-			if self.parent.parent.preferences.get('acceptedInvitations'):
-				for invitation in self.parent.parent.preferences.get('acceptedInvitations'):
-					if self.url == invitation['url']:
+			acceptedInvitations = self.parent.parent.acceptedInvitations()
+			if acceptedInvitations:
+				for invitation in acceptedInvitations:
+					if self.url == invitation.url:
 						return True
 
 		return False
