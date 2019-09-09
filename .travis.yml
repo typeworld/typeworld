@@ -4,17 +4,17 @@ language: python
 
 os:
   - linux
-  - osx
+#  - osx
 
 jobs:
   include:
-  - stage: osx
-    if: os = osx
-    python: &latest_py3
-    script: coverage run ./Lib/typeWorld/test.py
+  # - stage: osx
+  #   if: os = osx
+  #   python: &latest_py3 3.6
+  #   script: coverage run ./Lib/typeWorld/test.py
   - stage: linux
     if: os = linux
-    python: &latest_py3
+    python: &latest_py3 3.6
     script: coverage run ./Lib/typeWorld/test.py
 
 install:
