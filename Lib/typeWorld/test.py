@@ -26,8 +26,8 @@ class User(object):
 
 		if self.login:
 			self.client.linkUser(*self.login)
-			self.clearSubscriptions()
 			self.clearInvitations()
+			self.clearSubscriptions()
 
 
 	def testFont(self):
@@ -45,10 +45,16 @@ class User(object):
 			invitation.decline()
 
 	def takeDown(self):
+		self.clearInvitations()
+		self.clearSubscriptions()
 		if self.login:
 			self.client.unlinkUser()
 
 
+user0 = User()
+user1 = User(testUser)
+user2 = User(testUser2)
+user3 = User(testUser3)
 
 
 class TestStringMethods(unittest.TestCase):
@@ -56,10 +62,6 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_normalSubscription(self):
 
-		user0 = User()
-		user1 = User(testUser)
-		user2 = User(testUser2)
-		user3 = User(testUser3)
 
 
 		## Scenario 1:
@@ -252,11 +254,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
 
 
-		# Takedown
-		user0.takeDown()
-		user1.takeDown()
-		user2.takeDown()
-		user3.takeDown()
 
 
 
@@ -634,6 +631,12 @@ class TestStringMethods(unittest.TestCase):
 
 if __name__ == '__main__':
 	unittest.main()
+
+# Takedown
+user0.takeDown()
+user1.takeDown()
+user2.takeDown()
+user3.takeDown()
 
 
  # Local
