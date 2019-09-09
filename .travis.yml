@@ -17,6 +17,7 @@ jobs:
         - TOXENV=py3
         - HOMEBREW_NO_INSTALL_CLEANUP=1
         - HOMEBREW_NO_ANALYTICS=1
+        - BADGE=osx
       before_cache:
         # - brew cleanup
         - rm -f "$HOME/Library/Caches/pip/log/debug.log"
@@ -46,6 +47,7 @@ install:
   - pip install semver
   - pip install codecov
   - pip install certifi
+  - pip install pyobjc
 
 script: coverage run ./Lib/typeWorld/test.py
 
