@@ -76,8 +76,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
-		for subscription in user0.client.publishers()[0].subscriptions():
-			subscription.delete()
+		# Logo
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand().foundries[0].logo)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+
+		user0.clearSubscriptions()
 
 
 
