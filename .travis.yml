@@ -2,11 +2,6 @@ sudo: false
 
 language: python
 
-env:
-  - BADGE=linux
-  - BADGE=osx
-  - BADGE=windows
-
 
 jobs:
   include:
