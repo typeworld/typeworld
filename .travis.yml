@@ -2,6 +2,10 @@ sudo: false
 
 language: python
 
+os:
+  - linux
+  - osx
+
 jobs:
   include:
   - python: &latest_py3 3.6
