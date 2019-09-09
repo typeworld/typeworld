@@ -88,8 +88,9 @@ class TestStringMethods(unittest.TestCase):
 		# Scenario 2:
 		# Protected subscription, installation on machine without user account
 		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
-		success, message, publisher, subscription = user0.client.addSubscription(protectedSubscription)
-		print(success, message)
+		result = user0.client.addSubscription(protectedSubscription)
+		print(result)
+		success, message, publisher, subscription = result
 
 		self.assertEqual(success, False)
 		self.assertEqual(message, '#(response.insufficientPermission)')
@@ -102,8 +103,9 @@ class TestStringMethods(unittest.TestCase):
 
 		# Scenario 3:
 		# Protected subscription, installation on first machine with Type.World user account
-		success, message, publisher, subscription = user1.client.addSubscription(protectedSubscription)
-		print(success, message)
+		result = user1.client.addSubscription(protectedSubscription)
+		print(result)
+		success, message, publisher, subscription = result
 
 		self.assertEqual(success, True)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
