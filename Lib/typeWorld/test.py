@@ -10,18 +10,255 @@ tempFolder = tempfile.mkdtemp()
 from typeWorld.api import *
 
 
-prefs = JSON(os.path.join(tempFolder, 'preferences.json'))
-client = APIClient(preferences = prefs)
-
-prefs2 = JSON(os.path.join(tempFolder, 'preferences2.json'))
-client2 = APIClient(preferences = prefs)
-
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-testUser = ('736b524a-cf24-11e9-9f62-901b0ecbcc7a', 'AApCEfatt6vE5H4m0pevPsQA9P7fYG8Q1uhsNFYV')
+testUser = ('736b524a-cf24-11e9-9f62-901b0ecbcc7a', 'AApCEfatt6vE5H4m0pevPsQA9P7fYG8Q1uhsNFYV') # test@type.world
+testUser2 = ('8d48dafc-d07d-11e9-a3e3-901b0ecbcc7a', 'XPd2QbwHskEDzLeUXZxysGkiJmASHLhXxQfgTZCD') # test2@type.world
+testUser3 = ('e865a474-d07d-11e9-982c-901b0ecbcc7a', 'LN1LYRgVYcQhEgulYmUdBgJObq2R4VCgL4rdnnZ5') # test3@type.world
+
+
+
+class User(object):
+	def __init__(self, login = None):
+		self.login = login
+		self.prefFile = os.path.join(tempFolder, str(id(self)) + '.json')
+		self.client = APIClient(preferences = JSON(self.prefFile))
+
+		if self.login:
+			self.client.linkUser(*self.login)
+			self.clearSubscriptions()
+			self.clearInvitations()
+
+
+	def testFont(self):
+		if self.client.publishers():
+			return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
+		else:
+			raise Exception('No test font available')
+
+	def clearSubscriptions(self):
+		for publisher in self.client.publishers():
+			publisher.delete()
+
+	def clearInvitations(self):
+		for invitation in self.client.pendingInvitations():
+			invitation.decline()
+
+	def takeDown(self):
+		if self.login:
+			self.client.unlinkUser()
+
+
 
 
 class TestStringMethods(unittest.TestCase):
+
+
+	def test_normalSubscription(self):
+
+		user0 = User()
+		user1 = User(testUser)
+		user2 = User(testUser2)
+		user3 = User(testUser3)
+
+
+		## Scenario 1:
+		## Test a simple subscription of free fonts without Type.World user account
+
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		print(success, message)
+
+		self.assertEqual(success, True)
+		self.assertEqual(user0.client.publishers()[0].canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
+
+		for subscription in user0.client.publishers()[0].subscriptions():
+			subscription.delete()
+
+
+
+		### ###
+
+
+
+		# Scenario 2:
+		# Protected subscription, installation on machine without user account
+		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
+		success, message, publisher, subscription = user0.client.addSubscription(protectedSubscription)
+		print(success, message)
+
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.insufficientPermission)')
+
+
+
+		### ###
+
+
+
+		# Scenario 3:
+		# Protected subscription, installation on first machine with Type.World user account
+		success, message, publisher, subscription = user1.client.addSubscription(protectedSubscription)
+		print(success, message)
+
+		self.assertEqual(success, True)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
+
+		user1.client.downloadSubscriptions()
+		user1.client.publishers()[0].update()
+
+		# Install Font
+		# First it's meant to fail because the user hasn't accepted the Terms & Conditions
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
+		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		# Then it's supposed to fail because the server requires the revealted user identity for this subscription
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().prefersRevealedUserIdentity, True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
+		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+		# Finally supposed to pass
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+
+
+
+		### ###
+
+
+
+		# Scenario 4:
+		# Protected subscription, installation on second machine
+
+		# Supposed to reject because seats are limited to 1
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		print(success, message)
+
+		# Two versions available
+		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions())), 2)
+
+		# Attempt to install font for user2, supposed to fail
+		user2.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		user2.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)']))
+
+		# Uninstall font for user1
+		result = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
+
+		# Uninstall font for user2, must fail because deleting same font file (doesn't make sense in normal setup)
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
+
+		# Try again for user2
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (True, None))
+
+		# Uninstall font on for user2
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
+
+		# Install older version on second client
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[0].number), (True, None))
+
+		# One font must be outdated
+		self.assertEqual(user2.client.amountOutdatedFonts(), 1)
+
+		# Uninstall font for user2
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
+
+		# Clear
+		user2.clearSubscriptions()
+		self.assertEqual(len(user2.client.publishers()), 0)
+
+
+
+
+		### ###
+
+
+
+		# Invitations
+		# Invite to client without linked user account
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, True)
+		result = user0.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
+		self.assertEqual(result, (False, 'No source user linked.'))
+
+		# Invite unknown user
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
+		self.assertEqual(result, (False, ['#(response.unknownTargetEmail)', '#(response.unknownTargetEmail.headline)']))
+
+		# Invite same user
+		self.assertEqual(user1.client.userEmail(), 'test@type.world')
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test@type.world')
+		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
+
+		# Invite real user
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result, (True, None))
+
+		# Update third user
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+		self.assertEqual(len(user2.client.publishers()), 0)
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.pendingInvitations()), 1)
+
+		# Accept invitation
+		user2.client.pendingInvitations()[0].accept()
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+		self.assertEqual(len(user2.client.publishers()), 1)
+
+		# Invite yet another user
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		# Decline invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 0)
+
+		# Invite again
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		# Accept invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		user3.client.pendingInvitations()[0].accept()
+		self.assertEqual(len(user3.client.publishers()), 1)
+
+		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
+		user1.client.publishers()[0].subscriptions()[-1].delete()
+		user2.client.downloadSubscriptions()
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+
+
+		# Takedown
+		user0.takeDown()
+		user1.takeDown()
+		user2.takeDown()
+		user3.takeDown()
+
+
 
 
 	def test_api(self):
@@ -394,114 +631,6 @@ class TestStringMethods(unittest.TestCase):
 			print(api.validate())
 		except:
 			pass
-
-
-
-
-
-
-	def test_normalSubscription(self):
-
-
-		## Test a simple subscription of free fonts
-
-
-		success, message, publisher, subscription = client.addSubscription(freeSubscription)
-		print(success, message)
-
-		self.assertEqual(success, True)
-		self.assertEqual(publisher.canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-		self.assertEqual(len(publisher.subscriptions()), 1)
-		self.assertEqual(len(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
-		self.assertEqual(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
-
-		for subscription in publisher.subscriptions():
-			subscription.delete()
-
-
-		# Protected subscription, installation on first machine
-
-		client.linkUser(*testUser)
-
-		success, message, publisher, subscription = client.addSubscription(protectedSubscription)
-		print(success, message)
-
-		self.assertEqual(success, True)
-		self.assertEqual(len(publisher.subscriptions()), 1)
-		self.assertEqual(len(publisher.subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
-
-		client.downloadSubscriptions()
-
-		client.publishers()[0].update()
-
-		# Install Font
-		font = client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
-		self.assertEqual(client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
-		client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
-		self.assertEqual(client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
-		client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (True, None))
-
-
-		# Protected subscription, installation on second machine
-		# Supposed to reject because seats are limited to 1
-
-		client2.linkUser(*testUser)
-		success, message, publisher, subscription = client2.addSubscription(protectedSubscription)
-		print(success, message)
-
-		font2 = client2.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
-
-		# Two versions available
-		self.assertEqual(len(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions())), 2)
-
-		client2.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
-		client2.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[-1].number), (False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)']))
-
-		# Uninstall font on first client
-		result = client.publishers()[0].subscriptions()[-1].removeFont(font.uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
-
-		# Uninstall font on second client, must fail because deleting same font file
-		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
-		print(result)
-		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
-
-		# Try again on second client
-		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[-1].number), (True, None))
-
-		# Uninstall font on second client
-		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
-
-		# Install older version on second client
-		self.assertEqual(client2.publishers()[0].subscriptions()[-1].installFont(font2.uniqueID, font2.getVersions()[0].number), (True, None))
-
-		# One font must be outdated
-		self.assertEqual(client2.amountOutdatedFonts(), 1)
-
-		# Uninstall font on second client
-		result = client2.publishers()[0].subscriptions()[-1].removeFont(font2.uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
-
-
-
-	def test_takedown(self):
-
-		for publisher in client.publishers():
-			for subscription in publisher.subscriptions():
-				subscription.delete()
-
-		for publisher in client2.publishers():
-			for subscription in publisher.subscriptions():
-				subscription.delete()
-
-		client.unlinkUser()
-		client2.unlinkUser()
 
 if __name__ == '__main__':
 	unittest.main()
