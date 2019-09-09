@@ -37,14 +37,6 @@ def Execute(command):
 		return response
 
 
-
-def get_registry_value(key, subkey, value):
-	import winreg
-	key = getattr(winreg, key)
-	handle = winreg.OpenKey(key, subkey)
-	(value, type) = winreg.QueryValueEx(handle, value)
-	return value
-
 	else:
 
 		import subprocess
@@ -54,6 +46,15 @@ def get_registry_value(key, subkey, value):
 		response = process.stdout.read().strip()
 		process.stdout.close()
 		return response
+
+
+def get_registry_value(key, subkey, value):
+	import winreg
+	key = getattr(winreg, key)
+	handle = winreg.OpenKey(key, subkey)
+	(value, type) = winreg.QueryValueEx(handle, value)
+	return value
+
 
 def MachineName():
 
