@@ -1084,51 +1084,51 @@ class APIClient(object):
 
 
 
-	def readGitHubResponse(self, url, username = None, password = None):
+	# def readGitHubResponse(self, url, username = None, password = None):
 
-		d = {}
-		d['errors'] = []
-		d['warnings'] = []
-		d['information'] = []
+	# 	d = {}
+	# 	d['errors'] = []
+	# 	d['warnings'] = []
+	# 	d['information'] = []
 
-		json = ''
+	# 	json = ''
 
-		try:
+	# 	try:
 
-			# print('readGitHubResponse(%s)' % url)
+	# 		# print('readGitHubResponse(%s)' % url)
 
-			request = urllib.request.Request(url)
-			if username and password:
-				base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
-				request.add_header("Authorization", "Basic %s" % base64string)   
-			response = urllib.request.urlopen(request, cafile=certifi.where())
+	# 		request = urllib.request.Request(url)
+	# 		if username and password:
+	# 			base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
+	# 			request.add_header("Authorization", "Basic %s" % base64string)   
+	# 		response = urllib.request.urlopen(request, cafile=certifi.where())
 
-			if response.getcode() == 404:
-				d['errors'].append('Server returned with error 404 (Not found).')
-				return None, d
+	# 		if response.getcode() == 404:
+	# 			d['errors'].append('Server returned with error 404 (Not found).')
+	# 			return None, d
 
-			if response.getcode() == 401:
-				d['errors'].append('User authentication failed. Please review your username and password.')
-				return None, d
+	# 		if response.getcode() == 401:
+	# 			d['errors'].append('User authentication failed. Please review your username and password.')
+	# 			return None, d
 
-			if response.getcode() != 200:
-				d['errors'].append('Resource returned with HTTP code %s' % response.code)
+	# 		if response.getcode() != 200:
+	# 			d['errors'].append('Resource returned with HTTP code %s' % response.code)
 
-			# if not response.headers['content-type'] in acceptableMimeTypes:
-			# 	d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
-			# 	self.log('Received this response with an unexpected MIME type for the URL %s:\n\n%s' % (url, response.read()))
+	# 		# if not response.headers['content-type'] in acceptableMimeTypes:
+	# 		# 	d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
+	# 		# 	self.log('Received this response with an unexpected MIME type for the URL %s:\n\n%s' % (url, response.read()))
 
-			if response.getcode() == 200:
+	# 		if response.getcode() == 200:
 
-				json = response.read()
+	# 			json = response.read()
 
-		except:
-			exc_type, exc_value, exc_traceback = sys.exc_info()
-			for line in traceback.format_exception_only(exc_type, exc_value):
-				d['errors'].append(line)
-			self.log(traceback.format_exc())
+	# 	except:
+	# 		exc_type, exc_value, exc_traceback = sys.exc_info()
+	# 		for line in traceback.format_exception_only(exc_type, exc_value):
+	# 			d['errors'].append(line)
+	# 		self.log(traceback.format_exc())
 
-		return json, d
+	# 	return json, d
 
 
 	def addAttributeToURL(self, url, key, value):
@@ -1396,27 +1396,27 @@ class APIPublisher(object):
 			self.stillAliveTouched = time.time()			
 
 
-	def gitHubRateLimit(self):
+	# def gitHubRateLimit(self):
 
-		limits, responses = self.readGitHubResponse('https://api.github.com/rate_limit')
+	# 	limits, responses = self.readGitHubResponse('https://api.github.com/rate_limit')
 
-		if responses['errors']:
-			return False, '\n'.join(responses['errors'])
+	# 	if responses['errors']:
+	# 		return False, '\n'.join(responses['errors'])
 
-		limits = json.loads(limits)
+	# 	limits = json.loads(limits)
 
-		if limits['rate']['remaining'] == 0:
-			return False, 'Your GitHub API rate limit has been reached. The limit resets at %s.' % (datetime.datetime.fromtimestamp(limits['rate']['reset']).strftime('%Y-%m-%d %H:%M:%S'))
+	# 	if limits['rate']['remaining'] == 0:
+	# 		return False, 'Your GitHub API rate limit has been reached. The limit resets at %s.' % (datetime.datetime.fromtimestamp(limits['rate']['reset']).strftime('%Y-%m-%d %H:%M:%S'))
 
-		return True, None
+	# 	return True, None
 
 
-	def readGitHubResponse(self, url):
+	# def readGitHubResponse(self, url):
 
-		if self.get('username') and self.getPassword(self.get('username')):
-			return self.parent.readGitHubResponse(url, self.get('username'), self.getPassword(self.get('username')))
-		else:
-			return self.parent.readGitHubResponse(url)
+	# 	if self.get('username') and self.getPassword(self.get('username')):
+	# 		return self.parent.readGitHubResponse(url, self.get('username'), self.getPassword(self.get('username')))
+	# 	else:
+	# 		return self.parent.readGitHubResponse(url)
 
 	def name(self, locale = ['en']):
 		return self.subscriptions()[0].protocol.rootCommand().name.getTextAndLocale(locale = locale)
@@ -1498,16 +1498,16 @@ class APIPublisher(object):
 		self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
 
 
-	def addGitHubSubscription(self, url, commits):
+	# def addGitHubSubscription(self, url, commits):
 
-		self.parent._subscriptions = {}
+	# 	self.parent._subscriptions = {}
 
-		subscription = self.subscription(url)
-		subscription.set('commits', commits)
-		self.set('currentSubscription', url)
-		subscription.save()
+	# 	subscription = self.subscription(url)
+	# 	subscription.set('commits', commits)
+	# 	self.set('currentSubscription', url)
+	# 	subscription.save()
 
-		return True, None
+	# 	return True, None
 
 
 	def subscription(self, url, protocol = None):
