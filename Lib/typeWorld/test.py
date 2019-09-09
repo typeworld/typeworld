@@ -28,9 +28,13 @@ class User(object):
 		self.client = APIClient(preferences = JSON(self.prefFile))
 
 		if self.login:
-			self.client.linkUser(*self.login)
+			self.linkUser()
 			self.clearInvitations()
 			self.clearSubscriptions()
+
+	def linkUser(self):
+		if self.login:
+			self.client.linkUser(*self.login)
 
 
 	def testFont(self):
@@ -64,6 +68,17 @@ class TestStringMethods(unittest.TestCase):
 
 
 	def test_normalSubscription(self):
+
+
+		# General stuff
+		self.assertEqual(type(user0.client.locale()), list)
+
+
+
+
+
+
+
 
 
 
@@ -131,6 +146,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 		# Finally supposed to pass
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+
+		# This is also supposed to delete the installed protected font
+		user1.client.unlinkUser()
+		user1.linkUser()
+
+		# Install again
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 
 

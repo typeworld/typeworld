@@ -972,11 +972,9 @@ class APIClient(object):
 				else:
 					from AppKit import NSLocale
 					self._systemLocale = str(NSLocale.autoupdatingCurrentLocale().localeIdentifier().split('_')[0])
-			elif WIN:
+			else:
 				import locale
 				self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
-			else:
-				self._systemLocale = 'en'
 
 		return self._systemLocale
 
@@ -1004,8 +1002,6 @@ class APIClient(object):
 	def keyring(self):
 
 		
-		if 'TRAVIS' in os.environ:
-			return dummyKeyRing
 
 		import keyring
 
@@ -1016,6 +1012,10 @@ class APIClient(object):
 			from keyring.backends.Windows import WinVaultKeyring
 			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 		elif LINUX:
+
+			if 'TRAVIS' in os.environ:
+				return dummyKeyRing
+
 			from keyring.backends.kwallet import DBusKeyring
 			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 
