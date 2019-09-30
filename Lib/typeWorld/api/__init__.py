@@ -736,17 +736,17 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 	def __repr__(self):
 		return '<API>'
 
-	def validate(self):
+	def customValidation(self):
 		'''\
 		Return three lists with informations, warnings, and errors.
 
 		An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
 		'''
-		information, warnings, errors = self._validate()
+		information, warnings, critical = [], [], []
 
 		if self.canonicalURL and not self.canonicalURL.startswith('https://'):
 			warnings.append('%s.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.' % (self))
 
-		return information, warnings, errors
+		return information, warnings, critical
 
 
