@@ -281,6 +281,29 @@ class TestStringMethods(unittest.TestCase):
 		user3.client.pendingInvitations()[0].accept()
 		self.assertEqual(len(user3.client.publishers()), 1)
 
+		# Revoke user
+		result = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.publishers()), 0)
+
+		# Invite again
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		# Accept invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		user3.client.pendingInvitations()[0].accept()
+		self.assertEqual(len(user3.client.publishers()), 1)
+
+		# Invitation accepted
+		self.assertEqual(len(user3.client.publishers()[0].subscription()[0].invitationAccepted()), 1)
+
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].subscriptions()[-1].delete()
 		user2.client.downloadSubscriptions()
