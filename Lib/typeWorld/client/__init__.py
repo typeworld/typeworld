@@ -394,7 +394,7 @@ class APIClient(object):
 			server = 'type.world'
 #		print('Pinging %s' % server)
 		if MAC or LINUX:
-			return os.system('ping %s -c 1 -t 255' % server) == 0
+			return os.system('ping %s -c 1' % server) == 0
 		if WIN:
 			CREATE_NO_WINDOW = 0x08000000
 			return subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW) == 0
