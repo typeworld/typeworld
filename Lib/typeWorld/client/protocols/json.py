@@ -92,7 +92,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			# Read response
 			data = {
 			}
-			api, responses = readJSONResponse(self.url, typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			api, responses = readJSONResponse(self.url, typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 			
 			# Errors
 			if responses['errors']:
@@ -123,7 +123,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if secretKey:
 			data['secretKey'] = secretKey
 
-		api, responses = readJSONResponse(self.connectURL(), INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		if responses['errors']:
 			
 			self.parent.parent._updatingSubscriptions.remove(self.url)
@@ -169,7 +169,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
 								}
 
-								api, messages = readJSONResponse(self.connectURL(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
+								api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontResponse(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
 
 								proceed = ['unknownInstallation'] # 
 
@@ -224,7 +224,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 							# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 
-							api, messages = readJSONResponse(self.connectURL(), INSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
+							api, messages = readJSONResponse(self.connectURL(), typeWorld.api.InstallFontResponse(), INSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
 
 							if messages['errors']:
 								return False, '\n\n'.join(messages['errors'])
@@ -259,7 +259,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
 			'command': 'installableFonts',
 		}
-		api, responses = readJSONResponse(self.url, typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api, responses = readJSONResponse(self.url, typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		
 		# Errors
 		if responses['errors']:
