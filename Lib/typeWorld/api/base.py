@@ -386,6 +386,18 @@ class DictBasedObject(object):
     _dataType_for_possible_keys = None
 
 
+    def sameContent(self, other):
+        '''\
+        Compares the data structure of this object to the other object.
+
+        Requires deepdiff module.
+        '''
+        return self.difference(other) == {}
+
+    def difference(self, other):
+        from deepdiff import DeepDiff
+        return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
+
     def nonListProxyBasedKeys(self):
 
         _list = []
@@ -691,6 +703,24 @@ class DictBasedObject(object):
                     critical.append('%s.%s is a required attribute, but empty' % (self, key))
 
                 else:
+
+
+                    # Check data types for validity recursively
+                    for key in list(self._content.keys()):
+
+                        if self._content[key].isEmpty() == False:
+                            # field is required or empty
+                            if (key in self._structure and self._structure[key][1]) or (key in self._content and self._content[key].isEmpty()):
+                                self.initAttr(key)
+                                data = self._content[key]
+                #               print data
+
+                                newInformation, newWarnings, newCritical = self.validateData(key, data)
+                                information.extend(extendWithKey(newInformation))
+                                warnings.extend(extendWithKey(newWarnings))
+                                critical.extend(extendWithKey(newCritical))
+
+
                     # recurse
                     if issubclass(self._content[key].__class__, (Proxy)):
                         if self._content[key]:
@@ -736,20 +766,6 @@ class DictBasedObject(object):
     #           print inspect.getmro(self._content[key].value)
 
 
-                    # Check data types for validity recursively
-                    for key in list(self._content.keys()):
-
-                        if self._content[key].isEmpty() == False:
-                            # field is required or empty
-                            if (key in self._structure and self._structure[key][1]) or (key in self._content and self._content[key].isEmpty()):
-                                self.initAttr(key)
-                                data = self._content[key]
-                #               print data
-
-                                newInformation, newWarnings, newCritical = self.validateData(key, data)
-                                information.extend(extendWithKey(newInformation))
-                                warnings.extend(extendWithKey(newWarnings))
-                                critical.extend(extendWithKey(newCritical))
 
             #Check custom messages:
             # if hasattr(self, 'customValidation') and isinstance(self.customValidation, types.MethodType):

@@ -732,19 +732,6 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'termsOfServiceAgreement': [WebURLDataType, 		True, 	'https://type.world/legal/default/TermsOfService.html', 	'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
 	}
 
-	def difference(self, other):
-		from deepdiff import DeepDiff
-		return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
-
-	def sameContent(self, other):
-		'''\
-		Compares the data structure of this object to the other object.
-
-		Requires deepdiff module.
-		'''
-		return self.difference(other) == {}
-
-
 	def __repr__(self):
 		return '<API>'
 
