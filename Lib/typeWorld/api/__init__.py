@@ -218,6 +218,9 @@ class Font(DictBasedObject):
 		for version in self.getVersions():
 			if len(self.filename(version.number)) > 255:
 				critical.append("The suggested file name is longer than 255 characters. It is composed of the font's uniqueID, its version string and the file extension like so: fontsUniqueID_1.2.otf")
+			filename = self.filename(version.number)
+			if len(filename) > 255:
+				critical.append("The suggested file name is longer than 255 characters: %s" % filename)
 
 		return information, warnings, critical
 
