@@ -58,11 +58,6 @@ class User(object):
 			self.client.unlinkUser()
 
 
-user0 = User()
-user1 = User(testUser)
-user2 = User(testUser2)
-user3 = User(testUser3)
-
 
 class TestStringMethods(unittest.TestCase):
 
@@ -669,16 +664,22 @@ class TestStringMethods(unittest.TestCase):
 			pass
 
 if __name__ == '__main__':
+
+	user0 = User()
+	user1 = User(testUser)
+	user2 = User(testUser2)
+	user3 = User(testUser3)
+
 	unittest.main()
 
-# Takedown
-user0.takeDown()
-user1.takeDown()
-user2.takeDown()
-user3.takeDown()
+	# Takedown
+	user0.takeDown()
+	user1.takeDown()
+	user2.takeDown()
+	user3.takeDown()
 
 
- # Local
-if not 'TRAVIS' in os.environ:
-#	os.remove(prefFile)
-	os.rmdir(tempFolder)
+	 # Local
+	if not 'TRAVIS' in os.environ:
+	#	os.remove(prefFile)
+		os.rmdir(tempFolder)
