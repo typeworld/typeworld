@@ -7,7 +7,7 @@ import semver
 import typeWorld.api
 import typeWorld.api.base
 
-VERSION = '0.1.6'
+VERSION = '0.1.7-alpha'
 
 # Response types (success, error, ...)
 SUCCESS = 'success'
