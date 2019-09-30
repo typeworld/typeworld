@@ -39,7 +39,7 @@ class User(object):
 
 	def testFont(self):
 		if self.client.publishers():
-			return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].families[0].fonts[0]
+			return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
 		else:
 			raise Exception('No test font available')
 
@@ -88,11 +88,11 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 		self.assertEqual(user0.client.publishers()[0].canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
-		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
+		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		# Logo
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand().foundries[0].logo)
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
@@ -129,7 +129,7 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertEqual(success, True)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().foundries), 1)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 
 		user1.client.downloadSubscriptions()
 		user1.client.publishers()[0].update()
@@ -142,7 +142,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		# Then it's supposed to fail because the server requires the revealted user identity for this subscription
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand().prefersRevealedUserIdentity, True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].prefersRevealedUserIdentity, True)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 		# Finally supposed to pass

@@ -76,7 +76,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		if self.get('versions'):
 			for dictData in self.get('versions'):
-				api = APIRoot()
+				api = InstallableFontsResponse()
 				api.parent = self
 				api.loadJSON(dictData)
 				self.versions.append(api)
@@ -102,11 +102,11 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 	#		self.save()
 
 		# Success
-		return self._rootCommand
+		return True, self._rootCommand
 
 
 	def returnInstallableFontsCommand(self):
-		return self.latestVersion().response.getCommand()
+		return True, self.latestVersion()
 
 	def protocolName(self):
 		return 'Type.World JSON Protocol'
@@ -130,14 +130,14 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			self.parent._updatingProblem = '\n'.join(responses['errors'])
 			return False, self.parent._updatingProblem
 
-		if api.response.getCommand().type == 'error':
+		if api.type == 'error':
 			self.parent.parent._updatingSubscriptions.remove(self.url)
-			self.parent._updatingProblem = api.response.getCommand().errorMessage
+			self.parent._updatingProblem = api.errorMessage
 			return False, self.parent._updatingProblem
 
-		if api.response.getCommand().type in ('temporarilyUnavailable', 'insufficientPermission'):
+		if api.type in ('temporarilyUnavailable', 'insufficientPermission'):
 			self.parent.parent._updatingSubscriptions.remove(self.url)
-			self.parent._updatingProblem = '#(response.%s)' % api.response.getCommand().type
+			self.parent._updatingProblem = '#(response.%s)' % api.type
 			return False, self.parent._updatingProblem
 
 		# Replace latest version
@@ -148,8 +148,14 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 	def removeFont(self, fontID):
 
+		success, message = self.installableFontsCommand()
+		if success:
+			installableFontsCommand = message
+		else:
+			installableFontsCommand = None
+
 		# Get font
-		for foundry in self.installableFontsCommand().foundries:
+		for foundry in installableFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -177,10 +183,10 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									return False, '\n\n'.join(messages['errors'])
 
 								# Predefined response messages
-								elif api.response.getCommand().type != 'error' and api.response.getCommand().type != 'success':
+								elif api.type != 'error' and api.type != 'success':
 									
-									if not api.response.getCommand().type in proceed:
-										return False, '#(response.%s)' % api.response.getCommand().type
+									if not api.rtype in proceed:
+										return False, '#(response.%s)' % api.type
 
 								return True, None
 
@@ -197,8 +203,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 	def installFont(self, fontID, version):
 
+		success, message = self.installableFontsCommand()
+		if success:
+			installableFontsCommand = message
+		else:
+			installableFontsCommand = None
+
+
 		# Get font
-		for foundry in self.installableFontsCommand().foundries:
+		for foundry in installableFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -229,15 +242,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							if messages['errors']:
 								return False, '\n\n'.join(messages['errors'])
 
-							if api.response.getCommand().type == 'error':
-								return False, api.response.getCommand().errorMessage
+							if api.type == 'error':
+								return False, api.errorMessage
 
 							# Predefined response messages
-							elif api.response.getCommand().type != 'error' and api.response.getCommand().type != 'success':
-								return False, ['#(response.%s)' % api.response.getCommand().type, '#(response.%s.headline)' % api.response.getCommand().type]
+							elif api.type != 'error' and api.type != 'success':
+								return False, ['#(response.%s)' % api.type, '#(response.%s.headline)' % api.type]
 
-							elif api.response.getCommand().type == 'success':
-								return True, api.response.getCommand()
+							elif api.type == 'success':
+								return True, api
 
 
 						except:
@@ -266,18 +279,22 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return False, responses['errors'][0]
 
 		# Check for installableFonts response support
-		if not 'installableFonts' in api.supportedCommands and not 'installFonts' in api.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % api.canonicalURL
+		success, message = self.rootCommand()
+		if not success:
+			return False, message
+		else:
+			rootCommand = message
 
-		if not api.response:
-			return False, 'API response has only root, no response attribute attached. Expected: installableFonts response.'
+		if not 'installableFonts' in rootCommand.supportedCommands and not 'installFonts' in rootCommand.supportedCommands:
+			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % rootCommand.canonicalURL
 
-		if api.response.getCommand().type == 'error':
-			return False, api.response.getCommand().errorMessage
+
+		if api.type == 'error':
+			return False, api.errorMessage
 
 		# Predefined response messages
-		if api.response.getCommand().type != 'error' and api.response.getCommand().type != 'success':
-			return False, '#(response.%s)' % api.response.getCommand().type
+		if api.type != 'error' and api.type != 'success':
+			return False, '#(response.%s)' % api.type
 
 		self.versions.append(api)
 #		self.save()

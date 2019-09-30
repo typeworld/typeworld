@@ -840,10 +840,14 @@ class APIClient(object):
 
 
 	def uninstallAllProtectedFonts(self):
+
 		# Uninstall all protected fonts
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
-				for foundry in subscription.protocol.installableFontsCommand().foundries:
+
+				success, installabeFontsCommand = subscription.protocol.installableFontsCommand()
+
+				for foundry in installabeFontsCommand.foundries:
 					for family in foundry.families:
 						for font in family.fonts:
 							if font.protected:
@@ -1152,7 +1156,13 @@ class APIClient(object):
 				return False, response, None, None
 
 
-			publisher = self.publisher(protocol.rootCommand().canonicalURL)
+			success, message = protocol.rootCommand()
+			if success:
+				rootCommand = message
+			else:
+				return False, message, None, None
+
+			publisher = self.publisher(rootCommand.canonicalURL)
 			subscription = publisher.subscription(protocol.saveURL(), protocol)
 
 			# Check for URL validity
@@ -1162,7 +1172,7 @@ class APIClient(object):
 
 
 			# Canonical URL
-			canonicalURL = protocol.rootCommand().canonicalURL
+			canonicalURL = rootCommand.canonicalURL
 			if not canonicalURL:
 				return False, 'Protocol object doesn’t return a canonicalURL value.', None, None
 
@@ -1182,7 +1192,7 @@ class APIClient(object):
 
 			protocol.subscriptionAdded()
 
-			return True, None, self.publisher(protocol.rootCommand().canonicalURL), subscription
+			return True, None, self.publisher(rootCommand.canonicalURL), subscription
 
 
 			# Outdated (for now)
@@ -1282,7 +1292,18 @@ class APIPublisher(object):
 
 			from os.path import expanduser
 			home = expanduser("~")
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (self.subscriptions()[0].protocol.rootCommand().name.getText(), self.subscriptions()[0].protocol.protocolName()))
+
+
+			success, message = self.subscriptions()[0].protocol.rootCommand()
+			if success:
+				rootCommand = message
+				title = rootCommand.name.getText()
+			else:
+				rootCommand = None
+				title = 'Untitled'
+
+
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (title, self.subscriptions()[0].protocol.protocolName()))
 
 			return folder
 
@@ -1370,7 +1391,19 @@ class APIPublisher(object):
 	# 		return self.parent.readGitHubResponse(url)
 
 	def name(self, locale = ['en']):
-		return self.subscriptions()[0].protocol.rootCommand().name.getTextAndLocale(locale = locale)
+
+
+		success, message = self.subscriptions()[0].protocol.rootCommand()
+		if success:
+			rootCommand = message
+			title = rootCommand.name.getText()
+		else:
+			rootCommand = None
+			title = 'Untitled'
+
+
+		if rootCommand:
+			return rootCommand.name.getTextAndLocale(locale = locale)
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -1648,7 +1681,10 @@ class APISubscription(object):
 
 
 	def name(self, locale = ['en']):
-		return self.protocol.installableFontsCommand().name.getText(locale) or '#(Unnamed)'
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+		return installabeFontsCommand.name.getText(locale) or '#(Unnamed)'
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
@@ -1665,18 +1701,24 @@ class APISubscription(object):
 			return self.parent.parent.resourceByURL(url, binary)
 
 
-	def familyByID(self, ID):
-		for foundry in self.protocol.installableFontsCommand().foundries:
-			for family in foundry.families:
-				if family.uniqueID == ID:
-					return family
+	# def familyByID(self, ID):
 
-	def fontByID(self, ID):
-		for foundry in self.protocol.installableFontsCommand().foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == ID:
-						return family
+	# 	success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+	# 	for foundry in installabeFontsCommand.foundries:
+	# 		for family in foundry.families:
+	# 			if family.uniqueID == ID:
+	# 				return family
+
+	# def fontByID(self, ID):
+
+	# 	success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+	# 	for foundry in installabeFontsCommand.foundries:
+	# 		for family in foundry.families:
+	# 			for font in family.fonts:
+	# 				if font.uniqueID == ID:
+	# 					return family
 
 	def amountInstalledFonts(self):
 		return len(self.installedFonts())
@@ -1684,7 +1726,10 @@ class APISubscription(object):
 	def installedFonts(self):
 		l = []
 		# Get font
-		for foundry in self.protocol.installableFontsCommand().foundries:
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if self.installedFontVersion(font.uniqueID):
@@ -1697,8 +1742,11 @@ class APISubscription(object):
 
 	def outdatedFonts(self):
 		l = []
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
 		# Get font
-		for foundry in self.protocol.installableFontsCommand().foundries:
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					installedFontVersion = self.installedFontVersion(font.uniqueID)
@@ -1709,8 +1757,10 @@ class APISubscription(object):
 
 	def installedFontVersion(self, fontID = None):
 
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
 		folder = self.parent.folder()
-		for foundry in self.protocol.installableFontsCommand().foundries:
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -1721,7 +1771,10 @@ class APISubscription(object):
 								return version.number
 
 	def fontIsOutdated(self, fontID):
-		for foundry in self.protocol.installableFontsCommand().foundries:
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -1732,9 +1785,11 @@ class APISubscription(object):
 
 	def removeFont(self, fontID, folder = None):
 
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
 		folder = self.parent.folder()
 		path = None
-		for foundry in self.protocol.installableFontsCommand().foundries:
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -1774,10 +1829,11 @@ class APISubscription(object):
 		if self.get('acceptedTermsOfService') != True:
 			return False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']
 
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
 		folder = self.parent.folder()
 		path = None
-		for foundry in self.protocol.installableFontsCommand().foundries:
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == fontID:
@@ -1941,8 +1997,10 @@ class APISubscription(object):
 
 		self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
 
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
 		# Delete all fonts
-		for foundry in self.protocol.installableFontsCommand().foundries:
+		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
 					self.removeFont(font.uniqueID)

@@ -36,14 +36,14 @@ class TypeWorldProtocolBase(object):
 		pass
 
 	def rootCommand(self):
-		command = self.returnRootCommand()
+		success, command = self.returnRootCommand()
 #		command.parent = self
-		return command
+		return success, command
 
 	def installableFontsCommand(self):
-		command = self.returnInstallableFontsCommand()
+		success, command = self.returnInstallableFontsCommand()
 #		command.parent = self
-		return command
+		return success, command
 
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
 		'''Overwrite this.
