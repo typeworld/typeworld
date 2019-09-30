@@ -947,32 +947,31 @@ class APIClient(object):
 
 	def keyring(self):
 
-		if (LINUX or WIN) and 'TRAVIS' in os.environ:
-			return dummyKeyRing
-
 		import keyring
-		return keyring.get_keyring()
 
-		# if MAC:
-		# 	return keyring.get_keyring()
+		if MAC:
 
-		# 	from keyring.backends.OS_X import Keyring
-		# 	keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
+			from keyring.backends.OS_X import Keyring
+			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
 
-		# elif WIN:
+		elif WIN:
 
-		# 	return keyring.get_keyring()
+			if 'TRAVIS' in os.environ:
+				return dummyKeyRing
 
-		# elif LINUX:
+			from keyring.backends.Windows import WinVaultKeyring
+			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 
-		# 	if 'TRAVIS' in os.environ:
-		# 		return dummyKeyRing
+		elif LINUX:
 
-			# from keyring.backends.kwallet import DBusKeyring
-			# keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
+			if 'TRAVIS' in os.environ:
+				return dummyKeyRing
+
+			from keyring.backends.kwallet import DBusKeyring
+			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 
 
-		# return keyring
+		return keyring
 
 
 	def log(self, *argv):
