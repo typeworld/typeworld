@@ -1769,17 +1769,17 @@ class APISubscription(object):
 							if os.path.exists(path):
 								return version.number
 
-	def fontIsOutdated(self, fontID):
+	# def fontIsOutdated(self, fontID):
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+	# 	success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == fontID:
+	# 	for foundry in installabeFontsCommand.foundries:
+	# 		for family in foundry.families:
+	# 			for font in family.fonts:
+	# 				if font.uniqueID == fontID:
 
-						installedVersion = self.installedFontVersion(fontID)
-						return installedVersion and installedVersion != font.getVersions()[-1].number
+	# 					installedVersion = self.installedFontVersion(fontID)
+	# 					return installedVersion and installedVersion != font.getVersions()[-1].number
 
 
 	def removeFont(self, fontID, folder = None):
