@@ -308,53 +308,90 @@ api.name.ar = 'Khatt Al-Shami'
 ## Example Code
 
 
-First, we import the Type.World module:
+### Example 1: Root Response
+
+Below you see the minimum possible object tree for a sucessful `root` response.
 
 ```python
+
+# Import module
 from typeWorld.api import *
+
+# Root of API
+root = RootResponse()
+root.name.en = 'Font Publisher'
+root.canonicalURL = 'https://fontpublisher.com/api/'
+root.adminEmail = 'admin@fontpublisher.com'
+root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+
+# Create API response as JSON
+json = root.dumpJSON()
+
+# Let’s see it
+print(json)
 ```
 
-Below you see the minimum possible object tree for a sucessful response.
+Will output the following JSON code:
+
+```json
+{
+  "licenseIdentifier": "CC-BY-NC-ND-4.0",
+  "public": false,
+  "privacyPolicy": "https://type.world/legal/default/PrivacyPolicy.html",
+  "termsOfServiceAgreement": "https://type.world/legal/default/TermsOfService.html",
+  "version": "0.1.7-alpha",
+  "name": {
+    "en": "Font Publisher"
+  },
+  "canonicalURL": "https://fontpublisher.com/api/",
+  "adminEmail": "admin@fontpublisher.com",
+  "supportedCommands": [
+    "installableFonts",
+    "installFont",
+    "uninstallFont",
+    "setAnonymousAppIDStatus"
+  ]
+}
+```
+
+### Example 2: InstallableFonts Response
+
+Below you see the minimum possible object tree for a sucessful `installabefonts` response.
 
 ```python
-# Root of API
-api = APIRoot()
-api.name.en = u'Font Publisher'
-api.canonicalURL = 'https://fontpublisher.com/api/'
-api.adminEmail = 'admin@fontpublisher.com'
-api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+
+# Import module
+from typeWorld.api import *
 
 # Response for 'availableFonts' command
-response = Response()
-response.command = 'installableFonts'
-responseCommand = InstallableFontsResponse()
-responseCommand.type = 'success'
-response.installableFonts = responseCommand
-api.response = response
+installableFonts = InstallableFontsResponse()
+installableFonts.type = 'success'
 
 # Add designer to root of response
 designer = Designer()
-designer.keyword = u'max'
-designer.name.en = u'Max Mustermann'
-responseCommand.designers.append(designer)
+designer.keyword = 'max'
+designer.name.en = 'Max Mustermann'
+installableFonts.designers.append(designer)
 
 # Add foundry to root of response
 foundry = Foundry()
-foundry.name.en = u'Awesome Fonts'
+foundry.name.en = 'Awesome Fonts'
 foundry.website = 'https://awesomefonts.com'
-responseCommand.foundries.append(foundry)
+foundry.uniqueID = 'awesomefontsfoundry'
+installableFonts.foundries.append(foundry)
 
 # Add license to foundry
-license = License()
-license.keyword = u'awesomeFontsEULA'
-license.name.en = u'Awesome Fonts Desktop EULA'
+license = LicenseDefinition()
+license.keyword = 'awesomeFontsEULA'
+license.name.en = 'Awesome Fonts Desktop EULA'
 license.URL = 'https://awesomefonts.com/EULA/'
 foundry.licenses.append(license)
 
 # Add font family to foundry
 family = Family()
-family.name.en = u'Awesome Sans'
-family.designers.append(u'max')
+family.name.en = 'Awesome Sans'
+family.designers.append('max')
+family.uniqueID = 'awesomefontsfoundry-awesomesans'
 foundry.families.append(family)
 
 # Add version to font family
@@ -364,104 +401,105 @@ family.versions.append(version)
 
 # Add font to family
 font = Font()
-font.name.en = u'Regular'
-font.postScriptName = u'AwesomeSans-Regular'
-font.licenseKeyword = u'awesomeFontsEULA'
-font.type = u'desktop'
+font.name.en = 'Regular'
+font.postScriptName = 'AwesomeSans-Regular'
+font.licenseKeyword = 'awesomeFontsEULA'
+font.purpose = 'desktop'
+font.format = 'otf'
+font.uniqueID = 'awesomefontsfoundry-awesomesans-regular'
 family.fonts.append(font)
 
+# Font's license usage
+licenseUsage = LicenseUsage()
+licenseUsage.keyword = 'awesomeFontsEULA'
+font.usedLicenses.append(licenseUsage)
+
 # Output API response as JSON
-json = api.dumpJSON()
+json = installableFonts.dumpJSON()
 
 # Let’s see it
-print json
+print(json)
 ```
 
 Will output the following JSON code:
 
 ```json
 {
-  "canonicalURL": "https://fontpublisher.com/api/", 
-  "adminEmail": "admin@fontpublisher.com", 
-  "public": false, 
-  "supportedCommands": [
-	"installableFonts", 
-	"installFonts", 
-	"uninstallFonts"
-  ], 
-  "licenseIdentifier": "CC-BY-NC-ND-4.0", 
-  "response": {
-	"command": "installableFonts", 
-	"installableFonts": {
-	  "designers": [
-		{
-		  "name": {
-			"en": "Max Mustermann"
-		  }, 
-		  "keyword": "max"
-		}
-	  ], 
-	  "version": 0.1, 
-	  "type": "success", 
-	  "foundries": [
-		{
-		  "website": "https://awesomefonts.com", 
-		  "licenses": [
-			{
-			  "URL": "https://awesomefonts.com/eula/", 
-			  "name": {
-				"en": "Awesome Fonts Desktop EULA"
-			  }, 
-			  "keyword": "awesomeFontsEULA"
-			}
-		  ], 
-		  "families": [
-			{
-			  "designers": [
-				"max"
-			  ], 
-			  "fonts": [
-				{
-				  "postScriptName": "AwesomeSans-Regular", 
-				  "licenseKeyword": "awesomeFontsEULA", 
-				  "name": {
-					"en": "Regular"
-				  }, 
-				  "type": "desktop"
-				}
-			  ], 
-			  "name": {
-				"en": "Awesome Sans"
-			  }, 
-			  "versions": [
-				{
-				  "number": 0.1
-				}
-			  ]
-			}
-		  ], 
-		  "name": {
-			"en": "Awesome Fonts"
-		  }
-		}
-	  ]
-	}
-  }, 
-  "name": {
-	"en": "Font Publisher"
-  }
+  "version": "0.1.7-alpha",
+  "prefersRevealedUserIdentity": false,
+  "type": "success",
+  "designers": [
+    {
+      "keyword": "max",
+      "name": {
+        "en": "Max Mustermann"
+      }
+    }
+  ],
+  "foundries": [
+    {
+      "name": {
+        "en": "Awesome Fonts"
+      },
+      "website": "https://awesomefonts.com",
+      "uniqueID": "awesomefontsfoundry",
+      "licenses": [
+        {
+          "keyword": "awesomeFontsEULA",
+          "name": {
+            "en": "Awesome Fonts Desktop EULA"
+          },
+          "URL": "https://awesomefonts.com/EULA/"
+        }
+      ],
+      "families": [
+        {
+          "name": {
+            "en": "Awesome Sans"
+          },
+          "designers": [
+            "max"
+          ],
+          "uniqueID": "awesomefontsfoundry-awesomesans",
+          "versions": [
+            {
+              "number": "0.1"
+            }
+          ],
+          "fonts": [
+            {
+              "status": "stable",
+              "name": {
+                "en": "Regular"
+              },
+              "postScriptName": "AwesomeSans-Regular",
+              "purpose": "desktop",
+              "uniqueID": "awesomefontsfoundry-awesomesans-regular",
+              "usedLicenses": [
+                {
+                  "keyword": "awesomeFontsEULA"
+                }
+              ],
+              "format": "otf"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
+
 ```
 
 Next we load that same JSON code back into an object tree, such as the GUI app would do when it loads the JSON from font publisher’s API endpoints.
 
 ```python
 # Load a second API instance from that JSON
-api2 = APIRoot()
-api2.loadJSON(json)
+installableFontsInput = InstallableFontsResponse()
+installableFontsInput.loadJSON(json)
 
 # Let’s see if they are identical (requires deepdiff)
-print api.sameContent(api2)
+print(installableFontsInput.sameContent(installableFonts))
 ```
 
 
