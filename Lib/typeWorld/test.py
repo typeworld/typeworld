@@ -145,6 +145,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].prefersRevealedUserIdentity, True)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+
 		# Finally supposed to pass
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 
@@ -302,7 +303,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user3.client.publishers()), 1)
 
 		# Invitation accepted
-		self.assertEqual(len(user3.client.publishers()[0].subscription()[0].invitationAccepted()), 1)
+		self.assertEqual(user3.client.publishers()[0].subscriptions()[0].invitationAccepted(), True)
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].subscriptions()[-1].delete()
