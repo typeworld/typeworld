@@ -65,6 +65,7 @@ class TestStringMethods(unittest.TestCase):
 	def test_normalSubscription(self):
 
 
+
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
 		self.assertTrue(typeWorld.client.validURL(freeSubscription))
@@ -292,6 +293,8 @@ class TestStringMethods(unittest.TestCase):
 
 
 
+
+
 	def test_api(self):
 
 
@@ -299,35 +302,39 @@ class TestStringMethods(unittest.TestCase):
 		# InstallableFonts
 
 		# Root of API
-		api = APIRoot()
-		api.name.en = 'Font Publisher'
-		api.canonicalURL = 'http://fontpublisher.com/api/'
-		api.adminEmail = 'admin@fontpublisher.com'
-		api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-		print(api)
+		root = RootResponse()
+		docu = root.docu()
+		root.name.en = 'Font Publisher'
+		root.canonicalURL = 'https://fontpublisher.com/api/'
+		root.adminEmail = 'admin@fontpublisher.com'
+		root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+
+		# Create API response as JSON
+		json = root.dumpJSON()
+
+		# Let’s see it
+		print(json)
+
+
 
 		# Response for 'availableFonts' command
-		response = Response()
-		response.command = 'installableFonts'
-		responseCommand = InstallableFontsResponse()
-		responseCommand.type = 'success'
-		response.installableFonts = responseCommand
-		api.response = response
-		print(response)
-		print(responseCommand)
+		# Response for 'availableFonts' command
+		installableFonts = InstallableFontsResponse()
+		installableFonts.type = 'success'
+		print(installableFonts)
 
 		# Add designer to root of response
 		designer = Designer()
 		designer.keyword = 'max'
 		designer.name.en = 'Max Mustermann'
-		responseCommand.designers.append(designer)
+		installableFonts.designers.append(designer)
 		print(designer)
-		assert designer.parent == responseCommand
+		assert designer.parent == installableFonts
 
-		responseCommand.designers.extend([designer])
-		responseCommand.designers.remove(responseCommand.designers[-1])
-		assert len(responseCommand.designers) == 1
-		print(responseCommand.designers)
+		installableFonts.designers.extend([designer])
+		installableFonts.designers.remove(installableFonts.designers[-1])
+		assert len(installableFonts.designers) == 1
+		print(installableFonts.designers)
 
 		# Add foundry to root of response
 		foundry = Foundry()
@@ -335,7 +342,7 @@ class TestStringMethods(unittest.TestCase):
 		foundry.name.en = 'Awesome Fonts'
 		foundry.name.de = 'Tolle Schriften'
 		foundry.website = 'https://awesomefonts.com'
-		responseCommand.foundries.append(foundry)
+		installableFonts.foundries.append(foundry)
 		print(foundry)
 		print(foundry.name.getTextAndLocale('en'))
 		print(foundry.name.getTextAndLocale('ar'))
@@ -379,11 +386,11 @@ class TestStringMethods(unittest.TestCase):
 		font.postScriptName = 'AwesomeSans-Regular'
 		font.purpose = 'desktop'
 		print(font.format)
-		print(font.validate())
 		font.format = 'otf'
 		font.designers.append('max')
 		font.dateAddedForUser = '2018-04-01'
 		family.fonts.append(font)
+		print(font.validate())
 		print(font.getDesigners())
 		usedLicense = LicenseUsage()
 		usedLicense.keyword = 'awesomeFontsEULA'
@@ -419,28 +426,38 @@ class TestStringMethods(unittest.TestCase):
 		assert type(font.getDesigners()) == list
 
 		# Output API response as JSON, includes validation
-		json = api.dumpJSON()
+		print(installableFonts.validate())
+		information, warnings, critical = installableFonts.validate()
+		# Supposed to contain a warning about how the name of the InstallableFontsResponse shouldn't be empy
+		assert information == []
+		assert warnings != []
+		assert critical == []
+
+		json = installableFonts.dumpJSON()
 
 		# Let’s see it
 		print(json)
 
 		# Load a second API instance from that JSON
-		api2 = APIRoot()
-		api2.loadJSON(json)
+		installableFontsInput = InstallableFontsResponse()
+		installableFontsInput.loadJSON(json)
 
 		# Let’s see if they are identical
-		assert api.sameContent(api2) == True
+		assert installableFontsInput.sameContent(installableFonts) == True
 
-		api.validate()
+		installableFontsInput.validate()
+
+
+
 
 
 		# Check for errors
 
 		try: 
-			api.licenseIdentifier = 'abc'
+			root.licenseIdentifier = 'abc'
 		except ValueError:
 		 	pass
-		api.licenseIdentifier = 'CC-BY-NC-ND-4.0'
+		root.licenseIdentifier = 'CC-BY-NC-ND-4.0'
 
 		try: 
 			font.format = 'abc'
@@ -455,30 +472,26 @@ class TestStringMethods(unittest.TestCase):
 
 
 		font.uniqueID = 'a' * 255
-		information, warnings, critical = api.validate()
+		filename = font.filename(font.versions[-1].number)
+		print(filename, len(filename))
+		information, warnings, critical = installableFonts.validate()
 		assert critical != []
 
 		font.uniqueID = 'abc:def'
-		information, warnings, critical = api.validate()
+		information, warnings, critical = installableFonts.validate()
 		assert critical != []
 
 		# Back to normal
 		font.uniqueID = 'yanone-NonameSans-Bold'
-		information, warnings, critical = api.validate()
+		information, warnings, critical = installableFonts.validate()
 		assert critical == []
 
-
-		try: 
-			response.command = 'abc'
-		except ValueError:
-			pass
-		response.command = 'installableFonts'
 
 		try:
 			# Too long name
 			foundry.name.en = 'abc' * 1000
 			# Output API response as JSON, includes validation
-			json = api.dumpJSON()
+			json = installableFonts.dumpJSON()
 		except ValueError:
 			pass
 		foundry.name.en = 'abc'
@@ -487,30 +500,25 @@ class TestStringMethods(unittest.TestCase):
 
 		# InstallFont
 
-
-		# Root of API
-		api2 = APIRoot()
-		api2.name.en = 'Font Publisher'
-		api2.canonicalURL = 'https://fontpublisher.com/api/'
-		api2.adminEmail = 'admin@fontpublisher.com'
-		api2.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-		print(api2)
-
-		# Response for 'availableFonts' command
-		response = Response()
-		response.command = 'installFont'
 		responseCommand = InstallFontResponse()
+		docu = responseCommand.docu()
 		responseCommand.type = 'success'
-		response.installFont = responseCommand
-		api2.response = response
-		print(response)
 		print(responseCommand)
 
 		responseCommand.font = b'ABC'
 		responseCommand.encoding = 'base64'
 
 		# Output API response as JSON, includes validation
-		json = api2.dumpJSON()
+		json = responseCommand.dumpJSON()
+
+
+		responseCommandInput = InstallFontResponse()
+		responseCommandInput.loadJSON(json)
+
+		# Let’s see if they are identical
+		assert responseCommandInput.sameContent(responseCommand) == True
+
+		responseCommandInput.validate()
 
 
 
@@ -518,36 +526,52 @@ class TestStringMethods(unittest.TestCase):
 
 		# UninstallFont
 
-
-		# Root of API
-		api3 = APIRoot()
-		api3.name.en = 'Font Publisher'
-		api3.canonicalURL = 'https://fontpublisher.com/api/'
-		api3.adminEmail = 'admin@fontpublisher.com'
-		api3.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-		print(api3)
-
-		# Response for 'availableFonts' command
-		response = Response()
-		response.command = 'uninstallFont'
 		responseCommand = UninstallFontResponse()
+		docu = responseCommand.docu()
 		responseCommand.type = 'success'
-		response.uninstallFont = responseCommand
-		api3.response = response
-		print(response)
 		print(responseCommand)
 
 		# Output API response as JSON, includes validation
-		json = api3.dumpJSON()
+		json = responseCommand.dumpJSON()
+
+		responseCommandInput = UninstallFontResponse()
+		responseCommandInput.loadJSON(json)
+
+		# Let’s see if they are identical
+		assert responseCommandInput.sameContent(responseCommand) == True
+
+		responseCommandInput.validate()
 
 
 
-		# Docu
+
+		# SetAnonymousAppIDStatusResponse
+
+		responseCommand = SetAnonymousAppIDStatusResponse()
+		docu = responseCommand.docu()
+		responseCommand.type = 'success'
+		print(responseCommand)
+
+		# Output API response as JSON, includes validation
+		json = responseCommand.dumpJSON()
+
+		responseCommandInput = UninstallFontResponse()
+		responseCommandInput.loadJSON(json)
+
+		# Let’s see if they are identical
+		assert responseCommandInput.sameContent(responseCommand) == True
+
+		responseCommandInput.validate()
 
 
 
-		# Docu
-		docu = api.docu()
+
+
+
+
+
+
+
 
 
 
@@ -665,6 +689,7 @@ class TestStringMethods(unittest.TestCase):
 
 if __name__ == '__main__':
 
+
 	user0 = User()
 	user1 = User(testUser)
 	user2 = User(testUser2)
@@ -672,12 +697,11 @@ if __name__ == '__main__':
 
 	unittest.main()
 
-	# Takedown
+	#Takedown
 	user0.takeDown()
 	user1.takeDown()
 	user2.takeDown()
 	user3.takeDown()
-
 
 	 # Local
 	if not 'TRAVIS' in os.environ:

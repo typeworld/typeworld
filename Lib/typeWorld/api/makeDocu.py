@@ -5,9 +5,14 @@ from typeWorld.api import *
 from typeWorld.api.base import *
 from ynlib.files import WriteToFile, ReadFromFile
 
-api = APIRoot()
+docstrings = []
 
-docstrings = api.docu()
+docstrings.extend(RootResponse().docu())
+docstrings.extend(InstallableFontsResponse().docu())
+docstrings.extend(InstallFontResponse().docu())
+docstrings.extend(UninstallFontResponse().docu())
+docstrings.extend(SetAnonymousAppIDStatusResponse().docu())
+
 docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'docu.md'))
 
 

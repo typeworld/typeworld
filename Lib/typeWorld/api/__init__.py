@@ -50,10 +50,6 @@ class LicenseUsage(DictBasedObject):
 		'allowanceDescription':			[MultiLanguageTextProxy,False, 	None, 	'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
 		'upgradeURL':					[WebURLDataType,		False, 	None, 	'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.'],
 		'dateAddedForUser':				[DateDataType,			False, 	None, 	'Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
-
-		# 'keyword':	 				[UnicodeDataType,		True, 	None, 	'Machine-readable keyword under which the license will be referenced from the individual fonts.'],
-		# 'name':	 					[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of font license'],
-		# 'URL':	 					[WebURLDataType,		True, 	None, 	'URL where the font license text can be viewed online'],
 	}
 
 	def __repr__(self):
@@ -427,7 +423,7 @@ class FoundryListProxy(ListProxy):
 
 ####################################################################################################################################
 
-#  Available Fonts
+#  Base Response
 
 class BaseResponse(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
@@ -446,11 +442,10 @@ class BaseResponse(DictBasedObject):
 
 		return information, warnings, critical
 
-def BaseResponse_Parent(self):
-	if hasattr(self, '_parent') and hasattr(self._parent, '_parent'):
-		return self._parent._parent
-BaseResponse.parent = property(lambda self: BaseResponse_Parent(self))
 
+####################################################################################################################################
+
+#  Available Fonts
 
 class InstallableFontsResponseType(ResponseCommandDataType):
 	def valid(self):
@@ -461,14 +456,17 @@ class InstallableFontsResponseType(ResponseCommandDataType):
 
 class InstallableFontsResponse(BaseResponse):
 	'''\
-	This is the response expected to be returned when the API is invoked using the command parameter, such as `http://fontpublisher.com/api/?command=installableFonts`.
-
-	The response needs to be specified at the ::Response.command:: attribute, and then the ::Response:: object needs to carry the specific response command at the attribute of same name, in this case ::Reponse.installableFonts::.
+	This is the response expected to be returned when the API is invoked using the `?command=installableFonts` parameter.
 
 	```python
-	api.response = Response()
-	api.response.command = 'installableFonts'
-	api.response.installableFonts = InstallableFontsResponse()
+	# Create root object
+	installableFonts = InstallableFontsResponse()
+
+	# Add data to the command here
+	# ...
+
+	# Return the call’s JSON content to the HTTP request
+	return installableFonts.dumpJSON()
 	```
 
 	'''
@@ -543,9 +541,6 @@ class InstallableFontsResponse(BaseResponse):
 		return information, warnings, critical
 
 
-class InstallableFontsResponseProxy(Proxy):
-	dataType = InstallableFontsResponse
-
 ####################################################################################################################################
 
 #  InstallFont
@@ -558,6 +553,22 @@ class InstallFontResponseType(ResponseCommandDataType):
 			return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTCOMMAND['responseTypes'])
 
 class InstallFontResponse(BaseResponse):
+	'''\
+	This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
+
+	```python
+	# Create root object
+	installFonts = InstallFontResponse()
+
+	# Add data to the command here
+	# ...
+
+	# Return the call’s JSON content to the HTTP request
+	return installFonts.dumpJSON()
+	```
+
+	'''
+
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 
@@ -585,9 +596,6 @@ class InstallFontResponse(BaseResponse):
 		return information, warnings, critical
 
 
-class InstallFontResponseProxy(Proxy):
-	dataType = InstallFontResponse
-
 ####################################################################################################################################
 
 #  Uninstall Fonts
@@ -600,7 +608,23 @@ class UninstallFontResponseType(ResponseCommandDataType):
 			return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTCOMMAND['responseTypes'])
 
 class UninstallFontResponse(BaseResponse):
+	'''\
+	This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
+
+	```python
+	# Create root object
+	uninstallFonts = UninstallFontResponse()
+
+	# Add data to the command here
+	# ...
+
+	# Return the call’s JSON content to the HTTP request
+	return uninstallFonts.dumpJSON()
+	```
+
+	'''
 	# 	key: 					[data type, required, default value, description]
+
 	_structure = {
 
 		# Root
@@ -610,9 +634,6 @@ class UninstallFontResponse(BaseResponse):
 
 		# Response-specific
 		}
-
-class UninstallFontResponseProxy(Proxy):
-	dataType = UninstallFontResponse
 
 
 ####################################################################################################################################
@@ -637,67 +658,10 @@ class SetAnonymousAppIDStatusResponse(BaseResponse):
 		}
 
 
-class SetAnonymousAppIDStatusResponseProxy(Proxy):
-	dataType = SetAnonymousAppIDStatusResponse
-
-
-
 ####################################################################################################################################
 
 
-class Response(DictBasedObject):
-	# 	key: 					[data type, required, default value, description]
-	_structure = {
-		'command': 							[SupportedAPICommandsDataType,	True, 	None, 	'Command code of the response. The specific response must then be present under an attribute of same name.'],
-		INSTALLABLEFONTSCOMMAND['keyword']:	[InstallableFontsResponseProxy, 	False, 	None, 	''],
-		INSTALLFONTCOMMAND['keyword']:		[InstallFontResponseProxy, 	False, 	None, 	''],
-		UNINSTALLFONTCOMMAND['keyword']:	[UninstallFontResponseProxy, 	False, 	None, 	''],
-		SETANONYMOUSAPPIDSTATUSCOMMAND['keyword']:	[SetAnonymousAppIDStatusResponseProxy, 	False, 	None, 	''],
-	}
-
-	def __repr__(self):
-		return '<Response>'
-
-	def getCommand(self):
-		'''\
-Returns the specific response referenced in the .command attribute. This is a shortcut.
-
-```python
-print api.response.getCommand()
-
-# will print:
-<InstallableFontsResponse>
-
-# which is the same as:
-print api.response.get(api.response.command)
-
-# will print:
-<InstallableFontsResponse>
-```
-'''
-#		exec("command = self.%s" % self.command)
-		return self.get(self.command)
-
-	def customValidation(self):
-
-		information, warnings, critical = [], [], []
-
-		if not self.getCommand():
-			critical.append('%s.command is set, but we are missing that command at %s.%s' % (self, self, self.command))
-
-		return information, warnings, critical
-
-
-def Response_Parent(self):
-	if hasattr(self, '_parent') and hasattr(self._parent, '_parent'):
-		return self._parent._parent
-Response.parent = property(lambda self: Response_Parent(self))
-
-
-class ResponseProxy(Proxy):
-	dataType = Response
-
-class APIRoot(DictBasedObject):
+class RootResponse(BaseResponse):
 	'''\
 This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
 
@@ -707,11 +671,11 @@ In case the API endpoint has been invoked with a particular command, the respons
 
 
 ```python
-api = APIRoot()
-api.name.en = u'Font Publisher'
-api.canonicalURL = 'https://fontpublisher.com/api/'
-api.adminEmail = 'admin@fontpublisher.com'
-api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
+response = RootResponse()
+response.name.en = u'Font Publisher'
+response.canonicalURL = 'https://fontpublisher.com/api/'
+response.adminEmail = 'admin@fontpublisher.com'
+response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 ```
 
 	'''
@@ -728,7 +692,6 @@ api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 		'logo': 				[WebResourceURLDataType, 	False, 	None, 	'URL of logo of API endpoint, for publication. Specifications to follow.'],
 		'backgroundColor': 		[HexColorDataType,			False, 	None, 	'Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
 		'website': 				[WebURLDataType, 			False, 	None, 	'URL of human-visitable website of API endpoint, for publication'],
-		'response': 			[ResponseProxy, 			False, 	None, 	'Response of the API call'],
 		'privacyPolicy': 		[WebURLDataType, 			True, 	'https://type.world/legal/default/PrivacyPolicy.html', 	'URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
 		'termsOfServiceAgreement': [WebURLDataType, 		True, 	'https://type.world/legal/default/TermsOfService.html', 	'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
 		'version': 			[VersionDataType,			True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],

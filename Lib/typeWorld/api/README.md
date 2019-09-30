@@ -205,9 +205,8 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 
 ## List of Classes
 
-- [APIRoot](#user-content-class-apiroot)<br />
+- [RootResponse](#user-content-class-rootresponse)<br />
 - [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-- [Response](#user-content-class-response)<br />
 - [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
 - [Designer](#user-content-class-designer)<br />
 - [Foundry](#user-content-class-foundry)<br />
@@ -324,53 +323,89 @@ api.name.ar = 'Khatt Al-Shami'
 ## Example Code
 
 
-First, we import the Type.World module:
+### Example 1: Root Response
+
+Below you see the minimum possible object tree for a sucessful `root` response.
 
 ```python
+
+# Import module
 from typeWorld.api import *
+
+# Root of API
+root = RootResponse()
+root.name.en = 'Font Publisher'
+root.canonicalURL = 'https://fontpublisher.com/api/'
+root.adminEmail = 'admin@fontpublisher.com'
+root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+
+# Create API response as JSON
+json = root.dumpJSON()
+
+# Let’s see it
+print(json)
 ```
 
-Below you see the minimum possible object tree for a sucessful response.
+Will output the following JSON code:
+
+```json
+{
+  "licenseIdentifier": "CC-BY-NC-ND-4.0",
+  "public": false,
+  "privacyPolicy": "https://type.world/legal/default/PrivacyPolicy.html",
+  "termsOfServiceAgreement": "https://type.world/legal/default/TermsOfService.html",
+  "name": {
+    "en": "Font Publisher"
+  },
+  "canonicalURL": "https://fontpublisher.com/api/",
+  "adminEmail": "admin@fontpublisher.com",
+  "supportedCommands": [
+    "installableFonts",
+    "installFont",
+    "uninstallFont",
+    "setAnonymousAppIDStatus"
+  ]
+}
+```
+
+### Example 2: InstallableFonts Response
+
+Below you see the minimum possible object tree for a sucessful `installabefonts` response.
 
 ```python
-# Root of API
-api = APIRoot()
-api.name.en = u'Font Publisher'
-api.canonicalURL = 'https://fontpublisher.com/api/'
-api.adminEmail = 'admin@fontpublisher.com'
-api.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+
+# Import module
+from typeWorld.api import *
 
 # Response for 'availableFonts' command
-response = Response()
-response.command = 'installableFonts'
-responseCommand = InstallableFontsResponse()
-responseCommand.type = 'success'
-response.installableFonts = responseCommand
-api.response = response
+installableFonts = InstallableFontsResponse()
+installableFonts.type = 'success'
 
 # Add designer to root of response
 designer = Designer()
-designer.keyword = u'max'
-designer.name.en = u'Max Mustermann'
-responseCommand.designers.append(designer)
+designer.keyword = 'max'
+designer.name.en = 'Max Mustermann'
+installableFonts.designers.append(designer)
 
 # Add foundry to root of response
 foundry = Foundry()
-foundry.name.en = u'Awesome Fonts'
+foundry.name.en = 'Awesome Fonts'
 foundry.website = 'https://awesomefonts.com'
-responseCommand.foundries.append(foundry)
+foundry.uniqueID = 'awesomefontsfoundry'
+installableFonts.foundries.append(foundry)
 
 # Add license to foundry
-license = License()
-license.keyword = u'awesomeFontsEULA'
-license.name.en = u'Awesome Fonts Desktop EULA'
+license = LicenseDefinition()
+license.keyword = 'awesomeFontsEULA'
+license.name.en = 'Awesome Fonts Desktop EULA'
 license.URL = 'https://awesomefonts.com/EULA/'
 foundry.licenses.append(license)
 
 # Add font family to foundry
 family = Family()
-family.name.en = u'Awesome Sans'
-family.designers.append(u'max')
+family.name.en = 'Awesome Sans'
+family.designers.append('max')
+family.uniqueID = 'awesomefontsfoundry-awesomesans'
 foundry.families.append(family)
 
 # Add version to font family
@@ -380,104 +415,105 @@ family.versions.append(version)
 
 # Add font to family
 font = Font()
-font.name.en = u'Regular'
-font.postScriptName = u'AwesomeSans-Regular'
-font.licenseKeyword = u'awesomeFontsEULA'
-font.type = u'desktop'
+font.name.en = 'Regular'
+font.postScriptName = 'AwesomeSans-Regular'
+font.licenseKeyword = 'awesomeFontsEULA'
+font.purpose = 'desktop'
+font.format = 'otf'
+font.uniqueID = 'awesomefontsfoundry-awesomesans-regular'
 family.fonts.append(font)
 
+# Font's license usage
+licenseUsage = LicenseUsage()
+licenseUsage.keyword = 'awesomeFontsEULA'
+font.usedLicenses.append(licenseUsage)
+
 # Output API response as JSON
-json = api.dumpJSON()
+json = installableFonts.dumpJSON()
 
 # Let’s see it
-print json
+print(json)
 ```
 
 Will output the following JSON code:
 
 ```json
 {
-  "canonicalURL": "https://fontpublisher.com/api/", 
-  "adminEmail": "admin@fontpublisher.com", 
-  "public": false, 
-  "supportedCommands": [
-	"installableFonts", 
-	"installFonts", 
-	"uninstallFonts"
-  ], 
-  "licenseIdentifier": "CC-BY-NC-ND-4.0", 
-  "response": {
-	"command": "installableFonts", 
-	"installableFonts": {
-	  "designers": [
-		{
-		  "name": {
-			"en": "Max Mustermann"
-		  }, 
-		  "keyword": "max"
-		}
-	  ], 
-	  "version": 0.1, 
-	  "type": "success", 
-	  "foundries": [
-		{
-		  "website": "https://awesomefonts.com", 
-		  "licenses": [
-			{
-			  "URL": "https://awesomefonts.com/eula/", 
-			  "name": {
-				"en": "Awesome Fonts Desktop EULA"
-			  }, 
-			  "keyword": "awesomeFontsEULA"
-			}
-		  ], 
-		  "families": [
-			{
-			  "designers": [
-				"max"
-			  ], 
-			  "fonts": [
-				{
-				  "postScriptName": "AwesomeSans-Regular", 
-				  "licenseKeyword": "awesomeFontsEULA", 
-				  "name": {
-					"en": "Regular"
-				  }, 
-				  "type": "desktop"
-				}
-			  ], 
-			  "name": {
-				"en": "Awesome Sans"
-			  }, 
-			  "versions": [
-				{
-				  "number": 0.1
-				}
-			  ]
-			}
-		  ], 
-		  "name": {
-			"en": "Awesome Fonts"
-		  }
-		}
-	  ]
-	}
-  }, 
-  "name": {
-	"en": "Font Publisher"
-  }
+  "version": "0.1.7-alpha",
+  "prefersRevealedUserIdentity": false,
+  "type": "success",
+  "designers": [
+    {
+      "keyword": "max",
+      "name": {
+        "en": "Max Mustermann"
+      }
+    }
+  ],
+  "foundries": [
+    {
+      "name": {
+        "en": "Awesome Fonts"
+      },
+      "website": "https://awesomefonts.com",
+      "uniqueID": "awesomefontsfoundry",
+      "licenses": [
+        {
+          "keyword": "awesomeFontsEULA",
+          "name": {
+            "en": "Awesome Fonts Desktop EULA"
+          },
+          "URL": "https://awesomefonts.com/EULA/"
+        }
+      ],
+      "families": [
+        {
+          "name": {
+            "en": "Awesome Sans"
+          },
+          "designers": [
+            "max"
+          ],
+          "uniqueID": "awesomefontsfoundry-awesomesans",
+          "versions": [
+            {
+              "number": "0.1"
+            }
+          ],
+          "fonts": [
+            {
+              "status": "stable",
+              "name": {
+                "en": "Regular"
+              },
+              "postScriptName": "AwesomeSans-Regular",
+              "purpose": "desktop",
+              "uniqueID": "awesomefontsfoundry-awesomesans-regular",
+              "usedLicenses": [
+                {
+                  "keyword": "awesomeFontsEULA"
+                }
+              ],
+              "format": "otf"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
+
 ```
 
 Next we load that same JSON code back into an object tree, such as the GUI app would do when it loads the JSON from font publisher’s API endpoints.
 
 ```python
 # Load a second API instance from that JSON
-api2 = APIRoot()
-api2.loadJSON(json)
+installableFontsInput = InstallableFontsResponse()
+installableFontsInput.loadJSON(json)
 
 # Let’s see if they are identical (requires deepdiff)
-print api.sameContent(api2)
+print(installableFontsInput.sameContent(installableFonts))
 ```
 
 
@@ -491,9 +527,9 @@ True
 
 <div id="classreference"></div>
 
-## Class Reference<div id="class-apiroot"></div>
+## Class Reference<div id="class-rootresponse"></div>
 
-# _class_ APIRoot()
+# _class_ RootResponse()
 
 This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
 
@@ -503,26 +539,26 @@ In case the API endpoint has been invoked with a particular command, the respons
 
 
 ```python
-api = APIRoot()
-api.name.en = u'Font Publisher'
-api.canonicalURL = 'https://fontpublisher.com/api/'
-api.adminEmail = 'admin@fontpublisher.com'
-api.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
+response = RootResponse()
+response.name.en = u'Font Publisher'
+response.canonicalURL = 'https://fontpublisher.com/api/'
+response.adminEmail = 'admin@fontpublisher.com'
+response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 ```
 
         
 
 ### Attributes
 
-[adminEmail](#class-apiroot-attribute-adminemail)<br />[backgroundColor](#class-apiroot-attribute-backgroundcolor)<br />[canonicalURL](#class-apiroot-attribute-canonicalurl)<br />[licenseIdentifier](#class-apiroot-attribute-licenseidentifier)<br />[logo](#class-apiroot-attribute-logo)<br />[name](#class-apiroot-attribute-name)<br />[privacyPolicy](#class-apiroot-attribute-privacypolicy)<br />[public](#class-apiroot-attribute-public)<br />[response](#class-apiroot-attribute-response)<br />[supportedCommands](#class-apiroot-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-apiroot-attribute-termsofserviceagreement)<br />[website](#class-apiroot-attribute-website)<br />
+[adminEmail](#class-rootresponse-attribute-adminemail)<br />[backgroundColor](#class-rootresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-rootresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-rootresponse-attribute-licenseidentifier)<br />[logo](#class-rootresponse-attribute-logo)<br />[name](#class-rootresponse-attribute-name)<br />[privacyPolicy](#class-rootresponse-attribute-privacypolicy)<br />[public](#class-rootresponse-attribute-public)<br />[supportedCommands](#class-rootresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-rootresponse-attribute-termsofserviceagreement)<br />[version](#class-rootresponse-attribute-version)<br />[website](#class-rootresponse-attribute-website)<br />
 
 ### Methods
 
-[sameContent()](#class-apiroot-method-samecontent)<br />[validate()](#class-apiroot-method-validate)<br />
+[customValidation()](#class-rootresponse-method-customvalidation)<br />[sameContent()](#class-rootresponse-method-samecontent)<br />
 
 ## Attributes
 
-<div id="class-apiroot-attribute-adminEmail"></div>
+<div id="class-rootresponse-attribute-adminEmail"></div>
 
 ### adminEmail
 
@@ -530,7 +566,7 @@ API endpoint Administrator. This email needs to be reachable for various informa
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-apiroot-attribute-backgroundColor"></div>
+<div id="class-rootresponse-attribute-backgroundColor"></div>
 
 ### backgroundColor
 
@@ -539,7 +575,7 @@ Publisher’s preferred background color. This is meant to go as a background co
 __Required:__ False<br />
 __Type:__ Str<br />
 __Format:__ Hex RRGGBB (without leading #)<br />
-<div id="class-apiroot-attribute-canonicalURL"></div>
+<div id="class-rootresponse-attribute-canonicalURL"></div>
 
 ### canonicalURL
 
@@ -547,7 +583,7 @@ Official API endpoint URL, bare of ID keys and other parameters. Used for groupi
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-apiroot-attribute-licenseIdentifier"></div>
+<div id="class-rootresponse-attribute-licenseIdentifier"></div>
 
 ### licenseIdentifier
 
@@ -557,7 +593,7 @@ __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ CC-BY-NC-ND-4.0
 
-<div id="class-apiroot-attribute-logo"></div>
+<div id="class-rootresponse-attribute-logo"></div>
 
 ### logo
 
@@ -566,7 +602,7 @@ URL of logo of API endpoint, for publication. Specifications to follow.
 __Required:__ False<br />
 __Type:__ Str<br />
 __Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
-<div id="class-apiroot-attribute-name"></div>
+<div id="class-rootresponse-attribute-name"></div>
 
 ### name
 
@@ -574,7 +610,7 @@ Human-readable name of API endpoint
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-<div id="class-apiroot-attribute-privacyPolicy"></div>
+<div id="class-rootresponse-attribute-privacyPolicy"></div>
 
 ### privacyPolicy
 
@@ -586,7 +622,7 @@ __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ https://type.world/legal/default/PrivacyPolicy.html
 
-<div id="class-apiroot-attribute-public"></div>
+<div id="class-rootresponse-attribute-public"></div>
 
 ### public
 
@@ -596,15 +632,7 @@ __Required:__ True<br />
 __Type:__ Bool<br />
 __Default value:__ False
 
-<div id="class-apiroot-attribute-response"></div>
-
-### response
-
-Response of the API call
-
-__Required:__ False<br />
-__Type:__ [Response](#user-content-class-response)<br />
-<div id="class-apiroot-attribute-supportedCommands"></div>
+<div id="class-rootresponse-attribute-supportedCommands"></div>
 
 ### supportedCommands
 
@@ -612,7 +640,7 @@ List of commands this API endpoint supports: ['installableFonts', 'installFont',
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
-<div id="class-apiroot-attribute-termsOfServiceAgreement"></div>
+<div id="class-rootresponse-attribute-termsOfServiceAgreement"></div>
 
 ### termsOfServiceAgreement
 
@@ -624,7 +652,18 @@ __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ https://type.world/legal/default/TermsOfService.html
 
-<div id="class-apiroot-attribute-website"></div>
+<div id="class-rootresponse-attribute-version"></div>
+
+### version
+
+Version of "installFont" response
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
+__Default value:__ 0.1.7-alpha
+
+<div id="class-rootresponse-attribute-website"></div>
 
 ### website
 
@@ -636,21 +675,21 @@ __Type:__ Str<br />
 
 ## Methods
 
-<div id="class-apiroot-method-samecontent"></div>
+<div id="class-rootresponse-method-customvalidation"></div>
+
+#### customValidation()
+
+Return three lists with informations, warnings, and errors.
+
+An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
+
+<div id="class-rootresponse-method-samecontent"></div>
 
 #### sameContent()
 
 Compares the data structure of this object to the other object.
 
 Requires deepdiff module.
-
-<div id="class-apiroot-method-validate"></div>
-
-#### validate()
-
-Return three lists with informations, warnings, and errors.
-
-An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
 
 
 
@@ -684,7 +723,7 @@ for languageCode, text in (
 
 ### Methods
 
-[getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />
+[getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />[sameContent()](#class-multilanguagetext-method-samecontent)<br />
 
 ## Methods
 
@@ -700,80 +739,13 @@ Returns the text in the first language found from the specified list of language
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
+<div id="class-multilanguagetext-method-samecontent"></div>
 
+#### sameContent()
 
+Compares the data structure of this object to the other object.
 
-
-<div id="class-response"></div>
-
-# _class_ Response()
-
-
-
-### Attributes
-
-[command](#class-response-attribute-command)<br />[installFont](#class-response-attribute-installfont)<br />[installableFonts](#class-response-attribute-installablefonts)<br />[setAnonymousAppIDStatus](#class-response-attribute-setanonymousappidstatus)<br />[uninstallFont](#class-response-attribute-uninstallfont)<br />
-
-### Methods
-
-[getCommand()](#class-response-method-getcommand)<br />
-
-## Attributes
-
-<div id="class-response-attribute-command"></div>
-
-### command
-
-Command code of the response. The specific response must then be present under an attribute of same name.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-<div id="class-response-attribute-installFont"></div>
-
-### installFont
-
-__Required:__ False<br />
-__Type:__ [InstallFontResponse](#user-content-class-installfontresponse)<br />
-<div id="class-response-attribute-installableFonts"></div>
-
-### installableFonts
-
-__Required:__ False<br />
-__Type:__ [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
-<div id="class-response-attribute-setAnonymousAppIDStatus"></div>
-
-### setAnonymousAppIDStatus
-
-__Required:__ False<br />
-__Type:__ [SetAnonymousAppIDStatusResponse](#user-content-class-setanonymousappidstatusresponse)<br />
-<div id="class-response-attribute-uninstallFont"></div>
-
-### uninstallFont
-
-__Required:__ False<br />
-__Type:__ [UninstallFontResponse](#user-content-class-uninstallfontresponse)<br />
-
-
-## Methods
-
-<div id="class-response-method-getcommand"></div>
-
-#### getCommand()
-
-Returns the specific response referenced in the .command attribute. This is a shortcut.
-
-```python
-print api.response.getCommand()
-
-# will print:
-<InstallableFontsResponse>
-
-# which is the same as:
-print api.response.get(api.response.command)
-
-# will print:
-<InstallableFontsResponse>
-```
+Requires deepdiff module.
 
 
 
@@ -783,19 +755,26 @@ print api.response.get(api.response.command)
 
 # _class_ InstallableFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the command parameter, such as `http://fontpublisher.com/api/?command=installableFonts`.
-
-The response needs to be specified at the [Response.command](#user-content-class-response-attribute-command) attribute, and then the [Response](#user-content-class-response) object needs to carry the specific response command at the attribute of same name, in this case [Reponse.installableFonts](#user-content-class-reponse-attribute-installablefonts).
+This is the response expected to be returned when the API is invoked using the `?command=installableFonts` parameter.
 
 ```python
-api.response = Response()
-api.response.command = 'installableFonts'
-api.response.installableFonts = InstallableFontsResponse()
+# Create root object
+installableFonts = InstallableFontsResponse()
+
+# Add data to the command here
+# ...
+
+# Return the call’s JSON content to the HTTP request
+return installableFonts.dumpJSON()
 ```
 
 ### Attributes
 
 [designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[type](#class-installablefontsresponse-attribute-type)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />[version](#class-installablefontsresponse-attribute-version)<br />
+
+### Methods
+
+[sameContent()](#class-installablefontsresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -875,7 +854,19 @@ Version of "installableFonts" response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.6
+__Default value:__ 0.1.7-alpha
+
+
+
+## Methods
+
+<div id="class-installablefontsresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
 
 
 
@@ -890,6 +881,10 @@ __Default value:__ 0.1.6
 ### Attributes
 
 [description](#class-designer-attribute-description)<br />[keyword](#class-designer-attribute-keyword)<br />[name](#class-designer-attribute-name)<br />[website](#class-designer-attribute-website)<br />
+
+### Methods
+
+[sameContent()](#class-designer-method-samecontent)<br />
 
 ## Attributes
 
@@ -927,6 +922,18 @@ __Required:__ False<br />
 __Type:__ Str<br />
 
 
+## Methods
+
+<div id="class-designer-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
 
 
 <div id="class-foundry"></div>
@@ -938,6 +945,10 @@ __Type:__ Str<br />
 ### Attributes
 
 [backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+
+### Methods
+
+[sameContent()](#class-foundry-method-samecontent)<br />
 
 ## Attributes
 
@@ -1081,6 +1092,18 @@ __Required:__ False<br />
 __Type:__ Str<br />
 
 
+## Methods
+
+<div id="class-foundry-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
 
 
 <div id="class-licensedefinition"></div>
@@ -1092,6 +1115,10 @@ __Type:__ Str<br />
 ### Attributes
 
 [URL](#class-licensedefinition-attribute-url)<br />[keyword](#class-licensedefinition-attribute-keyword)<br />[name](#class-licensedefinition-attribute-name)<br />
+
+### Methods
+
+[sameContent()](#class-licensedefinition-method-samecontent)<br />
 
 ## Attributes
 
@@ -1121,6 +1148,18 @@ __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 
+## Methods
+
+<div id="class-licensedefinition-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
 
 
 <div id="class-family"></div>
@@ -1135,7 +1174,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### Methods
 
-[getAllDesigners()](#class-family-method-getalldesigners)<br />
+[getAllDesigners()](#class-family-method-getalldesigners)<br />[sameContent()](#class-family-method-samecontent)<br />
 
 ## Attributes
 
@@ -1250,6 +1289,14 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 Returns a list of [Designer](#user-content-class-designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
                 
 
+<div id="class-family-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
 
 
 
@@ -1266,7 +1313,7 @@ Returns a list of [Designer](#user-content-class-designer) objects that represen
 
 ### Methods
 
-[isFontSpecific()](#class-version-method-isfontspecific)<br />
+[isFontSpecific()](#class-version-method-isfontspecific)<br />[sameContent()](#class-version-method-samecontent)<br />
 
 ## Attributes
 
@@ -1307,6 +1354,14 @@ __Format:__ YYYY-MM-DD<br />
 Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
                 
 
+<div id="class-version-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
 
 
 
@@ -1323,7 +1378,7 @@ Returns True if this version is defined at the font level. Returns False if this
 
 ### Methods
 
-[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
+[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />[sameContent()](#class-font-method-samecontent)<br />
 
 ## Attributes
 
@@ -1348,7 +1403,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'woff2', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'ttc', 'ttf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1491,6 +1546,14 @@ Returns list of [Version](#user-content-class-version) objects.
 
 This is the final list based on the version information in this font object as well as in its parent [Family](#user-content-class-family) object. Please read the section about [versioning](#versioning) above.
 
+<div id="class-font-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
 
 
 
@@ -1507,7 +1570,7 @@ This is the final list based on the version information in this font object as w
 
 ### Methods
 
-[getLicense()](#class-licenseusage-method-getlicense)<br />
+[getLicense()](#class-licenseusage-method-getlicense)<br />[sameContent()](#class-licenseusage-method-samecontent)<br />
 
 ## Attributes
 
@@ -1571,6 +1634,14 @@ __Type:__ Str<br />
 Returns the [License](#user-content-class-license) object that this font references.
                 
 
+<div id="class-licenseusage-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
 
 
 
@@ -1579,11 +1650,26 @@ Returns the [License](#user-content-class-license) object that this font referen
 
 # _class_ InstallFontResponse()
 
+This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
 
+```python
+# Create root object
+installFonts = InstallFontResponse()
+
+# Add data to the command here
+# ...
+
+# Return the call’s JSON content to the HTTP request
+return installFonts.dumpJSON()
+```
 
 ### Attributes
 
 [encoding](#class-installfontresponse-attribute-encoding)<br />[errorMessage](#class-installfontresponse-attribute-errormessage)<br />[fileName](#class-installfontresponse-attribute-filename)<br />[font](#class-installfontresponse-attribute-font)<br />[type](#class-installfontresponse-attribute-type)<br />[version](#class-installfontresponse-attribute-version)<br />
+
+### Methods
+
+[sameContent()](#class-installfontresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -1637,7 +1723,19 @@ Version of "installFont" response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.6
+__Default value:__ 0.1.7-alpha
+
+
+
+## Methods
+
+<div id="class-installfontresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
 
 
 
@@ -1647,11 +1745,26 @@ __Default value:__ 0.1.6
 
 # _class_ UninstallFontResponse()
 
+This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
 
+```python
+# Create root object
+uninstallFonts = UninstallFontResponse()
+
+# Add data to the command here
+# ...
+
+# Return the call’s JSON content to the HTTP request
+return uninstallFonts.dumpJSON()
+```
 
 ### Attributes
 
 [errorMessage](#class-uninstallfontresponse-attribute-errormessage)<br />[type](#class-uninstallfontresponse-attribute-type)<br />[version](#class-uninstallfontresponse-attribute-version)<br />
+
+### Methods
+
+[sameContent()](#class-uninstallfontresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -1681,7 +1794,19 @@ Version of "uninstallFont" response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.6
+__Default value:__ 0.1.7-alpha
+
+
+
+## Methods
+
+<div id="class-uninstallfontresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
 
 
 
@@ -1696,6 +1821,10 @@ __Default value:__ 0.1.6
 ### Attributes
 
 [errorMessage](#class-setanonymousappidstatusresponse-attribute-errormessage)<br />[type](#class-setanonymousappidstatusresponse-attribute-type)<br />[version](#class-setanonymousappidstatusresponse-attribute-version)<br />
+
+### Methods
+
+[sameContent()](#class-setanonymousappidstatusresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -1725,7 +1854,19 @@ Version of "setAnonymousAppIDStatus" response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.6
+__Default value:__ 0.1.7-alpha
+
+
+
+## Methods
+
+<div id="class-setanonymousappidstatusresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
 
 
 
