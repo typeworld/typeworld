@@ -680,7 +680,10 @@ class DictBasedObject(object):
         def extendWithKey(values):
             _list = []
             for value in values:
-                _list.append('%s.%s --> %s' % (self, key, value))
+                try:
+                    _list.append('%s.%s --> %s' % (self.__repr__(), key, value))
+                except:
+                    _list.append('%s --> %s' % (self.__repr__(), value))
             return _list
 
 
@@ -705,22 +708,6 @@ class DictBasedObject(object):
                 else:
 
 
-                    # Check data types for validity recursively
-                    for key in list(self._content.keys()):
-
-                        if self._content[key].isEmpty() == False:
-                            # field is required or empty
-                            if (key in self._structure and self._structure[key][1]) or (key in self._content and self._content[key].isEmpty()):
-                                self.initAttr(key)
-                                data = self._content[key]
-                #               print data
-
-                                newInformation, newWarnings, newCritical = self.validateData(key, data)
-                                information.extend(extendWithKey(newInformation))
-                                warnings.extend(extendWithKey(newWarnings))
-                                critical.extend(extendWithKey(newCritical))
-
-
                     # recurse
                     if issubclass(self._content[key].__class__, (Proxy)):
                         if self._content[key]:
@@ -743,8 +730,9 @@ class DictBasedObject(object):
 
 
                     # recurse
-                    if issubclass(self._content[key].__class__, ListProxy):
+                    if issubclass(self._content[key].__class__, (ListProxy)):
 
+                        # print ('Validation: Checking %s.%s' % (self._content[key], key))
 
                         if self._content[key].isEmpty() == False:
                             for item in self._content[key]:
@@ -761,17 +749,42 @@ class DictBasedObject(object):
                                     warnings.extend(extendWithKey(newWarnings))
                                     critical.extend(extendWithKey(newCritical))
 
+                    # Check data types for validity recursively
+                    for key in list(self._content.keys()):
+
+                        # print ('Validation: Checking %s.%s' % (self._content[key], key))
+
+                        required = key in self._structure and self._structure[key][1] == True
+                        empty = self._content[key].isEmpty()
+
+                        if required:
+                            self.initAttr(key)
+                            data = self._content[key]
+            #               print data
+
+                            newInformation, newWarnings, newCritical = self.validateData(key, data)
+                            information.extend(extendWithKey(newInformation))
+                            warnings.extend(extendWithKey(newWarnings))
+                            critical.extend(extendWithKey(newCritical))
+
+                        if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
+                            newInformation, newWarnings, newCritical = self._content[key].customValidation()
+                            information.extend(extendWithKey(newInformation))
+                            warnings.extend(extendWithKey(newWarnings))
+                            critical.extend(extendWithKey(newCritical))
+
     #           if self._structure[key][1] == False and self._content[key].isEmpty():
 
     #           print inspect.getmro(self._content[key].value)
 
 
 
-            #Check custom messages:
-            # if hasattr(self, 'customValidation') and isinstance(self.customValidation, types.MethodType):
-            #   newWarnings, newCritical = self.customValidation()
-            #   warnings.extend(newWarnings)
-            #   critical.extend(newCritical)
+        # Check custom messages:
+        if issubclass(self.__class__, typeWorld.api.BaseResponse) and hasattr(self, 'customValidation') and isinstance(self.customValidation, types.MethodType):
+            newInformation, newWarnings, newCritical = self.customValidation()
+            information.extend(extendWithKey(newInformation))
+            warnings.extend(extendWithKey(newWarnings))
+            critical.extend(extendWithKey(newCritical))
 
 
 
@@ -785,14 +798,17 @@ class DictBasedObject(object):
         return self._validate()
 
 
-    def dumpDict(self):
+    def dumpDict(self, key = None):
 
         d = {}
 
         # Auto-validate
         information, warnings, critical = self.validate()
         if critical:
-            raise ValueError(critical[0])
+            if key:
+                raise ValueError('%s.%s: %s' % (self.__repr__(), key, critical[0]))
+            else:
+                raise ValueError(critical[0])
 
 
         for key in list(self._content.keys()):
@@ -914,7 +930,7 @@ for languageCode, text in (
         return '<MultiLanguageText>'
 
     def __str__(self):
-        return self.getText()
+        return str(self.getText())
 
     def getTextAndLocale(self, locale = ['en']):
         '''Like getText(), but additionally returns the language of whatever text was found first.'''
@@ -952,7 +968,7 @@ for languageCode, text in (
         information, warnings, critical = [], [], []
 
         if self.isEmpty():
-            critical.append('%s needs to contain at least one language field' % (self))
+            critical.append('%s needs to contain at least one language field' % (self.__repr__()))
 
         # Check for text length
         for langId in self._possible_keys:
