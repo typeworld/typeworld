@@ -354,6 +354,7 @@ Will output the following JSON code:
   "public": false,
   "privacyPolicy": "https://type.world/legal/default/PrivacyPolicy.html",
   "termsOfServiceAgreement": "https://type.world/legal/default/TermsOfService.html",
+  "version": "0.1.7-alpha",
   "name": {
     "en": "Font Publisher"
   },
@@ -1247,7 +1248,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### pdf
 
-URL of PDF file with type specimen and/or instructions for entire family. (See also: [Font.pdf](#user-content-class-font-attribute-pdf)
+URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at [Font.pdf](#user-content-class-font-attribute-pdf).
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1374,7 +1375,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[previewImage](#class-font-attribute-previewimage)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1403,7 +1404,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'ttc', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'ttc', 'woff2', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1440,15 +1441,6 @@ Complete PostScript name of font
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-font-attribute-previewImage"></div>
-
-### previewImage
-
-URL of preview image of font, specifications to follow.
-
-__Required:__ False<br />
-__Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
 <div id="class-font-attribute-protected"></div>
 
 ### protected
@@ -1479,7 +1471,7 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 
 ### status
 
-Font status. For UI signaling. Possible values are: ['alpha', 'beta', 'stable']
+Font status. For UI signaling. Possible values are: ['prerelease', 'trial', 'stable']
 
 __Required:__ True<br />
 __Type:__ Str<br />
