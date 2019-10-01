@@ -1717,7 +1717,7 @@ class APISubscription(object):
 			for family in foundry.families:
 				for font in family.fonts:
 					if font.uniqueID == ID:
-						return family
+						return font
 
 	def amountInstalledFonts(self):
 		return len(self.installedFonts())
