@@ -91,6 +91,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 			# Read response
 			data = {
+				'appVersion': typeWorld.api.VERSION,
 			}
 			api, responses = readJSONResponse(self.url, typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 			
@@ -119,6 +120,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'command': 'installableFonts', 
 			'anonymousAppID': self.parent.parent.parent.anonymousAppID(), 
 			'anonymousTypeWorldUserID': self.parent.parent.parent.user()}
+			'appVersion': typeWorld.api.VERSION,
 		secretKey = self.getSecretKey()
 		if secretKey:
 			data['secretKey'] = secretKey
@@ -173,6 +175,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									'subscriptionID': self.subscriptionID,
 									'secretKey': self.getSecretKey(),
 									'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
+									'appVersion': typeWorld.api.VERSION,
 								}
 
 								api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontResponse(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
@@ -228,6 +231,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 								'subscriptionID': self.subscriptionID,
 								'secretKey': self.getSecretKey(),
 								'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
+								'appVersion': typeWorld.api.VERSION,
 							}
 
 							if self.parent.get('revealIdentity') and self.parent.parent.parent.userName():
@@ -271,6 +275,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
 			'command': 'installableFonts',
+			'appVersion': typeWorld.api.VERSION,
 		}
 		api, responses = readJSONResponse(self.url, typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		
