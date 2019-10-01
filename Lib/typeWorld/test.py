@@ -209,6 +209,14 @@ class TestStringMethods(unittest.TestCase):
 		print(result)
 		self.assertEqual(result, (True, None))
 
+		# Family By ID
+		family = user2.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0]
+		self.assertEqual(family, user2.client.publishers()[0].subscriptions()[-1].familyByID(family.uniqueID))
+
+		# Font By ID
+		font = family.fonts[0]
+		self.assertEqual(font, user2.client.publishers()[0].subscriptions()[-1].fontByID(font.uniqueID))
+
 		# Clear
 		user2.clearSubscriptions()
 		self.assertEqual(len(user2.client.publishers()), 0)
