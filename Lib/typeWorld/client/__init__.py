@@ -1700,24 +1700,24 @@ class APISubscription(object):
 			return self.parent.parent.resourceByURL(url, binary)
 
 
-	# def familyByID(self, ID):
+	def familyByID(self, ID):
 
-	# 	success, installabeFontsCommand = self.protocol.installableFontsCommand()
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-	# 	for foundry in installabeFontsCommand.foundries:
-	# 		for family in foundry.families:
-	# 			if family.uniqueID == ID:
-	# 				return family
+		for foundry in installabeFontsCommand.foundries:
+			for family in foundry.families:
+				if family.uniqueID == ID:
+					return family
 
-	# def fontByID(self, ID):
+	def fontByID(self, ID):
 
-	# 	success, installabeFontsCommand = self.protocol.installableFontsCommand()
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-	# 	for foundry in installabeFontsCommand.foundries:
-	# 		for family in foundry.families:
-	# 			for font in family.fonts:
-	# 				if font.uniqueID == ID:
-	# 					return family
+		for foundry in installabeFontsCommand.foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.uniqueID == ID:
+						return family
 
 	def amountInstalledFonts(self):
 		return len(self.installedFonts())
