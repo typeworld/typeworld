@@ -119,8 +119,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'subscriptionID': self.subscriptionID, 
 			'command': 'installableFonts', 
 			'anonymousAppID': self.parent.parent.parent.anonymousAppID(), 
-			'anonymousTypeWorldUserID': self.parent.parent.parent.user()}
+			'anonymousTypeWorldUserID': self.parent.parent.parent.user(),
 			'appVersion': typeWorld.api.VERSION,
+		}
 		secretKey = self.getSecretKey()
 		if secretKey:
 			data['secretKey'] = secretKey
