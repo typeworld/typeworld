@@ -299,7 +299,7 @@ class Family(DictBasedObject):
 		'versions':	 				[VersionListProxy,		False, 	None, 	'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
 		'fonts':	 				[FontListProxy,			True, 	None, 	'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
 		'dateFirstPublished':		[DateDataType,			False, 	None, 	'Date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
-		'pdf':						[WebResourceURLDataType,False, 	None, 	'URL of PDF file with type specimen and/or instructions for entire family. (See also: ::Font.pdf::'],
+		'pdf':						[WebResourceURLDataType,False, 	None, 	'URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at ::Font.pdf::.'],
 	}
 
 	def __repr__(self):
