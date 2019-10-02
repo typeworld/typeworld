@@ -932,6 +932,9 @@ for languageCode, text in (
     def __str__(self):
         return str(self.getText())
 
+    def __bool__(self):
+        return bool(self.getText())
+
     def getTextAndLocale(self, locale = ['en']):
         '''Like getText(), but additionally returns the language of whatever text was found first.'''
 
