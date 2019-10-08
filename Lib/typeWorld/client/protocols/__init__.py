@@ -37,12 +37,12 @@ class TypeWorldProtocolBase(object):
 
 	def rootCommand(self):
 		success, command = self.returnRootCommand()
-#		command.parent = self
+		command.parent = self
 		return success, command
 
 	def installableFontsCommand(self):
 		success, command = self.returnInstallableFontsCommand()
-#		command.parent = self
+		command.parent = self
 		return success, command
 
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
