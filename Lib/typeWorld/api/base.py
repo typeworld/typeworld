@@ -168,7 +168,6 @@ class DataType(object):
         self.value = self.shapeValue(value)
 
         if issubclass(self.value.__class__, (DictBasedObject, ListProxy, Proxy, DataType)):
-#           print 'Setting _parent of %s to %s' % (self.value, self)
             object.__setattr__(self.value, '_parent', self)
 
         valid = self.valid()
@@ -259,8 +258,6 @@ class DateDataType(StringDataType):
         return 'YYYY-MM-DD'
 
 
-
-
 class WebURLDataType(UnicodeDataType):
 
     def valid(self):
@@ -306,9 +303,8 @@ class HexColorDataType(StringDataType):
 class ListProxy(DataType):
     initialData = []
 
-
-    # Data type of each list member
-    # Here commented out to enforce explicit setting of data type for each Proxy
+    ## Data type of each list member
+    ## Here commented out to enforce explicit setting of data type for each Proxy
     #dataType = str
 
     def __repr__(self):
@@ -417,8 +413,6 @@ class DictBasedObject(object):
 
 
     def linkDocuText(self, text):
-
-#       print text
 
         def my_replace(match):
             match = match.group()
@@ -585,12 +579,6 @@ class DictBasedObject(object):
         object.__setattr__(self, '_content', {})
         object.__setattr__(self, '_allowedKeys', set(self._structure.keys()) | set(self._possible_keys))
 
-        # Add base structure to main structure:
-#       if hasattr(self, '_base_structure') and self._base_structure:
-#           for key in self._base_structure.keys():
-#               self._structure[key] = self._base_structure[key]
-
-
         # Fill default values
         for key in list(self._structure.keys()):
 
@@ -612,20 +600,12 @@ class DictBasedObject(object):
                 self._content[key] = self._dataType_for_possible_keys()
 
             self._content[key]._parent = self
-#               print key, self._content[key]
-
-#       print 'initAttr', self, key, self._content[key]
-
-#       print self, key, self._content[key]
-#           print self._content[key]
-
 
     def __getattr__(self, key):
 
 
         if key in self._allowedKeys:
             self.initAttr(key)
-#           print '__getattr__', self, key, self._content[key]
             return self._content[key].get()
 
         else:
@@ -638,15 +618,11 @@ class DictBasedObject(object):
 
             if issubclass(value.__class__, (DictBasedObject, ListProxy, Proxy, DataType)):
                 object.__setattr__(value, '_parent', self)
-#               print 'Setting _parent of %s to %s' % (value, self)
 
             self.__dict__['_content'][key].put(value)
 
         else:
             object.__setattr__(self, key, value)
-
-#       else:
-#           raise AttributeError('%s.%s is not a valid attribute.' % (self, key))
 
     def set(self, key, value):
         self.__setattr__(key, value)
@@ -675,8 +651,6 @@ class DictBasedObject(object):
 
     def _validate(self):
 
-#       print '____validate()', self
-
         information = []
         warnings = []
         critical = []
@@ -684,25 +658,14 @@ class DictBasedObject(object):
         def extendWithKey(values):
             _list = []
             for value in values:
-                try:
-                    _list.append('%s.%s --> %s' % (self.__repr__(), key, value))
-                except:
-                    _list.append('%s --> %s' % (self.__repr__(), value))
+                _list.append('%s.%s --> %s' % (self.__repr__(), key, value))
             return _list
 
 
         # Check if required fields are filled
         for key in list(self._structure.keys()):
 
-#           if self._structure[key][1]:
             self.initAttr(key)
-
-            # if self._structure[key][1]:
-            #   if 'fonts' in key:
-            #       print key, self._content[key].isEmpty()
-
-
-#           print key, self._content[key], self._content[key].isEmpty()
 
             if self.discardThisKey(key) == False:
 
@@ -711,13 +674,10 @@ class DictBasedObject(object):
 
                 else:
 
-
                     # recurse
                     if issubclass(self._content[key].__class__, (Proxy)):
                         if self._content[key]:
             
-    #                       print 'isProxy', key, self._content[key], self._content[key].isEmpty()
-
                             if self._content[key].isEmpty() == False:
                                 if self._content[key].value:
                                     newInformation, newWarnings, newCritical = self._content[key].value._validate()
@@ -735,8 +695,6 @@ class DictBasedObject(object):
 
                     # recurse
                     if issubclass(self._content[key].__class__, (ListProxy)):
-
-                        # print ('Validation: Checking %s.%s' % (self._content[key], key))
 
                         if self._content[key].isEmpty() == False:
                             for item in self._content[key]:
@@ -756,31 +714,24 @@ class DictBasedObject(object):
                     # Check data types for validity recursively
                     for key in list(self._content.keys()):
 
-                        # print ('Validation: Checking %s.%s' % (self._content[key], key))
-
                         required = key in self._structure and self._structure[key][1] == True
                         empty = self._content[key].isEmpty()
 
                         if required:
                             self.initAttr(key)
                             data = self._content[key]
-            #               print data
 
                             newInformation, newWarnings, newCritical = self.validateData(key, data)
                             information.extend(extendWithKey(newInformation))
                             warnings.extend(extendWithKey(newWarnings))
                             critical.extend(extendWithKey(newCritical))
 
+                        # TODO: Seems to be unneccessary maybe?
                         if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
                             newInformation, newWarnings, newCritical = self._content[key].customValidation()
                             information.extend(extendWithKey(newInformation))
                             warnings.extend(extendWithKey(newWarnings))
                             critical.extend(extendWithKey(newCritical))
-
-    #           if self._structure[key][1] == False and self._content[key].isEmpty():
-
-    #           print inspect.getmro(self._content[key].value)
-
 
 
         # Check custom messages:
