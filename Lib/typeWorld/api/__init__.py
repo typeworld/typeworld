@@ -3,10 +3,6 @@
 from typeWorld.api.base import *
 import functools, os
 
-import platform
-WIN = platform.system() == 'Windows'
-MAC = platform.system() == 'Darwin'
-
 
 ####################################################################################################################################
 
