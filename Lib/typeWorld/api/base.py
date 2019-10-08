@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime
+import json, copy, types, inspect, re, traceback, datetime, lxml.html
 from optparse import OptionParser
 import semver
 
@@ -979,10 +979,13 @@ for languageCode, text in (
         # Check for text length
         for langId in self._possible_keys:
             if self.get(langId):
-#           if self._content.has_key(langId):
-                if len(self.get(langId)) > self._length:
+                string = self.get(langId)
+                if len(string) > self._length:
                     critical.append('%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length))
-#       return True
+
+                if lxml.html.fromstring(string).find('.//*') is not None:
+                    critical.append('String contains HTML code, which is not allowed. You may use Markdown for text formatting.')
+
         return information, warnings, critical
 
     def isEmpty(self):

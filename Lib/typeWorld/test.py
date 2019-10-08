@@ -667,6 +667,13 @@ class TestStringMethods(unittest.TestCase):
 		text.en = 'Hello'
 		self.assertEqual(bool(text), True)
 
+		text.en = 'Hello'
+		self.assertEqual(text.customValidation()[2], [])
+
+		# HTML in Text
+		text.en = 'Hello, <b>world</b>'
+		self.assertNotEqual(text.customValidation()[2], [])
+
 		try:
 			font.type = 'abc'
 		except:
