@@ -662,6 +662,11 @@ class TestStringMethods(unittest.TestCase):
 			pass
 
 
+		text = MultiLanguageText()
+		self.assertEqual(bool(text), False)
+		text.en = 'Hello'
+		self.assertEqual(bool(text), True)
+
 		try:
 			font.type = 'abc'
 		except:
