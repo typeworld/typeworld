@@ -674,6 +674,28 @@ class TestStringMethods(unittest.TestCase):
 		text.en = 'Hello, <b>world</b>'
 		self.assertNotEqual(text.customValidation()[2], [])
 
+		# Markdown in Text
+		text.en = 'Hello, _world_'
+		self.assertNotEqual(text.customValidation()[2], [])
+
+
+		description = MultiLanguageLongText()
+		self.assertEqual(bool(description), False)
+		description.en = 'Hello'
+		self.assertEqual(bool(description), True)
+
+		description.en = 'Hello'
+		self.assertEqual(description.customValidation()[2], [])
+
+		# HTML in Text
+		description.en = 'Hello, <b>world</b>'
+		self.assertNotEqual(description.customValidation()[2], [])
+
+		# Markdown in Text
+		description.en = 'Hello, _world_'
+		self.assertEqual(description.customValidation()[2], [])
+
+
 		try:
 			font.type = 'abc'
 		except:

@@ -209,6 +209,7 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 - [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 - [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
 - [Designer](#user-content-class-designer)<br />
+- [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
 - [Foundry](#user-content-class-foundry)<br />
 - [LicenseDefinition](#user-content-class-licensedefinition)<br />
 - [Family](#user-content-class-family)<br />
@@ -611,6 +612,7 @@ Human-readable name of API endpoint
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-rootresponse-attribute-privacyPolicy"></div>
 
 ### privacyPolicy
@@ -722,6 +724,8 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
+HTML code is not allowed in MultiLanguageText. Instead, use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links. However, note that markdown code is probably stripped in the displayed text in most places, except where meaningful, such as the display of paragraphs of text (i.e. typeface descriptions).
+
 ### Methods
 
 [getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />[sameContent()](#class-multilanguagetext-method-samecontent)<br />
@@ -730,13 +734,13 @@ for languageCode, text in (
 
 <div id="class-multilanguagetext-method-gettext"></div>
 
-#### getText(locale = ['en'])
+#### getText(locale = ['en'], format = plain)
 
 Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
 
 <div id="class-multilanguagetext-method-gettextandlocale"></div>
 
-#### getTextAndLocale(locale = ['en'])
+#### getTextAndLocale(locale = ['en'], format = plain)
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
@@ -795,6 +799,7 @@ Description of error in case of [InstallableFontsResponse.type](#user-content-cl
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-installablefontsresponse-attribute-foundries"></div>
 
 ### foundries
@@ -811,6 +816,7 @@ A name of this response and its contents. This is needed to manage subscriptions
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-installablefontsresponse-attribute-prefersRevealedUserIdentity"></div>
 
 ### prefersRevealedUserIdentity
@@ -846,6 +852,7 @@ The name of the user who these fonts are licensed to.
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-installablefontsresponse-attribute-version"></div>
 
 ### version
@@ -896,7 +903,8 @@ Requires deepdiff module.
 Description of designer
 
 __Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
+__Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
 <div id="class-designer-attribute-keyword"></div>
 
 ### keyword
@@ -913,6 +921,7 @@ Human-readable name of designer
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-designer-attribute-website"></div>
 
 ### website
@@ -926,6 +935,42 @@ __Type:__ Str<br />
 ## Methods
 
 <div id="class-designer-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
+
+
+<div id="class-multilanguagelongtext"></div>
+
+# _class_ MultiLanguageLongText()
+
+
+
+### Methods
+
+[getText()](#class-multilanguagelongtext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagelongtext-method-gettextandlocale)<br />[sameContent()](#class-multilanguagelongtext-method-samecontent)<br />
+
+## Methods
+
+<div id="class-multilanguagelongtext-method-gettext"></div>
+
+#### getText(locale = ['en'], format = plain)
+
+Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
+
+<div id="class-multilanguagelongtext-method-gettextandlocale"></div>
+
+#### getTextAndLocale(locale = ['en'], format = plain)
+
+Like getText(), but additionally returns the language of whatever text was found first.
+
+<div id="class-multilanguagelongtext-method-samecontent"></div>
 
 #### sameContent()
 
@@ -969,7 +1014,8 @@ __Format:__ Hex RRGGBB (without leading #)<br />
 Description of foundry
 
 __Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
+__Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
 <div id="class-foundry-attribute-email"></div>
 
 ### email
@@ -1027,6 +1073,7 @@ Name of foundry
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-foundry-attribute-skype"></div>
 
 ### skype
@@ -1147,6 +1194,7 @@ Human-readable name of font license
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 
 
 ## Methods
@@ -1203,7 +1251,8 @@ __Format:__ YYYY-MM-DD<br />
 Description of font family
 
 __Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
+__Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
 <div id="class-family-attribute-designers"></div>
 
 ### designers
@@ -1244,6 +1293,7 @@ Human-readable name of font family. This may include any additions that you find
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-family-attribute-pdf"></div>
 
 ### pdf
@@ -1325,7 +1375,8 @@ Requires deepdiff module.
 Description of font version
 
 __Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
+__Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
 <div id="class-version-attribute-number"></div>
 
 ### number
@@ -1404,7 +1455,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'ttc', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1424,6 +1475,7 @@ Human-readable name of font. This may include any additions that you find useful
 
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-font-attribute-pdf"></div>
 
 ### pdf
@@ -1467,6 +1519,7 @@ Optional set name of font. This is used to group fonts in the UI. Think of fonts
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-font-attribute-status"></div>
 
 ### status
@@ -1574,6 +1627,7 @@ In case of non-desktop font (see [Font.purpose](#user-content-class-font-attribu
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-licenseusage-attribute-dateAddedForUser"></div>
 
 ### dateAddedForUser
@@ -1681,6 +1735,7 @@ Description of error in case of custom response type
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-installfontresponse-attribute-fileName"></div>
 
 ### fileName
@@ -1768,6 +1823,7 @@ Description of error in case of custom response type
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-uninstallfontresponse-attribute-type"></div>
 
 ### type
@@ -1828,6 +1884,7 @@ Description of error in case of custom response type
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-setanonymousappidstatusresponse-attribute-type"></div>
 
 ### type

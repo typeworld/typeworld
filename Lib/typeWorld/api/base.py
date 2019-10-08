@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime, lxml.html
+import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown
 from optparse import OptionParser
 import semver
 
 import typeWorld.api
 import typeWorld.api.base
+from typeWorld.api.helpers import *
 
 VERSION = '0.1.7-alpha'
 
@@ -923,11 +924,13 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
+HTML code is not allowed in MultiLanguageText. Instead, use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links. However, note that markdown code is probably stripped in the displayed text in most places, except where meaningful, such as the display of paragraphs of text (i.e. typeface descriptions).
 """
 
     _possible_keys = ['ab', 'aa', 'af', 'ak', 'sq', 'am', 'ar', 'an', 'hy', 'as', 'av', 'ae', 'ay', 'az', 'bm', 'ba', 'eu', 'be', 'bn', 'bh', 'bi', 'bs', 'br', 'bg', 'my', 'ca', 'ch', 'ce', 'ny', 'zh', 'cv', 'kw', 'co', 'cr', 'hr', 'cs', 'da', 'dv', 'nl', 'dz', 'en', 'eo', 'et', 'ee', 'fo', 'fj', 'fi', 'fr', 'ff', 'gl', 'ka', 'de', 'el', 'gn', 'gu', 'ht', 'ha', 'he', 'hz', 'hi', 'ho', 'hu', 'ia', 'id', 'ie', 'ga', 'ig', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'kl', 'kn', 'kr', 'ks', 'kk', 'km', 'ki', 'rw', 'ky', 'kv', 'kg', 'ko', 'ku', 'kj', 'la', 'lb', 'lg', 'li', 'ln', 'lo', 'lt', 'lu', 'lv', 'gv', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mh', 'mn', 'na', 'nv', 'nd', 'ne', 'ng', 'nb', 'nn', 'no', 'ii', 'nr', 'oc', 'oj', 'cu', 'om', 'or', 'os', 'pa', 'pi', 'fa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'sa', 'sc', 'sd', 'se', 'sm', 'sg', 'sr', 'gd', 'sn', 'si', 'sk', 'sl', 'so', 'st', 'es', 'su', 'sw', 'ss', 'sv', 'ta', 'te', 'tg', 'th', 'ti', 'bo', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk', 'ur', 'uz', 've', 'vi', 'vo', 'wa', 'cy', 'wo', 'fy', 'xh', 'yi', 'yo', 'za', 'zu']
     _dataType_for_possible_keys = UnicodeDataType
-    _length = 1000
+    _length = 100
+    _markdownAllowed = False
 
     def __repr__(self):
         return '<MultiLanguageText>'
@@ -938,7 +941,7 @@ for languageCode, text in (
     def __bool__(self):
         return bool(self.getText())
 
-    def getTextAndLocale(self, locale = ['en']):
+    def getTextAndLocale(self, locale = ['en'], format = 'plain'):
         '''Like getText(), but additionally returns the language of whatever text was found first.'''
 
         if type(locale) in (str, str):
@@ -961,10 +964,10 @@ for languageCode, text in (
 
         return None, None
 
-    def getText(self, locale = ['en']):
+    def getText(self, locale = ['en'], format = 'plain'):
         '''Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.'''
 
-        text, locale = self.getTextAndLocale(locale)
+        text, locale = self.getTextAndLocale(locale, format = format)
 
         return text
 
@@ -984,7 +987,13 @@ for languageCode, text in (
                     critical.append('%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length))
 
                 if lxml.html.fromstring(string).find('.//*') is not None:
-                    critical.append('String contains HTML code, which is not allowed. You may use Markdown for text formatting.')
+                    if self._markdownAllowed:
+                        critical.append('String contains HTML code, which is not allowed. You may use Markdown for text formatting.')
+                    else:
+                        critical.append('String contains HTML code, which is not allowed.')
+
+                if not self._markdownAllowed and string and '<p>' + string + '</p>' != markdown.markdown(string):
+                    critical.append('String contains Markdown code, which is not allowed.')
 
         return information, warnings, critical
 
@@ -1009,7 +1018,6 @@ for languageCode, text in (
     #     return True
 
 
-
     def loadDict(self, d):
         for key in list(d.keys()):
             self.set(key, d[key])
@@ -1026,8 +1034,24 @@ class MultiLanguageTextProxy(Proxy):
     def isEmpty(self):
         return self.value.isEmpty()
 
+    def formatHint(self):
+        text = 'Maximum allowed characters: %s.' % self.dataType._length
+        if self.dataType._markdownAllowed:
+            text += ' Mardown code is permitted for text formatting.'
+        return text
+
 class MultiLanguageTextListProxy(ListProxy):
     dataType = MultiLanguageTextProxy
+
+
+####################################################################################################################################
+
+class MultiLanguageLongText(MultiLanguageText):
+    _length = 3000
+    _markdownAllowed = True
+
+class MultiLanguageLongTextProxy(MultiLanguageTextProxy):
+    dataType = MultiLanguageLongText
 
 
 

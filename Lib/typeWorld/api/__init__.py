@@ -93,7 +93,7 @@ class Designer(DictBasedObject):
 		'keyword':	 				[UnicodeDataType,		True, 	None, 	'Machine-readable keyword under which the designer will be referenced from the individual fonts or font families'],
 		'name':	 					[MultiLanguageTextProxy,		True, 	None, 	'Human-readable name of designer'],
 		'website':	 				[WebURLDataType,		False, 	None, 	'Designer’s web site'],
-		'description':	 			[MultiLanguageTextProxy,		False, 	None, 	'Description of designer'],
+		'description':	 			[MultiLanguageLongTextProxy,		False, 	None, 	'Description of designer'],
 	}
 
 	def __repr__(self):
@@ -122,7 +122,7 @@ class Version(DictBasedObject):
 	# 	key: 					[data type, required, default value, description]
 	_structure = {
 		'number':	 				[VersionDataType,			True, 	None, 	'Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.'],
-		'description':	 			[MultiLanguageTextProxy,	False, 	None, 	'Description of font version'],
+		'description':	 			[MultiLanguageLongTextProxy,	False, 	None, 	'Description of font version'],
 		'releaseDate':	 			[DateDataType,				False, 	None, 	'Font version’s release date.'],
 	}
 
@@ -289,7 +289,7 @@ class Family(DictBasedObject):
 	_structure = {
 		'uniqueID':					[StringDataType,		True, 	None, 	'An string that uniquely identifies this family within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
-		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of font family'],
+		'description':	 			[MultiLanguageLongTextProxy,False, 	None, 	'Description of font family'],
 		'billboards':	 			[BillboardListProxy,	False, 	None, 	'List of URLs pointing at images to show for this typeface, specifications to follow'],
 		'designers':	 			[DesignersReferencesListProxy,	False, 	None, 	'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
 
@@ -377,7 +377,7 @@ class Foundry(DictBasedObject):
 		'uniqueID':					[StringDataType,		True, 	None, 	'An string that uniquely identifies this foundry within the publisher.'],
 		'name':	 					[MultiLanguageTextProxy,True, 	None, 	'Name of foundry'],
 		'logo':	 					[WebResourceURLDataType,False, 	None, 	'URL of foundry’s logo. Specifications to follow.'],
-		'description':	 			[MultiLanguageTextProxy,False, 	None, 	'Description of foundry'],
+		'description':	 			[MultiLanguageLongTextProxy,False, 	None, 	'Description of foundry'],
 		'email':	 				[EmailDataType,			False, 	None, 	'General email address for this foundry.'],
 		'website':	 				[WebURLDataType,		False, 	None, 	'Website for this foundry'],
 		'twitter':	 				[UnicodeDataType,		False, 	None, 	'Twitter handle for this foundry, without the @'],
