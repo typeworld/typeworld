@@ -1120,14 +1120,14 @@ class FontPurposeDataType(UnicodeDataType):
 
 class FontStatusDataType(UnicodeDataType):
     
-    commands = FONTSTATUSES
+    statuses = FONTSTATUSES
 
 
     def valid(self):
-        if self.value in self.commands:
+        if self.value in self.statuses:
             return True
         else:
-            return 'Unknown API command: "%s". Possible: %s' % (self.value, self.commands)
+            return 'Unknown API command: "%s". Possible: %s' % (self.value, self.statuses)
 
 
 class FontExtensionDataType(UnicodeDataType):
