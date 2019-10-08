@@ -4,7 +4,6 @@ import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown,
 
 import typeWorld.api
 import typeWorld.api.base
-from typeWorld.api.helpers import *
 
 VERSION = '0.1.7-alpha'
 
