@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown
-import semver
+import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown, semver
 
 import typeWorld.api
 import typeWorld.api.base
