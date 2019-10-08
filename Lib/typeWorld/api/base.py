@@ -339,6 +339,9 @@ class ListProxy(DataType):
     def __len__(self):
         return len(self.value)
 
+    def index(self, item):
+        return [x.get() for x in self.value].index(item)
+
     def get(self):
         return self
 
