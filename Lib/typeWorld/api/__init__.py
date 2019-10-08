@@ -433,7 +433,6 @@ class BaseResponse(DictBasedObject):
 	def __repr__(self):
 		return '<%s>' % self.__class__.__name__
 
-
 	def customValidation(self):
 		information, warnings, critical = [], [], []
 
@@ -697,8 +696,6 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
 		'version': 			[VersionDataType,			True, 	INSTALLFONTCOMMAND['currentVersion'], 	'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 	}
 
-	def __repr__(self):
-		return '<API>'
 
 	def customValidation(self):
 		'''\
