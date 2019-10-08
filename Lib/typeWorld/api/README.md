@@ -724,7 +724,7 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-HTML code is not allowed in MultiLanguageText. Instead, use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links. However, note that markdown code is probably stripped in the displayed text in most places, except where meaningful, such as the display of paragraphs of text (i.e. typeface descriptions).
+Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 ### Methods
 
@@ -950,7 +950,29 @@ Requires deepdiff module.
 
 # _class_ MultiLanguageLongText()
 
+Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
+The GUI app will then calculate the language data to be displayed using [MultiLanguageText.getText()](#user-content-class-multilanguagetext-method-gettext) with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+
+These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+
+```python
+api.name.en = u'Font Publisher XYZ'
+api.name.de = u'Schriftenhaus XYZ'
+```
+
+If you are loading language information from an external source, you may use the `.set()` method to enter data:
+
+```python
+# Simulating external data source
+for languageCode, text in (
+        ('en': u'Font Publisher XYZ'),
+        ('de': u'Schriftenhaus XYZ'),
+    )
+    api.name.set(languageCode, text)
+```
+
+HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links.
 
 ### Methods
 
@@ -1455,7 +1477,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'ttc', 'ttf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />

@@ -924,7 +924,7 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-HTML code is not allowed in MultiLanguageText. Instead, use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links. However, note that markdown code is probably stripped in the displayed text in most places, except where meaningful, such as the display of paragraphs of text (i.e. typeface descriptions).
+Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 """
 
     _possible_keys = ['ab', 'aa', 'af', 'ak', 'sq', 'am', 'ar', 'an', 'hy', 'as', 'av', 'ae', 'ay', 'az', 'bm', 'ba', 'eu', 'be', 'bn', 'bh', 'bi', 'bs', 'br', 'bg', 'my', 'ca', 'ch', 'ce', 'ny', 'zh', 'cv', 'kw', 'co', 'cr', 'hr', 'cs', 'da', 'dv', 'nl', 'dz', 'en', 'eo', 'et', 'ee', 'fo', 'fj', 'fi', 'fr', 'ff', 'gl', 'ka', 'de', 'el', 'gn', 'gu', 'ht', 'ha', 'he', 'hz', 'hi', 'ho', 'hu', 'ia', 'id', 'ie', 'ga', 'ig', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'kl', 'kn', 'kr', 'ks', 'kk', 'km', 'ki', 'rw', 'ky', 'kv', 'kg', 'ko', 'ku', 'kj', 'la', 'lb', 'lg', 'li', 'ln', 'lo', 'lt', 'lu', 'lv', 'gv', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mh', 'mn', 'na', 'nv', 'nd', 'ne', 'ng', 'nb', 'nn', 'no', 'ii', 'nr', 'oc', 'oj', 'cu', 'om', 'or', 'os', 'pa', 'pi', 'fa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'sa', 'sc', 'sd', 'se', 'sm', 'sg', 'sr', 'gd', 'sn', 'si', 'sk', 'sl', 'so', 'st', 'es', 'su', 'sw', 'ss', 'sv', 'ta', 'te', 'tg', 'th', 'ti', 'bo', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk', 'ur', 'uz', 've', 'vi', 'vo', 'wa', 'cy', 'wo', 'fy', 'xh', 'yi', 'yo', 'za', 'zu']
@@ -1047,6 +1047,33 @@ class MultiLanguageTextListProxy(ListProxy):
 ####################################################################################################################################
 
 class MultiLanguageLongText(MultiLanguageText):
+    """\
+Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
+
+The GUI app will then calculate the language data to be displayed using ::MultiLanguageText.getText():: with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+
+These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+
+```python
+api.name.en = u'Font Publisher XYZ'
+api.name.de = u'Schriftenhaus XYZ'
+```
+
+If you are loading language information from an external source, you may use the `.set()` method to enter data:
+
+```python
+# Simulating external data source
+for languageCode, text in (
+        ('en': u'Font Publisher XYZ'),
+        ('de': u'Schriftenhaus XYZ'),
+    )
+    api.name.set(languageCode, text)
+```
+
+HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links.
+"""
+
+
     _length = 3000
     _markdownAllowed = True
 
