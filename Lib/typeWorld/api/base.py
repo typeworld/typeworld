@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown
-from optparse import OptionParser
 import semver
 
 import typeWorld.api
