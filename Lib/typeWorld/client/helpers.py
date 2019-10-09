@@ -11,8 +11,6 @@ def ReadFromFile(path):
 		f.close()
 		return text
 
-	return ''
-
 def WriteToFile(path, string):
 	"""\
 	Write content to file
