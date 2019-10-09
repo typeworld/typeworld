@@ -34,9 +34,7 @@ class User(object):
 	def linkUser(self):
 		if self.login:
 			success, message = self.client.linkUser(*self.login)
-			if not success:
-				raise ProgrammingError(message)
-
+			if not success: raise Exception(message)
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
@@ -54,8 +52,7 @@ class User(object):
 		self.clearSubscriptions()
 		if self.login:
 			success, message = self.client.unlinkUser()
-			if not success:
-				raise ProgrammingError(message)
+			if not success: raise Exception(message)
 
 	def loadClient(self):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
@@ -90,6 +87,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# Name
 		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].name(), 'Free Fonts')
 
 		# Reload client
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
@@ -137,6 +135,7 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.downloadSubscriptions()
 		user1.client.publishers()[0].update()
 		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
 		print(user1.client.publishers()[0].updatingProblem())
 		self.assertEqual(user1.client.allSubscriptionsUpdated(), True)
 
@@ -277,7 +276,14 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 1)
 
+		# Decline (exists only here in test script)
+		user2.clearInvitations()
+		# Invite again
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result, (True, None))
+
 		# Accept invitation
+		user2.client.downloadSubscriptions()
 		user2.client.pendingInvitations()[0].accept()
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
@@ -889,8 +895,7 @@ class TestStringMethods(unittest.TestCase):
 		print('tearDown()')
 
 		 # Local
-		if not 'TRAVIS' in os.environ:
-			os.rmdir(tempFolder)
+		if not 'TRAVIS' in os.environ: os.rmdir(tempFolder)
 
 if __name__ == '__main__':
 
