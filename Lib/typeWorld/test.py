@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import unittest
 from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults
 import tempfile, os, traceback
-tempFolder = tempfile.mkdtemp()
 from typeWorld.api import *
 
 
@@ -801,25 +800,30 @@ class TestStringMethods(unittest.TestCase):
 
 	def setUp(self):
 
-		global user0, user1, user2, user3
+		global user0, user1, user2, user3, tempFolder
+		tempFolder = tempfile.mkdtemp()
 		user0 = User()
 		user1 = User(testUser)
 		user2 = User(testUser2)
 		user3 = User(testUser3)
 
+		print('setUp()')
+
 	def tearDown(self):
 
-		global user0, user1, user2, user3
+		global user0, user1, user2, user3, tempFolder
 		user0.takeDown()
 		user1.takeDown()
 		user2.takeDown()
 		user3.takeDown()
 
+		print('tearDown()')
+
+		 # Local
+		if not 'TRAVIS' in os.environ:
+			os.rmdir(tempFolder)
+
 if __name__ == '__main__':
 
 	unittest.main()
 
-	 # Local
-	if not 'TRAVIS' in os.environ:
-	#	os.remove(prefFile)
-		os.rmdir(tempFolder)
