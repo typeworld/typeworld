@@ -33,7 +33,9 @@ class User(object):
 
 	def linkUser(self):
 		if self.login:
-			self.client.linkUser(*self.login)
+			success, message = self.client.linkUser(*self.login)
+			if not success:
+				raise ProgrammingError(message)
 
 
 	def testFont(self):
@@ -51,7 +53,9 @@ class User(object):
 		self.clearInvitations()
 		self.clearSubscriptions()
 		if self.login:
-			self.client.unlinkUser()
+			success, message = self.client.unlinkUser()
+			if not success:
+				raise ProgrammingError(message)
 
 	def loadClient(self):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
@@ -84,6 +88,12 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
+		# Name
+		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')
+
+		# Reload client
+		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
+		user0.loadClient()
 
 		user0.clearSubscriptions()
 
@@ -97,7 +107,6 @@ class TestStringMethods(unittest.TestCase):
 		# Protected subscription, installation on machine without user account
 		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
 		result = user0.client.addSubscription(protectedSubscription)
-		print(result)
 		success, message, publisher, subscription = result
 
 		self.assertEqual(success, False)
@@ -118,6 +127,12 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
+
+
+		# saveURL
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		# completeURL
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
 		user1.client.downloadSubscriptions()
 		user1.client.publishers()[0].update()
@@ -141,16 +156,18 @@ class TestStringMethods(unittest.TestCase):
 
 		# This is also supposed to delete the installed protected font
 		user1.client.unlinkUser()
-		user1.linkUser()
+		self.assertEqual(user1.client.userEmail(), None)
+		self.assertEqual(user1.client.user(), '')
+
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+
+		user1.linkUser()
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(user1.client.userEmail(), 'test@type.world')
 
 		# Install again
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-
-		# Reload client
-		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
-		user1.loadClient()
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
 		# Current Publisher
@@ -246,6 +263,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# Invite same user
 		self.assertEqual(user1.client.userEmail(), 'test@type.world')
+		self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test@type.world')
 		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
 
@@ -312,11 +330,12 @@ class TestStringMethods(unittest.TestCase):
 		# Accept invitation
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		self.assertEqual(len(user3.client.publishers()), 0)
 		user3.client.pendingInvitations()[0].accept()
 		self.assertEqual(len(user3.client.publishers()), 1)
 
 		# Invitation accepted
-		self.assertEqual(user3.client.publishers()[0].subscriptions()[0].invitationAccepted(), True)
+		self.assertEqual(user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted(), True)
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].subscriptions()[-1].delete()
@@ -846,6 +865,7 @@ class TestStringMethods(unittest.TestCase):
 		print('####################', success, message)
 		self.assertEqual(success, False)
 		self.assertEqual(message, "URL is malformed.")
+
 
 	def setUp(self):
 

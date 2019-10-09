@@ -675,7 +675,6 @@ class APIClient(object):
 			# Success
 			return self.executeDownloadSubscriptions(response)
 
-		return True, None
 
 	def declineInvitation(self, ID):
 
@@ -724,7 +723,6 @@ class APIClient(object):
 			# Success
 			return self.executeDownloadSubscriptions(response)
 
-		return True, None
 
 	def syncSubscriptions(self, performCommands = True):
 		self.appendCommands('syncSubscriptions', self.completeSubscriptionURLs() or ['empty'])
@@ -777,7 +775,6 @@ class APIClient(object):
 			# Success
 			return True, len(response['subscriptions']) - len(oldURLs)
 
-		return True, None
 
 
 	def userName(self):
@@ -881,7 +878,7 @@ class APIClient(object):
 		parameters = {
 			'command': 'unlinkTypeWorldUserAccount',
 			'anonymousAppID': self.anonymousAppID(),
-			'anonymousUserID': self.user(),
+			'anonymousUserID': userID,
 			'appVersion': typeWorld.api.VERSION,
 		}
 
@@ -1181,9 +1178,8 @@ class APIClient(object):
 			return False, 'Protocol object doesn’t return a canonicalURL value.', None, None
 
 
-
 		publisher.set('type', protocol.protocol)
-		publisher.set('currentSubscription', subscription.url)
+		publisher.set('currentSubscription', protocol.saveURL())
 		subscription.save()
 		publisher.save()
 		publisher.stillAlive()
@@ -1394,20 +1390,20 @@ class APIPublisher(object):
 	# 	else:
 	# 		return self.parent.readGitHubResponse(url)
 
-	# def name(self, locale = ['en']):
+	def name(self, locale = ['en']):
 
 
-	# 	success, message = self.subscriptions()[0].protocol.rootCommand()
-	# 	if success:
-	# 		rootCommand = message
-	# 		title = rootCommand.name.getText()
-	# 	else:
-	# 		rootCommand = None
-	# 		title = 'Untitled'
+		success, message = self.subscriptions()[0].protocol.rootCommand()
+		if success:
+			rootCommand = message
+			title = rootCommand.name.getText()
+		else:
+			rootCommand = None
+			title = 'Untitled'
 
 
-	# 	if rootCommand:
-	# 		return rootCommand.name.getTextAndLocale(locale = locale)
+		if rootCommand:
+			return rootCommand.name.getTextAndLocale(locale = locale)
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -1674,7 +1670,7 @@ class APISubscription(object):
 			acceptedInvitations = self.parent.parent.acceptedInvitations()
 			if acceptedInvitations:
 				for invitation in acceptedInvitations:
-					if self.url == invitation.url:
+					if self.protocol.completeURL() == invitation.url:
 						return True
 
 		return False
@@ -1969,7 +1965,7 @@ class APISubscription(object):
 		return self._updatingProblem
 
 	def get(self, key):
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.url) or {})
+		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.saveURL()) or {})
 		if key in preferences:
 
 			o = preferences[key]
@@ -1984,14 +1980,14 @@ class APISubscription(object):
 
 	def set(self, key, value):
 
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.url) or {})
+		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.saveURL()) or {})
 		preferences[key] = value
-		self.parent.parent.preferences.set('subscription(%s)' % self.url, preferences)
+		self.parent.parent.preferences.set('subscription(%s)' % self.protocol.saveURL(), preferences)
 
 	def save(self):
 		subscriptions = self.parent.get('subscriptions') or []
-		if not self.url in subscriptions:
-			subscriptions.append(self.url)
+		if not self.protocol.saveURL() in subscriptions:
+			subscriptions.append(self.protocol.saveURL())
 		self.parent.set('subscriptions', subscriptions)
 
 		self.protocol.save()
@@ -2025,16 +2021,16 @@ class APISubscription(object):
 
 
 		# New
-		self.parent.parent.preferences.remove('subscription(%s)' % self.url)
+		self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.saveURL())
 
 		# Subscriptions
 		subscriptions = self.parent.get('subscriptions')
-		subscriptions.remove(self.url)
+		subscriptions.remove(self.protocol.saveURL())
 		self.parent.set('subscriptions', subscriptions)
 		self.parent._subscriptions = {}
 
 		# currentSubscription
-		if self.parent.get('currentSubscription') == self.url:
+		if self.parent.get('currentSubscription') == self.protocol.saveURL():
 			if len(subscriptions) >= 1:
 				self.parent.set('currentSubscription', subscriptions[0])
 

@@ -142,7 +142,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return False, self.parent._updatingProblem
 
 		if api.type in ('temporarilyUnavailable', 'insufficientPermission'):
-			self.parent.parent._updatingSubscriptions.remove(self.url)
+			if self.url in self.parent.parent._updatingSubscriptions:
+				self.parent.parent._updatingSubscriptions.remove(self.url)
 			self.parent._updatingProblem = '#(response.%s)' % api.type
 			return False, self.parent._updatingProblem
 

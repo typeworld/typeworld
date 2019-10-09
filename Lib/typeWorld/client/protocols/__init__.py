@@ -12,28 +12,59 @@ class TypeWorldProtocolBase(object):
 
 		self.initialize()
 
-	def initialize(self):
+	# def initialize(self):
+	# 	'''Overwrite this'''
+	# 	pass
+
+	# def loadFromDB(self):
+	# 	'''Overwrite this'''
+	# 	pass
+
+	# def protocolName(self):
+	# 	'''Overwrite this
+	# 	Human readable name of protocol'''
+	# 	return self.__class__.__name__
+
+	# def returnRootCommand(self):
+	# 	'''Overwrite this
+	# 	Return the root of the API call'''
+	# 	pass
+
+	# def returnInstallableFontsCommand(self):
+	# 	'''Overwrite this
+	# 	Return the root of the InstallableFonts command'''
+	# 	pass
+
+	# def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
+	# 	'''Overwrite this.
+	# 	Put here an initial health check of the subscription. Check if URLs point to the right place etc.
+	# 	Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
+	# 	Return False, 'message' in case of errors.'''
+	# 	return True, None
+
+	def subscriptionAdded(self):
 		'''Overwrite this'''
 		pass
 
-	def loadFromDB(self):
-		'''Overwrite this'''
-		pass
+	# def update(self):
+	# 	'''Overwrite this'''
+	# 	pass
 
-	def protocolName(self):
-		'''Overwrite this
-		Human readable name of protocol'''
-		return self.__class__.__name__
+	# def installFont(self, fontID, version):
+	# 	'''Overwrite this'''
+	# 	pass
 
-	def returnRootCommand(self):
-		'''Overwrite this
-		Return the root of the API call'''
-		pass
+	# def removeFont(self, fontID):
+	# 	'''Overwrite this'''
+	# 	pass
 
-	def returnInstallableFontsCommand(self):
-		'''Overwrite this
-		Return the root of the InstallableFonts command'''
-		pass
+	# def returnRootCommand(self, testScenario = None):
+	# 	'''Overwrite this'''
+	# 	return True, None
+
+	# def returnInstallableFontsCommand(self):
+	# 	'''Overwrite this'''
+	# 	return True, None
 
 	def rootCommand(self, testScenario = None):
 		success, command = self.returnRootCommand(testScenario = testScenario)
@@ -45,17 +76,6 @@ class TypeWorldProtocolBase(object):
 		command.parent = self
 		return success, command
 
-	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
-		'''Overwrite this.
-		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
-		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
-		Return False, 'message' in case of errors.'''
-		return True, None
-
-	def subscriptionAdded(self):
-		'''Overwrite this'''
-		pass
-
 	def get(self, key):
 		data = self.parent.get('data') or {}
 		if key in data:
@@ -65,15 +85,6 @@ class TypeWorldProtocolBase(object):
 		data = self.parent.get('data') or {}
 		data[key] = value
 		self.parent.set('data', data)
-
-	def update(self):
-		pass
-
-	def installFont(self, fontID, version):
-		pass
-
-	def removeFont(self, fontID):
-		pass
 
 	def path(self):
 		return self.parent.path()
@@ -94,13 +105,13 @@ class TypeWorldProtocolBase(object):
 
 		# Both subscriptionID as well as secretKey defined
 		if self.subscriptionID and self.secretKey:
-			url = self.transportProtocol + self.protocol + '+' + self.subscriptionID + ':' + 'secretKey' + '@' + self.restDomain
+			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + ':' + 'secretKey' + '@' + self.restDomain
 		elif self.subscriptionID and not self.secretKey:
-			url = self.transportProtocol + self.protocol + '+' + self.subscriptionID + '@' + self.restDomain
+			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + '@' + self.restDomain
 		else:
-			url = self.transportProtocol + self.protocol + '+' + self.restDomain 
+			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.restDomain 
 
-		saveURL = self.url.replace('https://', 'https//').replace('http://', 'http//')
+		saveURL = url.replace('https://', 'https//').replace('http://', 'http//')
 
 		return saveURL
 
