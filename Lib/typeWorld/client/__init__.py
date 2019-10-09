@@ -91,7 +91,7 @@ def splitJSONURL(url):
 			keyURL = transportProtocol + subscriptionID + ':' + 'secretKey' + '@' + domain
 		else:
 			subscriptionID = credentials
-			secretKey = None
+			secretKey = ''
 			keyURL = transportProtocol + subscriptionID + '@' + domain
 
 		actualURL = transportProtocol + domain
@@ -121,11 +121,11 @@ class Preferences(object):
 		if key in self._dict:
 			del self._dict[key]
 
-	def save(self):
-		pass
+	# def save(self):
+	# 	pass
 
-	def dictionary(self):
-		return self._dict
+	# def dictionary(self):
+	# 	return self._dict
 
 class JSON(Preferences):
 	def __init__(self, path):
@@ -137,20 +137,15 @@ class JSON(Preferences):
 
 	def save(self):
 
-		if not os.path.exists(os.path.dirname(self.path)):
-			os.makedirs(os.path.dirname(self.path))
+		os.makedirs(os.path.dirname(self.path))
 		WriteToFile(self.path, json.dumps(self._dict))
 
 
 
 class AppKitNSUserDefaults(Preferences):
-	def __init__(self, name = None):
+	def __init__(self, name):
 #		NSUserDefaults = objc.lookUpClass('NSUserDefaults')
-		if name:
-			self.defaults = NSUserDefaults.alloc().initWithSuiteName_(name)
-		else:
-			self.defaults = NSUserDefaults.standardUserDefaults()
-
+		self.defaults = NSUserDefaults.alloc().initWithSuiteName_(name)
 		self.values = {}
 
 
@@ -202,11 +197,11 @@ class AppKitNSUserDefaults(Preferences):
 
 		self.defaults.removeObjectForKey_(key)
 
-	def save(self):
-		pass
+	# def save(self):
+	# 	pass
 
-	def dictionary(self):
-		return dict(self.defaults.dictionaryRepresentation())
+	# def dictionary(self):
+	# 	return dict(self.defaults.dictionaryRepresentation())
 
 
 
@@ -215,10 +210,10 @@ class APIInvitation(object):
 
 	def __init__(self, d):
 		for key in self.keywords:
-			if key in d:
-				setattr(self, key, d[key])
-			else:
-				setattr(self, key, None)
+			# if key in d:
+			setattr(self, key, d[key])
+			# else:
+			# 	setattr(self, key, None)
 
 class APIPendingInvitation(APIInvitation):
 	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
@@ -335,9 +330,6 @@ class APIClient(object):
 		if WIN:
 			CREATE_NO_WINDOW = 0x08000000
 			return subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW) == 0
-
-		return True
-
 
 
 	def appendCommands(self, commandName, commandsList = ['pending']):
@@ -912,12 +904,8 @@ class APIClient(object):
 
 		if not self._systemLocale:
 			if MAC:
-				# For Mojave
-				if platform.mac_ver()[0].split('.') >= '10.14.0'.split('.'):
-					self._systemLocale = Execute('defaults read .GlobalPreferences AppleLanguages | tr -d [:space:] | cut -c3-4').decode()
-				else:
-					from AppKit import NSLocale
-					self._systemLocale = str(NSLocale.autoupdatingCurrentLocale().localeIdentifier().split('_')[0])
+				from AppKit import NSLocale
+				self._systemLocale = str(NSLocale.autoupdatingCurrentLocale().localeIdentifier().split('_')[0])
 			else:
 				import locale
 				self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
@@ -930,11 +918,15 @@ class APIClient(object):
 		'''
 
 		if self.preferences.get('localizationType') == 'systemLocale':
-			_locale = [self.systemLocale(), 'en']
+			_locale = [self.systemLocale()]
 		elif self.preferences.get('localizationType') == 'customLocale':
-			_locale = [self.preferences.get('customLocaleChoice'), 'en']
+			_locale = [self.preferences.get('customLocaleChoice') or 'en']
 		else:
-			_locale = [self.systemLocale(), 'en']
+			_locale = [self.systemLocale()]
+
+		if not 'en' in _locale:
+			_locale.append('en')
+
 		return _locale
 
 

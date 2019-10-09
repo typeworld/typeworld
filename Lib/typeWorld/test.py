@@ -753,6 +753,53 @@ class TestStringMethods(unittest.TestCase):
 		except:
 			pass
 
+
+	def test_helpers(self):
+
+		# validURL()
+		self.assertEqual(typeWorld.client.validURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), True)
+		self.assertEqual(typeWorld.client.validURL('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), False)
+		self.assertEqual(typeWorld.client.validURL('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), False)
+
+		# splitJSONURL()
+		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+			'typeworld://',
+			'json',
+			'https://',
+			's9lWvayTEOaB9eIIMA67',
+			'bN0QnnNsaE4LfHlOMGkm',
+			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
+			))
+		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+			'typeworld://',
+			'json',
+			'https://',
+			's9lWvayTEOaB9eIIMA67',
+			'',
+			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
+			))
+		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+			'typeworld://',
+			'json',
+			'https://',
+			'',
+			'',
+			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
+			))
+
+
+		# Locale
+		self.assertEqual(user0.client.locale(), ['en'])
+		user0.client.preferences.set('localizationType', 'systemLocale')
+		self.assertEqual(user0.client.locale(), ['en'])
+		user0.client.preferences.set('localizationType', 'customLocale')
+		self.assertEqual(user0.client.locale(), ['en'])
+		user0.client.preferences.set('customLocaleChoice', 'de')
+		self.assertEqual(user0.client.locale(), ['de', 'en'])
+
+
+
+
 if __name__ == '__main__':
 
 
