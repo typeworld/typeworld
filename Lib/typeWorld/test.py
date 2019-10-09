@@ -1,6 +1,6 @@
-import sys, os
+# -*- coding: utf-8 -*-
 
-print(sys.version)
+import sys, os
 
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -25,7 +25,7 @@ class User(object):
 	def __init__(self, login = None):
 		self.login = login
 		self.prefFile = os.path.join(tempFolder, str(id(self)) + '.json')
-		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
+		self.loadClient()
 
 		if self.login:
 			self.linkUser()
@@ -57,6 +57,9 @@ class User(object):
 		if self.login:
 			self.client.unlinkUser()
 
+	def loadClient(self):
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
+
 
 
 class TestStringMethods(unittest.TestCase):
@@ -64,20 +67,9 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_normalSubscription(self):
 
-
-
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
 		self.assertTrue(typeWorld.client.validURL(freeSubscription))
-
-
-
-
-
-
-
-
-
 
 		## Scenario 1:
 		## Test a simple subscription of free fonts without Type.World user account
@@ -148,14 +140,22 @@ class TestStringMethods(unittest.TestCase):
 
 		# Finally supposed to pass
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
 		# This is also supposed to delete the installed protected font
 		user1.client.unlinkUser()
 		user1.linkUser()
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
 
 		# Install again
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
+
+		# Reload client
+		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
+		user1.loadClient()
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
 
 		### ###
