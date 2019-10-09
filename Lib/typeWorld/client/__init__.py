@@ -137,7 +137,8 @@ class JSON(Preferences):
 
 	def save(self):
 
-		os.makedirs(os.path.dirname(self.path))
+		if not os.path.exists(os.path.dirname(self.path)):
+			os.makedirs(os.path.dirname(self.path))
 		WriteToFile(self.path, json.dumps(self._dict))
 
 
