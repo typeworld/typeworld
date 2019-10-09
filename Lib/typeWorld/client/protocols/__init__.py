@@ -35,8 +35,8 @@ class TypeWorldProtocolBase(object):
 		Return the root of the InstallableFonts command'''
 		pass
 
-	def rootCommand(self):
-		success, command = self.returnRootCommand()
+	def rootCommand(self, testScenario = None):
+		success, command = self.returnRootCommand(testScenario = testScenario)
 		command.parent = self
 		return success, command
 
@@ -78,43 +78,17 @@ class TypeWorldProtocolBase(object):
 	def path(self):
 		return self.parent.path()
 
-	def urlIsValid(self):
-
-		if self.url.count('@') > 1:
-			return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
-
-		if not '://' in self.url:
-			return False, 'URL is malformed.'
-
-		if self.url.split('://')[1].count(':') > 2:
-			return False, 'URL contains more than two : signs, so don’t know how to parse it.'
-
-		if not self.url.find('typeworld://') < self.url.find('+') < self.url.find('http') < self.url.find('//', self.url.find('http')):
-			return False, 'URL is malformed.'
-
-		if not self.transportProtocol:
-			return False, 'No transport protocol defined (http:// or https://).'
-
-		return True, None
-
 	def getSecretKey(self):
 		keyring = self.parent.parent.parent.keyring()
-		if keyring:
-			return keyring.get_password(self.url, self.subscriptionID)
-		else:
-			return self.secretKey
+		return keyring.get_password(self.url, self.subscriptionID)
 
 	def setSecretKey(self, secretKey):
 		keyring = self.parent.parent.parent.keyring()
-		if keyring:
-			keyring.set_password(self.url, self.subscriptionID, secretKey)
-		else:
-			self.secretKey = secretKey
+		keyring.set_password(self.url, self.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
 		keyring = self.parent.parent.parent.keyring()
-		if keyring:
-			keyring.delete_password(self.url, self.subscriptionID)
+		keyring.delete_password(self.url, self.subscriptionID)
 
 	def saveURL(self):
 

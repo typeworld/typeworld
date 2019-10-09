@@ -85,7 +85,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if self.versions:
 			return self.versions[-1]
 
-	def returnRootCommand(self):
+	def returnRootCommand(self, testScenario):
 
 		if not self._rootCommand:
 
@@ -93,6 +93,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			data = {
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if testScenario:
+				data['testScenario'] = testScenario
 			api, responses = readJSONResponse(self.url, typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 			
 			# Errors
@@ -100,7 +102,6 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 				return False, responses['errors'][0]
 
 			self._rootCommand = api
-	#		self.save()
 
 		# Success
 		return True, self._rootCommand
@@ -122,6 +123,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'anonymousTypeWorldUserID': self.parent.parent.parent.user(),
 			'appVersion': typeWorld.api.VERSION,
 		}
+		if self.parent.parent.parent.testScenario:
+			data['testScenario'] = self.parent.parent.parent.testScenario
 		secretKey = self.getSecretKey()
 		if secretKey:
 			data['secretKey'] = secretKey
@@ -178,6 +181,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
 									'appVersion': typeWorld.api.VERSION,
 								}
+								if self.parent.parent.parent.testScenario:
+									data['testScenario'] = self.parent.parent.parent.testScenario
 
 								api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontResponse(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
 
@@ -234,6 +239,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 								'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
 								'appVersion': typeWorld.api.VERSION,
 							}
+							if self.parent.parent.parent.testScenario:
+								data['testScenario'] = self.parent.parent.parent.testScenario
 
 							if self.parent.get('revealIdentity') and self.parent.parent.parent.userName():
 								data['userName'] = self.parent.parent.parent.userName()
@@ -263,7 +270,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							return False, traceback.format_exc()
 
 
-	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
+	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey, testScenario):
 		'''Overwrite this.
 		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
 		Return False, 'message' in case of errors.'''
@@ -278,6 +285,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'command': 'installableFonts',
 			'appVersion': typeWorld.api.VERSION,
 		}
+		if testScenario:
+			data['testScenario'] = testScenario
+
 		api, responses = readJSONResponse(self.url, typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		
 		# Errors
@@ -285,15 +295,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return False, responses['errors'][0]
 
 		# Check for installableFonts response support
-		success, message = self.rootCommand()
+		success, message = self.rootCommand(testScenario = testScenario)
 		if not success:
 			return False, message
 		else:
 			rootCommand = message
 
-		if not 'installableFonts' in rootCommand.supportedCommands and not 'installFonts' in rootCommand.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" and "installFonts" commands.' % rootCommand.canonicalURL
-
+		print(rootCommand.supportedCommands)
+		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFont' in rootCommand.supportedCommands:
+			return False, 'API endpoint %s does not support the "installableFonts" or "installFont" commands.' % rootCommand.canonicalURL
 
 		if api.type == 'error':
 			return False, api.errorMessage

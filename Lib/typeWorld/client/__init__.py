@@ -54,6 +54,32 @@ def validURL(url):
 	return True
 
 
+def urlIsValid(url):
+
+	if url.count('@') > 1:
+		return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
+
+	if not '://' in url:
+		return False, 'URL doesn’t contain ://'
+
+	found = False
+	for protocol in typeWorld.api.base.PROTOCOLS:
+		if url.startswith(protocol + '://'):
+			found = True
+			break
+	if not found:
+		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS)
+
+	if url.split('://')[-1].count(':') > 1:
+		return False, 'URL contains more than one : signs, so don’t know how to parse it.'
+
+	if not url.find('typeworld://') < url.find('+') < url.find('http') < url.find('//', url.find('http')):
+		return False, 'URL is malformed.'
+
+
+	return True, None
+
+
 def splitJSONURL(url):
 
 	customProtocol = 'typeworld://'
@@ -242,6 +268,8 @@ class APIClient(object):
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
 
+		# For Unit Testing
+		self.testScenario = None
 
 		self._systemLocale = None
 
@@ -1108,6 +1136,7 @@ class APIClient(object):
 			spec.loader.exec_module(module)
 			
 			protocolObject = module.TypeWorldProtocol(None, url)
+			protocolObject.parent = self
 
 			return True, protocolObject
 		else:
@@ -1119,16 +1148,10 @@ class APIClient(object):
 		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
 		'''
 
-		# Check for correct protocol
-
-		found = False
-		for protocol in typeWorld.api.base.PROTOCOLS:
-			if url.startswith(protocol + '://'):
-				found = True
-				break
-		if not found:
-			return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS), None, None
-
+		# Check for URL validity
+		success, response = urlIsValid(url)
+		if not success:
+			return False, response, None, None
 
 		# Get subscription
 		success, message = self.protocol(url)
@@ -1137,14 +1160,13 @@ class APIClient(object):
 		else:
 			return False, message, None, None
 
-
 		# Initial Health Check
-		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey)
+		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
 			return False, response, None, None
 
 
-		success, message = protocol.rootCommand()
+		success, message = protocol.rootCommand(testScenario = self.testScenario)
 		if success:
 			rootCommand = message
 		else:
@@ -1152,12 +1174,6 @@ class APIClient(object):
 
 		publisher = self.publisher(rootCommand.canonicalURL)
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
-
-		# Check for URL validity
-		success, response = protocol.urlIsValid()
-		if not success:
-			return False, response, None, None
-
 
 		# Canonical URL
 		canonicalURL = rootCommand.canonicalURL
@@ -1378,20 +1394,20 @@ class APIPublisher(object):
 	# 	else:
 	# 		return self.parent.readGitHubResponse(url)
 
-	def name(self, locale = ['en']):
+	# def name(self, locale = ['en']):
 
 
-		success, message = self.subscriptions()[0].protocol.rootCommand()
-		if success:
-			rootCommand = message
-			title = rootCommand.name.getText()
-		else:
-			rootCommand = None
-			title = 'Untitled'
+	# 	success, message = self.subscriptions()[0].protocol.rootCommand()
+	# 	if success:
+	# 		rootCommand = message
+	# 		title = rootCommand.name.getText()
+	# 	else:
+	# 		rootCommand = None
+	# 		title = 'Untitled'
 
 
-		if rootCommand:
-			return rootCommand.name.getTextAndLocale(locale = locale)
+	# 	if rootCommand:
+	# 		return rootCommand.name.getTextAndLocale(locale = locale)
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -1446,8 +1462,6 @@ class APIPublisher(object):
 			subscription = self.subscription(self.get('currentSubscription'))
 			if subscription:
 				return subscription
-			else:
-				return self.subscriptions()[0]
 
 	def get(self, key):
 		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
@@ -1512,6 +1526,8 @@ class APIPublisher(object):
 		return [self.subscription(url) for url in self.get('subscriptions') or []]
 
 	def update(self):
+
+		self.parent.prepareUpdate()
 
 		if self.parent.online():
 

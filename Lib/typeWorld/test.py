@@ -137,6 +137,7 @@ class TestStringMethods(unittest.TestCase):
 		# Finally supposed to pass
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
 		# This is also supposed to delete the installed protected font
 		user1.client.unlinkUser()
@@ -205,6 +206,8 @@ class TestStringMethods(unittest.TestCase):
 
 		# One font must be outdated
 		self.assertEqual(user2.client.amountOutdatedFonts(), 1)
+		self.assertEqual(user2.client.publishers()[0].amountOutdatedFonts(), 1)
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1)
 
 		# Uninstall font for user2
 		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
@@ -797,6 +800,52 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.locale(), ['de', 'en'])
 
 
+	def test_simulateExternalScenarios(self):
+
+		user0.takeDown()
+
+		user0.client.testScenario = 'simulateEndpointDoesntSupportInstallFontCommand'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = 'simulateEndpointDoesntSupportInstallableFontsCommand'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = 'simulateCustomError'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user0.client.testScenario = 'simulateProgrammingError'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'API endpoint returned with following error: HTTP Error 500: Internal Server Error')
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworld://unknownprotocol+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'Protocol unknownprotocol doesn’t exist in this app (yet).')
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/@')
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'URL contains more than one @ sign, so don’t know how to parse it.')
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworldjson://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(success, False)
+		self.assertEqual(message, "Unknown custom protocol, known are: ['typeworld']")
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworldjson//json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(success, False)
+		self.assertEqual(message, "Unknown custom protocol, known are: ['typeworld']")
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/:')
+		self.assertEqual(success, False)
+		self.assertEqual(message, "URL contains more than one : signs, so don’t know how to parse it.")
+
+		success, message, publisher, subscription = user0.client.addSubscription('typeworld://json+s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		print('####################', success, message)
+		self.assertEqual(success, False)
+		self.assertEqual(message, "URL is malformed.")
 
 	def setUp(self):
 
