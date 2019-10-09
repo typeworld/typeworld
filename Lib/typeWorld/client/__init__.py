@@ -48,9 +48,6 @@ def validURL(url):
 
 	protocol = url.split('://')[0]
 
-	if not protocol:
-		return False
-
 	if not protocol in typeWorld.api.base.PROTOCOLS:
 		return False
 
@@ -1121,70 +1118,69 @@ class APIClient(object):
 		'''
 		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
 		'''
-		try:
 
-			# Check for correct protocol
+		# Check for correct protocol
 
-			found = False
-			for protocol in typeWorld.api.base.PROTOCOLS:
-				if url.startswith(protocol + '://'):
-					found = True
-					break
-			if not found:
-				return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS), None, None
+		found = False
+		for protocol in typeWorld.api.base.PROTOCOLS:
+			if url.startswith(protocol + '://'):
+				found = True
+				break
+		if not found:
+			return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS), None, None
 
 
-			# Get subscription
-			success, message = self.protocol(url)
-			if success:
-				protocol = message
-			else:
+		# Get subscription
+		success, message = self.protocol(url)
+		if success:
+			protocol = message
+		else:
+			return False, message, None, None
+
+
+		# Initial Health Check
+		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey)
+		if not success:
+			return False, response, None, None
+
+
+		success, message = protocol.rootCommand()
+		if success:
+			rootCommand = message
+		else:
+			return False, message, None, None
+
+		publisher = self.publisher(rootCommand.canonicalURL)
+		subscription = publisher.subscription(protocol.saveURL(), protocol)
+
+		# Check for URL validity
+		success, response = protocol.urlIsValid()
+		if not success:
+			return False, response, None, None
+
+
+		# Canonical URL
+		canonicalURL = rootCommand.canonicalURL
+		if not canonicalURL:
+			return False, 'Protocol object doesn’t return a canonicalURL value.', None, None
+
+
+
+		publisher.set('type', protocol.protocol)
+		publisher.set('currentSubscription', subscription.url)
+		subscription.save()
+		publisher.save()
+		publisher.stillAlive()
+
+
+		if updateSubscriptionsOnServer:
+			success, message = self.uploadSubscriptions()
+			if not success:
 				return False, message, None, None
 
+		protocol.subscriptionAdded()
 
-			# Initial Health Check
-			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey)
-			if not success:
-				return False, response, None, None
-
-
-			success, message = protocol.rootCommand()
-			if success:
-				rootCommand = message
-			else:
-				return False, message, None, None
-
-			publisher = self.publisher(rootCommand.canonicalURL)
-			subscription = publisher.subscription(protocol.saveURL(), protocol)
-
-			# Check for URL validity
-			success, response = protocol.urlIsValid()
-			if not success:
-				return False, response, None, None
-
-
-			# Canonical URL
-			canonicalURL = rootCommand.canonicalURL
-			if not canonicalURL:
-				return False, 'Protocol object doesn’t return a canonicalURL value.', None, None
-
-
-
-			publisher.set('type', protocol.protocol)
-			publisher.set('currentSubscription', subscription.url)
-			subscription.save()
-			publisher.save()
-			publisher.stillAlive()
-
-
-			if updateSubscriptionsOnServer:
-				success, message = self.uploadSubscriptions()
-				if not success:
-					return False, message, None, None
-
-			protocol.subscriptionAdded()
-
-			return True, None, self.publisher(rootCommand.canonicalURL), subscription
+		return True, None, self.publisher(rootCommand.canonicalURL), subscription
 
 
 			# Outdated (for now)
@@ -1232,10 +1228,10 @@ class APIClient(object):
 			# 	return success, message, self.publisher(canonicalURL), None
 
 
-		except:
+		# except:
 
-			exc_type, exc_value, exc_traceback = sys.exc_info()
-			return False, traceback.format_exc(), None, None
+		# 	exc_type, exc_value, exc_traceback = sys.exc_info()
+		# 	return False, traceback.format_exc(), None, None
 
 
 	def currentPublisher(self):

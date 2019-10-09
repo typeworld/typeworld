@@ -38,10 +38,7 @@ class User(object):
 
 
 	def testFont(self):
-		if self.client.publishers():
-			return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
-		else:
-			raise Exception('No test font available')
+		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
 
 	def clearSubscriptions(self):
 		for publisher in self.client.publishers():
@@ -151,11 +148,17 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
-
 		# Reload client
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
 		user1.loadClient()
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+
+		# Current Publisher
+		user1.client.preferences.set('currentPublisher', user1.client.publishers()[0].canonicalURL)
+		self.assertEqual(user1.client.currentPublisher(), user1.client.publishers()[0])
+		user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
+		self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
+
 
 
 		### ###
@@ -497,12 +500,6 @@ class TestStringMethods(unittest.TestCase):
 			pass
 
 
-		try: 
-			font.uniqueID = 'a' * 500
-		except ValueError:
-			pass
-
-
 		font.uniqueID = 'a' * 255
 		filename = font.filename(font.versions[-1].number)
 		print(filename, len(filename))
@@ -696,11 +693,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(description.customValidation()[2], [])
 
 
-		try:
-			font.type = 'abc'
-		except:
-			pass
-
 		# __repr__
 		print(font.uniqueID)
 
@@ -786,6 +778,14 @@ class TestStringMethods(unittest.TestCase):
 			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
+		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+			'typeworld://',
+			'json',
+			'http://',
+			'',
+			'',
+			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
+			))
 
 
 		# Locale
@@ -799,22 +799,25 @@ class TestStringMethods(unittest.TestCase):
 
 
 
+	def setUp(self):
+
+		global user0, user1, user2, user3
+		user0 = User()
+		user1 = User(testUser)
+		user2 = User(testUser2)
+		user3 = User(testUser3)
+
+	def tearDown(self):
+
+		global user0, user1, user2, user3
+		user0.takeDown()
+		user1.takeDown()
+		user2.takeDown()
+		user3.takeDown()
 
 if __name__ == '__main__':
 
-
-	user0 = User()
-	user1 = User(testUser)
-	user2 = User(testUser2)
-	user3 = User(testUser3)
-
 	unittest.main()
-
-	#Takedown
-	user0.takeDown()
-	user1.takeDown()
-	user2.takeDown()
-	user3.takeDown()
 
 	 # Local
 	if not 'TRAVIS' in os.environ:
