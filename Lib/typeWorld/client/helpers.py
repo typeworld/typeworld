@@ -29,23 +29,23 @@ def Execute(command):
 
 	import sys, os, platform
 
-	if sys.version.startswith("2.3") or platform.system() == "Windows":
+	# if sys.version.startswith("2.3") or platform.system() == "Windows":
 
-		p = os.popen(command, "r")
-		response = p.read()
-		p.close()
-		return response
+	# 	p = os.popen(command, "r")
+	# 	response = p.read()
+	# 	p.close()
+	# 	return response
 
 
-	else:
+	# else:
 
-		import subprocess
+	import subprocess
 
-		process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, close_fds=True)
-		os.waitpid(process.pid, 0)
-		response = process.stdout.read().strip()
-		process.stdout.close()
-		return response
+	process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, close_fds=True)
+	os.waitpid(process.pid, 0)
+	response = process.stdout.read().strip()
+	process.stdout.close()
+	return response
 
 
 def get_registry_value(key, subkey, value):
@@ -99,23 +99,16 @@ def MachineName():
 		import plistlib
 		import subprocess
 		from Cocoa import NSBundle
-		if sys.version_info >= (3, 0):
-			data = plistlib.loads(Execute('system_profiler -xml SPHardwareDataType'))
-		else:
-			data = plistlib.readPlistFromString(Execute('system_profiler -xml SPHardwareDataType'))
-
-		if (len(sys.argv) == 2):
-			model = sys.argv[1]
-		else:
-			model = subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.model"]).strip()
+		data = plistlib.loads(Execute('system_profiler -xml SPHardwareDataType'))
+		model = subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.model"]).strip()
 
 		serverInfoBundle=NSBundle.bundleWithPath_("/System/Library/PrivateFrameworks/ServerInformation.framework/")
 		sysinfofile=serverInfoBundle.URLForResource_withExtension_subdirectory_("SIMachineAttributes", "plist", "")
 
 		plist = plistlib.readPlist(sysinfofile.path())
 
-		if (model in plist):
-			name = plist[model]["_LOCALIZABLE_"]["marketingModel"]
+		# if (model in plist):
+		# 	name = plist[model]["_LOCALIZABLE_"]["marketingModel"]
 
 		# Approach 2
 		if not name:
@@ -123,11 +116,11 @@ def MachineName():
 
 		machineModelIdentifier = data[0]['_items'][0]['machine_model']
 		humanReadableName = '%s' % name
-		if not name.startswith('Apple'):
-			name = 'Apple ' + name
+		# if not name.startswith('Apple'):
+		# 	name = 'Apple ' + name
 		specsDescription = []
-		if 'cpu_type' in data[0]['_items'][0]:
-			specsDescription.append(data[0]['_items'][0]['cpu_type'])
+		# if 'cpu_type' in data[0]['_items'][0]:
+		# 	specsDescription.append(data[0]['_items'][0]['cpu_type'])
 		if 'current_processor_speed' in data[0]['_items'][0]:
 			specsDescription.append(data[0]['_items'][0]['current_processor_speed'])
 		specsDescription.append('with')
@@ -153,9 +146,6 @@ def OSName():
             "ProductName") + ', ' + str(platform.version())
 
 	elif platform.system() == 'Linux':
-		try:
-			return ' '.join(platform.linux_distribution())
-		except:
-			return "N/A"
+		return ' '.join(platform.linux_distribution())
 
 
