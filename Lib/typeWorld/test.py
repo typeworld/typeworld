@@ -136,13 +136,13 @@ class TestStringMethods(unittest.TestCase):
 		# This is also supposed to delete the installed protected font
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
-			user1.client.downloadSubscriptions(),
-			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			user1.client.downloadSubscriptions()[0],
+			False
 			)
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
 		self.assertEqual(
-			user1.client.downloadSubscriptions(),
-			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			user1.client.downloadSubscriptions()[0],
+			False
 			)
 		user1.client.testScenario = None
 		self.assertEqual(
@@ -172,13 +172,13 @@ class TestStringMethods(unittest.TestCase):
 		# This is also supposed to delete the installed protected font
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
-			user1.client.unlinkUser(),
-			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			user1.client.unlinkUser()[0],
+			False
 			)
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
 		self.assertEqual(
-			user1.client.unlinkUser(),
-			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			user1.client.unlinkUser()[0],
+			False
 			)
 		user1.client.testScenario = None
 		self.assertEqual(
@@ -193,13 +193,13 @@ class TestStringMethods(unittest.TestCase):
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
-			user1.client.linkUser(*testUser),
-			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			user1.client.linkUser(*testUser)[0],
+			False
 			)
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
 		self.assertEqual(
-			user1.client.linkUser(*testUser),
-			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			user1.client.linkUser(*testUser)[0],
+			False
 			)
 		user1.client.testScenario = None
 		self.assertEqual(
