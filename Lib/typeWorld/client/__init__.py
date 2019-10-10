@@ -157,8 +157,7 @@ class JSON(Preferences):
 
 	def save(self):
 
-		if not os.path.exists(os.path.dirname(self.path)):
-			os.makedirs(os.path.dirname(self.path))
+		if not os.path.exists(os.path.dirname(self.path)): os.makedirs(os.path.dirname(self.path))
 		WriteToFile(self.path, json.dumps(self._dict))
 
 
@@ -753,8 +752,7 @@ class APIClient(object):
 	def syncSubscriptions(self, performCommands = True):
 		self.appendCommands('syncSubscriptions', self.completeSubscriptionURLs() or ['empty'])
 
-		if performCommands:
-			return self.performCommands()
+		if performCommands: return self.performCommands()
 
 	def performSyncSubscriptions(self, oldURLs):
 
@@ -940,8 +938,7 @@ class APIClient(object):
 		self.preferences.remove('acceptedInvitations')
 		self.preferences.remove('pendingInvitations')
 		self.preferences.remove('sentInvitations')
-		if self.preferences.get('currentPublisher') == 'pendingInvitations':
-			self.preferences.set('currentPublisher', '')
+		if self.preferences.get('currentPublisher') == 'pendingInvitations': self.preferences.set('currentPublisher', '')
 
 		try:
 			keyring = self.keyring()
@@ -1318,14 +1315,8 @@ class APIPublisher(object):
 			home = expanduser("~")
 
 
-			success, message = self.subscriptions()[0].protocol.rootCommand()
-			if success:
-				rootCommand = message
-				title = rootCommand.name.getText()
-			else:
-				rootCommand = None
-				title = 'Untitled'
-
+			rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
+			title = rootCommand.name.getText()
 
 			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (title, self.subscriptions()[0].protocol.protocolName()))
 
@@ -1357,37 +1348,33 @@ class APIPublisher(object):
 
 		def stillAliveWorker(self):
 
+			# Register endpoint
+
+			parameters = {
+				'command': 'registerAPIEndpoint',
+				'url': self.canonicalURL,
+			}
+			if self.parent.testScenario:
+				parameters['testScenario'] = self.parent.testScenario
+
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+
+			url = 'https://type.world/jsonAPI/'
+			if self.parent.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
+
 			try:
-				# Register endpoint
-
-				parameters = {
-					'command': 'registerAPIEndpoint',
-					'url': self.canonicalURL,
-				}
-				if self.parent.testScenario:
-					parameters['testScenario'] = self.parent.testScenario
-
-				data = urllib.parse.urlencode(parameters).encode('ascii')
-
-				url = 'https://type.world/jsonAPI/'
-				if self.parent.testScenario == 'simulateCentralServerNotReachable':
-					url = 'https://type.worlddd/jsonAPI/'
-
-				try:
-					response = urllib.request.urlopen(url, data, cafile=certifi.where())
-				except urllib.error.HTTPError as e:
-					return
-				except urllib.error.URLError as e:
-					return
-
-				response = json.loads(response.read().decode())
-
-				if not response['errors']:
-					self.parent.log('API endpoint alive success.')
-				else:
-					self.parent.log('API endpoint alive error: %s' % response['message'])
+				response = urllib.request.urlopen(url, data, cafile=certifi.where())
 			except:
-				self.parent.log(traceback.format_exc())
+				return
+
+			response = json.loads(response.read().decode())
+
+			if not response['errors']:
+				self.parent.log('API endpoint alive success.')
+			else:
+				self.parent.log('API endpoint alive error: %s' % response['message'])
+
 
 		# Touch only once
 		if not self.stillAliveTouched:
@@ -1424,15 +1411,7 @@ class APIPublisher(object):
 	def name(self, locale = ['en']):
 
 
-		success, message = self.subscriptions()[0].protocol.rootCommand()
-		if success:
-			rootCommand = message
-			title = rootCommand.name.getText()
-		else:
-			rootCommand = None
-			title = 'Untitled'
-
-
+		rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
 		if rootCommand:
 			return rootCommand.name.getTextAndLocale(locale = locale)
 
@@ -1646,18 +1625,19 @@ class APISubscription(object):
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
-		except urllib.error.HTTPError as e:
-			return False, str(e)
-		except urllib.error.URLError as e:
-			return False, str(e)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
 
 		response = json.loads(response.read().decode())
 
-		if response['response'] == 'success':
-			return True, None
+		if 'errors' in response and response['errors']:
+			return False, ', '.join(response['errors'])
 
-		else:
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+		if 'response' in response:
+			if response['response'] == 'success':
+				return True, None
+			else:
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 
 
@@ -1695,18 +1675,19 @@ class APISubscription(object):
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
-		except urllib.error.HTTPError as e:
-			return False, str(e)
-		except urllib.error.URLError as e:
-			return False, str(e)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
 
 		response = json.loads(response.read().decode())
 
-		if response['response'] == 'success':
-			return True, None
+		if 'errors' in response and response['errors']:
+			return False, ', '.join(response['errors'])
 
-		else:
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+		if 'response' in response:
+			if response['response'] == 'success':
+				return True, None
+			else:
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 	def invitationAccepted(self):
 

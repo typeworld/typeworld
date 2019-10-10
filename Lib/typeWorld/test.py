@@ -340,8 +340,18 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
 
 		# Invite real user
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result, (True, None))
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = None
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], True)
 
 		# Update third user
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
@@ -419,7 +429,20 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user3.client.publishers()), 1)
 
 		# Revoke user
-		result = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, True)
+
+
 		self.assertEqual(result, (True, None))
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.publishers()), 0)
