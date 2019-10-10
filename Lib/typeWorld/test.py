@@ -487,11 +487,11 @@ class TestStringMethods(unittest.TestCase):
 
 		# Root of API
 		root = RootResponse()
-		docu = root.docu()
 		root.name.en = 'Font Publisher'
 		root.canonicalURL = 'https://fontpublisher.com/api/'
 		root.adminEmail = 'admin@fontpublisher.com'
 		root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+		assert type(root.supportedCommands.index('installableFonts')) == int
 
 		# Create API response as JSON
 		json = root.dumpJSON()
@@ -679,7 +679,6 @@ class TestStringMethods(unittest.TestCase):
 		# InstallFont
 
 		responseCommand = InstallFontResponse()
-		docu = responseCommand.docu()
 		responseCommand.type = 'success'
 		print(responseCommand)
 
@@ -705,7 +704,6 @@ class TestStringMethods(unittest.TestCase):
 		# UninstallFont
 
 		responseCommand = UninstallFontResponse()
-		docu = responseCommand.docu()
 		responseCommand.type = 'success'
 		print(responseCommand)
 
@@ -726,7 +724,6 @@ class TestStringMethods(unittest.TestCase):
 		# SetAnonymousAppIDStatusResponse
 
 		responseCommand = SetAnonymousAppIDStatusResponse()
-		docu = responseCommand.docu()
 		responseCommand.type = 'success'
 		print(responseCommand)
 
@@ -743,15 +740,12 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-
-
-
-
-
-
-
-
-
+		## DOCU
+		docu = RootResponse().docu()
+		docu = InstallableFontsResponse().docu()
+		docu = InstallFontResponse().docu()
+		docu = UninstallFontResponse().docu()
+		docu = SetAnonymousAppIDStatusResponse().docu()
 
 
 		# Data types
@@ -993,36 +987,6 @@ class TestStringMethods(unittest.TestCase):
 		print('####################', success, message)
 		self.assertEqual(success, False)
 		self.assertEqual(message, "URL is malformed.")
-
-
-	def _test_3(self):
-
-
-		user1.takeDown()
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		self.assertEqual(
-			user1.client.linkUser(*testUser),
-			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
-			)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		self.assertEqual(
-			user1.client.linkUser(*testUser),
-			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
-			)
-		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.linkUser(*testUser),
-			(True, None)
-			)
-
-		# user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		# print('####################', user1.linkUser())
-
-		# TODO:
-		# simulateCentralServerNotReachable
-		# simulateCentralServerProgrammingError
-
-
 
 
 

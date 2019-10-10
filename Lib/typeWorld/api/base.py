@@ -147,8 +147,8 @@ class DataType(object):
             self.value = self.dataType()
 
 
-    def __repr__(self):
-        return '<%s "%s">' % (self.__class__.__name__, self.get())
+    # def __repr__(self):
+    #     return '<%s "%s">' % (self.__class__.__name__, self.get())
 
     def valid(self):
         if type(self.value) == self.dataType:
@@ -369,8 +369,7 @@ class ListProxy(DataType):
         if self.value:
             for data in self.value:
                 valid = data.valid()
-                if valid != True:
-                    return valid
+                return valid
         return True
 
 
@@ -569,7 +568,7 @@ class DictBasedObject(object):
 
         return classes
 
-    def __init__(self, json = None):
+    def __init__(self):
 
         super(DictBasedObject, self).__init__()
 
@@ -582,9 +581,6 @@ class DictBasedObject(object):
             # if required and default value is not empty
             if self._structure[key][1] and self._structure[key][2] is not None:
                 setattr(self, key, self._structure[key][2])
-
-        if json:
-            self.loadJSON(json)
 
     def initAttr(self, key):
 

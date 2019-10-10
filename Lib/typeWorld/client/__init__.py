@@ -1698,8 +1698,6 @@ class APISubscription(object):
 					if self.protocol.completeURL() == invitation.url:
 						return True
 
-		return False
-
 
 	def stillUpdating(self):
 		return self.url in self.parent._updatingSubscriptions
