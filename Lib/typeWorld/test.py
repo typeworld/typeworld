@@ -128,6 +128,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 
 
+
 		# saveURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		# completeURL
