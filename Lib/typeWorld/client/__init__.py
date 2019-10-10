@@ -342,6 +342,8 @@ class APIClient(object):
 
 	def online(self, server = None):
 
+		if self.testScenario == 'simulateNotOnline':
+			return False
 
 		if not server:
 			server = 'type.world'
@@ -795,8 +797,7 @@ class APIClient(object):
 				if not url in oldURLs:
 					success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-					if not success:
-						return False, message
+					if not success: return False, message
 
 			# Success
 			return True, len(response['subscriptions']) - len(oldURLs)

@@ -135,6 +135,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
 		# This is also supposed to delete the installed protected font
+
+
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
 			user1.client.downloadSubscriptions()[0],
@@ -146,6 +148,11 @@ class TestStringMethods(unittest.TestCase):
 			False
 			)
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
 		self.assertEqual(
 			user1.client.downloadSubscriptions()[0],
 			False
@@ -191,6 +198,11 @@ class TestStringMethods(unittest.TestCase):
 			user1.client.unlinkUser()[0],
 			False
 			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
 		self.assertTrue(user1.client.syncProblems())
 		user1.client.testScenario = None
 		self.assertEqual(
@@ -219,6 +231,11 @@ class TestStringMethods(unittest.TestCase):
 			user1.client.linkUser(*testUser)[0],
 			False
 			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.linkUser(*testUser)[0],
+			False
+			)
 		user1.client.testScenario = None
 		self.assertEqual(
 			user1.client.linkUser(*testUser)[0],
@@ -238,6 +255,11 @@ class TestStringMethods(unittest.TestCase):
 			False
 			)
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
 		self.assertEqual(
 			user1.client.syncSubscriptions()[0],
 			False
@@ -275,6 +297,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
@@ -370,6 +395,9 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
 		self.assertEqual(result[0], False)
+		# user1.client.testScenario = 'simulateNotOnline'
+		# result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		# self.assertEqual(result[0], False)
 		user1.client.testScenario = None
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
 		self.assertEqual(result[0], True)
@@ -396,6 +424,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user2.client.pendingInvitations()[0].accept()
 		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
 		success, message = user2.client.pendingInvitations()[0].accept()
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
@@ -425,6 +456,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user3.client.pendingInvitations()[0].decline()
 		self.assertEqual(success, False)
 		user3.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateNotOnline'
 		success, message = user3.client.pendingInvitations()[0].decline()
 		self.assertEqual(success, False)
 		user3.client.testScenario = None
@@ -459,6 +493,9 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
 		self.assertEqual(success, False)
+		# user2.client.testScenario = 'simulateNotOnline'
+		# success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		# self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
 		self.assertEqual(success, True)
@@ -978,6 +1015,10 @@ class TestStringMethods(unittest.TestCase):
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
 
 		user0.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
