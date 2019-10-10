@@ -413,7 +413,7 @@ class APIClient(object):
 					self.log('unlinkUser finished successfully')
 
 				else:
-					self.log('syncSubscriptions failure:', message)
+					self.log('unlinkUser failure:', message)
 					self._syncProblems.append(message)
 
 
@@ -423,10 +423,10 @@ class APIClient(object):
 				if success:
 					commands['linkUser'] = []
 					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('syncSubscriptions finished successfully')
+					self.log('linkUser finished successfully')
 
 				else:
-					self.log('syncSubscriptions failure:', message)
+					self.log('linkUser failure:', message)
 					self._syncProblems.append(message)
 
 			if 'syncSubscriptions' in commands and commands['syncSubscriptions']:
@@ -626,8 +626,7 @@ class APIClient(object):
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-				if not success:
-					return False, message
+				if not success: return False, message
 
 		# Invitations
 		self.preferences.set('acceptedInvitations', response['acceptedInvitations'])
@@ -758,6 +757,8 @@ class APIClient(object):
 	def performSyncSubscriptions(self, oldURLs):
 
 		userID = self.user()
+
+		print('performSyncSubscriptions: %s' % userID)
 
 		if userID:
 
