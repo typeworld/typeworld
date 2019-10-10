@@ -1199,21 +1199,11 @@ class APIClient(object):
 			return False, response, None, None
 
 
-		success, message = protocol.rootCommand(testScenario = self.testScenario)
-		if success:
-			rootCommand = message
-		else:
-			return False, message, None, None
-
+		rootCommand = protocol.rootCommand()
 		publisher = self.publisher(rootCommand.canonicalURL)
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
 
-		# Canonical URL
-		canonicalURL = rootCommand.canonicalURL
-		if not canonicalURL:
-			return False, 'Protocol object doesn’t return a canonicalURL value.', None, None
-
-
+		# Success
 		publisher.set('type', protocol.protocol)
 		publisher.set('currentSubscription', protocol.saveURL())
 		subscription.save()
