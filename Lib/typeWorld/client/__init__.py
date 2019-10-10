@@ -597,8 +597,6 @@ class APIClient(object):
 			if response['errors']:
 				return False, '\n'.join(response['errors'])
 
-#			self.log('Downloading subscriptions: %s' % response)
-
 			return self.executeDownloadSubscriptions(response)
 
 		return True, None
@@ -1199,7 +1197,7 @@ class APIClient(object):
 			return False, response, None, None
 
 
-		rootCommand = protocol.rootCommand()
+		rootCommand = protocol.rootCommand()[1]
 		publisher = self.publisher(rootCommand.canonicalURL)
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
 
