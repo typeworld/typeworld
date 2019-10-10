@@ -427,7 +427,6 @@ class APIClient(object):
 					self.log('syncSubscriptions failure:', message)
 					self._syncProblems.append(message)
 
-
 			if 'syncSubscriptions' in commands and commands['syncSubscriptions']:
 				success, message = self.performSyncSubscriptions(commands['syncSubscriptions'])
 
@@ -879,7 +878,6 @@ class APIClient(object):
 	def unlinkUser(self):
 
 		self.appendCommands('unlinkUser')
-
 		return self.performCommands()
 
 

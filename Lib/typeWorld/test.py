@@ -227,6 +227,27 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(user1.client.userEmail(), 'test@type.world')
 
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			True
+			)
+
 		# Install again
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
