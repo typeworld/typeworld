@@ -82,6 +82,11 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		# Logo
+		user0.client.testScenario = 'simulateProgrammingError'
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = None
 		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
@@ -248,32 +253,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(user1.client.userEmail(), 'test@type.world')
 
-		# user1.client.testScenario = 'simulateCentralServerNotReachable'
-		# self.assertEqual(
-		# 	user1.client.syncSubscriptions()[0],
-		# 	False
-		# 	)
-		# user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		# self.assertEqual(
-		# 	user1.client.syncSubscriptions()[0],
-		# 	False
-		# 	)
-		# user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		# self.assertEqual(
-		# 	user1.client.syncSubscriptions()[0],
-		# 	False
-		# 	)
-		# user1.client.testScenario = 'simulateNotOnline'
-		# self.assertEqual(
-		# 	user1.client.syncSubscriptions()[0],
-		# 	False
-		# 	)
-		# user1.client.testScenario = None
-		# self.assertEqual(
-		# 	user1.client.syncSubscriptions()[0],
-		# 	True
-		# 	)
-
 		# Install again
 		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
@@ -286,6 +265,32 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
 		self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
 
+		# Sync subscription
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			True
+			)
 
 
 		### ###

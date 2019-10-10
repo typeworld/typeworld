@@ -147,3 +147,6 @@ def OSName():
 		return ' '.join(platform.linux_distribution())
 
 
+def addAttributeToURL(url, attribute):
+	if '?' in url: return url + '&' + attribute
+	else: return url + '?' + attribute

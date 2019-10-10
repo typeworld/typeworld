@@ -1040,37 +1040,38 @@ class APIClient(object):
 
 
 
-	def resourceByURL(self, url, binary = False, update = False, username = None, password = None):
+	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
 		resources = self.preferences.get('resources') or {}
 
 		if url not in resources or update:
 
-			# print('resourceByURL', url)
+			if self.testScenario:
+				url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
 
 			request = urllib.request.Request(url)
-			if username and password:
-				base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
-				request.add_header("Authorization", "Basic %s" % base64string)   
+			# if username and password:
+			# 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
+			# 	request.add_header("Authorization", "Basic %s" % base64string)   
 				# print('with username and password %s:%s' % (username, password))
-			response = urllib.request.urlopen(request, cafile=certifi.where())
+
+			try:
+				response = urllib.request.urlopen(request, cafile=certifi.where())
+			except:
+				return False, traceback.format_exc().splitlines()[-1], None
 
 
-			if response.getcode() != 200:
-				return False, 'Resource returned with HTTP code %s' % response.code
-
+			content = response.read()
+			if binary:
+				content = base64.b64encode(content).decode()
 			else:
-				content = response.read()
-				if binary:
-					content = base64.b64encode(content).decode()
-				else:
-					content = content.decode()
+				content = content.decode()
 
-				resources[url] = response.headers['content-type'] + ',' + content
-				self.preferences.set('resources', resources)
+			resources[url] = response.headers['content-type'] + ',' + content
+			self.preferences.set('resources', resources)
 
-				return True, content, response.headers['content-type']
+			return True, content, response.headers['content-type']
 
 		else:
 
@@ -1712,16 +1713,22 @@ class APISubscription(object):
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
-		# Save resource
-		resourcesList = self.get('resources') or []
-		if not url in resourcesList:
-			resourcesList.append(url)
-			self.set('resources', resourcesList)
 
-		if self.parent.get('username') and self.parent.getPassword(self.get('username')):
-			return self.parent.parent.resourceByURL(url, binary, self.parent.get('username'), self.parent.getPassword(self.get('username')))
-		else:
-			return self.parent.parent.resourceByURL(url, binary)
+		# if self.parent.get('username') and self.parent.getPassword(self.get('username')):
+		# 	return self.parent.parent.resourceByURL(url, binary, self.parent.get('username'), self.parent.getPassword(self.get('username')))
+		# else:
+
+		response = self.parent.parent.resourceByURL(url, binary, update)
+
+		# Save resource
+		if response[0] == True:
+			resourcesList = self.get('resources') or []
+			if not url in resourcesList:
+				resourcesList.append(url)
+				self.set('resources', resourcesList)
+
+		return response
+
 
 
 	def familyByID(self, ID):
