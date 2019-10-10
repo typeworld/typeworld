@@ -33,8 +33,7 @@ class User(object):
 
 	def linkUser(self):
 		if self.login:
-			success, message = self.client.linkUser(*self.login)
-			if not success: raise Exception(message)
+			return self.client.linkUser(*self.login)
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
@@ -50,9 +49,11 @@ class User(object):
 	def takeDown(self):
 		self.clearInvitations()
 		self.clearSubscriptions()
+		self.unlinkUser()
+
+	def unlinkUser(self):
 		if self.login:
-			success, message = self.client.unlinkUser()
-			if not success: raise Exception(message)
+			return self.client.unlinkUser()
 
 	def loadClient(self):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
@@ -132,7 +133,22 @@ class TestStringMethods(unittest.TestCase):
 		# completeURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
-		user1.client.downloadSubscriptions()
+		# This is also supposed to delete the installed protected font
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.downloadSubscriptions(),
+			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.downloadSubscriptions(),
+			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			True
+			)
 		user1.client.publishers()[0].update()
 		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
@@ -154,14 +170,42 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
 		# This is also supposed to delete the installed protected font
-		user1.client.unlinkUser()
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.unlinkUser(),
+			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.unlinkUser(),
+			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			True
+			)
 		self.assertEqual(user1.client.userEmail(), None)
 		self.assertEqual(user1.client.user(), '')
 
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 
-		user1.linkUser()
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.linkUser(*testUser),
+			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.linkUser(*testUser),
+			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.linkUser(*testUser)[0],
+			True
+			)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(user1.client.userEmail(), 'test@type.world')
 
@@ -871,6 +915,38 @@ class TestStringMethods(unittest.TestCase):
 		print('####################', success, message)
 		self.assertEqual(success, False)
 		self.assertEqual(message, "URL is malformed.")
+
+
+	def _test_3(self):
+
+
+		user1.takeDown()
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.linkUser(*testUser),
+			(False, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.linkUser(*testUser),
+			(False, 'urllib.error.HTTPError: HTTP Error 500: Internal Server Error')
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.linkUser(*testUser),
+			(True, None)
+			)
+
+		# user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		# print('####################', user1.linkUser())
+
+		# TODO:
+		# simulateCentralServerNotReachable
+		# simulateCentralServerProgrammingError
+
+
+
+
 
 
 	def setUp(self):
