@@ -240,10 +240,10 @@ class APIPendingInvitation(APIInvitation):
 	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
 
 	def accept(self):
-		self.parent.acceptInvitation(self.ID)
+		return self.parent.acceptInvitation(self.ID)
 
 	def decline(self):
-		self.parent.declineInvitation(self.ID)
+		return self.parent.declineInvitation(self.ID)
 
 class APIAcceptedInvitation(APIInvitation):
 	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
@@ -1388,10 +1388,8 @@ class APIPublisher(object):
 				try:
 					response = urllib.request.urlopen(url, data, cafile=certifi.where())
 				except urllib.error.HTTPError as e:
-					self.log(str(e))
 					return
 				except urllib.error.URLError as e:
-					self.log(str(e))
 					return
 
 				response = json.loads(response.read().decode())
@@ -1660,10 +1658,8 @@ class APISubscription(object):
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
 		except urllib.error.HTTPError as e:
-			self.log(str(e))
 			return False, str(e)
 		except urllib.error.URLError as e:
-			self.log(str(e))
 			return False, str(e)
 
 		response = json.loads(response.read().decode())
@@ -1711,10 +1707,8 @@ class APISubscription(object):
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
 		except urllib.error.HTTPError as e:
-			self.log(str(e))
 			return False, str(e)
 		except urllib.error.URLError as e:
-			self.log(str(e))
 			return False, str(e)
 
 		response = json.loads(response.read().decode())

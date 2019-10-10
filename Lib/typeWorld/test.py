@@ -180,11 +180,13 @@ class TestStringMethods(unittest.TestCase):
 			user1.client.unlinkUser()[0],
 			False
 			)
+		self.assertTrue(user1.client.syncProblems())
 		user1.client.testScenario = None
 		self.assertEqual(
 			user1.client.unlinkUser()[0],
 			True
 			)
+		self.assertFalse(user1.client.syncProblems())
 		self.assertEqual(user1.client.userEmail(), None)
 		self.assertEqual(user1.client.user(), '')
 
@@ -229,7 +231,15 @@ class TestStringMethods(unittest.TestCase):
 		# Protected subscription, installation on second machine
 
 		# Supposed to reject because seats are limited to 1
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, True)
 		print(success, message)
 
 		# Two versions available
@@ -328,7 +338,17 @@ class TestStringMethods(unittest.TestCase):
 
 		# Accept invitation
 		user2.client.downloadSubscriptions()
-		user2.client.pendingInvitations()[0].accept()
+
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, True)
+
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
 		self.assertEqual(len(user2.client.publishers()), 1)
@@ -344,7 +364,17 @@ class TestStringMethods(unittest.TestCase):
 		# Decline invitation
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.pendingInvitations()), 1)
-		user3.client.pendingInvitations()[0].decline()
+
+		user3.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = None
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, True)
+
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.sentInvitations()), 0)
