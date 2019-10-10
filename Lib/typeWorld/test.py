@@ -144,6 +144,11 @@ class TestStringMethods(unittest.TestCase):
 			user1.client.downloadSubscriptions()[0],
 			False
 			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
 		user1.client.testScenario = None
 		self.assertEqual(
 			user1.client.downloadSubscriptions()[0],
@@ -180,6 +185,11 @@ class TestStringMethods(unittest.TestCase):
 			user1.client.unlinkUser()[0],
 			False
 			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
 		self.assertTrue(user1.client.syncProblems())
 		user1.client.testScenario = None
 		self.assertEqual(
@@ -199,6 +209,11 @@ class TestStringMethods(unittest.TestCase):
 			False
 			)
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.linkUser(*testUser)[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
 		self.assertEqual(
 			user1.client.linkUser(*testUser)[0],
 			False
@@ -235,6 +250,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
@@ -345,6 +363,9 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateCentralServerProgrammingError'
 		success, message = user2.client.pendingInvitations()[0].accept()
 		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.pendingInvitations()[0].accept()
 		self.assertEqual(success, True)
@@ -369,6 +390,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user3.client.pendingInvitations()[0].decline()
 		self.assertEqual(success, False)
 		user3.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message = user3.client.pendingInvitations()[0].decline()
 		self.assertEqual(success, False)
 		user3.client.testScenario = None
