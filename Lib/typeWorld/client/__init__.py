@@ -272,6 +272,7 @@ class APIClient(object):
 		self.testScenario = None
 
 		self._systemLocale = None
+		self._online = {}
 
 	def pendingInvitations(self):
 		_list = []
@@ -345,17 +346,32 @@ class APIClient(object):
 
 	def online(self, server = None):
 
-		# if 'TRAVIS' in os.environ:
-		# 	return True
 
 		if not server:
 			server = 'type.world'
-#		print('Pinging %s' % server)
-		if MAC or LINUX:
-			return os.system('ping %s -c 1' % server) == 0
-		if WIN:
-			CREATE_NO_WINDOW = 0x08000000
-			return subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW) == 0
+
+		if server in self._online and self._online[server]['result'] == 0:
+			return True
+
+		else:
+
+			print('###### Pinging %s' % server)
+
+			result = 0
+			if MAC or LINUX:
+				result = os.system('ping %s -c 1' % server)
+			if WIN:
+				CREATE_NO_WINDOW = 0x08000000
+				result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
+
+			self._online[server] = {
+				'time': time.time(),
+				'result': result
+			}
+
+			return result == 0
+
+
 
 
 	def appendCommands(self, commandName, commandsList = ['pending']):
