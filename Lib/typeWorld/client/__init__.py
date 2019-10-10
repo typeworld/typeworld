@@ -493,7 +493,10 @@ class APIClient(object):
 					self.log('downloadSubscriptions failure:', message)
 					self._syncProblems.append(message)
 
-			return success, message
+			if self._syncProblems:
+				return False, self._syncProblems[0]
+			else:
+				return True, None
 
 		else:
 
@@ -526,6 +529,8 @@ class APIClient(object):
 				'subscriptionURLs': ','.join(oldURLs or ['empty']),
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 			# Add user’s secret key
 			keyring = self.keyring()
 			if keyring:
@@ -533,12 +538,13 @@ class APIClient(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = 'https://type.world/jsonAPI/'
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
 				response = urllib.request.urlopen(url, data, cafile=certifi.where())
-			except urllib.error.HTTPError as e:
-				self.log('API endpoint alive HTTP error: %s' % e)
-				return False, 'API endpoint alive HTTP error: %s' % e
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
 			response = json.loads(response.read().decode())
 
@@ -572,6 +578,8 @@ class APIClient(object):
 				'userTimezone': self.timezone(),
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 			# Add user’s secret key
 			keyring = self.keyring()
 			if keyring:
@@ -579,12 +587,13 @@ class APIClient(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = 'https://type.world/jsonAPI/'
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
 				response = urllib.request.urlopen(url, data, cafile=certifi.where())
-			except urllib.error.HTTPError as e:
-				self.log('API endpoint alive HTTP error: %s' % e)
-				return False, 'API endpoint alive HTTP error: %s' % e
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
 			response = json.loads(response.read().decode())
 
@@ -669,6 +678,8 @@ class APIClient(object):
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 			# Add user’s secret key
 			keyring = self.keyring()
 			if keyring:
@@ -676,12 +687,13 @@ class APIClient(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = 'https://type.world/jsonAPI/'
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
 				response = urllib.request.urlopen(url, data, cafile=certifi.where())
-			except urllib.error.HTTPError as e:
-				self.log('API endpoint alive HTTP error: %s' % e)
-				return False, 'API endpoint alive HTTP error: %s' % e
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
 			response = json.loads(response.read().decode())
 
@@ -717,6 +729,8 @@ class APIClient(object):
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 			# Add user’s secret key
 			keyring = self.keyring()
 			if keyring:
@@ -724,12 +738,13 @@ class APIClient(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = 'https://type.world/jsonAPI/'
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
 				response = urllib.request.urlopen(url, data, cafile=certifi.where())
-			except urllib.error.HTTPError as e:
-				self.log('API endpoint alive HTTP error: %s' % e)
-				return False, 'API endpoint alive HTTP error: %s' % e
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
 			response = json.loads(response.read().decode())
 
@@ -761,6 +776,8 @@ class APIClient(object):
 				'subscriptionURLs': ','.join(oldURLs or ['empty']),
 				'appVersion': typeWorld.api.VERSION,
 			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 			# Add user’s secret key
 			keyring = self.keyring()
 			if keyring:
@@ -768,12 +785,13 @@ class APIClient(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = 'https://type.world/jsonAPI/'
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
 				response = urllib.request.urlopen(url, data, cafile=certifi.where())
-			except urllib.error.HTTPError as e:
-				self.log('API endpoint alive HTTP error: %s' % e)
-				return False, 'API endpoint alive HTTP error: %s' % e
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
 			response = json.loads(response.read().decode())
 
@@ -790,6 +808,8 @@ class APIClient(object):
 
 			# Success
 			return True, len(response['subscriptions']) - len(oldURLs)
+
+		return True, None
 
 
 
@@ -825,6 +845,8 @@ class APIClient(object):
 			'anonymousUserID': userID,
 			'appVersion': typeWorld.api.VERSION,
 		}
+		if self.testScenario:
+			parameters['testScenario'] = self.testScenario
 		# Add user’s secret key
 		keyring = self.keyring()
 		if keyring:
@@ -833,15 +855,13 @@ class APIClient(object):
 		parameters = self.addMachineIDToParameters(parameters)
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = 'https://type.world/jsonAPI/'
+		if self.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
-		except urllib.error.HTTPError as e:
-			self.log('API endpoint alive HTTP error: %s' % e)
-			return False, 'API endpoint alive HTTP error: %s' % e
-		except urllib.error.URLError as e:
-			self.log('API endpoint URL HTTP error: %s' % e)
-			return False, 'API endpoint URL HTTP error: %s' % e
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
 
 		response = json.loads(response.read().decode())
 
@@ -897,6 +917,8 @@ class APIClient(object):
 			'anonymousUserID': userID,
 			'appVersion': typeWorld.api.VERSION,
 		}
+		if self.testScenario:
+			parameters['testScenario'] = self.testScenario
 
 		# Add user’s secret key
 		keyring = self.keyring()
@@ -905,12 +927,13 @@ class APIClient(object):
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = 'https://type.world/jsonAPI/'
+		if self.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
-		except urllib.error.HTTPError as e:
-			self.log('API endpoint alive HTTP error: %s' % e)
-			return False, 'API endpoint alive HTTP error: %s' % e
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
 
 		response = json.loads(response.read().decode())
 
@@ -1352,17 +1375,26 @@ class APIPublisher(object):
 			try:
 				# Register endpoint
 
-				data = urllib.parse.urlencode({
+				parameters = {
 					'command': 'registerAPIEndpoint',
 					'url': self.canonicalURL,
-				}).encode('ascii')
+				}
+				if self.parent.testScenario:
+					parameters['testScenario'] = self.parent.testScenario
+
+				data = urllib.parse.urlencode(parameters).encode('ascii')
 
 				url = 'https://type.world/jsonAPI/'
+				if self.parent.testScenario == 'simulateCentralServerNotReachable':
+					url = 'https://type.worlddd/jsonAPI/'
 
 				try:
 					response = urllib.request.urlopen(url, data, cafile=certifi.where())
 				except urllib.error.HTTPError as e:
-					self.parent.log('API endpoint alive HTTP error: %s' % e)
+					self.log(str(e))
+					return
+				except urllib.error.URLError as e:
+					self.log(str(e))
 					return
 
 				response = json.loads(response.read().decode())
@@ -1620,14 +1652,22 @@ class APISubscription(object):
 			'sourceUserEmail': self.parent.parent.userEmail(),
 			'subscriptionURL': self.protocol.completeURL(),
 		}
+		if self.parent.parent.testScenario:
+			parameters['testScenario'] = self.parent.parent.testScenario
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = 'https://type.world/jsonAPI/'
+		if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
 		except urllib.error.HTTPError as e:
-			return False, 'API endpoint alive HTTP error: %s' % e
+			self.log(str(e))
+			return False, str(e)
+		except urllib.error.URLError as e:
+			self.log(str(e))
+			return False, str(e)
 
 		response = json.loads(response.read().decode())
 
@@ -1663,14 +1703,22 @@ class APISubscription(object):
 			'sourceUserEmail': self.parent.parent.userEmail(),
 			'subscriptionURL': self.protocol.completeURL(),
 		}
+		if self.parent.parent.testScenario:
+			parameters['testScenario'] = self.parent.parent.testScenario
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = 'https://type.world/jsonAPI/'
+		if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
 			response = urllib.request.urlopen(url, data, cafile=certifi.where())
 		except urllib.error.HTTPError as e:
-			return False, 'API endpoint alive HTTP error: %s' % e
+			self.log(str(e))
+			return False, str(e)
+		except urllib.error.URLError as e:
+			self.log(str(e))
+			return False, str(e)
 
 		response = json.loads(response.read().decode())
 
