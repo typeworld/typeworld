@@ -1636,6 +1636,7 @@ class APISubscription(object):
 
 		# print('<API SUbscription %s>' % self.url)
 
+
 	def inviteUser(self, targetEmail):
 
 		if not self.parent.parent.userEmail():
