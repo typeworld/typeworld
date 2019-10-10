@@ -56,11 +56,11 @@ def validURL(url):
 
 def urlIsValid(url):
 
+	if not url.find('typeworld://') < url.find('+') < url.find('http') < url.find('//', url.find('http')):
+		return False, 'URL is malformed.'
+
 	if url.count('@') > 1:
 		return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
-
-	if not '://' in url:
-		return False, 'URL doesn’t contain ://'
 
 	found = False
 	for protocol in typeWorld.api.base.PROTOCOLS:
@@ -72,9 +72,6 @@ def urlIsValid(url):
 
 	if url.split('://')[-1].count(':') > 1:
 		return False, 'URL contains more than one : signs, so don’t know how to parse it.'
-
-	if not url.find('typeworld://') < url.find('+') < url.find('http') < url.find('//', url.find('http')):
-		return False, 'URL is malformed.'
 
 
 	return True, None
