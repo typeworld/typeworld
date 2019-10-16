@@ -363,11 +363,10 @@ class APIClient(object):
 
 		else:
 
-			print('###### Pinging %s' % server)
-
 			result = 0
 			if MAC or LINUX:
-				result = os.system('ping %s -c 1' % server)
+				out = subprocess.Popen('ping %s -c 1' % server, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, shell=True)
+				output, result = out.communicate()[0].decode(), out.returncode
 			if WIN:
 				CREATE_NO_WINDOW = 0x08000000
 				result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
