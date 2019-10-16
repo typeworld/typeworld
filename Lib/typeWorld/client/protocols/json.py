@@ -302,7 +302,6 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		else:
 			rootCommand = message
 
-		print(rootCommand.supportedCommands)
 		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFont' in rootCommand.supportedCommands:
 			return False, 'API endpoint %s does not support the "installableFonts" or "installFont" commands.' % rootCommand.canonicalURL
 
