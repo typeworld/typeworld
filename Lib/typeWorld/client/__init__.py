@@ -1371,10 +1371,10 @@ class APIPublisher(object):
 
 			response = json.loads(response.read().decode())
 
-			if not response['errors']:
-				self.parent.log('API endpoint alive success.')
-			else:
-				self.parent.log('API endpoint alive error: %s' % response['message'])
+			# if not response['errors']:
+			# 	self.parent.log('API endpoint alive success.')
+			# else:
+			# 	self.parent.log('API endpoint alive error: %s' % response['message'])
 
 
 		# Touch only once
