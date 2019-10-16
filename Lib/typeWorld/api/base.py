@@ -508,7 +508,7 @@ class DictBasedObject(object):
                 methodsList.append(methodName)
                 methods += '<div id="class-%s-method-%s"></div>\n\n' % (self.__class__.__name__.lower(), methodName.lower())
 
-                args = inspect.getargspec(getattr(self, methodName))
+                args = inspect.getfullargspec(getattr(self, methodName))
                 if args.args != ['self']:
                     
                     argList = []
