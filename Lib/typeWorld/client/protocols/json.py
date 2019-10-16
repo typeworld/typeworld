@@ -27,7 +27,7 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}, JSON = None):
 
 		try:
 
-			response = urllib.request.urlopen(request, data, cafile=certifi.where())
+			response = urllib.request.urlopen(request, data, context=sslcontext)
 
 			if response.getcode() != 200:
 				d['errors'].append('Resource returned with HTTP code %s' % response.code)

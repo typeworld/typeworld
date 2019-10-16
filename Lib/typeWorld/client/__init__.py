@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import os, sys, json, platform, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess
+import os, sys, json, platform, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl
 from time import gmtime, strftime
-
+sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 import typeWorld.api, typeWorld.api.base
 from typeWorld.api import *
@@ -548,7 +548,7 @@ class APIClient(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -597,7 +597,7 @@ class APIClient(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -694,7 +694,7 @@ class APIClient(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -745,7 +745,7 @@ class APIClient(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -793,7 +793,7 @@ class APIClient(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -862,7 +862,7 @@ class APIClient(object):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+			response = urllib.request.urlopen(url, data, context=sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -933,7 +933,7 @@ class APIClient(object):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+			response = urllib.request.urlopen(url, data, context=sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -1066,7 +1066,7 @@ class APIClient(object):
 				# print('with username and password %s:%s' % (username, password))
 
 			try:
-				response = urllib.request.urlopen(request, cafile=certifi.where())
+				response = urllib.request.urlopen(request, context=sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1], None
 
@@ -1110,7 +1110,7 @@ class APIClient(object):
 	# 		if username and password:
 	# 			base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
 	# 			request.add_header("Authorization", "Basic %s" % base64string)   
-	# 		response = urllib.request.urlopen(request, cafile=certifi.where())
+	# 		response = urllib.request.urlopen(request, context=sslcontext)
 
 	# 		if response.getcode() == 404:
 	# 			d['errors'].append('Server returned with error 404 (Not found).')
@@ -1374,7 +1374,7 @@ class APIPublisher(object):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, cafile=certifi.where())
+				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
 				return
 
@@ -1634,7 +1634,7 @@ class APISubscription(object):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+			response = urllib.request.urlopen(url, data, context=sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -1684,7 +1684,7 @@ class APISubscription(object):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, cafile=certifi.where())
+			response = urllib.request.urlopen(url, data, context=sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
