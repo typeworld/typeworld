@@ -5,68 +5,71 @@ language: python
 
 jobs:
   include:
-    - stage: linux
-      os: linux
-      python: 3.7           # this works for Linux but is ignored on macOS or Windows
-      env: BADGE=linux
-      install:
-        - pip install deepdiff
-        - pip install semver
-        - pip install codecov
-        - pip install certifi
-        - pip install keyring
-        - pip install lxml
-        - pip install markdown
+    # - stage: linux
+    #   os: linux
+    #   python: 3.7           # this works for Linux but is ignored on macOS or Windows
+    #   env: BADGE=linux
+    #   install:
+    #     - pip install deepdiff
+    #     - pip install semver
+    #     - pip install codecov
+    #     - pip install certifi
+    #     - pip install keyring
+    #     - pip install lxml
+    #     - pip install markdown
 
-    - stage: osx
-      os: osx
-      language: sh
-      env:
-        - TOXENV=py3
-        - HOMEBREW_NO_INSTALL_CLEANUP=1
-        - HOMEBREW_NO_ANALYTICS=1
-        - BADGE=osx
-      before_cache:
-        # - brew cleanup
-        - rm -f "$HOME/Library/Caches/pip/log/debug.log"
-      cache:
-        directories:
-          # - "$HOME/Library/Caches/Homebrew"
-          - "$HOME/Library/Caches/pip"
-      addons:
-        homebrew:
-          # update: true
-          packages: python3
-      before_install:
-        - python3 -m pip install --upgrade virtualenv
-        - virtualenv -p python3 --system-site-packages "$HOME/venv"
-        - source "$HOME/venv/bin/activate"
-      install:
-        - pip install deepdiff
-        - pip install semver
-        - pip install codecov
-        - pip install certifi
-        - pip install pyobjc
-        - pip install keyring
-        - pip install lxml
-        - pip install markdown
+    # - stage: osx
+    #   os: osx
+    #   language: sh
+    #   env:
+    #     - TOXENV=py3
+    #     - HOMEBREW_NO_INSTALL_CLEANUP=1
+    #     - HOMEBREW_NO_ANALYTICS=1
+    #     - BADGE=osx
+    #   before_cache:
+    #     # - brew cleanup
+    #     - rm -f "$HOME/Library/Caches/pip/log/debug.log"
+    #   cache:
+    #     directories:
+    #       # - "$HOME/Library/Caches/Homebrew"
+    #       - "$HOME/Library/Caches/pip"
+    #   addons:
+    #     homebrew:
+    #       # update: true
+    #       packages: python3
+    #   before_install:
+    #     - python3 -m pip install --upgrade virtualenv
+    #     - virtualenv -p python3 --system-site-packages "$HOME/venv"
+    #     - source "$HOME/venv/bin/activate"
+    #   install:
+    #     - pip install deepdiff
+    #     - pip install semver
+    #     - pip install codecov
+    #     - pip install certifi
+    #     - pip install pyobjc
+    #     - pip install keyring
+    #     - pip install lxml
+    #     - pip install markdown
 
     - stage: windows
       os: windows           # Windows 10.0.17134 N/A Build 17134
       language: shell       # 'language: python' is an error on Travis CI Windows
       before_install:
-        - choco install python
+        - choco install python --version 3.7.4
+        - python --version
         - python -m pip install --upgrade pip
+        - pip3 install --upgrade pytest
+        - pip3 install codecov
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
       python: &latest_py3 3.6
       install:
-        - pip install deepdiff
-        - pip install semver
-        - pip install codecov
-        - pip install certifi
-        - pip install keyring
-        - pip install lxml
-        - pip install markdown
+        - pip3 install deepdiff
+        - pip3 install semver
+#        - pip install codecov
+        - pip3 install certifi
+        - pip3 install keyring
+        - pip3 install lxml
+        - pip3 install markdown
 
 
 
