@@ -19,6 +19,14 @@ testUser2 = ('8d48dafc-d07d-11e9-a3e3-901b0ecbcc7a', 'XPd2QbwHskEDzLeUXZxysGkiJm
 testUser3 = ('e865a474-d07d-11e9-982c-901b0ecbcc7a', 'LN1LYRgVYcQhEgulYmUdBgJObq2R4VCgL4rdnnZ5') # test3@type.world
 
 
+class TypeWorldClientDelegate(object):
+	def fontWillInstall(self, font):
+		assert type(font) == typeWorld.api.Font
+
+	def fontHasInstalled(self, success, message, font):
+		assert type(font) == typeWorld.api.Font
+
+
 
 class User(object):
 	def __init__(self, login = None):
@@ -56,7 +64,10 @@ class User(object):
 			return self.client.unlinkUser()
 
 	def loadClient(self):
-		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), delegate = TypeWorldClientDelegate())
+
+
+
 
 
 

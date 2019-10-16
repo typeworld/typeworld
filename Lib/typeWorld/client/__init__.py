@@ -225,6 +225,15 @@ class AppKitNSUserDefaults(Preferences):
 
 
 
+
+class TypeWorldClientDelegate(object):
+	def fontWillInstall(self, font):
+		pass
+
+	def fontHasInstalled(self, success, message, font):
+		pass
+
+
 class APIInvitation(object):
 	keywords = ()
 
@@ -256,13 +265,14 @@ class APIClient(object):
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None):
+	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None):
 		self.preferences = preferences
 		self._publishers = {}
 		self._subscriptionsUpdated = []
 		self.onlineCommandsQueue = []
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
+		self.delegate = delegate or TypeWorldClientDelegate()
 
 		# For Unit Testing
 		self.testScenario = None
@@ -1855,6 +1865,7 @@ class APISubscription(object):
 
 	def installFont(self, fontID, version, folder = None):
 
+
 		# Terms of Service
 		if self.get('acceptedTermsOfService') != True:
 			return False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']
@@ -1871,6 +1882,7 @@ class APISubscription(object):
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
+		self.parent.parent.delegate.fontWillInstall(font)
 
 		success, payload = self.protocol.installFont(fontID, version)		
 
@@ -1891,6 +1903,8 @@ class APISubscription(object):
 				f.write(base64.b64decode(command.font))
 				f.close()
 			except PermissionError:
+
+				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
 				return False, "Insufficient permission to install font."
 
 
@@ -1898,11 +1912,15 @@ class APISubscription(object):
 			self.parent.stillAlive()
 
 			if os.path.exists(path):
+
+				self.parent.parent.delegate.fontHasInstalled(True, None, font)
 				return True, None
 			else:
+				self.parent.parent.delegate.fontHasInstalled(False, 'Font file could not be written: %s' % path, font)
 				return False, 'Font file could not be written: %s' % path
 
 		else:
+			self.parent.parent.delegate.fontHasInstalled(False, payload, font)
 			return False, payload
 
 
