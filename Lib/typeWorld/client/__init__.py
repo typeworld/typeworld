@@ -228,10 +228,10 @@ class AppKitNSUserDefaults(Preferences):
 
 class TypeWorldClientDelegate(object):
 	def fontWillInstall(self, font):
-		pass
+		assert type(font) == typeWorld.api.Font
 
 	def fontHasInstalled(self, success, message, font):
-		pass
+		assert type(font) == typeWorld.api.Font
 
 
 class APIInvitation(object):
