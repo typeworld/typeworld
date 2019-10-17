@@ -1045,15 +1045,12 @@ class APIClient(object):
 
 	def allSubscriptionsUpdated(self):
 
-		numSubscriptions = 0
 		for publisher in self.publishers():
-			numSubscriptions += len(publisher.subscriptions())
+			for subscription in publisher.subscriptions():
+				if subscription.stillUpdating():
+					return False
 
-		if len(self._subscriptionsUpdated) == numSubscriptions:
-			return True
-		else:
-			return False
-
+		return True
 
 
 	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
