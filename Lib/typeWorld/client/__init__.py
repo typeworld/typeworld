@@ -1846,6 +1846,7 @@ class APISubscription(object):
 					if font.uniqueID == fontID:
 						if self.installedFontVersion(font.uniqueID):
 							path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+							break
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
@@ -1894,6 +1895,7 @@ class APISubscription(object):
 				for font in family.fonts:
 					if font.uniqueID == fontID:
 						path = os.path.join(folder, font.filename(version))
+						break
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
