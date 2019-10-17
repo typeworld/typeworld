@@ -1051,6 +1051,8 @@ class APIClient(object):
 
 		if len(self._subscriptionsUpdated) == numSubscriptions:
 			return True
+		else:
+			return False
 
 
 
@@ -1549,17 +1551,18 @@ class APIPublisher(object):
 
 		self.parent.prepareUpdate()
 
-		noChanges = False
+		changes = False
 
 		if self.parent.online():
 
 			for subscription in self.subscriptions():
 				success, message, change = subscription.update()
-				noChanges = noChanges and change
+				if change:
+					changes = True
 				if not success:
 					return success, message, False
 
-			return True, None, not noChanges
+			return True, None, changes
 
 		else:
 			return False, '#(response.notOnline)', False
