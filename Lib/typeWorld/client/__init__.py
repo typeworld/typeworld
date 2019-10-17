@@ -1550,17 +1550,20 @@ class APIPublisher(object):
 
 		self.parent.prepareUpdate()
 
+		noChanges = False
+
 		if self.parent.online():
 
 			for subscription in self.subscriptions():
-				success, message = subscription.update()
+				success, message, change = subscription.update()
+				noChanges = noChanges and change
 				if not success:
-					return success, message
+					return success, message, False
 
-			return True, None
+			return True, None, not noChanges
 
 		else:
-			return False, '#(response.notOnline)'
+			return False, '#(response.notOnline)', False
 
 	def save(self):
 		publishers = self.parent.preferences.get('publishers') or []
@@ -1799,20 +1802,24 @@ class APISubscription(object):
 							l.append(font.uniqueID)
 		return l
 
-	def installedFontVersion(self, fontID = None):
+	def installedFontVersion(self, fontID = None, font = None):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
 		folder = self.parent.folder()
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == fontID:
 
-						for version in font.getVersions():
-							path = os.path.join(folder, font.filename(version.number))
-							if os.path.exists(path):
-								return version.number
+		if not font:
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if font.uniqueID == fontID:
+							break
+
+		if font:
+			for version in font.getVersions():
+				path = os.path.join(folder, font.filename(version.number))
+				if os.path.exists(path):
+					return version.number
 
 	# def fontIsOutdated(self, fontID):
 
@@ -1987,7 +1994,7 @@ class APISubscription(object):
 		if self.parent.parent.online(self.protocol.restDomain.split('/')[0]):
 
 
-			success, message = self.protocol.update()
+			success, message, changes = self.protocol.update()
 
 			# elif self.parent.get('type') == 'GitHub':
 
@@ -2008,14 +2015,14 @@ class APISubscription(object):
 			self.parent.parent._subscriptionsUpdated.append(self.url)
 
 			self.save()
-			return True, None
+			return True, None, changes
 
 		else:
 			self.parent._updatingSubscriptions.remove(self.url)
 			self.parent.parent._subscriptionsUpdated.append(self.url)
 			self._updatingProblem = '#(response.serverNotReachable)'
 #			print('Error updating %s' % self)
-			return False, self._updatingProblem
+			return False, self._updatingProblem, False
 
 	def updatingProblem(self):
 		return self._updatingProblem

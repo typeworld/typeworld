@@ -149,8 +149,10 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		# Replace latest version
 		# TODO: Implement different checking, save additional version
+		identical = self.versions[-1].sameContent(api)
+
 		self.versions[-1] = api
-		return True, None
+		return True, None, not identical
 
 
 	def removeFont(self, fontID):
