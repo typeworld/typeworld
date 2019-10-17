@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import os, sys, json, platform, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl
+import os, sys, json, platform, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl, threading
 from time import gmtime, strftime
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -1394,7 +1394,6 @@ class APIPublisher(object):
 		# Touch only once
 		if not self.stillAliveTouched:
 
-			import threading
 			stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self, ))
 			stillAliveThread.start()
 
@@ -1899,7 +1898,13 @@ class APISubscription(object):
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
-		self.parent.parent.delegate.fontWillInstall(font)
+		# self.parent.parent.delegate.fontWillInstall(font)
+
+		def installFontDelegateWorker(self):
+			self.parent.parent.delegate.fontWillInstall(font)
+		installFontDelegateThread = threading.Thread(target=installFontDelegateWorker, args=(self, ))
+		installFontDelegateThread.start()
+
 
 		success, payload = self.protocol.installFont(fontID, version)		
 
