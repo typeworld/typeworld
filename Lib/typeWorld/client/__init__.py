@@ -233,6 +233,11 @@ class TypeWorldClientDelegate(object):
 	def fontHasInstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
+	def fontWillUninstall(self, font):
+		assert type(font) == typeWorld.api.Font
+
+	def fontHasUninstalled(self, success, message, font):
+		assert type(font) == typeWorld.api.Font
 
 class APIInvitation(object):
 	keywords = ()
@@ -1837,6 +1842,8 @@ class APISubscription(object):
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
+		self.parent.parent.delegate.fontWillUninstall(font)
+
 		success, payload = self.protocol.removeFont(fontID)
 
 		if success:
@@ -1846,18 +1853,20 @@ class APISubscription(object):
 
 				try:
 					os.remove(path)
+					self.parent.parent.delegate.fontHasUninstalled(True, None, font)
 					return True, None
 
 				except PermissionError:
+					self.parent.parent.delegate.fontHasUninstalled(False, "Insufficient permission to delete font.", font)
 					return False, "Insufficient permission to delete font."
 
 			else:
 
+				self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
 				return False, 'Font doesn’t exist.'
 
-
-
 		else:
+			self.parent.parent.delegate.fontHasUninstalled(False, payload, font)
 			return False, payload
 
 
