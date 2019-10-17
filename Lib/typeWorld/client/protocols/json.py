@@ -134,18 +134,18 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			
 			self.parent.parent._updatingSubscriptions.remove(self.url)
 			self.parent._updatingProblem = '\n'.join(responses['errors'])
-			return False, self.parent._updatingProblem
+			return False, self.parent._updatingProblem, False
 
 		if api.type == 'error':
 			self.parent.parent._updatingSubscriptions.remove(self.url)
 			self.parent._updatingProblem = api.errorMessage
-			return False, self.parent._updatingProblem
+			return False, self.parent._updatingProblem, False
 
 		if api.type in ('temporarilyUnavailable', 'insufficientPermission'):
 			if self.url in self.parent.parent._updatingSubscriptions:
 				self.parent.parent._updatingSubscriptions.remove(self.url)
 			self.parent._updatingProblem = '#(response.%s)' % api.type
-			return False, self.parent._updatingProblem
+			return False, self.parent._updatingProblem, False
 
 		# Replace latest version
 		# TODO: Implement different checking, save additional version
