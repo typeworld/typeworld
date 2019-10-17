@@ -172,6 +172,11 @@ class TestStringMethods(unittest.TestCase):
 			changes,
 			False
 			)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(
+			changes,
+			False
+			)
 		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
 		print(user1.client.publishers()[0].updatingProblem())
