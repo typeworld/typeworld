@@ -166,8 +166,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 				for font in family.fonts:
 					if font.uniqueID == fontID:
 
-						# TODO: remove this for final version
-						if (hasattr(font, 'requiresUserID') and font.requiresUserID) or (hasattr(font, 'protected') and font.protected):
+						if font.protected:
 						
 							data = {
 								'command': 'uninstallFont',
@@ -196,11 +195,6 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 									return False, '#(response.%s)' % api.type
 
 							return True, None
-
-						else:
-							return True, None
-
-		return True, None
 
 
 
