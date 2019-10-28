@@ -203,6 +203,10 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateInsufficientPermissions'
 		success, message, changes = user1.client.publishers()[0].update()
 		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateCustomError'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
 
 		# Simulate unexpected empty subscription
 		user1.client.testScenario = 'simulateNoFontsAvailable'
@@ -215,9 +219,23 @@ class TestStringMethods(unittest.TestCase):
 		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
 
 		# Repeat font installation
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateCustomError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+
+
+		# Supposed to pass
+		user1.client.testScenario = None
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
 
 		# This is also supposed to delete the installed protected font
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
