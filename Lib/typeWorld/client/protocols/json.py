@@ -13,52 +13,38 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}, JSON = None):
 	url = transportProtocol + restDomain
 
 
-	try:
-		request = urllib.request.Request(url)
+	request = urllib.request.Request(url)
 
-		if not 'source' in data:
-			data['source'] = 'typeWorldApp'
+	if not 'source' in data:
+		data['source'] = 'typeWorldApp'
 
-		data = urllib.parse.urlencode(data)
-		data = data.encode('ascii')
-		
-		if JSON:
-			api.loadJSON(JSON)
+	data = urllib.parse.urlencode(data)
+	data = data.encode('ascii')
+	
+	if JSON:
+		api.loadJSON(JSON)
 
-		try:
+	response = urllib.request.urlopen(request, data, context=sslcontext)
 
-			response = urllib.request.urlopen(request, data, context=sslcontext)
+	if response.getcode() != 200:
+		d['errors'].append('Resource returned with HTTP code %s' % response.code)
 
-			if response.getcode() != 200:
-				d['errors'].append('Resource returned with HTTP code %s' % response.code)
+	incomingMIMEType = response.headers['content-type'].split(';')[0]
+	if not incomingMIMEType in acceptableMimeTypes:
+		d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
 
-			incomingMIMEType = response.headers['content-type'].split(';')[0]
-			if not incomingMIMEType in acceptableMimeTypes:
-				d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
-
-			if response.getcode() == 200:
-
-				api.loadJSON(response.read().decode())
+	if response.getcode() == 200:
+		api.loadJSON(response.read().decode())
 
 
-		except urllib.request.HTTPError as e:
-			d['errors'].append('API endpoint returned with following error: %s' % str(e))
+	information, warnings, errors = api.validate()
 
-		except:
-			d['errors'].append(traceback.format_exc())
-
-
-		information, warnings, errors = api.validate()
-
-		if information:
-			d['information'].extend(information)
-		if warnings:
-			d['warnings'].extend(warnings)
-		if errors:
-			d['errors'].extend(errors)
-
-	except:
-		d['errors'].append(traceback.format_exc())
+	if information:
+		d['information'].extend(information)
+	if warnings:
+		d['warnings'].extend(warnings)
+	if errors:
+		d['errors'].extend(errors)
 
 	return api, d
 
