@@ -1516,23 +1516,21 @@ class APIPublisher(object):
 
 
 	def subscription(self, url, protocol = None):
+
 		if url not in self._subscriptions:
 
 			# Load from DB
 			loadFromDB = False
+
 			if not protocol:
 				success, message = self.parent.protocol(url)
 				if success:
 					protocol = message
 					loadFromDB = True
-				else:
-					raise Exception(message)
 
 			e = APISubscription(self, protocol)
 			if loadFromDB:
 				protocol.loadFromDB()
-
-
 
 			self._subscriptions[url] = e
 
