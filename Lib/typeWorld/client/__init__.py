@@ -2016,6 +2016,9 @@ class APISubscription(object):
 			# 	commits, responses = self.parent.readGitHubResponse(commitsURL)
 			# 	self.set('commits', commits)
 
+			if not success:
+				return success, message, changes
+
 			if self.url in self.parent._updatingSubscriptions:
 				self.parent._updatingSubscriptions.remove(self.url)
 			self._updatingProblem = None
