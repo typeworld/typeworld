@@ -115,6 +115,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 	def update(self):
 
+		print('Updating...')
+
 		data = {
 			'subscriptionID': self.subscriptionID, 
 			'command': 'installableFonts', 
@@ -128,7 +130,12 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if secretKey:
 			data['secretKey'] = secretKey
 
+		print ('data: %s' % data)
+
 		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+
+		print('Response: %s' % api.dumpJSON())
+
 		if responses['errors']:
 			
 			self.parent.parent._updatingSubscriptions.remove(self.url)
