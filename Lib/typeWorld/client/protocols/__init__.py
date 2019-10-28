@@ -94,7 +94,7 @@ class TypeWorldProtocolBase(object):
 		return keyring.get_password(self.url, self.subscriptionID)
 
 	def setSecretKey(self, secretKey):
-		keyring = self.parent.parent.parent.keyring()
+		keyring = self.parent.keyring()
 		keyring.set_password(self.url, self.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
