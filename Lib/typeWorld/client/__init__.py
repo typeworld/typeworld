@@ -1557,7 +1557,7 @@ class APIPublisher(object):
 				if change:
 					changes = True
 				if not success:
-					return success, message, False
+					return success, message, changes
 
 			return True, None, changes
 
