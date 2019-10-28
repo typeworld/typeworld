@@ -133,7 +133,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 
 
-
 		# saveURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		# completeURL
@@ -168,12 +167,11 @@ class TestStringMethods(unittest.TestCase):
 			True
 			)
 		success, message, changes = user1.client.publishers()[0].update()
-		self.assertEqual(
-			changes,
-			False
-			)
+		print('Updating publisher:', success, message, changes)
+		self.assertEqual(success, True)
+		self.assertEqual(changes, False)
 		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		print(success, message, changes)
+		print('Updating subscription 1:', success, message, changes)
 		self.assertEqual(success, True)
 		self.assertEqual(changes, False)
 		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
@@ -191,6 +189,21 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 
 		# Finally supposed to pass
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+		# Simulate unexpected empty subscription
+		user1.client.testScenario = 'simulateNoFontsAvailable'
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		print('Updating subscription 2:', success, message, changes)
+		self.assertEqual(success, True)
+		self.assertEqual(changes, True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
+		user1.client.testScenario = None
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+
+		# Repeat font installation
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
