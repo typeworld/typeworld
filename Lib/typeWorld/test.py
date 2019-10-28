@@ -222,10 +222,12 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateProgrammingError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
+
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
+
 		user1.client.testScenario = 'simulateInsufficientPermissions'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
