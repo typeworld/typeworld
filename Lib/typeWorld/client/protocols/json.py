@@ -278,11 +278,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return False, responses['errors'][0]
 
 		# Check for installableFonts response support
-		success, message = self.rootCommand(testScenario = testScenario)
-		if not success:
-			return False, message
-		else:
-			rootCommand = message
+		success, rootCommand = self.rootCommand(testScenario = testScenario)
 
 		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFont' in rootCommand.supportedCommands:
 			return False, 'API endpoint %s does not support the "installableFonts" or "installFont" commands.' % rootCommand.canonicalURL
