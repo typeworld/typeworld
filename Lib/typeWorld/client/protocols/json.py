@@ -155,6 +155,11 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 
 		# Detect installed fonts now not available in subscription anymore and delete them
+		if api.type == typeWorld.api.NOFONTSAVAILABLE:
+			for foundry in self._installableFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						self.removeFont(font.uniqueID)
 
 
 		identical = self._installableFontsCommand.sameContent(api)
