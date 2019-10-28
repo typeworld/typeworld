@@ -329,6 +329,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		self._installableFontsCommand = api
 
 		# Success
+		if self.secretKey:
+			self.setSecretKey(self.secretKey)
 		return True, None
 
 	def save(self):
