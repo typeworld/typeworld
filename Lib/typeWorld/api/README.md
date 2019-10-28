@@ -1477,7 +1477,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttc', 'ttf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff', 'otf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1778,7 +1778,7 @@ __Type:__ Str<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired', 'revealedUserIdentityRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'temporarilyUnavailable', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired', 'revealedUserIdentityRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1850,7 +1850,7 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation', 'insufficientPermission', 'validTypeWorldUserAccountRequired']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation', 'insufficientPermission', 'temporarilyUnavailable', 'validTypeWorldUserAccountRequired']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1911,7 +1911,7 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'insufficientPermission']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'insufficientPermission', 'temporarilyUnavailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />

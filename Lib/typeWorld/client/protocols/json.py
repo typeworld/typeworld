@@ -146,6 +146,10 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			self.parent._updatingProblem = '#(response.%s)' % api.type
 			return False, self.parent._updatingProblem, False
 
+
+		# Detect installed fonts now not available in subscription anymore and delete them
+
+
 		identical = self._installableFontsCommand.sameContent(api)
 		self._installableFontsCommand = api
 		return True, None, not identical
