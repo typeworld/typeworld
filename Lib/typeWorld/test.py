@@ -193,6 +193,17 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
+		# Simulations
+		user1.client.testScenario = 'simulateNotOnline'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+
 		# Simulate unexpected empty subscription
 		user1.client.testScenario = 'simulateNoFontsAvailable'
 		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
@@ -322,6 +333,9 @@ class TestStringMethods(unittest.TestCase):
 		# Protected subscription, installation on second machine
 
 		# Supposed to reject because seats are limited to 1
+		user2.client.testScenario = 'simulateProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
@@ -1055,7 +1069,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'API endpoint returned with following error: HTTP Error 500: Internal Server Error')
+		self.assertEqual(message, 'HTTP Error 500: Internal Server Error')
 
 		success, message, publisher, subscription = user0.client.addSubscription('typeworld://unknownprotocol+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		self.assertEqual(success, False)

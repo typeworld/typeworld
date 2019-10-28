@@ -24,18 +24,21 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}, JSON = None):
 	if JSON:
 		api.loadJSON(JSON)
 
-	response = urllib.request.urlopen(request, data, context=sslcontext)
+	try:
+		response = urllib.request.urlopen(request, data, context=sslcontext)
 
-	if response.getcode() != 200:
-		d['errors'].append('Resource returned with HTTP code %s' % response.code)
+		if response.getcode() != 200:
+			d['errors'].append('Resource returned with HTTP code %s' % response.code)
 
-	incomingMIMEType = response.headers['content-type'].split(';')[0]
-	if not incomingMIMEType in acceptableMimeTypes:
-		d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
+		incomingMIMEType = response.headers['content-type'].split(';')[0]
+		if not incomingMIMEType in acceptableMimeTypes:
+			d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
 
-	if response.getcode() == 200:
-		api.loadJSON(response.read().decode())
+		if response.getcode() == 200:
+			api.loadJSON(response.read().decode())
 
+	except urllib.request.HTTPError as e:
+		d['errors'].append(str(e))
 
 	information, warnings, errors = api.validate()
 
@@ -120,11 +123,10 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 
-		print('Response: %s' % api.dumpJSON())
-
 		if responses['errors']:
 			
-			self.parent.parent._updatingSubscriptions.remove(self.url)
+			if self.url in self.parent.parent._updatingSubscriptions:
+				self.parent.parent._updatingSubscriptions.remove(self.url)
 			self.parent._updatingProblem = '\n'.join(responses['errors'])
 			return False, self.parent._updatingProblem, False
 
