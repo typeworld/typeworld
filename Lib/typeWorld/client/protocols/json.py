@@ -70,20 +70,19 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 	def initialize(self):
 		self.versions = []
 		self._rootCommand = None
+		self._installableFontsCommand = None
 
 	def loadFromDB(self):
 		'''Overwrite this'''
 
-		if self.get('versions'):
-			for dictData in self.get('versions'):
-				api = InstallableFontsResponse()
-				api.parent = self
-				api.loadJSON(dictData)
-				self.versions.append(api)
+		if self.get('installableFontsCommand'):
+			api = InstallableFontsResponse()
+			api.parent = self
+			api.loadJSON(self.get('installableFontsCommand'))
+			self._installableFontsCommand = api
 
 	def latestVersion(self):
-		if self.versions:
-			return self.versions[-1]
+		return self._installableFontsCommand
 
 	def returnRootCommand(self, testScenario):
 
@@ -147,11 +146,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			self.parent._updatingProblem = '#(response.%s)' % api.type
 			return False, self.parent._updatingProblem, False
 
-		# Replace latest version
-		# TODO: Implement different checking, save additional version
-		identical = self.versions[-1].sameContent(api)
-
-		self.versions[-1] = api
+		identical = self._installableFontsCommand.sameContent(api)
+		self._installableFontsCommand = api
 		return True, None, not identical
 
 
@@ -314,12 +310,11 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if api.type != 'error' and api.type != 'success':
 			return False, '#(response.%s)' % api.type
 
-		self.versions.append(api)
-#		self.save()
+		self._installableFontsCommand = api
 
 		# Success
 		return True, None
 
 	def save(self):
-		self.set('versions', [x.dumpJSON() for x in self.versions])
+		self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
 
