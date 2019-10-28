@@ -2024,7 +2024,8 @@ class APISubscription(object):
 			self._updatingProblem = None
 			self.parent.parent._subscriptionsUpdated.append(self.url)
 
-			self.save()
+			if changes:
+				self.save()
 			return True, None, changes
 
 		else:
