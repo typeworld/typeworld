@@ -533,10 +533,8 @@ class APIClient(object):
 		self.appendCommands('uploadSubscriptions', self.completeSubscriptionURLs() or ['empty'])
 		self.appendCommands('downloadSubscriptions')
 
-		if performCommands:
-			return self.performCommands()
-		else:
-			return True, None
+		if performCommands: return self.performCommands()
+		else: return True, None
 
 	def perfomUploadSubscriptions(self, oldURLs):
 
@@ -1036,16 +1034,16 @@ class APIClient(object):
 
 		elif WIN:
 
-			if 'TRAVIS' in os.environ:
-				return dummyKeyRing
+			# if 'TRAVIS' in os.environ:
+			# 	return dummyKeyRing
 
 			from keyring.backends.Windows import WinVaultKeyring
 			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 
 		elif LINUX:
 
-			if 'TRAVIS' in os.environ:
-				return dummyKeyRing
+			# if 'TRAVIS' in os.environ:
+			# 	return dummyKeyRing
 
 			return dummyKeyRing
 			# from keyring.backends.kwallet import DBusKeyring

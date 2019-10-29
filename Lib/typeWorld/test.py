@@ -626,7 +626,8 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-
+		# TODO:
+		# App revokation
 
 
 	def test_api(self):
