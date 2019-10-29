@@ -37,6 +37,8 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 		d['errors'].append(str(e))
 
 
+	# if information:
+	# 	d['information'].extend(information)
 	if warnings:
 		d['warnings'].extend(warnings)
 	if errors:
@@ -63,8 +65,20 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			api.loadJSON(self.get('installableFontsCommand'))
 			self._installableFontsCommand = api
 
+		if self.get('rootCommand'):
+			api = RootResponse()
+			api.parent = self
+			api.loadJSON(self.get('rootCommand'))
+			self._rootCommand = api
+
 	def latestVersion(self):
 		return self._installableFontsCommand
+
+
+	def updateRootCommand(self):
+		self._rootCommand = None
+		success, rootCommand = self.rootCommand()
+
 
 	def returnRootCommand(self, testScenario):
 
@@ -84,6 +98,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 			self._rootCommand = api
 
+			self.save()
+
 		# Success
 		return True, self._rootCommand
 
@@ -97,7 +113,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 	def update(self):
 
-		print('Updating...')
+		self.updateRootCommand()
 
 		data = {
 			'subscriptionID': self.subscriptionID, 
@@ -111,8 +127,6 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		secretKey = self.getSecretKey()
 		if secretKey:
 			data['secretKey'] = secretKey
-
-		print ('data: %s' % data)
 
 		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 
@@ -146,6 +160,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		identical = self._installableFontsCommand.sameContent(api)
 		self._installableFontsCommand = api
+
+		self.save()
+
 		return True, None, not identical
 
 
@@ -240,6 +257,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							return True, api
 
 
+
+
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey, testScenario):
 		'''Overwrite this.
 		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
@@ -285,5 +304,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		return True, None
 
 	def save(self):
-		self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
+		if self._installableFontsCommand:
+			self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
+		if self._rootCommand:
+			self.set('rootCommand', self._rootCommand.dumpJSON())
 
