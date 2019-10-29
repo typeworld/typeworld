@@ -1039,21 +1039,27 @@ class APIClient(object):
 				import keyring
 				from keyring.backends.Windows import WinVaultKeyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
+				usingRealKeyring = True
 			except:
-				return dummyKeyRing
+				keyring = dummyKeyRing
+				usingRealKeyring = False
 
-
-			# keyring.set_keyring(keyring.backend.Win32CryptoKeyring())
+			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
+			return keyring
 
 		elif LINUX:
 
-			# if 'TRAVIS' in os.environ:
-			# 	return dummyKeyRing
+			try:
+				import keyring
+				from keyring.backends.kwallet import DBusKeyring
+				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
+				usingRealKeyring = True
+			except:
+				keyring = dummyKeyRing
+				usingRealKeyring = False
 
-			return dummyKeyRing
-			# from keyring.backends.kwallet import DBusKeyring
-			# keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
-
+			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
+			return keyring
 
 
 	def log(self, *argv):
