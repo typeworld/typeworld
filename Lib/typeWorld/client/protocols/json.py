@@ -194,7 +194,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 								if not api.type in proceed:
 									return False, '#(response.%s)' % api.type
 
-							return True, None
+						return True, None
 
 
 
