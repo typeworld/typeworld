@@ -60,7 +60,7 @@ jobs:
         - python -m pip install --upgrade pip
         - pip3 install --upgrade pytest
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
-      python: &latest_py3 3.6
+      python: &latest_py3 3.7
       install:
         - pip3 install deepdiff
         - pip3 install semver

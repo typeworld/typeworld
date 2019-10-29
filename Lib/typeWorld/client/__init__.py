@@ -21,10 +21,10 @@ if MAC:
 	import objc
 	from AppKit import NSDictionary, NSUserDefaults
 
-if WIN:
-	import winreg as wreg
-	key = wreg.CreateKey(wreg.HKEY_LOCAL_MACHINE, "System\\CurrentControlSet\\Control\\Lsa\\")
-	wreg.SetValueEx(key, 'disabledomaincreds', 0, wreg.REG_DWORD, 1)
+# if WIN and 'TRAVIS' in os.environ:
+# 	import winreg as wreg
+# 	key = wreg.CreateKey(wreg.HKEY_LOCAL_MACHINE, "System\\CurrentControlSet\\Control\\Lsa\\")
+# 	wreg.SetValueEx(key, 'disabledomaincreds', 0, wreg.REG_DWORD, 1)
 
 
 class DummyKeyring(object):
@@ -1039,8 +1039,10 @@ class APIClient(object):
 
 		elif WIN:
 
-			from keyring.backends.Windows import WinVaultKeyring
-			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
+			# from keyring.backends.Windows import WinVaultKeyring
+			# keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
+
+			keyring.set_keyring(keyring.backend.Win32CryptoKeyring())
 
 		elif LINUX:
 
