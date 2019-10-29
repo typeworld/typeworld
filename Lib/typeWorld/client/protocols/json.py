@@ -28,10 +28,12 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 		if not incomingMIMEType in acceptableMimeTypes:
 			d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
 
+		if response.getcode() != 200:
+			d['errors'].append(str(esponse.info()))
+
 		if response.getcode() == 200:
 			api.loadJSON(response.read().decode())
-
-		information, warnings, errors = api.validate()
+			information, warnings, errors = api.validate()
 
 		# if information:
 		# 	d['information'].extend(information)
@@ -173,7 +175,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 				for font in family.fonts:
 					if font.uniqueID == fontID:
 
-						if font.protected:
+						if (hasattr(font, 'requiresUserID') and font.requiresUserID) or (hasattr(font, 'protected') and font.protected):
 						
 							data = {
 								'command': 'uninstallFont',
@@ -194,6 +196,9 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 							if messages['errors']:
 								return False, '\n\n'.join(messages['errors'])
+
+							elif api.type == 'error':
+								return False, api.errorMessage
 
 							# Predefined response messages
 							elif api.type != 'error' and api.type != 'success':
@@ -281,7 +286,11 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			return False, responses['errors'][0]
 
 		# Check for installableFonts response support
-		success, rootCommand = self.rootCommand(testScenario = testScenario)
+		success, message = self.rootCommand(testScenario = testScenario)
+		if success:
+			rootCommand = message
+		else:
+			return False, 'Error when getting rootCommand: %s' % message
 
 		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFont' in rootCommand.supportedCommands:
 			return False, 'API endpoint %s does not support the "installableFonts" or "installFont" commands.' % rootCommand.canonicalURL
@@ -293,9 +302,10 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if api.type != 'error' and api.type != 'success':
 			return False, '#(response.%s)' % api.type
 
+		# Success
+
 		self._installableFontsCommand = api
 
-		# Success
 		if self.secretKey:
 			self.setSecretKey(self.secretKey)
 		return True, None

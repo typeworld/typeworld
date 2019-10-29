@@ -111,6 +111,7 @@ class TestStringMethods(unittest.TestCase):
 		# Protected subscription, installation on machine without user account
 		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
 		result = user0.client.addSubscription(protectedSubscription)
+		print('Scenario 2:', result)
 		success, message, publisher, subscription = result
 
 		self.assertEqual(success, False)
@@ -125,7 +126,7 @@ class TestStringMethods(unittest.TestCase):
 		# Scenario 3:
 		# Protected subscription, installation on first machine with Type.World user account
 		result = user1.client.addSubscription(protectedSubscription)
-		print(result)
+		print('Scenario 3:', result)
 		success, message, publisher, subscription = result
 
 		self.assertEqual(success, True)
@@ -353,7 +354,6 @@ class TestStringMethods(unittest.TestCase):
 		# Scenario 4:
 		# Protected subscription, installation on second machine
 
-		# Supposed to reject because seats are limited to 1
 		user2.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
@@ -377,15 +377,31 @@ class TestStringMethods(unittest.TestCase):
 		# Two versions available
 		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions())), 2)
 
-		# Attempt to install font for user2, supposed to fail
+		# Supposed to reject because seats are limited to 1
 		user2.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		user2.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)']))
+		self.assertEqual(
+			user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), 
+			(False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)'])
+			)
 
 		# Uninstall font for user1
-		result = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
+		user1.client.testScenario = 'simulateCustomError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = None
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, True)
 
 		# Uninstall font for user2, must fail because deleting same font file (doesn't make sense in normal setup)
 		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
@@ -462,17 +478,17 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
 		self.assertEqual(result[0], False)
-		# user1.client.testScenario = 'simulateNotOnline'
-		# result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		# self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateNotOnline'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
 		user1.client.testScenario = None
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
 		self.assertEqual(result[0], True)
 
-		# Update third user
+		# Update user2
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
 		self.assertEqual(len(user2.client.publishers()), 0)
-		user2.client.downloadSubscriptions()
+		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
 		self.assertEqual(len(user2.client.pendingInvitations()), 1)
 
 		# Decline (exists only here in test script)
@@ -482,7 +498,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(result, (True, None))
 
 		# Accept invitation
-		user2.client.downloadSubscriptions()
+		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
 
 		user2.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message = user2.client.pendingInvitations()[0].accept()
@@ -560,9 +576,9 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
 		self.assertEqual(success, False)
-		# user2.client.testScenario = 'simulateNotOnline'
-		# success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		# self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
 		self.assertEqual(success, True)

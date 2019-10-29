@@ -141,8 +141,7 @@ class Preferences(object):
 		if key in self._dict:
 			del self._dict[key]
 
-	# def save(self):
-	# 	pass
+	def save(self): pass
 
 	# def dictionary(self):
 	# 	return self._dict
@@ -272,6 +271,8 @@ class APIClient(object):
 
 	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None):
 		self.preferences = preferences
+		# if self.preferences:
+		# 	self.clearPendingOnlineCommands()
 		self._publishers = {}
 		self._subscriptionsUpdated = []
 		self.onlineCommandsQueue = []
@@ -284,6 +285,18 @@ class APIClient(object):
 
 		self._systemLocale = None
 		self._online = {}
+
+	def clearPendingOnlineCommands(self):
+		commands = self.preferences.get('pendingOnlineCommands') or {}
+		commands['acceptInvitation'] = []
+		commands['declineInvitation'] = []
+		commands['downloadSubscriptions'] = []
+		commands['linkUser'] = []
+		commands['syncSubscriptions'] = []
+		commands['unlinkUser'] = []
+		commands['uploadSubscriptions'] = []
+		self.preferences.set('pendingOnlineCommands', commands)
+
 
 	def pendingInvitations(self):
 		_list = []
@@ -522,6 +535,8 @@ class APIClient(object):
 
 		if performCommands:
 			return self.performCommands()
+		else:
+			return True, None
 
 	def perfomUploadSubscriptions(self, oldURLs):
 
@@ -537,7 +552,7 @@ class APIClient(object):
 				'command': 'uploadUserSubscriptions',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
-				'subscriptionURLs': ','.join(oldURLs or ['empty']),
+				'subscriptionURLs': ','.join(oldURLs),
 				'appVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
@@ -572,6 +587,8 @@ class APIClient(object):
 
 		if performCommands:
 			return self.performCommands()
+		else:
+			return True, None
 
 
 	def performDownloadSubscriptions(self):
@@ -766,7 +783,10 @@ class APIClient(object):
 	def syncSubscriptions(self, performCommands = True):
 		self.appendCommands('syncSubscriptions', self.completeSubscriptionURLs() or ['empty'])
 
-		if performCommands: return self.performCommands()
+		if performCommands:
+			return self.performCommands()
+		else:
+			return True, None
 
 	def performSyncSubscriptions(self, oldURLs):
 
@@ -782,7 +802,7 @@ class APIClient(object):
 				'command': 'syncUserSubscriptions',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
-				'subscriptionURLs': ','.join(oldURLs or ['empty']),
+				'subscriptionURLs': ','.join(oldURLs),
 				'appVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
@@ -1027,8 +1047,9 @@ class APIClient(object):
 			if 'TRAVIS' in os.environ:
 				return dummyKeyRing
 
-			from keyring.backends.kwallet import DBusKeyring
-			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
+			return dummyKeyRing
+			# from keyring.backends.kwallet import DBusKeyring
+			# keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 
 
 		return keyring
@@ -1200,11 +1221,13 @@ class APIClient(object):
 		if success:
 			protocol = message
 		else:
+			print('Error in addSubscription() from self.protocol(): %s' % message)
 			return False, message, None, None
 
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
+			print('Error in addSubscription() from aboutToAddSubscription(): %s' % response)
 			return False, response, None, None
 
 
@@ -1223,6 +1246,7 @@ class APIClient(object):
 		if updateSubscriptionsOnServer:
 			success, message = self.uploadSubscriptions()
 			if not success:
+				print('Error in addSubscription() from self.uploadSubscriptions(): %s' % message)
 				return False, message, None, None
 
 		protocol.subscriptionAdded()
@@ -1621,38 +1645,43 @@ class APISubscription(object):
 
 	def inviteUser(self, targetEmail):
 
-		if not self.parent.parent.userEmail():
-			return False, 'No source user linked.'
+		if self.parent.parent.online():
 
-		parameters = {
-			'command': 'inviteUserToSubscription',
-			'targetUserEmail': targetEmail,
-			'sourceUserEmail': self.parent.parent.userEmail(),
-			'subscriptionURL': self.protocol.completeURL(),
-		}
-		if self.parent.parent.testScenario:
-			parameters['testScenario'] = self.parent.parent.testScenario
+			if not self.parent.parent.userEmail():
+				return False, 'No source user linked.'
 
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
-		if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
+			parameters = {
+				'command': 'inviteUserToSubscription',
+				'targetUserEmail': targetEmail,
+				'sourceUserEmail': self.parent.parent.userEmail(),
+				'subscriptionURL': self.protocol.completeURL(),
+			}
+			if self.parent.parent.testScenario:
+				parameters['testScenario'] = self.parent.parent.testScenario
 
-		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+			url = 'https://type.world/jsonAPI/'
+			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
-		response = json.loads(response.read().decode())
+			try:
+				response = urllib.request.urlopen(url, data, context=sslcontext)
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
-		if 'errors' in response and response['errors']:
-			return False, ', '.join(response['errors'])
+			response = json.loads(response.read().decode())
 
-		if 'response' in response:
-			if response['response'] == 'success':
-				return True, None
-			else:
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if 'errors' in response and response['errors']:
+				return False, ', '.join(response['errors'])
+
+			if 'response' in response:
+				if response['response'] == 'success':
+					return True, None
+				else:
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+		else:
+			return False, '#(response.notOnline)'
 
 
 
@@ -1671,38 +1700,42 @@ class APISubscription(object):
 
 	def revokeUser(self, targetEmail):
 
-		if not self.parent.parent.userEmail():
-			return False, 'No source user linked.'
+		if self.parent.parent.online():
+			if not self.parent.parent.userEmail():
+				return False, 'No source user linked.'
 
-		parameters = {
-			'command': 'revokeSubscriptionInvitation',
-			'targetUserEmail': targetEmail,
-			'sourceUserEmail': self.parent.parent.userEmail(),
-			'subscriptionURL': self.protocol.completeURL(),
-		}
-		if self.parent.parent.testScenario:
-			parameters['testScenario'] = self.parent.parent.testScenario
+			parameters = {
+				'command': 'revokeSubscriptionInvitation',
+				'targetUserEmail': targetEmail,
+				'sourceUserEmail': self.parent.parent.userEmail(),
+				'subscriptionURL': self.protocol.completeURL(),
+			}
+			if self.parent.parent.testScenario:
+				parameters['testScenario'] = self.parent.parent.testScenario
 
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
-		if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+			url = 'https://type.world/jsonAPI/'
+			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
-		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+			try:
+				response = urllib.request.urlopen(url, data, context=sslcontext)
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
-		response = json.loads(response.read().decode())
+			response = json.loads(response.read().decode())
 
-		if 'errors' in response and response['errors']:
-			return False, ', '.join(response['errors'])
+			if 'errors' in response and response['errors']:
+				return False, ', '.join(response['errors'])
 
-		if 'response' in response:
-			if response['response'] == 'success':
-				return True, None
-			else:
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if 'response' in response:
+				if response['response'] == 'success':
+					return True, None
+				else:
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+		else:
+			return False, '#(response.notOnline)'
 
 	def invitationAccepted(self):
 
