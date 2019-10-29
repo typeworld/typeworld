@@ -198,14 +198,23 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateNotOnline'
 		success, message, changes = user1.client.publishers()[0].update()
 		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
 		user1.client.testScenario = 'simulateProgrammingError'
 		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
 		self.assertEqual(success, False)
 		user1.client.testScenario = 'simulateInsufficientPermissions'
 		success, message, changes = user1.client.publishers()[0].update()
 		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
 		user1.client.testScenario = 'simulateCustomError'
 		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
@@ -1032,6 +1041,7 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_helpers(self):
 
+
 		# validURL()
 		self.assertEqual(typeWorld.client.validURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), True)
 		self.assertEqual(typeWorld.client.validURL('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), False)
@@ -1080,6 +1090,10 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.locale(), ['en'])
 		user0.client.preferences.set('customLocaleChoice', 'de')
 		self.assertEqual(user0.client.locale(), ['de', 'en'])
+
+		from typeWorld.client.helpers import addAttributeToURL
+		self.assertEqual(addAttributeToURL('https://type.world/', 'hello=world'), 'https://type.world/?hello=world')
+		self.assertEqual(addAttributeToURL('https://type.world/?foo=bar', 'hello=world'), 'https://type.world/?foo=bar&hello=world')
 
 
 	def test_simulateExternalScenarios(self):

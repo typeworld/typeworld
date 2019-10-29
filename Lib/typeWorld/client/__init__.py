@@ -286,16 +286,16 @@ class APIClient(object):
 		self._systemLocale = None
 		self._online = {}
 
-	def clearPendingOnlineCommands(self):
-		commands = self.preferences.get('pendingOnlineCommands') or {}
-		commands['acceptInvitation'] = []
-		commands['declineInvitation'] = []
-		commands['downloadSubscriptions'] = []
-		commands['linkUser'] = []
-		commands['syncSubscriptions'] = []
-		commands['unlinkUser'] = []
-		commands['uploadSubscriptions'] = []
-		self.preferences.set('pendingOnlineCommands', commands)
+	# def clearPendingOnlineCommands(self):
+	# 	commands = self.preferences.get('pendingOnlineCommands') or {}
+	# 	commands['acceptInvitation'] = []
+	# 	commands['declineInvitation'] = []
+	# 	commands['downloadSubscriptions'] = []
+	# 	commands['linkUser'] = []
+	# 	commands['syncSubscriptions'] = []
+	# 	commands['unlinkUser'] = []
+	# 	commands['uploadSubscriptions'] = []
+	# 	self.preferences.set('pendingOnlineCommands', commands)
 
 
 	def pendingInvitations(self):
@@ -1701,8 +1701,6 @@ class APISubscription(object):
 	def revokeUser(self, targetEmail):
 
 		if self.parent.parent.online():
-			if not self.parent.parent.userEmail():
-				return False, 'No source user linked.'
 
 			parameters = {
 				'command': 'revokeSubscriptionInvitation',
