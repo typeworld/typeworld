@@ -1844,6 +1844,7 @@ class APISubscription(object):
 						if self.installedFontVersion(font.uniqueID):
 							path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
 							break
+
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
@@ -1893,17 +1894,11 @@ class APISubscription(object):
 					if font.uniqueID == fontID:
 						path = os.path.join(folder, font.filename(version))
 						break
+
 		if not path:
 			return False, 'Font path couldn’t be determined'
 
-		# self.parent.parent.delegate.fontWillInstall(font)
-
-		def installFontDelegateWorker(self):
-			self.parent.parent.delegate.fontWillInstall(font)
-		installFontDelegateThread = threading.Thread(target=installFontDelegateWorker, args=(self, ))
-		installFontDelegateThread.start()
-
-
+		self.parent.parent.delegate.fontWillInstall(font)
 		success, payload = self.protocol.installFont(fontID, version)		
 
 		if success:
