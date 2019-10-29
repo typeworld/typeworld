@@ -36,8 +36,6 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 
 	information, warnings, errors = api.validate()
 
-	if information:
-		d['information'].extend(information)
 	if warnings:
 		d['warnings'].extend(warnings)
 	if errors:
