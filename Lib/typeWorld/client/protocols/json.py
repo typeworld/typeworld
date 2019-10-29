@@ -97,8 +97,6 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 			self._rootCommand = api
 
-			self.save()
-
 		# Success
 		return True, self._rootCommand
 
@@ -117,12 +115,12 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		data = {
 			'subscriptionID': self.subscriptionID, 
 			'command': 'installableFonts', 
-			'anonymousAppID': self.parent.parent.parent.anonymousAppID(), 
-			'anonymousTypeWorldUserID': self.parent.parent.parent.user(),
+			'anonymousAppID': self.client.anonymousAppID(), 
+			'anonymousTypeWorldUserID': self.client.user(),
 			'appVersion': typeWorld.api.VERSION,
 		}
-		if self.parent.parent.parent.testScenario:
-			data['testScenario'] = self.parent.parent.parent.testScenario
+		if self.client.testScenario:
+			data['testScenario'] = self.client.testScenario
 		secretKey = self.getSecretKey()
 		if secretKey:
 			data['secretKey'] = secretKey
@@ -131,22 +129,22 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		if responses['errors']:
 			
-			if self.url in self.parent.parent._updatingSubscriptions:
-				self.parent.parent._updatingSubscriptions.remove(self.url)
-			self.parent._updatingProblem = '\n'.join(responses['errors'])
-			return False, self.parent._updatingProblem, False
+			if self.url in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			self.subscription._updatingProblem = '\n'.join(responses['errors'])
+			return False, self.subscription._updatingProblem, False
 
 		if api.type == 'error':
-			if self.url in self.parent.parent._updatingSubscriptions:
-				self.parent.parent._updatingSubscriptions.remove(self.url)
-			self.parent._updatingProblem = api.errorMessage
-			return False, self.parent._updatingProblem, False
+			if self.url in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			self.subscription._updatingProblem = api.errorMessage
+			return False, self.subscription._updatingProblem, False
 
 		if api.type in ('temporarilyUnavailable', 'insufficientPermission'):
-			if self.url in self.parent.parent._updatingSubscriptions:
-				self.parent.parent._updatingSubscriptions.remove(self.url)
-			self.parent._updatingProblem = '#(response.%s)' % api.type
-			return False, self.parent._updatingProblem, False
+			if self.url in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			self.subscription._updatingProblem = '#(response.%s)' % api.type
+			return False, self.subscription._updatingProblem, False
 
 
 		# Detect installed fonts now not available in subscription anymore and delete them
@@ -180,15 +178,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							data = {
 								'command': 'uninstallFont',
 								'fontID': urllib.parse.quote_plus(fontID),
-								'anonymousAppID': self.parent.parent.parent.anonymousAppID(),
-								'anonymousTypeWorldUserID': self.parent.parent.parent.user(),
+								'anonymousAppID': self.client.anonymousAppID(),
+								'anonymousTypeWorldUserID': self.client.user(),
 								'subscriptionID': self.subscriptionID,
 								'secretKey': self.getSecretKey(),
-								'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
+								'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 								'appVersion': typeWorld.api.VERSION,
 							}
-							if self.parent.parent.parent.testScenario:
-								data['testScenario'] = self.parent.parent.parent.testScenario
+							if self.client.testScenario:
+								data['testScenario'] = self.client.testScenario
 
 							api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontResponse(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
 
@@ -223,20 +221,20 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							'command': 'installFont',
 							'fontID': urllib.parse.quote_plus(fontID),
 							'fontVersion': str(version),
-							'anonymousAppID': self.parent.parent.parent.anonymousAppID(),
-							'anonymousTypeWorldUserID': self.parent.parent.parent.user(),
+							'anonymousAppID': self.client.anonymousAppID(),
+							'anonymousTypeWorldUserID': self.client.user(),
 							'subscriptionID': self.subscriptionID,
 							'secretKey': self.getSecretKey(),
-							'secretTypeWorldAPIKey': self.parent.parent.parent.secretTypeWorldAPIKey,
+							'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 							'appVersion': typeWorld.api.VERSION,
 						}
-						if self.parent.parent.parent.testScenario:
-							data['testScenario'] = self.parent.parent.parent.testScenario
+						if self.client.testScenario:
+							data['testScenario'] = self.client.testScenario
 
-						if self.parent.get('revealIdentity') and self.parent.parent.parent.userName():
-							data['userName'] = self.parent.parent.parent.userName()
-						if self.parent.get('revealIdentity') and self.parent.parent.parent.userEmail():
-							data['userEmail'] = self.parent.parent.parent.userEmail()
+						if self.subscription.get('revealIdentity') and self.client.userName():
+							data['userName'] = self.client.userName()
+						if self.subscription.get('revealIdentity') and self.client.userEmail():
+							data['userEmail'] = self.client.userEmail()
 
 						# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 

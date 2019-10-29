@@ -1177,8 +1177,8 @@ class APIClient(object):
 			module = importlib.util.module_from_spec(spec)
 			spec.loader.exec_module(module)
 			
-			protocolObject = module.TypeWorldProtocol(None, url)
-			protocolObject.parent = self
+			protocolObject = module.TypeWorldProtocol(url)
+			protocolObject.client = self
 
 			return True, protocolObject
 		else:
@@ -1611,7 +1611,7 @@ class APISubscription(object):
 		self.exists = False
 		self.secretKey = None
 		self.protocol = protocol
-		self.protocol.parent = self
+		self.protocol.subscription = self
 		self.url = self.protocol.saveURL()
 
 		self._updatingProblem = None

@@ -4,9 +4,12 @@ from typeWorld.client import *
 
 
 class TypeWorldProtocolBase(object):
-	def __init__(self, parent, url):
-		self.parent = parent
+	def __init__(self, url):
 		self.url = url
+
+		# References to objects this is attached to
+		self.client = None
+		self.subscription = None
 
 		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.restDomain = splitJSONURL(url)
 
@@ -77,28 +80,28 @@ class TypeWorldProtocolBase(object):
 		return success, command
 
 	def get(self, key):
-		data = self.parent.get('data') or {}
+		data = self.subscription.get('data') or {}
 		if key in data:
 			return data[key]
 
 	def set(self, key, value):
-		data = self.parent.get('data') or {}
+		data = self.subscription.get('data') or {}
 		data[key] = value
-		self.parent.set('data', data)
+		self.subscription.set('data', data)
 
 	def path(self):
-		return self.parent.path()
+		return self.subscription.path()
 
 	def getSecretKey(self):
-		keyring = self.parent.parent.parent.keyring()
+		keyring = self.client.keyring()
 		return keyring.get_password(self.url, self.subscriptionID)
 
 	def setSecretKey(self, secretKey):
-		keyring = self.parent.keyring()
+		keyring = self.client.keyring()
 		keyring.set_password(self.url, self.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
-		keyring = self.parent.parent.parent.keyring()
+		keyring = self.client.keyring()
 		keyring.delete_password(self.url, self.subscriptionID)
 
 	def saveURL(self):
@@ -127,6 +130,6 @@ class TypeWorldProtocolBase(object):
 			if secretKey:
 				url = url.replace(':secretKey@', ':%s@' % secretKey)
 			else:
-				self.parent.parent.parent.log('WARNING: No secret key found for %s' % url)				
+				self.client.log('WARNING: No secret key found for %s' % url)				
 
 		return url		
