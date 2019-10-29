@@ -31,10 +31,11 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 		if response.getcode() == 200:
 			api.loadJSON(response.read().decode())
 
+		information, warnings, errors = api.validate()
+
 	except urllib.request.HTTPError as e:
 		d['errors'].append(str(e))
 
-	information, warnings, errors = api.validate()
 
 	if warnings:
 		d['warnings'].extend(warnings)
