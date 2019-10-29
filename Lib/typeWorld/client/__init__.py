@@ -1040,6 +1040,11 @@ class APIClient(object):
 				from keyring.backends.Windows import WinVaultKeyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 				usingRealKeyring = True
+
+				keyring.set_password('Type.World Test Password', 'Test User', 'Secret Key')
+				assert keyring.get_password('Type.World Test Password', 'Test User') == 'Secret Key'
+				keyring.delete_password('Type.World Test Password', 'Test User')
+
 			except:
 				keyring = dummyKeyRing
 				usingRealKeyring = False
