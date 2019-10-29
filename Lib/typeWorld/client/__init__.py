@@ -1035,8 +1035,6 @@ class APIClient(object):
 
 		elif WIN:
 
-			if 'TRAVIS' in os.environ:
-
 			try:
 				import keyring
 				from keyring.backends.Windows import WinVaultKeyring
