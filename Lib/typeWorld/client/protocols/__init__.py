@@ -89,9 +89,6 @@ class TypeWorldProtocolBase(object):
 		data[key] = value
 		self.subscription.set('data', data)
 
-	def path(self):
-		return self.subscription.path()
-
 	def getSecretKey(self):
 		keyring = self.client.keyring()
 		return keyring.get_password(self.url, self.subscriptionID)
