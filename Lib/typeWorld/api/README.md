@@ -1477,7 +1477,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'otf', 'woff2', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1633,7 +1633,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[allowanceDescription](#class-licenseusage-attribute-allowancedescription)<br />[dateAddedForUser](#class-licenseusage-attribute-dateaddedforuser)<br />[keyword](#class-licenseusage-attribute-keyword)<br />[seatsAllowedForUser](#class-licenseusage-attribute-seatsallowedforuser)<br />[seatsInstalledByUser](#class-licenseusage-attribute-seatsinstalledbyuser)<br />[upgradeURL](#class-licenseusage-attribute-upgradeurl)<br />
+[allowanceDescription](#class-licenseusage-attribute-allowancedescription)<br />[dateAddedForUser](#class-licenseusage-attribute-dateaddedforuser)<br />[keyword](#class-licenseusage-attribute-keyword)<br />[seatsAllowed](#class-licenseusage-attribute-seatsallowed)<br />[seatsInstalled](#class-licenseusage-attribute-seatsinstalled)<br />[upgradeURL](#class-licenseusage-attribute-upgradeurl)<br />
 
 ### Methods
 
@@ -1667,17 +1667,17 @@ Keyword reference of font’s license. This license must be specified in [Foundr
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-licenseusage-attribute-seatsAllowedForUser"></div>
+<div id="class-licenseusage-attribute-seatsAllowed"></div>
 
-### seatsAllowedForUser
+### seatsAllowed
 
 In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations permitted by the user’s license.
 
 __Required:__ False<br />
 __Type:__ Int<br />
-<div id="class-licenseusage-attribute-seatsInstalledByUser"></div>
+<div id="class-licenseusage-attribute-seatsInstalled"></div>
 
-### seatsInstalledByUser
+### seatsInstalled
 
 In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
 
