@@ -1914,10 +1914,7 @@ class APISubscription(object):
 
 		if success:
 
-			if self.parent.parent.testScenario == 'simulatePermissionError':
-				raise PermissionError
-			else:
-				os.remove(path)
+			os.remove(path)
 
 			self.parent.parent.delegate.fontHasUninstalled(True, None, font)
 			return True, None
@@ -1976,25 +1973,11 @@ class APISubscription(object):
 
 			command = payload
 
-
-			# if MAC or WIN:
-
-			try:
-				# Create folder if it doesn't exist
-				if self.parent.parent.testScenario == 'simulatePermissionError':
-					raise PermissionError
-
-				else:
-					if not os.path.exists(os.path.dirname(path)):
-						os.makedirs(os.path.dirname(path))
-					f = open(path, 'wb')
-					f.write(base64.b64decode(command.font))
-					f.close()
-
-				# Put future encoding switches here
-			except PermissionError:
-				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
-				return False, "Insufficient permission to install font."
+			if not os.path.exists(os.path.dirname(path)):
+				os.makedirs(os.path.dirname(path))
+			f = open(path, 'wb')
+			f.write(base64.b64decode(command.font))
+			f.close()
 
 
 			# Ping
