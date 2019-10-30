@@ -1624,12 +1624,6 @@ class APIPublisher(object):
 		for subscription in self.subscriptions():
 			subscription.delete(calledFromParent = True)
 
-		# Path
-		try:
-			os.rmdir(self.path())
-		except:
-			pass
-
 		self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
 
 		# Resources
