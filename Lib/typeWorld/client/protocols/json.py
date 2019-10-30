@@ -26,10 +26,10 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 
 		incomingMIMEType = response.headers['content-type'].split(';')[0]
 		if not incomingMIMEType in acceptableMimeTypes:
-			d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
+			d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is "%s".' % (response.headers['content-type'], acceptableMimeTypes))
 
 		if response.getcode() != 200:
-			d['errors'].append(str(esponse.info()))
+			d['errors'].append(str(response.info()))
 
 		if response.getcode() == 200:
 			api.loadJSON(response.read().decode())

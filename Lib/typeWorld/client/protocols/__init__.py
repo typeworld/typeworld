@@ -91,23 +91,22 @@ class TypeWorldProtocolBase(object):
 
 	def getSecretKey(self):
 		keyring = self.client.keyring()
-		return keyring.get_password(self.url, self.subscriptionID)
+		return keyring.get_password(self.saveURL(), self.subscriptionID)
 
 	def setSecretKey(self, secretKey):
 		keyring = self.client.keyring()
-		keyring.set_password(self.url, self.subscriptionID, secretKey)
+		keyring.set_password(self.saveURL(), self.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
 		keyring = self.client.keyring()
-		keyring.delete_password(self.url, self.subscriptionID)
+		keyring.delete_password(self.saveURL(), self.subscriptionID)
 
 	def saveURL(self):
 
 		# Both subscriptionID as well as secretKey defined
 		if self.subscriptionID and self.secretKey:
 			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + ':' + 'secretKey' + '@' + self.restDomain
-		elif self.subscriptionID and not self.secretKey:
-			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + '@' + self.restDomain
+		elif self.subscriptionID and not self.secretKey: url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + '@' + self.restDomain
 		else:
 			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.restDomain 
 
@@ -124,9 +123,7 @@ class TypeWorldProtocolBase(object):
 
 		if ':secretKey@' in url:
 			secretKey = self.getSecretKey()
-			if secretKey:
-				url = url.replace(':secretKey@', ':%s@' % secretKey)
-			else:
-				self.client.log('WARNING: No secret key found for %s' % url)				
+			if secretKey: url = url.replace(':secretKey@', ':%s@' % secretKey)
+			else: raise Exception('No secret key found for %s' % url)				
 
 		return url		

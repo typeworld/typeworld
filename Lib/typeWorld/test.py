@@ -139,7 +139,10 @@ class TestStringMethods(unittest.TestCase):
 		# completeURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
-		# This is also supposed to delete the installed protected font
+		# Reload client
+		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
+		user1.loadClient()
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -370,6 +373,11 @@ class TestStringMethods(unittest.TestCase):
 		# Scenario 4:
 		# Protected subscription, installation on second machine
 
+
+		user2.client.testScenario = 'simulateWrongMimeType'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
 		user2.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
