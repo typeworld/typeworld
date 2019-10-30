@@ -631,7 +631,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted(), True)
 
 		# Get publisher's logo
-		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		success, logo, mimeType = user0.client.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].delete()
