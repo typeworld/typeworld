@@ -1604,6 +1604,21 @@ class APIPublisher(object):
 			publishers.append(self.canonicalURL)
 		self.parent.preferences.set('publishers', publishers)
 
+	def resourceByURL(self, url, binary = False, update = False):
+		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
+
+		response = self.parent.resourceByURL(url, binary, update)
+
+		# Save resource
+		if response[0] == True:
+			resourcesList = self.get('resources') or []
+			if not url in resourcesList:
+				resourcesList.append(url)
+				self.set('resources', resourcesList)
+
+		return response
+
+
 	def delete(self):
 
 		for subscription in self.subscriptions():
@@ -1766,11 +1781,6 @@ class APISubscription(object):
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
-
-
-		# if self.parent.get('username') and self.parent.getPassword(self.get('username')):
-		# 	return self.parent.parent.resourceByURL(url, binary, self.parent.get('username'), self.parent.getPassword(self.get('username')))
-		# else:
 
 		response = self.parent.parent.resourceByURL(url, binary, update)
 
