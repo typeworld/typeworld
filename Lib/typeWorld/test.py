@@ -233,6 +233,10 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
 
+		user1.client.testScenario = 'simulatePermissionError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
@@ -245,7 +249,10 @@ class TestStringMethods(unittest.TestCase):
 
 		# Supposed to pass
 		user1.client.testScenario = None
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
+			(True, None)
+		)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
@@ -395,6 +402,14 @@ class TestStringMethods(unittest.TestCase):
 			)
 
 		# Uninstall font for user1
+		user1.client.testScenario = 'simulatePermissionError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateMissingFont'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
 		self.assertEqual(success, False)

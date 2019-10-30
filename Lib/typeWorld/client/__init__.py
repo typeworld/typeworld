@@ -533,8 +533,10 @@ class APIClient(object):
 		self.appendCommands('uploadSubscriptions', self.completeSubscriptionURLs() or ['empty'])
 		self.appendCommands('downloadSubscriptions')
 
-		if performCommands: return self.performCommands()
-		else: return True, None
+		success, message = True, None
+		if performCommands:
+			success, message = self.performCommands()
+		return success, message
 
 	def perfomUploadSubscriptions(self, oldURLs):
 
@@ -1040,25 +1042,25 @@ class APIClient(object):
 				from keyring.backends.Windows import WinVaultKeyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 				usingRealKeyring = True
-
+				# Supposed to cause crash on Travis CI
 				keyring.set_password('Type.World Test Password', 'Test User', 'Secret Key')
-				assert keyring.get_password('Type.World Test Password', 'Test User') == 'Secret Key'
-				keyring.delete_password('Type.World Test Password', 'Test User')
 
 			except:
 				keyring = dummyKeyRing
 				usingRealKeyring = False
 
 			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
+			if usingRealKeyring: keyring.delete_password('Type.World Test Password', 'Test User')
+
 			return keyring
 
 		elif LINUX:
 
 			try:
+				usingRealKeyring = True
 				import keyring
 				from keyring.backends.kwallet import DBusKeyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
-				usingRealKeyring = True
 			except:
 				keyring = dummyKeyRing
 				usingRealKeyring = False
@@ -1080,8 +1082,7 @@ class APIClient(object):
 
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
-				if subscription.stillUpdating():
-					return False
+				if subscription.stillUpdating(): return False
 
 		return True
 
@@ -1263,6 +1264,11 @@ class APIClient(object):
 
 		protocol.subscriptionAdded()
 
+
+		# Preload resource
+		if rootCommand.logo:
+			success, content, mimeType = self.resourceByURL(rootCommand.logo)
+
 		return True, None, self.publisher(rootCommand.canonicalURL), subscription
 
 
@@ -1386,11 +1392,9 @@ class APIPublisher(object):
 
 		for subscription in self.subscriptions():
 			problem = subscription.updatingProblem()
-			if problem and not problem in problems:
-				problems.append(problem)
+			if problem and not problem in problems: problems.append(problem)
 
-		if problems:
-			return problems
+		if problems: return problems
 
 
 	def stillAlive(self):
@@ -1524,11 +1528,8 @@ class APIPublisher(object):
 
 			o = preferences[key]
 
-			if 'Array' in o.__class__.__name__:
-				o = list(o)
-
-			elif 'Dictionary' in o.__class__.__name__:
-				o = dict(o)
+			if 'Array' in o.__class__.__name__: o = list(o)
+			elif 'Dictionary' in o.__class__.__name__: o = dict(o)
 
 			return o
 
@@ -1588,8 +1589,7 @@ class APIPublisher(object):
 
 			for subscription in self.subscriptions():
 				success, message, change = subscription.update()
-				if change:
-					changes = True
+				if change: changes = True
 				if not success:
 					return success, message, changes
 
@@ -1738,11 +1738,8 @@ class APISubscription(object):
 			if 'errors' in response and response['errors']:
 				return False, ', '.join(response['errors'])
 
-			if 'response' in response:
-				if response['response'] == 'success':
+			if 'response' in response and response['response'] == 'success':
 					return True, None
-				else:
-					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		else:
 			return False, '#(response.notOnline)'
@@ -1893,26 +1890,44 @@ class APISubscription(object):
 
 		self.parent.parent.delegate.fontWillUninstall(font)
 
+		# Test for permissions here
+		try:
+			if self.parent.parent.testScenario == 'simulatePermissionError':
+				raise PermissionError
+			else:
+				f = open(path + '.test', 'w')
+				f.write('test')
+				f.close()
+				os.remove(path + '.test')
+		except PermissionError:
+			self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
+			return False, "Insufficient permission to install font."
+
+		assert os.path.exists(path + '.test') == False
+
+		if not os.path.exists(path) or self.parent.parent.testScenario == 'simulateMissingFont':
+			self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
+			return False, 'Font doesn’t exist.'
+
+
 		success, payload = self.protocol.removeFont(fontID)
 
 		if success:
 
+			try:
 
-			if os.path.exists(path):
-
-				try:
+				if self.parent.parent.testScenario == 'simulatePermissionError':
+					raise PermissionError
+				else:
 					os.remove(path)
-					self.parent.parent.delegate.fontHasUninstalled(True, None, font)
-					return True, None
 
-				except PermissionError:
-					self.parent.parent.delegate.fontHasUninstalled(False, "Insufficient permission to delete font.", font)
-					return False, "Insufficient permission to delete font."
+				self.parent.parent.delegate.fontHasUninstalled(True, None, font)
+				return True, None
 
-			else:
+			except PermissionError:
+				self.parent.parent.delegate.fontHasUninstalled(False, "Insufficient permission to delete font.", font)
+				return False, "Insufficient permission to delete font."
 
-				self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
-				return False, 'Font doesn’t exist.'
 
 		else:
 			self.parent.parent.delegate.fontHasUninstalled(False, payload, font)
@@ -1942,6 +1957,23 @@ class APISubscription(object):
 			return False, 'Font path couldn’t be determined'
 
 		self.parent.parent.delegate.fontWillInstall(font)
+
+		# Test for permissions here
+		try:
+			if self.parent.parent.testScenario == 'simulatePermissionError':
+				raise PermissionError
+			else:
+				f = open(path + '.test', 'w')
+				f.write('test')
+				f.close()
+				os.remove(path + '.test')
+		except PermissionError:
+			self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
+			return False, "Insufficient permission to install font."
+
+		assert os.path.exists(path + '.test') == False
+
+		# Server access
 		success, payload = self.protocol.installFont(fontID, version)		
 
 		if success:
@@ -1953,15 +1985,18 @@ class APISubscription(object):
 
 			try:
 				# Create folder if it doesn't exist
-				if not os.path.exists(os.path.dirname(path)):
-					os.makedirs(os.path.dirname(path))
+				if self.parent.parent.testScenario == 'simulatePermissionError':
+					raise PermissionError
+
+				else:
+					if not os.path.exists(os.path.dirname(path)):
+						os.makedirs(os.path.dirname(path))
+					f = open(path, 'wb')
+					f.write(base64.b64decode(command.font))
+					f.close()
 
 				# Put future encoding switches here
-				f = open(path, 'wb')
-				f.write(base64.b64decode(command.font))
-				f.close()
 			except PermissionError:
-
 				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
 				return False, "Insufficient permission to install font."
 
