@@ -1944,8 +1944,7 @@ class APISubscription(object):
 						path = os.path.join(folder, font.filename(version))
 						break
 
-		if not path:
-			return False, 'Font path couldn’t be determined'
+		if not path: return False, 'Font path couldn’t be determined'
 
 		self.parent.parent.delegate.fontWillInstall(font)
 
@@ -1954,8 +1953,7 @@ class APISubscription(object):
 			if self.parent.parent.testScenario == 'simulatePermissionError':
 				raise PermissionError
 			else:
-				if not os.path.exists(os.path.dirname(path)):
-					os.makedirs(os.path.dirname(path))
+				if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
 				f = open(path + '.test', 'w')
 				f.write('test')
 				f.close()
@@ -1973,8 +1971,7 @@ class APISubscription(object):
 
 			command = payload
 
-			if not os.path.exists(os.path.dirname(path)):
-				os.makedirs(os.path.dirname(path))
+			if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
 			f = open(path, 'wb')
 			f.write(base64.b64decode(command.font))
 			f.close()
@@ -1983,13 +1980,11 @@ class APISubscription(object):
 			# Ping
 			self.parent.stillAlive()
 
-			if os.path.exists(path):
-
-				self.parent.parent.delegate.fontHasInstalled(True, None, font)
-				return True, None
-			else:
-				self.parent.parent.delegate.fontHasInstalled(False, 'Font file could not be written: %s' % path, font)
-				return False, 'Font file could not be written: %s' % path
+			self.parent.parent.delegate.fontHasInstalled(True, None, font)
+			return True, None
+			# else:
+			# 	self.parent.parent.delegate.fontHasInstalled(False, 'Font file could not be written: %s' % path, font)
+			# 	return False, 'Font file could not be written: %s' % path
 
 		else:
 			self.parent.parent.delegate.fontHasInstalled(False, payload, font)
