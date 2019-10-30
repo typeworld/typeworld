@@ -332,8 +332,8 @@ class TestStringMethods(unittest.TestCase):
 		# Current Publisher
 		user1.client.preferences.set('currentPublisher', user1.client.publishers()[0].canonicalURL)
 		self.assertEqual(user1.client.currentPublisher(), user1.client.publishers()[0])
-		user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
-		self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
+		# user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
+		# self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
 
 		# Sync subscription
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -631,7 +631,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted(), True)
 
 		# Get publisher's logo
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].delete()

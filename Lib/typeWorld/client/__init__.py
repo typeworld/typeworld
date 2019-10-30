@@ -1250,7 +1250,7 @@ class APIClient(object):
 
 		# Success
 		publisher.set('type', protocol.protocol)
-		publisher.set('currentSubscription', protocol.saveURL())
+		# publisher.set('currentSubscription', protocol.saveURL())
 		subscription.save()
 		publisher.save()
 		publisher.stillAlive()
@@ -1516,11 +1516,11 @@ class APIPublisher(object):
 
 		return l
 
-	def currentSubscription(self):
-		if self.get('currentSubscription'):
-			subscription = self.subscription(self.get('currentSubscription'))
-			if subscription:
-				return subscription
+	# def currentSubscription(self):
+	# 	if self.get('currentSubscription'):
+	# 		subscription = self.subscription(self.get('currentSubscription'))
+	# 		if subscription:
+	# 			return subscription
 
 	def get(self, key):
 		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
@@ -2148,10 +2148,10 @@ class APISubscription(object):
 		self.parent.set('subscriptions', subscriptions)
 		self.parent._subscriptions = {}
 
-		# currentSubscription
-		if self.parent.get('currentSubscription') == self.protocol.saveURL():
-			if len(subscriptions) >= 1:
-				self.parent.set('currentSubscription', subscriptions[0])
+		# # currentSubscription
+		# if self.parent.get('currentSubscription') == self.protocol.saveURL():
+		# 	if len(subscriptions) >= 1:
+		# 		self.parent.set('currentSubscription', subscriptions[0])
 
 
 		if len(subscriptions) == 0 and calledFromParent == False:
