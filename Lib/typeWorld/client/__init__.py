@@ -1909,24 +1909,18 @@ class APISubscription(object):
 			self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
 			return False, 'Font doesn’t exist.'
 
-
+		# Server access
 		success, payload = self.protocol.removeFont(fontID)
 
 		if success:
 
-			try:
+			if self.parent.parent.testScenario == 'simulatePermissionError':
+				raise PermissionError
+			else:
+				os.remove(path)
 
-				if self.parent.parent.testScenario == 'simulatePermissionError':
-					raise PermissionError
-				else:
-					os.remove(path)
-
-				self.parent.parent.delegate.fontHasUninstalled(True, None, font)
-				return True, None
-
-			except PermissionError:
-				self.parent.parent.delegate.fontHasUninstalled(False, "Insufficient permission to delete font.", font)
-				return False, "Insufficient permission to delete font."
+			self.parent.parent.delegate.fontHasUninstalled(True, None, font)
+			return True, None
 
 
 		else:
