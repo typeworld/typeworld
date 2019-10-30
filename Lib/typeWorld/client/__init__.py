@@ -1265,10 +1265,6 @@ class APIClient(object):
 		protocol.subscriptionAdded()
 
 
-		# Preload resource
-		if rootCommand.logo:
-			success, content, mimeType = self.resourceByURL(rootCommand.logo)
-
 		return True, None, self.publisher(rootCommand.canonicalURL), subscription
 
 
@@ -1624,8 +1620,6 @@ class APIPublisher(object):
 		for subscription in self.subscriptions():
 			subscription.delete(calledFromParent = True)
 
-		self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
-
 		# Resources
 		resources = self.parent.preferences.get('resources') or {}
 		for url in self.get('resources') or []:
@@ -1633,7 +1627,7 @@ class APIPublisher(object):
 				del resources[url]
 		self.parent.preferences.set('resources', resources)
 
-
+		self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
 		publishers = self.parent.preferences.get('publishers')
 		publishers.remove(self.canonicalURL)
 		self.parent.preferences.set('publishers', publishers)
@@ -2135,7 +2129,6 @@ class APISubscription(object):
 		resources = self.parent.parent.preferences.get('resources') or {}
 		for url in self.get('resources') or []:
 			if url in resources:
-				# print('Deleting resource', url)
 				resources.pop(url)
 		self.parent.parent.preferences.set('resources', resources)
 
