@@ -972,7 +972,7 @@ class APIClient(object):
 		self.preferences.remove('acceptedInvitations')
 		self.preferences.remove('pendingInvitations')
 		self.preferences.remove('sentInvitations')
-		if self.preferences.get('currentPublisher') == 'pendingInvitations': self.preferences.set('currentPublisher', '')
+		# if self.preferences.get('currentPublisher') == 'pendingInvitations': self.preferences.set('currentPublisher', '')
 
 		try:
 			keyring = self.keyring()
@@ -1323,10 +1323,10 @@ class APIClient(object):
 		# 	return False, traceback.format_exc(), None, None
 
 
-	def currentPublisher(self):
-		if self.preferences.get('currentPublisher') and self.preferences.get('currentPublisher') != 'None' and self.preferences.get('currentPublisher') != 'pendingInvitations':
-			publisher = self.publisher(self.preferences.get('currentPublisher'))
-			return publisher
+	# def currentPublisher(self):
+	# 	if self.preferences.get('currentPublisher') and self.preferences.get('currentPublisher') != 'None' and self.preferences.get('currentPublisher') != 'pendingInvitations':
+	# 		publisher = self.publisher(self.preferences.get('currentPublisher'))
+	# 		return publisher
 
 	def publisher(self, canonicalURL):
 		if canonicalURL not in self._publishers:
@@ -1630,9 +1630,6 @@ class APIPublisher(object):
 		except:
 			pass
 
-		# Old
-		self.parent.preferences.remove(self.canonicalURL)
-		# New
 		self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
 
 		# Resources
@@ -1646,7 +1643,7 @@ class APIPublisher(object):
 		publishers = self.parent.preferences.get('publishers')
 		publishers.remove(self.canonicalURL)
 		self.parent.preferences.set('publishers', publishers)
-		self.parent.preferences.set('currentPublisher', '')
+		# self.parent.preferences.set('currentPublisher', '')
 
 		self.parent._publishers = {}
 

@@ -330,8 +330,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
 		# Current Publisher
-		user1.client.preferences.set('currentPublisher', user1.client.publishers()[0].canonicalURL)
-		self.assertEqual(user1.client.currentPublisher(), user1.client.publishers()[0])
+		# user1.client.preferences.set('currentPublisher', user1.client.publishers()[0].canonicalURL)
+		# self.assertEqual(user1.client.currentPublisher(), user1.client.publishers()[0])
 		# user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
 		# self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
 
