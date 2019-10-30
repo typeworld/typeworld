@@ -1963,6 +1963,8 @@ class APISubscription(object):
 			if self.parent.parent.testScenario == 'simulatePermissionError':
 				raise PermissionError
 			else:
+				if not os.path.exists(os.path.dirname(path)):
+					os.makedirs(os.path.dirname(path))
 				f = open(path + '.test', 'w')
 				f.write('test')
 				f.close()
