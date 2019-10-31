@@ -32,15 +32,20 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 			d['errors'].append(str(response.info()))
 
 		if response.getcode() == 200:
-			api.loadJSON(response.read().decode())
-			information, warnings, errors = api.validate()
+			# Catching ValueErrors
+			try:
+				api.loadJSON(response.read().decode())
+				information, warnings, errors = api.validate()
 
-		# if information:
-		# 	d['information'].extend(information)
-		if warnings:
-			d['warnings'].extend(warnings)
-		if errors:
-			d['errors'].extend(errors)
+				# if information:
+				# 	d['information'].extend(information)
+				if warnings:
+					d['warnings'].extend(warnings)
+				if errors:
+					d['errors'].extend(errors)
+			except:
+				d['errors'].append(traceback.format_exc().splitlines()[-1])
+
 
 	except urllib.request.HTTPError as e:
 		d['errors'].append(str(e))

@@ -71,12 +71,14 @@ class TypeWorldProtocolBase(object):
 
 	def rootCommand(self, testScenario = None):
 		success, command = self.returnRootCommand(testScenario = testScenario)
-		command.parent = self
+		if success:
+			command.parent = self
 		return success, command
 
 	def installableFontsCommand(self):
 		success, command = self.returnInstallableFontsCommand()
-		command.parent = self
+		if success:
+			command.parent = self
 		return success, command
 
 	def get(self, key):
@@ -123,7 +125,8 @@ class TypeWorldProtocolBase(object):
 
 		if ':secretKey@' in url:
 			secretKey = self.getSecretKey()
-			if secretKey: url = url.replace(':secretKey@', ':%s@' % secretKey)
-			else: raise Exception('No secret key found for %s' % url)				
+			if secretKey:
+				url = url.replace(':secretKey@', ':%s@' % secretKey)
+#			else: raise Exception('No secret key found for %s' % url)				
 
 		return url		

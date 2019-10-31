@@ -265,11 +265,8 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Revoke app instance
-
-		if 'TRAVIS' in os.environ:
-			authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
-		else:
-			authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
 		parameters = {
 			'command': 'revokeAppInstance',
 			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
@@ -434,7 +431,13 @@ class TestStringMethods(unittest.TestCase):
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		self.assertEqual(message, 'Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
+		user2.client.testScenario = 'simulateNotHTTP200'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateInvalidAPIJSONResponse'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerNotReachable'
