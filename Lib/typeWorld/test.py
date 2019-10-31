@@ -265,7 +265,11 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Revoke app instance
-		authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+
+		if 'TRAVIS' in os.environ:
+			authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
+		else:
+			authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
 		parameters = {
 			'command': 'revokeAppInstance',
 			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
@@ -288,7 +292,6 @@ class TestStringMethods(unittest.TestCase):
 		)
 
 		# Reactivate app instance
-		authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
 		parameters = {
 			'command': 'reactivateAppInstance',
 			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
