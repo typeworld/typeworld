@@ -5,6 +5,9 @@ import sys, os
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import ssl, certifi, urllib
+sslcontext = ssl.create_default_context(cafile=certifi.where())
+
 
 import unittest
 from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults
@@ -63,6 +66,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 	def test_normalSubscription(self):
+
 
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
@@ -260,6 +264,55 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
 
+		# Revoke app instance
+		authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+		parameters = {
+			'command': 'revokeAppInstance',
+			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
+			'authorizationKey': authKey,
+		}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = 'https://type.world/jsonAPI/'
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+		self.assertFalse(response['errors'])
+
+		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
+
+		# Reinstall font, fails
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)[0],
+			False
+		)
+
+		# Reactivate app instance
+		authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+		parameters = {
+			'command': 'reactivateAppInstance',
+			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
+			'authorizationKey': authKey,
+		}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = 'https://type.world/jsonAPI/'
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+		self.assertFalse(response['errors'])
+
+		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
+
+		# Reinstall font
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
+			(True, None)
+		)
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+
+
 		# This is also supposed to delete the installed protected font
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
@@ -414,9 +467,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
 		self.assertEqual(success, False)
 
-		user1.client.testScenario = 'simulateMissingFont'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
+		# user1.client.testScenario = 'simulateMissingFont'
+		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		# self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)

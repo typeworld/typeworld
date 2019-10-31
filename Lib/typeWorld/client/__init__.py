@@ -1065,7 +1065,7 @@ class APIClient(object):
 				keyring = dummyKeyRing
 				usingRealKeyring = False
 
-			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
+#			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
 			return keyring
 
 
@@ -1375,7 +1375,8 @@ class APIPublisher(object):
 			return folder
 
 		else:
-			return tempFolder
+			import tempfile
+			return tempfile.gettempdir()
 
 
 	def stillUpdating(self):
@@ -1900,9 +1901,9 @@ class APISubscription(object):
 
 		assert os.path.exists(path + '.test') == False
 
-		if not os.path.exists(path) or self.parent.parent.testScenario == 'simulateMissingFont':
-			self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
-			return False, 'Font doesn’t exist.'
+		# if not os.path.exists(path) or self.parent.parent.testScenario == 'simulateMissingFont':
+		# 	self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
+		# 	return False, 'Font doesn’t exist.'
 
 		# Server access
 		success, payload = self.protocol.removeFont(fontID)
