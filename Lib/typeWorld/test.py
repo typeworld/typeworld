@@ -440,6 +440,9 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateInvalidAPIJSONResponse'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateFaultyAPIJSONResponse'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
 		user2.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
