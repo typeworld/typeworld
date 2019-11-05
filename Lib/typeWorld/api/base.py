@@ -391,6 +391,12 @@ class DictBasedObject(object):
         result.__dict__.update(self.__dict__)
         return result
 
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        obj = cls()
+        obj.loadJSON(self.dumpJSON())
+        return obj
+
     def sameContent(self, other):
         '''\
         Compares the data structure of this object to the other object.
