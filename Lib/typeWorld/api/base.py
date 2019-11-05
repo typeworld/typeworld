@@ -382,6 +382,12 @@ class DictBasedObject(object):
     _dataType_for_possible_keys = None
 
 
+
+    def __copy__(self):
+        newone = type(self)()
+        newone.__dict__.update(self.__dict__)
+        return newone
+
     def sameContent(self, other):
         '''\
         Compares the data structure of this object to the other object.
