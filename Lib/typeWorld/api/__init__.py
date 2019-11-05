@@ -194,11 +194,11 @@ class Font(DictBasedObject):
 
 		# Checking font type/extension
 		if self.purpose == 'desktop' and not self.format:
-			critical.append('The font %s is a desktop font (see .purpose), but has no .format value.' % (self))
+			critical.append('%s is a desktop font (see .purpose), but has no .format value.' % (self))
 
 		# Checking version information
 		if not self.hasVersionInformation():
-			critical.append('The font %s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
+			critical.append('%s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
 
 		# Checking for designers
 		for designerKeyword in self.designers:
@@ -226,7 +226,7 @@ class Font(DictBasedObject):
 		'''
 
 		if not self.hasVersionInformation():
-			raise ValueError('Font %s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
+			raise ValueError('%s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
 
 
 		def compare(a, b):
