@@ -343,6 +343,10 @@ class ListProxy(DataType):
         return self
 
     def put(self, values):
+
+        if not type(values) in (list, tuple):
+            raise ValueError('Wrong data type. Is %s, should be: %s.' % (type(values), list))
+
         self.value = []
         for value in values:
             self.append(value)
@@ -369,6 +373,7 @@ class ListProxy(DataType):
                 del self[i]
 
     def valid(self):
+
         if self.value:
             for data in self.value:
                 valid = data.valid()
