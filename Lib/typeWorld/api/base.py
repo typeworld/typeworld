@@ -232,7 +232,10 @@ class VersionDataType(StringDataType):
 
             # Append .0 for semver comparison
             value = makeSemVer(self.value)
-            a = semver.parse(value)
+            try:
+                a = semver.parse(value)
+            except ValueError as e:
+                return str(e)
             return True
         except:
             return traceback.format_exc()
