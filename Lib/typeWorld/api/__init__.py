@@ -60,7 +60,7 @@ class LicenseUsage(DictBasedObject):
 		information, warnings, critical = [], [], []
 
 		# Checking for existing license
-		if not self.getLicense():
+		if self.keyword and not self.getLicense():
 			critical.append('%s has license "%s", but %s has no matching license.' % (self, self.keyword, self.parent.parent.parent))
 
 		return information, warnings, critical
