@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os
+import sys, os, copy
 
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -20,6 +20,170 @@ protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE
 testUser = ('736b524a-cf24-11e9-9f62-901b0ecbcc7a', 'AApCEfatt6vE5H4m0pevPsQA9P7fYG8Q1uhsNFYV') # test@type.world
 testUser2 = ('8d48dafc-d07d-11e9-a3e3-901b0ecbcc7a', 'XPd2QbwHskEDzLeUXZxysGkiJmASHLhXxQfgTZCD') # test2@type.world
 testUser3 = ('e865a474-d07d-11e9-982c-901b0ecbcc7a', 'LN1LYRgVYcQhEgulYmUdBgJObq2R4VCgL4rdnnZ5') # test3@type.world
+
+
+
+### RootResponse
+root = RootResponse()
+root.name.en = 'Font Publisher'
+root.canonicalURL = 'https://fontpublisher.com/api/'
+root.adminEmail = 'admin@fontpublisher.com'
+root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+root.backgroundColor = 'AABBCC'
+root.licenseIdentifier = 'CC-BY-NC-ND-4.0'
+root.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+root.privacyPolicy = 'https://type.world/legal/privacy.html'
+root.termsOfServiceAgreement = 'https://type.world/legal/terms.html'
+root.public = False
+root.version = '0.1.7-alpha'
+root.website = 'https://typeworldserver.com'
+
+### InstallableFontsResponse
+designer = Designer()
+designer.description.en = 'Yanone is a type designer based in Germany.'
+designer.keyword = 'yanone'
+designer.name.en = 'Yanone'
+designer.website = 'https://yanone.de'
+
+# License
+license = LicenseDefinition()
+license.URL = 'https://yanone.de/eula.html'
+license.keyword = 'yanoneEULA'
+license.name.en = 'Yanone EULA'
+
+# Font-specific Version
+fontVersion = Version()
+fontVersion.description.en = 'Initial release'
+fontVersion.description.de = 'Erstveröffentlichung'
+fontVersion.number = 1.0
+fontVersion.releaseDate = '2004-10-10'
+
+# LicenseUsage
+usedLicense = LicenseUsage()
+usedLicense.allowanceDescription.en = 'N/A'
+usedLicense.dateAddedForUser = '2019-10-01'
+usedLicense.keyword = 'yanoneEULA'
+usedLicense.seatsAllowed = 5
+usedLicense.seatsInstalled = 1
+usedLicense.upgradeURL = 'https://yanone.de/buy/kaffeesatz/upgrade?customerID=123456'
+
+# Font
+font = Font()
+font.dateFirstPublished = '2004-10-10'
+font.designers.append('yanone')
+font.designers = ['yanone']
+assert len(font.designers) == 1
+font.format = 'otf'
+font.free = True
+font.name.en = 'Regular'
+font.name.de = 'Normale'
+font.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+font.postScriptName = 'YanoneKaffeesatz-Regular'
+font.protected = False
+font.purpose = 'desktop'
+font.setName.en = 'Desktop Fonts'
+font.status = 'stable'
+font.uniqueID = 'yanone-kaffeesatz-regular'
+font.usedLicenses.append(usedLicense)
+font.usedLicenses = [usedLicense]
+assert len(font.usedLicenses) == 1
+font.variableFont = False
+font.versions.append(fontVersion)
+font.versions = [fontVersion]
+assert len(font.versions) == 1
+
+# Font 2
+font2 = Font()
+font2.dateFirstPublished = '2004-10-10'
+font2.designers.append('yanone')
+font2.designers = ['yanone']
+assert len(font2.designers) == 1
+font2.format = 'otf'
+font2.free = True
+font2.name.en = 'Bold'
+font2.name.de = 'Fette'
+font2.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+font2.postScriptName = 'YanoneKaffeesatz-Bold'
+font2.protected = False
+font2.purpose = 'desktop'
+font2.setName.en = 'Desktop Fonts'
+font2.status = 'stable'
+font2.uniqueID = 'yanone-kaffeesatz-bold'
+font2.usedLicenses.append(usedLicense)
+font2.usedLicenses = [usedLicense]
+assert len(font2.usedLicenses) == 1
+font2.variableFont = False
+font2.versions.append(fontVersion)
+font2.versions = [fontVersion]
+assert len(font2.versions) == 1
+
+# Family-specific Version
+familyVersion = Version()
+familyVersion.description.en = 'Initial release'
+familyVersion.description.de = 'Erstveröffentlichung'
+familyVersion.number = 1.0
+familyVersion.releaseDate = '2004-10-10'
+
+# Family
+family = Family()
+family.billboards = ['https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image']
+family.billboards.append('https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image')
+family.dateFirstPublished = '2019-10-01'
+family.description.en = 'Kaffeesatz is a free font classic'
+family.designers.append('yanone')
+family.designers = ['yanone'] # same as above
+assert len(family.designers) == 1
+family.inUseURL = 'https://fontsinuse.com/kaffeesatz'
+family.issueTrackerURL = 'https://github.com/yanone/kaffeesatzfont/issues'
+family.name.en = 'Yanone Kaffeesatz'
+family.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+family.sourceURL = 'https://github.com/yanone/kaffeesatzfont'
+family.uniqueID = 'yanone-yanonekaffeesatz'
+family.versions.append(familyVersion)
+family.versions = [familyVersion]
+assert len(family.versions) == 1
+family.fonts.append(font)
+family.fonts = [font]
+assert len(family.fonts) == 1
+family.fonts.append(font2)
+assert len(family.fonts) == 2
+family.fonts = [font, font2]
+assert len(family.fonts) == 2
+
+# Foundry
+foundry = Foundry()
+foundry.backgroundColor = 'AABBCC'
+foundry.description.en = 'Yanone is a foundry lead by German type designer Yanone.'
+foundry.email = 'font@yanone.de'
+foundry.facebook = 'https://facebook.com/pages/YanoneYanone'
+foundry.instagram = 'instagram'
+foundry.licenses.append(license)
+foundry.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+foundry.name.en = 'Awesome Fonts'
+foundry.name.de = 'Tolle Schriften'
+foundry.skype = 'yanone'
+foundry.supportEmail = 'support@yanone.de'
+foundry.supportTelephone = '+49123456789'
+foundry.supportWebsite = 'https://yanone.de/support/'
+foundry.telephone = '+49123456789'
+foundry.twitter = 'yanone'
+foundry.uniqueID = 'yanone'
+foundry.website = 'https://yanone.de'
+foundry.families.append(family)
+foundry.families = [family]
+assert len(foundry.families) == 1
+
+# InstallableFontsResponse
+installableFonts = InstallableFontsResponse()
+installableFonts.designers.append(designer)
+installableFonts.name.en = 'Yanone'
+installableFonts.prefersRevealedUserIdentity = True
+installableFonts.type = 'success'
+installableFonts.userEmail = 'post@yanone.de'
+installableFonts.userName.en = 'Yanone'
+installableFonts.version = '0.1.7-alpha'
+installableFonts.foundries.append(foundry)
+
 
 
 
@@ -725,201 +889,623 @@ class TestStringMethods(unittest.TestCase):
 		# App revokation
 
 
-	def test_api(self):
 
+	def test_RootResponse(self):
 
-
-		# InstallableFonts
-
-		# Root of API
-		root = RootResponse()
-		root.name.en = 'Font Publisher'
-		root.canonicalURL = 'https://fontpublisher.com/api/'
-		root.adminEmail = 'admin@fontpublisher.com'
-		root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-		assert type(root.supportedCommands.index('installableFonts')) == int
-
-		# Create API response as JSON
+		print(root)
+		# Dump and reload
 		json = root.dumpJSON()
+		root2 = RootResponse()
+		root2.loadJSON(json)
+		self.assertTrue(root.sameContent(root2))
 
-		# Let’s see it
-		print(json)
+		# name
+		r2 = copy.deepcopy(root)
+		r2.name.en = ''
+		self.assertEqual(r2.validate()[2], ['<RootResponse>.name is a required attribute, but empty'])
 
-
-
-		# Response for 'availableFonts' command
-		# Response for 'availableFonts' command
-		installableFonts = InstallableFontsResponse()
-		installableFonts.type = 'success'
-		print(installableFonts)
-
-		# Add designer to root of response
-		designer = Designer()
-		designer.keyword = 'max'
-		designer.name.en = 'Max Mustermann'
-		installableFonts.designers.append(designer)
-		print(designer)
-		assert designer.parent == installableFonts
-
-		installableFonts.designers.extend([designer])
-		installableFonts.designers.remove(installableFonts.designers[-1])
-		assert len(installableFonts.designers) == 1
-		print(installableFonts.designers)
-
-		# Add foundry to root of response
-		foundry = Foundry()
-		foundry.uniqueID = 'yanone'
-		foundry.name.en = 'Awesome Fonts'
-		foundry.name.de = 'Tolle Schriften'
-		foundry.website = 'https://awesomefonts.com'
-		installableFonts.foundries.append(foundry)
-		print(foundry)
-		print(foundry.name.getTextAndLocale('en'))
-		print(foundry.name.getTextAndLocale('ar'))
-		assert foundry.name.getTextAndLocale('en') == ('Awesome Fonts', 'en')
-		assert foundry.name.getTextAndLocale(['en']) == ('Awesome Fonts', 'en')
-		assert foundry.name.getTextAndLocale('de') == ('Tolle Schriften', 'de')
-		assert foundry.name.getTextAndLocale(['de']) == ('Tolle Schriften', 'de')
-
-		# Add license to foundry
-		license = LicenseDefinition()
-		license.keyword = 'awesomeFontsEULA'
-		license.name.en = 'Awesome Fonts Desktop EULA'
-		license.URL = 'https://awesomefonts.com/EULA/'
-		foundry.licenses.append(license)
-		print(license)
-		assert license.parent == foundry
-
-		# Add font family to foundry
-		family = Family()
-		family.uniqueID = 'yanone-AwesomeSans'
-		family.name.en = 'Awesome Sans'
-		family.designers.append('max')
-		foundry.families.append(family)
-		print(family)
-		assert family.parent == foundry
-
-		# Add version to font
-		version = Version()
-		version.number = 0.1
-		family.versions.append(version)
-		print(version)
-		assert version.isFontSpecific() == False
-		assert version.parent == family
-		assert type(family.getDesigners()) == list
-		assert type(family.getAllDesigners()) == list
-
-		# Add font to family
-		font = Font()
-		font.uniqueID = 'yanone-NonameSans-Regular'
-		font.name.en = 'Regular'
-		font.postScriptName = 'AwesomeSans-Regular'
-		font.purpose = 'desktop'
-		print(font.format)
-		font.format = 'otf'
-		font.designers.append('max')
-		font.dateAddedForUser = '2018-04-01'
-		family.fonts.append(font)
-		print(font.validate())
-		print(font.getDesigners())
-		usedLicense = LicenseUsage()
-		usedLicense.keyword = 'awesomeFontsEULA'
-		font.usedLicenses.append(usedLicense)
-		print(usedLicense)
-		print(font)
-		assert usedLicense.parent == font
-
-
-		# Add font to family
-		font = Font()
-		font.uniqueID = 'yanone-NonameSans-Bold'
-		font.name.en = 'Regular'
-		font.postScriptName = 'AwesomeSans-Bold'
-		font.purpose = 'desktop'
-		font.format = 'otf'
-		usedLicense = LicenseUsage()
-		usedLicense.keyword = 'awesomeFontsEULA'
-		font.usedLicenses.append(usedLicense)
-		family.fonts.append(font)
-		assert usedLicense.parent == font
-		assert font.parent == family
-
-		# Add version to font
-		version = Version()
-		version.number = 0.2
-		font.versions.append(version)
-		print(version)
-		assert version.isFontSpecific() == True
-		assert version.parent == font
-
-		assert len(font.getVersions()) == 2
-		assert type(font.getDesigners()) == list
-
-		# Output API response as JSON, includes validation
-		print(installableFonts.validate())
-		information, warnings, critical = installableFonts.validate()
-		# Supposed to contain a warning about how the name of the InstallableFontsResponse shouldn't be empy
-		assert information == []
-		assert warnings != []
-		assert critical == []
-
-		json = installableFonts.dumpJSON()
-
-		# Let’s see it
-		print(json)
-
-		# Load a second API instance from that JSON
-		installableFontsInput = InstallableFontsResponse()
-		installableFontsInput.loadJSON(json)
-
-		# Let’s see if they are identical
-		assert installableFontsInput.sameContent(installableFonts) == True
-
-		installableFontsInput.validate()
-
-
-
-
-
-		# Check for errors
-
-		try: 
-			root.licenseIdentifier = 'abc'
-		except ValueError:
-		 	pass
-		root.licenseIdentifier = 'CC-BY-NC-ND-4.0'
-
-		try: 
-			font.format = 'abc'
-		except ValueError:
-			pass
-
-
-		font.uniqueID = 'a' * 255
-		filename = font.filename(font.versions[-1].number)
-		print(filename, len(filename))
-		information, warnings, critical = installableFonts.validate()
-		assert critical != []
-
-		font.uniqueID = 'abc:def'
-		information, warnings, critical = installableFonts.validate()
-		assert critical != []
-
-		# Back to normal
-		font.uniqueID = 'yanone-NonameSans-Bold'
-		information, warnings, critical = installableFonts.validate()
-		assert critical == []
-
-
+		# canonicalURL
+		r2 = copy.deepcopy(root)
 		try:
-			# Too long name
-			foundry.name.en = 'abc' * 1000
-			# Output API response as JSON, includes validation
-			json = installableFonts.dumpJSON()
-		except ValueError:
-			pass
-		foundry.name.en = 'abc'
-		
+			r2.canonicalURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# adminEmail
+		r2 = copy.deepcopy(root)
+		try:
+			r2.adminEmail = 'post_at_yanone.de'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
+
+		# supportedCommands
+		r2 = copy.deepcopy(root)
+		try:
+			r2.supportedCommands = ['unsupportedCommand']
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown API command: "unsupportedCommand". Possible: [\'installableFonts\', \'installFont\', \'uninstallFont\', \'setAnonymousAppIDStatus\']')
+
+		# backgroundColor
+		r2 = copy.deepcopy(root)
+		try:
+			r2.backgroundColor = 'CDEFGH'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid hex color of format RRGGBB (like FF0000 for red): CDEFGH')
+
+		# licenseIdentifier
+		r2 = copy.deepcopy(root)
+		try:
+			r2.licenseIdentifier = 'unsupportedLicense'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown license identifier: "unsupportedLicense". See https://spdx.org/licenses/')
+
+		# logo
+		r2 = copy.deepcopy(root)
+		try:
+			r2.logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# privacyPolicy
+		r2 = copy.deepcopy(root)
+		try:
+			r2.privacyPolicy = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# termsOfServiceAgreement
+		r2 = copy.deepcopy(root)
+		try:
+			r2.termsOfServiceAgreement = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# public
+		r2 = copy.deepcopy(root)
+		try:
+			r2.public = 'True'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
+
+		# version
+		r2 = copy.deepcopy(root)
+		try:
+			r2.version = '0.1.7.2'
+		except ValueError as e:
+			self.assertEqual(str(e), '0.1.7.2 is not valid SemVer string')
+
+		# website
+		r2 = copy.deepcopy(root)
+		try:
+			r2.website = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+
+	def test_copy(self):
+
+		i2 = copy.copy(installableFonts)
+		self.assertTrue(installableFonts.sameContent(i2))
+
+		i3 = copy.deepcopy(installableFonts)
+		self.assertTrue(installableFonts.sameContent(i3))
+
+	def test_InstallableFontsResponse(self):
+
+		print(installableFonts)
+		# Dump and reload
+		json = installableFonts.dumpJSON()
+		installableFonts2 = InstallableFontsResponse()
+		installableFonts2.loadJSON(json)
+		self.assertTrue(installableFonts.sameContent(installableFonts2))
+
+		# designers
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.designers = 'yanone'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
+
+		# name
+		# allowed to be emtpy
+		i2 = copy.deepcopy(installableFonts)
+		i2.name.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		# prefersRevealedUserIdentity
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.prefersRevealedUserIdentity = 'True'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
+
+		# type
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.type = 'abc'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'accessTokenExpired\']')
+
+		# userEmail
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.userEmail = 'post_at_yanone.de'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
+
+		# userName
+		i2 = copy.deepcopy(installableFonts)
+		i2.userName.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		# version
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.version = '1.1.2.3'
+		except ValueError as e:
+			self.assertEqual(str(e), '1.1.2.3 is not valid SemVer string')
+
+		# foundries
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries = 'yanone'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
+
+
+
+	def test_Designer(self):
+
+		# name
+		i2 = copy.deepcopy(installableFonts)
+		i2.designers[0].name.en = ''
+		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.designers --> <Designer "None">.name is a required attribute, but empty'])
+
+		# description
+		# is optional, so this will pass
+		i2 = copy.deepcopy(installableFonts)
+		i2.designers[0].description.en = ''
+		self.assertEqual(i2.validate()[2], [])
+
+		# keyword
+		i2 = copy.deepcopy(installableFonts)
+		i2.designers[0].keyword = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.designers --> <Designer "Yanone">.keyword is a required attribute, but empty', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Bold"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.'])
+
+		# name
+		i2 = copy.deepcopy(installableFonts)
+		i2.designers[0].name.en = ''
+		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.designers --> <Designer "None">.name is a required attribute, but empty'])
+
+		# website
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.designers[0].website = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+	def test_LicenseDefinition(self):
+
+		# name
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].licenses[0].name.en = ''
+		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.licenses --> <LicenseDefinition "None">.name is a required attribute, but empty'])
+
+		# URL
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].licenses[0].URL= 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# keyword
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].licenses[0].keyword = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.licenses --> <LicenseDefinition "Yanone EULA">.keyword is a required attribute, but empty', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Bold">.usedLicenses --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.'])
+
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].licenses[0])
+		assert i2.foundries[0].licenses[0].parent == i2.foundries[0]
+
+	def test_Version(self):
+
+		# description
+		# is optional, so this will pass
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].versions[0].description.en = ''
+		i2.foundries[0].families[0].versions[0].description.de = ''
+		self.assertEqual(i2.validate()[2], [])
+
+		# number
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].versions[0].number = '1.1.2.3'
+		except ValueError as e:
+			self.assertEqual(str(e), '1.1.2.3 is not valid SemVer string')
+
+		# releaseDate
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].versions[0].releaseDate = '2010-20-21'
+		except ValueError as e:
+			self.assertEqual(str(e), 'ValueError: time data \'2010-20-21\' does not match format \'%Y-%m-%d\'')
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].families[0].versions[0])
+		assert i2.foundries[0].families[0].versions[0].isFontSpecific() == False
+		assert i2.foundries[0].families[0].versions[0].parent == i2.foundries[0].families[0]
+		assert i2.foundries[0].families[0].fonts[0].versions[0].isFontSpecific() == True
+		assert i2.foundries[0].families[0].fonts[0].versions[0].parent == i2.foundries[0].families[0].fonts[0]
+
+
+	def test_LicenseUsage(self):
+
+		# allowanceDescription
+		# is optional, so this will pass
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].usedLicenses[0].allowanceDescription.en = None
+		self.assertEqual(i2.validate()[2], [])
+
+		# dateAddedForUser
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].usedLicenses[0].dateAddedForUser = '2010-20-21'
+		except ValueError as e:
+			self.assertEqual(str(e), 'ValueError: time data \'2010-20-21\' does not match format \'%Y-%m-%d\'')
+
+		# keyword
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].usedLicenses[0].keyword = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses --> <LicenseUsage "">.keyword is a required attribute, but empty'])
+
+		# seatsAllowed
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].usedLicenses[0].seatsAllowed = '5,0'
+		except ValueError as e:
+			self.assertEqual(str(e), 'invalid literal for int() with base 10: \'5,0\'')
+		# try the same, but modify the json string, the re-import
+		json = installableFonts.dumpJSON()
+		json = json.replace('"seatsAllowed": 5', '"seatsAllowed": "5,0"')
+		try:
+			i2.loadJSON(json)
+		except ValueError as e:
+			self.assertEqual(str(e), 'invalid literal for int() with base 10: \'5,0\'')
+
+		# seatsInstalled
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].usedLicenses[0].seatsInstalled = '1,0'
+		except ValueError as e:
+			self.assertEqual(str(e), 'invalid literal for int() with base 10: \'1,0\'')
+
+		# URL
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].usedLicenses[0].upgradeURL= 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].families[0].fonts[0].usedLicenses[0])
+
+	def test_Font(self):
+
+		# dateAddedForUser
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].dateFirstPublished = '2010-20-21'
+		except ValueError as e:
+			self.assertEqual(str(e), 'ValueError: time data \'2010-20-21\' does not match format \'%Y-%m-%d\'')
+
+		# designers
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].designers = ['gfknlergerg']
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular"> has designer "gfknlergerg", but <InstallableFontsResponse>.designers has no matching designer.'])
+
+		# format
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].format = 'abc'
+		except ValueError as e:
+			self.assertTrue('Unknown font extension: "abc".' in str(e))
+
+		# free
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].free = 'True'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
+
+		# name
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].name.en = ''
+		i2.foundries[0].families[0].fonts[0].name.de = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.name is a required attribute, but empty'])
+
+		# pdf
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].pdf = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# postScriptName
+		# TODO: write check for postScriptName
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].postScriptName = 'YanoneKaffeesatzRegular'
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		# protected
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].protected = 'True'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
+
+		# purpose
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].purpose = 'anything'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown font type: "anything". Possible: [\'desktop\', \'web\', \'app\']')
+
+		# setName
+		# allowed to be emtpy
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].setName.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		#status
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].status = 'instable'
+		except ValueError as e:
+			self.assertEqual(str(e), "Unknown API command: \"instable\". Possible: [\'prerelease\', \'trial\', \'stable\']")
+
+		# uniqueID
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].uniqueID = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.uniqueID is a required attribute, but empty'])
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].uniqueID = 'a' * 255
+		validate = i2.validate()
+		# TODO: The error message gets put out twice here. This is faulty
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf'])
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].uniqueID = 'abc:def'
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> uniqueID must not contain the character : because it will be used for the font\'s file name on disk.'])
+
+
+
+		# usedLicenses
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].fonts[0].usedLicenses = []
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses is a required attribute, but empty'])
+		try:
+			i2.foundries[0].families[0].fonts[0].usedLicenses = ['hergerg']
+		except ValueError as e:
+			self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'typeWorld.api.LicenseUsage'>.")
+
+		# variableFont
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].variableFont = 'True'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
+
+		# versions
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].versions = []
+		i2.foundries[0].families[0].fonts[0].versions = []
+		try:
+			validate = i2.validate()
+		except ValueError as e:
+			self.assertEqual(str(e), '<Font "YanoneKaffeesatz-Regular"> has no version information, and neither has its family <Family "Yanone Kaffeesatz">. Either one needs to carry version information.')
+
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].families[0].fonts[0])
+		assert i2.foundries[0].families[0].fonts[0].parent == i2.foundries[0].families[0]
+		assert type(i2.foundries[0].families[0].fonts[0].getDesigners()) == list
+
+
+	def test_Family(self):
+
+		# billboards
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].billboards[0] = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# dateFirstPublished
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].dateFirstPublished = '2010-20-21'
+		except ValueError as e:
+			self.assertEqual(str(e), 'ValueError: time data \'2010-20-21\' does not match format \'%Y-%m-%d\'')
+
+		# description
+		# allowed to be empty
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].families[0].description.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		# designers
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].designers = 'yanone'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
+		i2.foundries[0].families[0].designers = ['awieberg']
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz"> has designer "awieberg", but <InstallableFontsResponse>.designers has no matching designer.'])
+
+		# inUseURL
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].inUseURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# issueTrackerURL
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].issueTrackerURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# name
+		i2.foundries[0].families[0].name.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "None">.name is a required attribute, but empty'])
+
+		# pdf
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].pdf = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# sourceURL
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].sourceURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# uniqueID
+		# TODO
+
+		# versions
+		# already check at font level
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].families[0])
+		assert i2.foundries[0].families[0].parent == i2.foundries[0]
+		assert type(i2.foundries[0].families[0].getDesigners()) == list
+		assert type(i2.foundries[0].families[0].getAllDesigners()) == list
+
+
+	def test_Foundry(self):
+
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].backgroundColor = 'CDEFGH'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid hex color of format RRGGBB (like FF0000 for red): CDEFGH')
+
+		# description
+		# allowed to be empty
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].description.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], [])
+
+		# email
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].email = 'post_at_yanone.de'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
+
+		# licenses
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].licenses = 'yanoneEULA'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
+
+		# logo
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# name
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].name.en = ''
+		i2.foundries[0].name.de = ''
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "None">.name is a required attribute, but empty'])
+
+		# supportEmail
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].supportEmail = 'post_at_yanone.de'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
+
+		# facebook
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].facebook = 1
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+		# instagram
+		# TODO: test this value, can't currently be tested
+
+		# skype
+		# TODO: test this value, can't currently be tested
+
+		# twitter
+		# TODO: test this value, can't currently be tested
+
+		# telephone
+		# TODO: test this value, can't currently be tested
+
+		# supportTelephone
+		# TODO: test this value, can't currently be tested
+
+		# website
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].website = 1
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0])
+		assert i2.foundries[0].name.getTextAndLocale('en') == ('Awesome Fonts', 'en')
+		assert i2.foundries[0].name.getTextAndLocale(['en']) == ('Awesome Fonts', 'en')
+		assert i2.foundries[0].name.getTextAndLocale('de') == ('Tolle Schriften', 'de')
+		assert i2.foundries[0].name.getTextAndLocale(['de']) == ('Tolle Schriften', 'de')
+		assert i2.foundries[0].name.getTextAndLocale(['ar']) == ('Awesome Fonts', 'en')
+
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].name.en = 'abc' * 1000
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc">.name --> abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc.en is too long. Allowed are 100 characters.'])
+
+
+
+	def test_otherStuff(self):
+
+		assert type(root.supportedCommands.index('installableFonts')) == int
+		assert installableFonts.designers[0].parent == installableFonts
+
+
+	def test_InstallableFontsResponse_Old(self):
+
 
 
 		# InstallFont
@@ -1081,6 +1667,8 @@ class TestStringMethods(unittest.TestCase):
 		description.en = 'Hello, _world_'
 		self.assertEqual(description.customValidation()[2], [])
 
+		i2 = copy.deepcopy(installableFonts)
+		font = i2.foundries[0].families[0].fonts[0]
 
 		# __repr__
 		print(font.uniqueID)
@@ -1133,6 +1721,8 @@ class TestStringMethods(unittest.TestCase):
 			print(api.validate())
 		except:
 			pass
+
+
 
 
 	def test_helpers(self):
