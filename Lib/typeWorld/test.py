@@ -185,6 +185,8 @@ assert len(foundry.families) == 1
 installableFonts = InstallableFontsResponse()
 installableFonts.designers.append(designer)
 installableFonts.designers.append(designer2)
+installableFonts.designers.remove(designer2)
+installableFonts.designers.extend([designer2])
 installableFonts.name.en = 'Yanone'
 installableFonts.prefersRevealedUserIdentity = True
 installableFonts.type = 'success'
@@ -192,6 +194,7 @@ installableFonts.userEmail = 'post@yanone.de'
 installableFonts.userName.en = 'Yanone'
 installableFonts.version = '0.1.7-alpha'
 installableFonts.foundries.append(foundry)
+print(installableFonts.designers)
 
 
 
@@ -1063,6 +1066,10 @@ class TestStringMethods(unittest.TestCase):
 		except ValueError as e:
 			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
 
+		i2 = copy.deepcopy(installableFonts)
+		i2.name.en = ''
+		validate = i2.validate()
+		self.assertEqual(validate[1], ['<InstallableFontsResponse>.errorMessage --> The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'])
 
 
 	def test_Designer(self):
@@ -1567,6 +1574,13 @@ class TestStringMethods(unittest.TestCase):
 		validate = installFont.validate()
 		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.'])
 
+		installFont = InstallFontResponse()
+		installFont.type = 'error'
+		try:
+			d = installFont.dumpDict()
+		except ValueError as e:
+			self.assertEqual(str(e), '<InstallFontResponse>.fileName --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.')
+
 	def test_UninstallFontResponse(self):
 
 		uninstallFont = UninstallFontResponse()
@@ -1574,6 +1588,7 @@ class TestStringMethods(unittest.TestCase):
 			uninstallFont.type = 'abc'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\']')
+
 
 
 	def test_SetAnonymousAppIDStatus(self):

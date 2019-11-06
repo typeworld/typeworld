@@ -736,11 +736,11 @@ class DictBasedObject(object):
                             critical.extend(extendWithKey(newCritical))
 
                         # TODO: Seems to be unneccessary maybe?
-                        if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
-                            newInformation, newWarnings, newCritical = self._content[key].customValidation()
-                            information.extend(extendWithKey(newInformation))
-                            warnings.extend(extendWithKey(newWarnings))
-                            critical.extend(extendWithKey(newCritical))
+                        # if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
+                        #     newInformation, newWarnings, newCritical = self._content[key].customValidation()
+                        #     information.extend(extendWithKey(newInformation))
+                        #     warnings.extend(extendWithKey(newWarnings))
+                        #     critical.extend(extendWithKey(newCritical))
 
 
         # Check custom messages:
@@ -892,8 +892,8 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
     _length = 100
     _markdownAllowed = False
 
-    def __repr__(self):
-        return '<MultiLanguageText>'
+    # def __repr__(self):
+    #     return '<MultiLanguageText>'
 
     def __str__(self):
         return str(self.getText())
