@@ -656,7 +656,7 @@ class SetAnonymousAppIDStatusResponse(BaseResponse):
 	_structure = {
 
 		# Root
-		'type': 			[InstallFontResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']],
+		'type': 			[SetAnonymousAppIDStatusResponseType,	True, 	None, 	'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']],
 		'errorMessage': 	[MultiLanguageTextProxy,	False, 	None, 	'Description of error in case of custom response type'],
 		'version': 			[VersionDataType,			True, 	SETANONYMOUSAPPIDSTATUSCOMMAND['currentVersion'], 	'Version of "%s" response' % SETANONYMOUSAPPIDSTATUSCOMMAND['keyword']],
 		}
