@@ -368,13 +368,13 @@ class ListProxy(DataType):
             if self[i] == removeValue:
                 del self[i]
 
-    def valid(self):
+    # def valid(self):
 
-        if self.value:
-            for data in self.value:
-                valid = data.valid()
-                return valid
-        return True
+    #     if self.value:
+    #         for data in self.value:
+    #             valid = data.valid()
+    #             return valid
+    #     return True
 
 
 
@@ -762,17 +762,14 @@ class DictBasedObject(object):
         return self._validate()
 
 
-    def dumpDict(self, key = None):
+    def dumpDict(self):
 
         d = {}
 
         # Auto-validate
         information, warnings, critical = self.validate()
         if critical:
-            if key:
-                raise ValueError('%s.%s: %s' % (self.__repr__(), key, critical[0]))
-            else:
-                raise ValueError(critical[0])
+            raise ValueError(critical[0])
 
 
         for key in list(self._content.keys()):
