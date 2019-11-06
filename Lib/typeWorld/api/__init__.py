@@ -181,6 +181,10 @@ class Font(DictBasedObject):
 
 		It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 255 characters.
 		'''
+
+		if not type(version) in (str, int, float):
+			raise ValueError('Supplied version must be str or int or float')
+
 		if self.format:
 			return '%s_%s.%s' % (self.uniqueID, version, self.format)
 		else:
