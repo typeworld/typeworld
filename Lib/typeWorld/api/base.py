@@ -667,7 +667,7 @@ class DictBasedObject(object):
         def extendWithKey(values):
             _list = []
             for value in values:
-                _list.append('%s.%s --> %s' % (self.__repr__(), key, value))
+                _list.append('%s --> %s' % (self.__repr__(), value))
             return _list
 
 
