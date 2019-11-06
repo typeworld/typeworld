@@ -936,8 +936,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
         information, warnings, critical = [], [], []
 
-        if self.isEmpty():
-            critical.append('%s needs to contain at least one language field' % (self.__repr__()))
+        if self.isEmpty(): critical.append('%s needs to contain at least one language field' % (self.__repr__()))
 
         # Check for text length
         for langId in self._possible_keys:
