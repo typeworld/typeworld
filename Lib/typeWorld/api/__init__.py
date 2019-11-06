@@ -346,8 +346,9 @@ class Family(DictBasedObject):
 	def setNames(self, locale):
 		setNames = []
 		for font in self.fonts:
-			if not font.setName.getText(locale) in setNames:
-				setNames.append(font.setName.getText(locale))
+			name = font.setName.getText(locale)
+			if not name in setNames:
+				setNames.append(name)
 		return setNames
 
 	def formatsForSetName(self, setName, locale):
