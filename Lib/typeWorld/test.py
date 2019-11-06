@@ -184,6 +184,7 @@ assert len(foundry.families) == 1
 # InstallableFontsResponse
 installableFonts = InstallableFontsResponse()
 installableFonts.designers.append(designer)
+installableFonts.designers.append(designer2)
 installableFonts.name.en = 'Yanone'
 installableFonts.prefersRevealedUserIdentity = True
 installableFonts.type = 'success'
