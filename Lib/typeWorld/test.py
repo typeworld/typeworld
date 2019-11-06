@@ -26,7 +26,7 @@ testUser3 = ('e865a474-d07d-11e9-982c-901b0ecbcc7a', 'LN1LYRgVYcQhEgulYmUdBgJObq
 ### RootResponse
 root = RootResponse()
 root.name.en = 'Font Publisher'
-root.canonicalURL = 'https://fontpublisher.com/api/'
+root.canonicalURL = 'http://fontpublisher.com/api/'
 root.adminEmail = 'admin@fontpublisher.com'
 root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
 root.backgroundColor = 'AABBCC'
@@ -44,6 +44,12 @@ designer.description.en = 'Yanone is a type designer based in Germany.'
 designer.keyword = 'yanone'
 designer.name.en = 'Yanone'
 designer.website = 'https://yanone.de'
+
+designer2 = Designer()
+designer2.description.en = 'Yanone is a type designer based in Germany.'
+designer2.keyword = 'yanone2'
+designer2.name.en = 'Yanone'
+designer2.website = 'https://yanone.de'
 
 # License
 license = LicenseDefinition()
@@ -71,8 +77,8 @@ usedLicense.upgradeURL = 'https://yanone.de/buy/kaffeesatz/upgrade?customerID=12
 font = Font()
 font.dateFirstPublished = '2004-10-10'
 font.designers.append('yanone')
-font.designers = ['yanone']
-assert len(font.designers) == 1
+font.designers = ['yanone', 'yanone2']
+assert len(font.designers) == 2
 font.format = 'otf'
 font.free = True
 font.name.en = 'Regular'
@@ -1144,6 +1150,13 @@ class TestStringMethods(unittest.TestCase):
 		assert i2.foundries[0].families[0].fonts[0].versions[0].isFontSpecific() == True
 		assert i2.foundries[0].families[0].fonts[0].versions[0].parent == i2.foundries[0].families[0].fonts[0]
 
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].filename(i2.foundries[0].families[0].fonts[0].getVersions()[-1])
+		except ValueError as e:
+			self.assertEqual(str(e), 'Supplied version must be str or int or float')
+
+
 
 	def test_LicenseUsage(self):
 
@@ -1549,23 +1562,23 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is set to success, but <InstallFontResponse>.font is missing'])
 
 
+	def test_UninstallFontResponse(self):
+
+		uninstallFont = UninstallFontResponse()
+		try:
+			uninstallFont.type = 'abc'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\']')
+
+
 	def test_SetAnonymousAppIDStatus(self):
 
 		status = SetAnonymousAppIDStatusResponse()
 		try:
 			status.type = 'abc'
 		except ValueError as e:
-			print(e)
 			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'insufficientPermission\', \'temporarilyUnavailable\']')
 
-
-	def test_SetAnonymousAppIDStatus(self):
-
-		status = SetAnonymousAppIDStatusResponse()
-		try:
-			status.type = 'abc'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'insufficientPermission\', \'temporarilyUnavailable\']')
 
 	def test_InstallableFontsResponse_Old(self):
 
