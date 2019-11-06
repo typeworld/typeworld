@@ -442,7 +442,7 @@ class BaseResponse(DictBasedObject):
 		information, warnings, critical = [], [], []
 
 		if self.type == ERROR and self.errorMessage is None:
-			warnings.append('%s.type is "%s", but .errorMessage is missing.' % (self, ERROR))
+			critical.append('%s.type is "%s", but .errorMessage is missing.' % (self, ERROR))
 
 		return information, warnings, critical
 
