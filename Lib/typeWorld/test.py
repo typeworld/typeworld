@@ -1565,7 +1565,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			status.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'duplicateInstallation\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'insufficientPermission\', \'temporarilyUnavailable\']')
 
 	def test_InstallableFontsResponse_Old(self):
 
