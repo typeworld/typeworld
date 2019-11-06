@@ -1076,6 +1076,10 @@ class SupportedAPICommandsListProxy(ListProxy):
 
 class FontPurposeDataType(UnicodeDataType):
     def valid(self):
+
+        if not self.value: 
+            return True
+
         if self.value in list(FONTPURPOSES.keys()):
             return True
         else:
@@ -1088,6 +1092,10 @@ class FontStatusDataType(UnicodeDataType):
 
 
     def valid(self):
+
+        if not self.value: 
+            return True
+
         if self.value in self.statuses:
             return True
         else:
@@ -1098,6 +1106,9 @@ class FontExtensionDataType(UnicodeDataType):
     def valid(self):
 
         found = False
+
+        if not self.value: 
+            return True
 
         for mimeType in list(MIMETYPES.keys()):
             if self.value in MIMETYPES[mimeType]['fileExtensions']:
