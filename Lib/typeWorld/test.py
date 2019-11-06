@@ -1069,6 +1069,7 @@ class TestStringMethods(unittest.TestCase):
 
 		i2 = copy.deepcopy(installableFonts)
 		i2.name.en = ''
+		i2.name.de = ''
 		validate = i2.validate()
 		self.assertEqual(validate[1], ['<InstallableFontsResponse>.errorMessage --> The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'])
 
