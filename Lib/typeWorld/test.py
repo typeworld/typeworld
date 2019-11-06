@@ -187,7 +187,8 @@ installableFonts.designers.append(designer)
 installableFonts.designers.append(designer2)
 installableFonts.designers.remove(designer2)
 installableFonts.designers.extend([designer2])
-installableFonts.name.en = 'Yanone'
+installableFonts.name.en = 'Commercial Fonts'
+installableFonts.name.de = 'Kommerzielle Schriften'
 installableFonts.prefersRevealedUserIdentity = True
 installableFonts.type = 'success'
 installableFonts.userEmail = 'post@yanone.de'
