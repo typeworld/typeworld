@@ -639,24 +639,24 @@ class DictBasedObject(object):
     def get(self, key):
         return self.__getattr__(key)
 
-    def validateData(self, key, data):
-        information = []
-        warnings = []
-        critical = []
+    # def validateData(self, key, data):
+    #     information = []
+    #     warnings = []
+    #     critical = []
 
-        if data != None and isinstance(data.valid, types.MethodType) and isinstance(data.get, types.MethodType):
-            if data.get() != None:
+    #     if data != None and isinstance(data.valid, types.MethodType) and isinstance(data.get, types.MethodType):
+    #         if data.get() != None:
                 
-                valid = data.valid()
+    #             valid = data.valid()
 
-                if valid == True:
-                    pass
+    #             if valid == True:
+    #                 pass
 
-                else:
-                    critical.append('%s.%s is invalid: %s' % (self, key, valid))
+    #             else:
+    #                 critical.append('%s.%s is invalid: %s' % (self, key, valid))
 
 
-        return information, warnings, critical
+    #     return information, warnings, critical
 
     def _validate(self):
 
@@ -720,20 +720,20 @@ class DictBasedObject(object):
                                     warnings.extend(extendWithKey(newWarnings))
                                     critical.extend(extendWithKey(newCritical))
 
-                    # Check data types for validity recursively
-                    for key in list(self._content.keys()):
+                    # # Check data types for validity recursively
+                    # for key in list(self._content.keys()):
 
-                        required = key in self._structure and self._structure[key][1] == True
-                        empty = self._content[key].isEmpty()
+                    #     required = key in self._structure and self._structure[key][1] == True
+                    #     empty = self._content[key].isEmpty()
 
-                        if required:
-                            self.initAttr(key)
-                            data = self._content[key]
+                    #     if required:
+                    #         self.initAttr(key)
+                    #         data = self._content[key]
 
-                            newInformation, newWarnings, newCritical = self.validateData(key, data)
-                            information.extend(extendWithKey(newInformation))
-                            warnings.extend(extendWithKey(newWarnings))
-                            critical.extend(extendWithKey(newCritical))
+                    #         newInformation, newWarnings, newCritical = self.validateData(key, data)
+                    #         information.extend(extendWithKey(newInformation))
+                    #         warnings.extend(extendWithKey(newWarnings))
+                    #         critical.extend(extendWithKey(newCritical))
 
                         # TODO: Seems to be unneccessary maybe?
                         # if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
