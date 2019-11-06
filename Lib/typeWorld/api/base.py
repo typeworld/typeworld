@@ -228,17 +228,13 @@ class VersionDataType(StringDataType):
 
     def valid(self):
         
+        # Append .0 for semver comparison
+        value = makeSemVer(self.value)
         try:
-
-            # Append .0 for semver comparison
-            value = makeSemVer(self.value)
-            try:
-                a = semver.parse(value)
-            except ValueError as e:
-                return str(e)
-            return True
-        except:
-            return traceback.format_exc()
+            a = semver.parse(value)
+        except ValueError as e:
+            return str(e)
+        return True
 
     def formatHint(self):
         return 'Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)'
