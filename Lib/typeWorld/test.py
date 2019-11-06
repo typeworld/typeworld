@@ -1562,6 +1562,10 @@ class TestStringMethods(unittest.TestCase):
 		validate = installFont.validate()
 		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is set to success, but <InstallFontResponse>.font is missing'])
 
+		installFont = InstallFontResponse()
+		installFont.type = 'error'
+		validate = installFont.validate()
+		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.'])
 
 	def test_UninstallFontResponse(self):
 

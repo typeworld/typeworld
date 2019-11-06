@@ -541,6 +541,10 @@ class InstallableFontsResponse(BaseResponse):
 		if duplicateFontIDs:
 			critical.append('Duplicate unique family IDs: %s' % duplicateFontIDs)
 
+		newInformation, newWarnings, newCritical = super().customValidation()
+		if newInformation: information.extend(newInformation)
+		if newWarnings: warnings.extend(newWarnings)
+		if newCritical: critical.extend(newCritical)
 
 		return information, warnings, critical
 
@@ -596,6 +600,11 @@ class InstallFontResponse(BaseResponse):
 
 		if self.font and not self.encoding:
 			critical.append('%s.font is set, but %s.encoding is missing' % (self, self))
+
+		newInformation, newWarnings, newCritical = super().customValidation()
+		if newInformation: information.extend(newInformation)
+		if newWarnings: warnings.extend(newWarnings)
+		if newCritical: critical.extend(newCritical)
 
 		return information, warnings, critical
 
