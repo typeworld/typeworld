@@ -1071,8 +1071,8 @@ class TestStringMethods(unittest.TestCase):
 		i2.name.en = ''
 		i2.name.de = ''
 		validate = i2.validate()
-		print(validate)
-		self.assertEqual(validate[1], ['<InstallableFontsResponse>.prefersRevealedUserIdentity --> The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'])
+#		print(validate)
+		self.assertEqual(validate[1], ['<InstallableFontsResponse> --> The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'])
 
 
 	def test_Designer(self):
@@ -1080,7 +1080,7 @@ class TestStringMethods(unittest.TestCase):
 		# name
 		i2 = copy.deepcopy(installableFonts)
 		i2.designers[0].name.en = ''
-		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.designers --> <Designer "None">.name is a required attribute, but empty'])
+		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse> --> <Designer "None">.name is a required attribute, but empty'])
 
 		# description
 		# is optional, so this will pass
@@ -1092,12 +1092,12 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.designers[0].keyword = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.designers --> <Designer "Yanone">.keyword is a required attribute, but empty', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Bold"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Designer "Yanone">.keyword is a required attribute, but empty', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Bold"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> has designer "yanone", but <InstallableFontsResponse>.designers has no matching designer.'])
 
 		# name
 		i2 = copy.deepcopy(installableFonts)
 		i2.designers[0].name.en = ''
-		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.designers --> <Designer "None">.name is a required attribute, but empty'])
+		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse> --> <Designer "None">.name is a required attribute, but empty'])
 
 		# website
 		i2 = copy.deepcopy(installableFonts)
@@ -1111,7 +1111,8 @@ class TestStringMethods(unittest.TestCase):
 		# name
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].licenses[0].name.en = ''
-		self.assertEqual(i2.validate()[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.licenses --> <LicenseDefinition "None">.name is a required attribute, but empty'])
+		validate = i2.validate()
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <LicenseDefinition "None">.name is a required attribute, but empty'])
 
 		# URL
 		i2 = copy.deepcopy(installableFonts)
@@ -1124,7 +1125,7 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].licenses[0].keyword = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.licenses --> <LicenseDefinition "Yanone EULA">.keyword is a required attribute, but empty', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Bold">.usedLicenses --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <LicenseDefinition "Yanone EULA">.keyword is a required attribute, but empty', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Bold"> --> <LicenseUsage "yanoneEULA"> has license "yanoneEULA", but <Foundry "Awesome Fonts"> has no matching license.'])
 
 
 		i2 = copy.deepcopy(installableFonts)
@@ -1188,7 +1189,7 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].usedLicenses[0].keyword = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses --> <LicenseUsage "">.keyword is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> --> <LicenseUsage "">.keyword is a required attribute, but empty'])
 
 		# seatsAllowed
 		i2 = copy.deepcopy(installableFonts)
@@ -1235,7 +1236,7 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].designers = ['gfknlergerg']
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular"> has designer "gfknlergerg", but <InstallableFontsResponse>.designers has no matching designer.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> has designer "gfknlergerg", but <InstallableFontsResponse>.designers has no matching designer.'])
 
 		# format
 		i2 = copy.deepcopy(installableFonts)
@@ -1256,7 +1257,7 @@ class TestStringMethods(unittest.TestCase):
 		i2.foundries[0].families[0].fonts[0].name.en = ''
 		i2.foundries[0].families[0].fonts[0].name.de = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.name is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular">.name is a required attribute, but empty'])
 
 		# pdf
 		i2 = copy.deepcopy(installableFonts)
@@ -1304,16 +1305,16 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].uniqueID = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.uniqueID is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular">.uniqueID is a required attribute, but empty'])
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].uniqueID = 'a' * 255
 		validate = i2.validate()
 		# TODO: The error message gets put out twice here. This is faulty
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf', '<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf', '<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> The suggested file name is longer than 255 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_1.0.otf'])
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].uniqueID = 'abc:def'
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> uniqueID must not contain the character : because it will be used for the font\'s file name on disk.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> uniqueID must not contain the character : because it will be used for the font\'s file name on disk.'])
 
 
 
@@ -1321,7 +1322,7 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].families[0].fonts[0].usedLicenses = []
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular">.usedLicenses is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular">.usedLicenses is a required attribute, but empty'])
 		try:
 			i2.foundries[0].families[0].fonts[0].usedLicenses = ['hergerg']
 		except ValueError as e:
@@ -1355,7 +1356,7 @@ class TestStringMethods(unittest.TestCase):
 		i2.foundries[0].families[0].fonts[0].format = ''
 		self.assertEqual(i2.foundries[0].families[0].fonts[0].filename(i2.foundries[0].families[0].fonts[0].getVersions()[-1].number), 'yanone-kaffeesatz-regular_1.0')
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz">.fonts --> <Font "YanoneKaffeesatz-Regular"> is a desktop font (see .purpose), but has no .format value.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> is a desktop font (see .purpose), but has no .format value.'])
 
 
 	def test_Family(self):
@@ -1389,7 +1390,7 @@ class TestStringMethods(unittest.TestCase):
 			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
 		i2.foundries[0].families[0].designers = ['awieberg']
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz"> has designer "awieberg", but <InstallableFontsResponse>.designers has no matching designer.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> has designer "awieberg", but <InstallableFontsResponse>.designers has no matching designer.'])
 
 		# inUseURL
 		i2 = copy.deepcopy(installableFonts)
@@ -1408,7 +1409,7 @@ class TestStringMethods(unittest.TestCase):
 		# name
 		i2.foundries[0].families[0].name.en = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "None">.name is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "None">.name is a required attribute, but empty'])
 
 		# pdf
 		i2 = copy.deepcopy(installableFonts)
@@ -1485,7 +1486,7 @@ class TestStringMethods(unittest.TestCase):
 		i2.foundries[0].name.en = ''
 		i2.foundries[0].name.de = ''
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "None">.name is a required attribute, but empty'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "None">.name is a required attribute, but empty'])
 
 		# supportEmail
 		i2 = copy.deepcopy(installableFonts)
@@ -1535,13 +1536,13 @@ class TestStringMethods(unittest.TestCase):
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].name.en = 'abc' * 1000
 		validate = i2.validate()
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc">.name --> abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc.en is too long. Allowed are 100 characters.'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"> --> abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc.en is too long. Allowed are 100 characters.'])
 
 		i2 = copy.deepcopy(installableFonts)
 		foundry2 = copy.deepcopy(i2.foundries[0])
 		i2.foundries.append(foundry2)
 		validate = i2.validate()
-		self.assertEqual(validate[2], ["<InstallableFontsResponse>.errorMessage --> Duplicate unique foundry IDs: ['yanone']", "<InstallableFontsResponse>.errorMessage --> Duplicate unique family IDs: ['yanone-yanonekaffeesatz']", "<InstallableFontsResponse>.errorMessage --> Duplicate unique family IDs: ['yanone-kaffeesatz-regular', 'yanone-kaffeesatz-bold']"])
+		self.assertEqual(validate[2], ["<InstallableFontsResponse> --> Duplicate unique foundry IDs: ['yanone']", "<InstallableFontsResponse> --> Duplicate unique family IDs: ['yanone-yanonekaffeesatz']", "<InstallableFontsResponse> --> Duplicate unique family IDs: ['yanone-kaffeesatz-regular', 'yanone-kaffeesatz-bold']"])
 
 
 	def test_otherStuff(self):
@@ -1563,26 +1564,26 @@ class TestStringMethods(unittest.TestCase):
 		installFont.font = b'ABC'
 		#installFont.encoding = 'base64'
 		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.font is set, but <InstallFontResponse>.encoding is missing'])
+		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.font is set, but <InstallFontResponse>.encoding is missing'])
 
 		installFont = InstallFontResponse()
 		installFont.type = 'success'
 		#installFont.font = b'ABC'
 		installFont.encoding = 'base64'
 		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is set to success, but <InstallFontResponse>.font is missing'])
+		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.type is set to success, but <InstallFontResponse>.font is missing'])
 
 		installFont = InstallFontResponse()
 		installFont.type = 'error'
 		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse>.fileName --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.'])
+		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.'])
 
 		installFont = InstallFontResponse()
 		installFont.type = 'error'
 		try:
 			d = installFont.dumpDict()
 		except ValueError as e:
-			self.assertEqual(str(e), '<InstallFontResponse>.fileName --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.')
+			self.assertEqual(str(e), '<InstallFontResponse> --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.')
 
 	def test_UninstallFontResponse(self):
 
