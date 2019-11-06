@@ -970,7 +970,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                 hasAtLeastOneLanguage = True
                 break
 
-        return not bool(hasAtLeastOneLanguage)
+        return not hasAtLeastOneLanguage
 
     # def valid(self):
     #     # Check for text length
@@ -1062,7 +1062,6 @@ class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
 class SupportedAPICommandsDataType(UnicodeDataType):
     
     commands = [x['keyword'] for x in COMMANDS]
-
 
     def valid(self):
         if self.value in self.commands:
