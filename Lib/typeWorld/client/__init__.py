@@ -17,6 +17,8 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
+MOTHERSHIP = 'http://127.0.0.1:8080/api'
+
 if MAC:
 	import objc
 	from AppKit import NSDictionary, NSUserDefaults
@@ -338,9 +340,6 @@ class APIClient(object):
 	def timezone(self):
 		return strftime("%z", gmtime())
 
-	def user(self):
-		return self.preferences.get('typeWorldUserAccount')
-
 	def syncProblems(self):
 		return self._syncProblems
 
@@ -418,6 +417,7 @@ class APIClient(object):
 			commandsList = [commandsList]
 		for commandListItem in commandsList:
 			if not commandListItem in commands[commandName]:
+				commands[commandName] = list(commands[commandName])
 				commands[commandName].append(commandListItem)
 		self.preferences.set('pendingOnlineCommands', commands)
 
@@ -792,7 +792,7 @@ class APIClient(object):
 
 		userID = self.user()
 
-		print('performSyncSubscriptions: %s' % userID)
+		# print('performSyncSubscriptions: %s' % userID)
 
 		if userID:
 
@@ -841,26 +841,164 @@ class APIClient(object):
 
 
 
+	def user(self):
+		return self.preferences.get('typeWorldUserAccount')
+
 	def userName(self):
 		keyring = self.keyring()
 		if keyring:
-			return keyring.get_password('https://type.world/user/%s' % self.user(), 'userName')
+			return keyring.get_password(self.userKeychainKey(self.user()), 'userName')
 
 	def userEmail(self):
 		keyring = self.keyring()
 		if keyring:
-			return keyring.get_password('https://type.world/user/%s' % self.user(), 'userEmail')
+			return keyring.get_password(self.userKeychainKey(self.user()), 'userEmail')
+
+
+	def createUserAccount(self, name, email, password1, password2):
+
+		if not name or not email or not password1 or not password2:
+			return False, '#(RequiredFieldEmpty)'
+
+		if password1 != password2:
+			return False, '#(PasswordsDontMatch)'
+
+		import hashlib, base64
+		m = hashlib.sha512()
+		m.update(password1.encode())
+		hashPassword = base64.b64encode(m.digest())
+
+
+		parameters = {
+			'command': 'createUserAccount',
+			'name': name,
+			'email': email,
+			'passwordHash': hashPassword,
+		}
+		if self.testScenario:
+			parameters['testScenario'] = self.testScenario
+
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+		if self.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
+
+		# try:
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		# except:
+		# 	return False, traceback.format_exc().splitlines()[-1]
+
+		response = json.loads(response.read().decode())
+
+		# print('createUserAccount():', response)
+
+		if response['errors']:
+			return False, '#(response.%s)' % response['errors'][0]
+
+		# success
+		# TODO: Make this actually happen
+		return self.linkUser(response['anonymousUserID'], response['secretKey'])
+
+
+	def deleteUserAccount(self, email, password):
+
+		if not email or not password:
+			return False, '#(RequiredFieldEmpty)'
+
+		import hashlib, base64
+		m = hashlib.sha512()
+		m.update(password.encode())
+		hashPassword = base64.b64encode(m.digest())
+
+
+		parameters = {
+			'command': 'deleteUserAccount',
+			'email': email,
+			'passwordHash': hashPassword,
+		}
+		if self.testScenario:
+			parameters['testScenario'] = self.testScenario
+
+		# Add user’s secret key
+		# keyring = self.keyring()
+		# if keyring:
+		# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
+
+		# parameters = self.addMachineIDToParameters(parameters)
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+		if self.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
+
+		try:
+			response = urllib.request.urlopen(url, data, context=sslcontext)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
+
+		response = json.loads(response.read().decode())
+
+		if response['errors']:
+			return False, '#(response.%s)' % response['errors'][0]
+
+		# success
+
+		return True, None
+
+
+	def logInUserAccount(self, email, password):
+
+		if not email or not password:
+			return False, '#(RequiredFieldEmpty)'
+
+		import hashlib, base64
+		m = hashlib.sha512()
+		m.update(password.encode())
+		hashPassword = base64.b64encode(m.digest())
+
+		parameters = {
+			'command': 'logInUserAccount',
+			'email': email,
+			'passwordHash': hashPassword,
+		}
+		if self.testScenario:
+			parameters['testScenario'] = self.testScenario
+
+		# Add user’s secret key
+		# keyring = self.keyring()
+		# if keyring:
+		# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
+
+		# parameters = self.addMachineIDToParameters(parameters)
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+		if self.testScenario == 'simulateCentralServerNotReachable':
+			url = 'https://type.worlddd/jsonAPI/'
+
+		try:
+			response = urllib.request.urlopen(url, data, context=sslcontext)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
+
+		response = json.loads(response.read().decode())
+
+		# print(response)
+
+		if response['errors']:
+			return False, '#(response.%s)' % response['errors'][0]
+
+		# success
+		return self.linkUser(response['anonymousUserID'], response['secretKey'])
 
 	def linkUser(self, userID, secretKey):
 
 		# Set secret key now, so it doesn't show up in preferences when offline
 		keyring = self.keyring()
 		if keyring:
-			keyring.set_password('https://type.world', userID, secretKey)
+			keyring.set_password(self.userKeychainKey(userID), 'secretKey', secretKey)
 
 		self.appendCommands('linkUser', userID)
-		self.syncSubscriptions(performCommands = False)
-		self.downloadSubscriptions(performCommands = False)
+		# self.syncSubscriptions(performCommands = False)
+		# self.downloadSubscriptions(performCommands = False)
 
 		return self.performCommands()
 
@@ -878,11 +1016,15 @@ class APIClient(object):
 		# Add user’s secret key
 		keyring = self.keyring()
 		if keyring:
-			parameters['secretKey'] = keyring.get_password('https://type.world', userID)
+			parameters['secretKey'] = keyring.get_password(self.userKeychainKey(userID), 'secretKey')
 
 		parameters = self.addMachineIDToParameters(parameters)
+
+		# print('performLinkUser() sentParameters:', parameters)
+
+
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
+		url = MOTHERSHIP
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -893,8 +1035,7 @@ class APIClient(object):
 
 		response = json.loads(response.read().decode())
 
-
-#		print(response)
+		# print('performLinkUser():', response)
 
 		if response['errors']:
 			return False, '\n'.join(response['errors'])
@@ -904,11 +1045,14 @@ class APIClient(object):
 
 		if keyring:
 			if 'userEmail' in response:
-				keyring.set_password('https://type.world/user/%s' % self.user(), 'userEmail', response['userEmail'])
+				keyring.set_password(self.userKeychainKey(userID), 'userEmail', response['userEmail'])
 			if 'userName' in response:
-				keyring.set_password('https://type.world/user/%s' % self.user(), 'userName', response['userName'])
+				keyring.set_password(self.userKeychainKey(userID), 'userName', response['userName'])
 
 		return True, None
+
+	def userKeychainKey(self, ID):
+		return 'https://type.world/user/%s@%s' % (self.anonymousAppID(), ID)
 
 
 	def unlinkUser(self):
@@ -950,10 +1094,10 @@ class APIClient(object):
 		# Add user’s secret key
 		keyring = self.keyring()
 		if keyring:
-			parameters['secretKey'] = keyring.get_password('https://type.world', userID)
+			parameters['secretKey'] = keyring.get_password(self.userKeychainKey(userID), 'secretKey')
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
+		url = MOTHERSHIP
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -964,7 +1108,8 @@ class APIClient(object):
 
 		response = json.loads(response.read().decode())
 
-		if response['errors']:
+		continueFor = ['userUnknown']
+		if response['errors'] and not set(response['errors']) | set(continueFor):
 			return False, '\n'.join(response['errors'])
 
 		# Success
@@ -974,14 +1119,11 @@ class APIClient(object):
 		self.preferences.remove('sentInvitations')
 		# if self.preferences.get('currentPublisher') == 'pendingInvitations': self.preferences.set('currentPublisher', '')
 
-		try:
-			keyring = self.keyring()
-			keyring.delete_password('https://type.world', userID)
-			keyring.delete_password('https://type.world', 'userEmail')
-			keyring.delete_password('https://type.world', 'userName')
+		keyring = self.keyring()
+		keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
+		keyring.delete_password(self.userKeychainKey(userID), 'userEmail')
+		keyring.delete_password(self.userKeychainKey(userID), 'userName')
 
-		except:
-			pass
 
 		# Success
 		return True, None
@@ -1234,13 +1376,13 @@ class APIClient(object):
 		if success:
 			protocol = message
 		else:
-			print('Error in addSubscription() from self.protocol(): %s' % message)
+			# print('Error in addSubscription() from self.protocol(): %s' % message)
 			return False, message, None, None
 
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
-			print('Error in addSubscription() from aboutToAddSubscription(): %s' % response)
+			# print('Error in addSubscription() from aboutToAddSubscription(): %s' % response)
 			return False, response, None, None
 
 
@@ -1259,7 +1401,7 @@ class APIClient(object):
 		if updateSubscriptionsOnServer:
 			success, message = self.uploadSubscriptions()
 			if not success:
-				print('Error in addSubscription() from self.uploadSubscriptions(): %s' % message)
+				# print('Error in addSubscription() from self.uploadSubscriptions(): %s' % message)
 				return False, message, None, None
 
 		protocol.subscriptionAdded()
