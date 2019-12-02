@@ -4,7 +4,7 @@
 
 # Requirements
 
-Install requirements with *pip*: 'pip install -U certifi keyring deepdiff semver lxml Markdown'
+Install requirements with *pip*: `pip install -U certifi keyring deepdiff semver lxml Markdown`
 
 
 # API
