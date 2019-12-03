@@ -17,7 +17,8 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
-MOTHERSHIP = 'http://127.0.0.1:8080/api'
+MOTHERSHIP = 'https://typeworld.appspot.com/api'
+
 
 if MAC:
 	import objc
@@ -271,7 +272,7 @@ class APIClient(object):
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None):
+	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP):
 		self.preferences = preferences
 		# if self.preferences:
 		# 	self.clearPendingOnlineCommands()
@@ -281,6 +282,7 @@ class APIClient(object):
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
 		self.delegate = delegate or TypeWorldClientDelegate()
+		self.mothership = mothership
 
 		# For Unit Testing
 		self.testScenario = None
@@ -563,7 +565,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = MOTHERSHIP
+			url = self.mothership
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -613,7 +615,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = MOTHERSHIP
+			url = self.mothership
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -710,7 +712,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = MOTHERSHIP
+			url = self.mothership
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -761,7 +763,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = MOTHERSHIP
+			url = self.mothership
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -812,7 +814,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = MOTHERSHIP
+			url = self.mothership
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -878,14 +880,14 @@ class APIClient(object):
 			parameters['testScenario'] = self.testScenario
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		url = self.mothership
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
-		# try:
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-		# except:
-		# 	return False, traceback.format_exc().splitlines()[-1]
+		try:
+			response = urllib.request.urlopen(url, data, context=sslcontext)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
 
 		response = json.loads(response.read().decode())
 
@@ -924,7 +926,7 @@ class APIClient(object):
 
 		# parameters = self.addMachineIDToParameters(parameters)
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		url = self.mothership
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -968,7 +970,7 @@ class APIClient(object):
 
 		# parameters = self.addMachineIDToParameters(parameters)
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		url = self.mothership
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -1022,7 +1024,7 @@ class APIClient(object):
 
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		url = self.mothership
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -1095,7 +1097,7 @@ class APIClient(object):
 			parameters['secretKey'] = keyring.get_password(self.userKeychainKey(userID), 'secretKey')
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		url = self.mothership
 		if self.testScenario == 'simulateCentralServerNotReachable':
 			url = 'https://type.worlddd/jsonAPI/'
 
@@ -1790,7 +1792,7 @@ class APISubscription(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 
-			url = MOTHERSHIP
+			url = self.parent.parent.mothership
 			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
