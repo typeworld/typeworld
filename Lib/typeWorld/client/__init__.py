@@ -864,17 +864,11 @@ class APIClient(object):
 		if password1 != password2:
 			return False, '#(PasswordsDontMatch)'
 
-		import hashlib, base64
-		m = hashlib.sha512()
-		m.update(password1.encode())
-		hashPassword = base64.b64encode(m.digest())
-
-
 		parameters = {
 			'command': 'createUserAccount',
 			'name': name,
 			'email': email,
-			'passwordHash': hashPassword,
+			'password': password1,
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
@@ -905,16 +899,10 @@ class APIClient(object):
 		if not email or not password:
 			return False, '#(RequiredFieldEmpty)'
 
-		import hashlib, base64
-		m = hashlib.sha512()
-		m.update(password.encode())
-		hashPassword = base64.b64encode(m.digest())
-
-
 		parameters = {
 			'command': 'deleteUserAccount',
 			'email': email,
-			'passwordHash': hashPassword,
+			'password': password,
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
@@ -950,15 +938,10 @@ class APIClient(object):
 		if not email or not password:
 			return False, '#(RequiredFieldEmpty)'
 
-		import hashlib, base64
-		m = hashlib.sha512()
-		m.update(password.encode())
-		hashPassword = base64.b64encode(m.digest())
-
 		parameters = {
 			'command': 'logInUserAccount',
 			'email': email,
-			'passwordHash': hashPassword,
+			'password': password,
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
