@@ -563,7 +563,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -574,9 +574,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-
-			if response['errors']:
-				return False, '\n'.join(response['errors'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
 		# Success
 		return True, None
@@ -614,7 +613,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -625,8 +624,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-			if response['errors']:
-				return False, '\n'.join(response['errors'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
 			return self.executeDownloadSubscriptions(response)
 
@@ -711,7 +710,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -722,8 +721,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-			if response['errors']:
-				return False, '\n'.join(response['errors'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
 			# Success
 			return self.executeDownloadSubscriptions(response)
@@ -762,7 +761,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -773,8 +772,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-			if response['errors']:
-				return False, '\n'.join(response['errors'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
 			# Success
 			return self.executeDownloadSubscriptions(response)
@@ -813,7 +812,7 @@ class APIClient(object):
 				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -824,8 +823,8 @@ class APIClient(object):
 
 			response = json.loads(response.read().decode())
 
-			if response['errors']:
-				return False, '\n'.join(response['errors'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
 			# Add new subscriptions
 			for url in response['subscriptions']:
@@ -892,11 +891,10 @@ class APIClient(object):
 
 		# print('createUserAccount():', response)
 
-		if response['errors']:
-			return False, '#(response.%s)' % response['errors'][0]
+		if response['response'] != 'success':
+			return False, '#(response.%s)' % response['response']
 
 		# success
-		# TODO: Make this actually happen
 		return self.linkUser(response['anonymousUserID'], response['secretKey'])
 
 
@@ -937,8 +935,8 @@ class APIClient(object):
 
 		response = json.loads(response.read().decode())
 
-		if response['errors']:
-			return False, '#(response.%s)' % response['errors'][0]
+		if response['response'] != 'success':
+			return False, '#(response.%s)' % response['response']
 
 		# success
 
@@ -983,8 +981,8 @@ class APIClient(object):
 
 		# print(response)
 
-		if response['errors']:
-			return False, '#(response.%s)' % response['errors'][0]
+		if response['response'] != 'success':
+			return False, '#(response.%s)' % response['response']
 
 		# success
 		return self.linkUser(response['anonymousUserID'], response['secretKey'])
@@ -1037,8 +1035,8 @@ class APIClient(object):
 
 		# print('performLinkUser():', response)
 
-		if response['errors']:
-			return False, '\n'.join(response['errors'])
+		if response['response'] != 'success':
+			return False, '#(response.%s)' % response['response']
 
 		# Success
 		self.preferences.set('typeWorldUserAccount', userID)
@@ -1109,8 +1107,8 @@ class APIClient(object):
 		response = json.loads(response.read().decode())
 
 		continueFor = ['userUnknown']
-		if response['errors'] and not set(response['errors']) | set(continueFor):
-			return False, '\n'.join(response['errors'])
+		if response['response'] != 'success' and not response['errors'] in continueFor:
+			return False, '#(response.%s)' % response['response']
 
 		# Success
 		self.preferences.set('typeWorldUserAccount', '')
