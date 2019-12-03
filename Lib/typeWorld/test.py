@@ -1881,6 +1881,12 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(addAttributeToURL('https://type.world/', 'hello=world'), 'https://type.world/?hello=world')
 		self.assertEqual(addAttributeToURL('https://type.world/?foo=bar', 'hello=world'), 'https://type.world/?foo=bar&hello=world')
 
+	def test_centralServer(self):
+
+		# TODO:
+		# verifyCredentials
+
+
 
 	def test_simulateExternalScenarios(self):
 

@@ -1412,7 +1412,7 @@ class APIClient(object):
 		# publisher.set('currentSubscription', protocol.saveURL())
 		subscription.save()
 		publisher.save()
-		publisher.stillAlive()
+		subscription.stillAlive()
 
 
 		if updateSubscriptionsOnServer:
@@ -1511,7 +1511,6 @@ class APIPublisher(object):
 		self.exists = False
 		self._subscriptions = {}
 
-		self.stillAliveTouched = None
 
 		self._updatingSubscriptions = []
 
@@ -1552,44 +1551,6 @@ class APIPublisher(object):
 
 		if problems: return problems
 
-
-	def stillAlive(self):
-
-
-		def stillAliveWorker(self):
-
-			# Register endpoint
-
-			parameters = {
-				'command': 'registerAPIEndpoint',
-				'url': self.canonicalURL,
-			}
-			if self.parent.testScenario:
-				parameters['testScenario'] = self.parent.testScenario
-
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-
-			url = MOTHERSHIP
-			if self.parent.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-
-#			response = json.loads(response.read().decode())
-
-			# if not response['errors']:
-			# 	self.parent.log('API endpoint alive success.')
-			# else:
-			# 	self.parent.log('API endpoint alive error: %s' % response['message'])
-
-
-		# Touch only once
-		if not self.stillAliveTouched:
-
-			stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self, ))
-			stillAliveThread.start()
-
-			self.stillAliveTouched = time.time()			
 
 
 	# def gitHubRateLimit(self):
@@ -1807,9 +1768,55 @@ class APISubscription(object):
 		self.protocol.subscription = self
 		self.url = self.protocol.saveURL()
 
+		self.stillAliveTouched = None
 		self._updatingProblem = None
 
 		# print('<API SUbscription %s>' % self.url)
+
+
+	def stillAlive(self):
+
+
+		def stillAliveWorker(self):
+
+			# Register endpoint
+
+			parameters = {
+				'command': 'registerAPIEndpoint',
+				'url': 'typeworld://%s+%s' % (self.protocol.protocol, self.parent.canonicalURL.replace('://', '//')),
+			}
+			if self.parent.parent.testScenario:
+				parameters['testScenario'] = self.parent.parent.testScenario
+
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+
+			url = MOTHERSHIP
+			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
+
+			try:
+				response = urllib.request.urlopen(url, data, context=sslcontext)
+			except:
+				self.parent.parent.log('stillAliveWorker(): ' + traceback.format_exc())
+				return
+
+
+			response = json.loads(response.read().decode())
+
+			if response['response'] == 'success':
+				self.parent.parent.log('API endpoint alive success.')
+			else:
+				self.parent.parent.log('API endpoint alive error: %s' % response['response'])
+
+
+		# Touch only once
+		if not self.parent.parent.user():
+			if not self.stillAliveTouched:
+
+				stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self, ))
+				stillAliveThread.start()
+
+				self.stillAliveTouched = time.time()			
 
 
 	def inviteUser(self, targetEmail):
@@ -2130,7 +2137,7 @@ class APISubscription(object):
 
 
 			# Ping
-			self.parent.stillAlive()
+			self.stillAlive()
 
 			self.parent.parent.delegate.fontHasInstalled(True, None, font)
 			return True, None
@@ -2197,6 +2204,7 @@ class APISubscription(object):
 
 		if self.parent.parent.online(self.protocol.restDomain.split('/')[0]):
 
+			self.stillAlive()
 
 			success, message, changes = self.protocol.update()
 
