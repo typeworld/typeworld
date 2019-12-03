@@ -17,10 +17,15 @@ from typeWorld.api import *
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-testUser = ('736b524a-cf24-11e9-9f62-901b0ecbcc7a', 'AApCEfatt6vE5H4m0pevPsQA9P7fYG8Q1uhsNFYV') # test@type.world
-testUser2 = ('8d48dafc-d07d-11e9-a3e3-901b0ecbcc7a', 'XPd2QbwHskEDzLeUXZxysGkiJmASHLhXxQfgTZCD') # test2@type.world
-testUser3 = ('e865a474-d07d-11e9-982c-901b0ecbcc7a', 'LN1LYRgVYcQhEgulYmUdBgJObq2R4VCgL4rdnnZ5') # test3@type.world
+testUser = ('test1@type.world', 'abc')
+testUser2 = ('test2@type.world', 'def')
+testUser3 = ('test3@type.world', 'ghi')
 
+
+if 'TRAVIS' in os.environ:
+	MOTHERSHIP = 'https://typeworld.appspot.com/api'
+else:
+	MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
 
 ### RootResponse
@@ -212,8 +217,9 @@ class User(object):
 			self.clearSubscriptions()
 
 	def linkUser(self):
+		self.unlinkUser()
 		if self.login:
-			return self.client.linkUser(*self.login)
+			return self.client.createUserAccount('Test User', self.login[0], self.login[1], self.login[1])
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
@@ -233,16 +239,37 @@ class User(object):
 
 	def unlinkUser(self):
 		if self.login:
-			return self.client.unlinkUser()
+			if self.client.user():
+				self.client.unlinkUser()
+			self.client.deleteUserAccount(*self.login)
 
 	def loadClient(self):
-		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile))
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP)
 
 
 class TestStringMethods(unittest.TestCase):
 
 
 	def test_normalSubscription(self):
+
+
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'qumBU7Sn5bc46gYyMV3zJ1n8jmKAg1dahBJBFUqf',
+		}
+
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+
+		try:
+			response = urllib.request.urlopen(url, data, context=sslcontext)
+		except:
+			return False, traceback.format_exc().splitlines()[-1]
+
+		response = json.loads(response.read().decode())
+		self.assertEqual(response['response'], 'success')
 
 
 		# General stuff
@@ -262,9 +289,9 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		# Logo
-		user0.client.testScenario = 'simulateProgrammingError'
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		self.assertEqual(success, False)
+		# user0.client.testScenario = 'simulateProgrammingError'
+		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		# self.assertEqual(success, False)
 
 		user0.client.testScenario = None
 		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
@@ -442,7 +469,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Revoke app instance
-		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password('https://type.world/jsonAPI', 'revokeAppInstance')
+		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password(MOTHERSHIP, 'revokeAppInstance')
 		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
 		parameters = {
 			'command': 'revokeAppInstance',
@@ -1885,7 +1912,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# TODO:
 		# verifyCredentials
-
+		pass
 
 
 	def test_simulateExternalScenarios(self):
@@ -1941,32 +1968,36 @@ class TestStringMethods(unittest.TestCase):
 
 
 
+def setUp():
 
-	def setUp(self):
+	global user0, user1, user2, user3, tempFolder
+	tempFolder = tempfile.mkdtemp()
+	user0 = User()
+	user1 = User(testUser)
+	user2 = User(testUser2)
+	user3 = User(testUser3)
 
-		global user0, user1, user2, user3, tempFolder
-		tempFolder = tempfile.mkdtemp()
-		user0 = User()
-		user1 = User(testUser)
-		user2 = User(testUser2)
-		user3 = User(testUser3)
+	print('setUp()')
 
-		print('setUp()')
+def tearDown():
 
-	def tearDown(self):
+	global user0, user1, user2, user3, tempFolder
+	user0.takeDown()
+	user1.takeDown()
+	user2.takeDown()
+	user3.takeDown()
 
-		global user0, user1, user2, user3, tempFolder
-		user0.takeDown()
-		user1.takeDown()
-		user2.takeDown()
-		user3.takeDown()
+	print('tearDown()')
 
-		print('tearDown()')
+	 # Local
+	if not 'TRAVIS' in os.environ: os.rmdir(tempFolder)
 
-		 # Local
-		if not 'TRAVIS' in os.environ: os.rmdir(tempFolder)
 
 if __name__ == '__main__':
 
+	setUp()
+
 	unittest.main()
+
+	tearDown()
 
