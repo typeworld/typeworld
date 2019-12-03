@@ -1569,16 +1569,13 @@ class APIPublisher(object):
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 
-			url = 'https://type.world/jsonAPI/'
+			url = MOTHERSHIP
 			if self.parent.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
-			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
-			except:
-				return
+			response = urllib.request.urlopen(url, data, context=sslcontext)
 
-			response = json.loads(response.read().decode())
+#			response = json.loads(response.read().decode())
 
 			# if not response['errors']:
 			# 	self.parent.log('API endpoint alive success.')
