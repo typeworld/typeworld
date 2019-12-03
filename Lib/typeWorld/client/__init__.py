@@ -1360,6 +1360,25 @@ class APIClient(object):
 		else:
 			return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
+	def rootCommand(self, url):
+		# Check for URL validity
+		success, response = urlIsValid(url)
+		if not success:
+			return False, response
+
+		# Get subscription
+		success, message = self.protocol(url)
+		if success:
+			protocol = message
+
+			# Get Root Command
+			return protocol.rootCommand()
+
+		else:
+			# print('Error in addSubscription() from self.protocol(): %s' % message)
+			return False, message
+
+
 
 	def addSubscription(self, url, username = None, password = None, updateSubscriptionsOnServer = True, JSON = None, secretTypeWorldAPIKey = None):
 		'''
