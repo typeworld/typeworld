@@ -18,6 +18,7 @@ MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
 MOTHERSHIP = 'https://typeworld.appspot.com/api'
+#MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
 
 if MAC:
