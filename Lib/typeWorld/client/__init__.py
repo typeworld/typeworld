@@ -644,8 +644,7 @@ class APIClient(object):
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-				if not success:
-					return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
+				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
 
 		def replace_item(obj, key, replace_value):
 			for k, v in obj.items():

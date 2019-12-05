@@ -21,10 +21,9 @@ testUser2 = ('test2@type.world', 'def')
 testUser3 = ('test3@type.world', 'ghi')
 
 
+MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld.appspot.com/api'
-else:
-	MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
 
 ### RootResponse
@@ -215,12 +214,10 @@ class User(object):
 			print('Login for %s: %s/%s' % (self.login[0], self.login[0], self.login[1]))
 			print('Deleting user account for %s' % self.login[0])
 			success, message = self.client.deleteUserAccount(*self.login)
-			if not success and message != '#(response.userUnknown)':
-				raise ValueError(message)
+			if not success and message != '#(response.userUnknown)': raise ValueError(message)
 			print('Creating user account for %s' % self.login[0])
 			success, message = self.client.createUserAccount('Test User', self.login[0], self.login[1], self.login[1])
-			if not success:
-				raise ValueError(message)
+			if not success: raise ValueError(message)
 			self.credentials = (self.client.user(), self.client.secretKey())
 			print('Credentials for %s: %s/%s' % (self.login[0], self.credentials[0], self.credentials[1]))
 
@@ -247,6 +244,8 @@ class User(object):
 		self.clearInvitations()
 		self.clearSubscriptions()
 		self.unlinkUser()
+		if self.login:
+			self.client.deleteUserAccount(*self.login)
 
 	def unlinkUser(self):
 		if self.login:
@@ -278,11 +277,7 @@ class TestStringMethods(unittest.TestCase):
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = MOTHERSHIP
 
-		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
-
+		response = urllib.request.urlopen(url, data, context=sslcontext)
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
 
@@ -304,9 +299,9 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		# Logo
-		# user0.client.testScenario = 'simulateProgrammingError'
-		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		# self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateProgrammingError'
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		self.assertEqual(success, False)
 
 		user0.client.testScenario = None
 		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
@@ -336,8 +331,6 @@ class TestStringMethods(unittest.TestCase):
 		result = user0.client.addSubscription(protectedSubscription)
 		print('Scenario 2:', result)
 		success, message, publisher, subscription = result
-		if type(message) == typeWorld.api.base.MultiLanguageText:
-			print('Message:', message.getText())
 		self.assertEqual(success, False)
 		self.assertEqual(message, '#(response.validTypeWorldUserAccountRequired)')
 
@@ -562,8 +555,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertTrue(user1.client.syncProblems())
 		user1.client.testScenario = None
 		success, message = user1.client.unlinkUser()
-		if not success:
-			print(message)
 		self.assertEqual(
 			success,
 			True
@@ -882,8 +873,6 @@ class TestStringMethods(unittest.TestCase):
 		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
 		self.assertEqual(result, (True, None))
 		success, message = user2.client.downloadSubscriptions()
-		if not success:
-			print(message)
 		self.assertEqual(success, True)
 		self.assertEqual(len(user2.client.sentInvitations()), 1)
 
@@ -946,8 +935,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		if not success:
-			print(message)
 		self.assertEqual(success, True)
 
 		print('STATUS: -6')
@@ -979,8 +966,6 @@ class TestStringMethods(unittest.TestCase):
 
 		# Invitation accepted
 		success = user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted()
-		if not success:
-			print(message)
 		self.assertEqual(success, True)
 
 
@@ -1003,7 +988,90 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-		print('done with test_normalSubscription()')
+
+
+
+
+
+
+
+		# Create user account
+
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', '', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(message, '#(PasswordsDontMatch)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(success, False)
+
+		# Delete User Account
+
+		success, message = user0.client.deleteUserAccount('test0@type.world', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+
+		# Log In User Account
+
+		success, message = user0.client.logInUserAccount('test0@type.world', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = None
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, True)
+		success, message = user0.client.unlinkUser()
+		self.assertEqual(success, True)
+
+
 
 
 	def test_RootResponse(self):
@@ -1675,8 +1743,12 @@ class TestStringMethods(unittest.TestCase):
 		assert type(root.supportedCommands.index('installableFonts')) == int
 		assert installableFonts.designers[0].parent == installableFonts
 
-		# TODO: Invite user to subscription with API endpoint as source
+		success, rootCommand = user1.client.rootCommand(protectedSubscription)
+		self.assertTrue(success)
+		success, rootCommand = user1.client.rootCommand(protectedSubscription[1:])
+		self.assertFalse(success)
 
+		# TODO: Invite user to subscription with API endpoint as source
 
 	def test_InstallFontResponse(self):
 
@@ -2101,7 +2173,7 @@ if __name__ == '__main__':
 
 	setUp()
 
-	unittest.main()
+	unittest.main(exit=False)
 
 	tearDown()
 

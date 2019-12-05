@@ -147,6 +147,30 @@ def OSName():
 		return ' '.join(platform.linux_distribution())
 
 
-def addAttributeToURL(url, attribute):
-	if '?' in url: return url + '&' + attribute
-	else: return url + '?' + attribute
+def addAttributeToURL(url, attributes):
+
+	from urllib.parse import urlparse
+	o = urlparse(url)
+
+	for attribute in attributes.split('&'):
+
+		key, value = attribute.split('=')
+
+
+		replaced = False
+		queryParts = o.query.split('&')
+		if queryParts:
+			for i, query in enumerate(queryParts):
+				if '=' in query and query.startswith(key + '='):
+					queryParts[i] = attribute
+					replaced = True
+					break
+		if not replaced:
+			if queryParts[0]:
+				queryParts.append(attribute)
+			else:
+				queryParts[0] = attribute
+		o = o._replace(query='&'.join(queryParts))
+
+	return o.geturl()
+
