@@ -224,10 +224,10 @@ class User(object):
 			self.clearInvitations()
 			self.clearSubscriptions()
 
-	def linkUser(self):
-		self.unlinkUser()
-		if self.login:
-			return self.client.linkUser(*self.credentials)
+	# def linkUser(self):
+	# 	self.unlinkUser()
+	# 	if self.login:
+	# 		return self.client.linkUser(*self.credentials)
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
@@ -985,9 +985,6 @@ class TestStringMethods(unittest.TestCase):
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-
-
-
 
 
 
