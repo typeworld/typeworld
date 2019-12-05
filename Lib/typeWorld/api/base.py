@@ -835,7 +835,7 @@ class DictBasedObject(object):
                         self.set(key, d[key])
 
     def dumpJSON(self):
-        return json.dumps(self.dumpDict(), indent=2)
+        return json.dumps(self.dumpDict())
 
     def loadJSON(self, j):
         self.loadDict(json.loads(j))

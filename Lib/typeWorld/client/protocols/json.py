@@ -45,7 +45,7 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 
 
 	except urllib.request.HTTPError as e:
-		d['errors'].append(str(e))
+		d['errors'].append('Error retrieving %s: %s' % (url, e))
 
 	return api, d
 

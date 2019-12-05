@@ -130,3 +130,11 @@ class TypeWorldProtocolBase(object):
 #			else: raise Exception('No secret key found for %s' % url)				
 
 		return url		
+
+	def secretURL(self):
+		url = self.url
+		secretKey = self.getSecretKey()
+		if secretKey:
+			url = url.replace(':%s@' % secretKey, ':secretKey@')
+
+		return url		

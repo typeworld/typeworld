@@ -48,16 +48,6 @@ if 'TRAVIS' in os.environ:
 
 
 
-def validURL(url):
-
-	protocol = url.split('://')[0]
-
-	if not protocol in typeWorld.api.base.PROTOCOLS:
-		return False
-
-	return True
-
-
 def urlIsValid(url):
 
 	if not url.find('typeworld://') < url.find('+') < url.find('http') < url.find('//', url.find('http')):
@@ -74,8 +64,8 @@ def urlIsValid(url):
 	if not found:
 		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS)
 
-	if url.split('://')[-1].count(':') > 1:
-		return False, 'URL contains more than one : signs, so don’t know how to parse it.'
+	if url.count('://') > 1:
+		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
 
 
 	return True, None
@@ -557,13 +547,10 @@ class APIClient(object):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'appVersion': typeWorld.api.VERSION,
+				'secretKey': self.secretKey(),
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
-			# Add user’s secret key
-			keyring = self.keyring()
-			if keyring:
-				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -607,13 +594,11 @@ class APIClient(object):
 				'anonymousUserID': userID,
 				'userTimezone': self.timezone(),
 				'appVersion': typeWorld.api.VERSION,
+				'secretKey': self.secretKey(),
 			}
+
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
-			# Add user’s secret key
-			keyring = self.keyring()
-			if keyring:
-				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -623,7 +608,7 @@ class APIClient(object):
 			try:
 				response = urllib.request.urlopen(url, data, context=sslcontext)
 			except:
-				return False, traceback.format_exc().splitlines()[-1]
+				return False, 'Response from %s: %s' % (url, traceback.format_exc().splitlines()[-1])
 
 			response = json.loads(response.read().decode())
 
@@ -651,7 +636,7 @@ class APIClient(object):
 #		print('executeDownloadSubscriptions():', response)
 
 
-		if 'appIsRevoked' in response['information']:
+		if response['appInstanceIsRevoked']:
 			self.uninstallAllProtectedFonts()
 
 		# Subscriptions
@@ -659,12 +644,19 @@ class APIClient(object):
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-				if not success: return False, message
+				if not success:
+					return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
+
+		def replace_item(obj, key, replace_value):
+			for k, v in obj.items():
+				if v == key:
+					obj[k] = replace_value
+			return obj
 
 		# Invitations
-		self.preferences.set('acceptedInvitations', response['acceptedInvitations'])
-		self.preferences.set('pendingInvitations', response['pendingInvitations'])
-		self.preferences.set('sentInvitations', response['sentInvitations'])
+		self.preferences.set('acceptedInvitations', [replace_item(x, None, '') for x in response['acceptedInvitations']])
+		self.preferences.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
+		self.preferences.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
 
 		import threading
 		preloadThread = threading.Thread(target=self.preloadLogos)
@@ -675,7 +667,6 @@ class APIClient(object):
 			for subscription in publisher.subscriptions():
 				if not subscription.protocol.completeURL() in response['subscriptions']:
 					subscription.delete(updateSubscriptionsOnServer = False)
-
 
 		# Success
 		return True, len(response['subscriptions']) - len(oldURLs)
@@ -704,13 +695,10 @@ class APIClient(object):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'appVersion': typeWorld.api.VERSION,
+				'secretKey': self.secretKey(),
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
-			# Add user’s secret key
-			keyring = self.keyring()
-			if keyring:
-				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -755,13 +743,10 @@ class APIClient(object):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'appVersion': typeWorld.api.VERSION,
+				'secretKey': self.secretKey(),
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
-			# Add user’s secret key
-			keyring = self.keyring()
-			if keyring:
-				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -806,13 +791,10 @@ class APIClient(object):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'appVersion': typeWorld.api.VERSION,
+				'secretKey': self.secretKey(),
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
-			# Add user’s secret key
-			keyring = self.keyring()
-			if keyring:
-				parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -844,7 +826,12 @@ class APIClient(object):
 
 
 	def user(self):
-		return self.preferences.get('typeWorldUserAccount')
+		return self.preferences.get('typeWorldUserAccount') or ''
+
+	def secretKey(self, userID = None):
+		keyring = self.keyring()
+		if keyring:
+			return keyring.get_password(self.userKeychainKey(userID or self.user()), 'secretKey')
 
 	def userName(self):
 		keyring = self.keyring()
@@ -981,8 +968,8 @@ class APIClient(object):
 			keyring.set_password(self.userKeychainKey(userID), 'secretKey', secretKey)
 
 		self.appendCommands('linkUser', userID)
-		# self.syncSubscriptions(performCommands = False)
-		# self.downloadSubscriptions(performCommands = False)
+		self.syncSubscriptions(performCommands = False)
+		self.downloadSubscriptions(performCommands = False)
 
 		return self.performCommands()
 
@@ -994,13 +981,10 @@ class APIClient(object):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'appVersion': typeWorld.api.VERSION,
+			'secretKey': self.secretKey(userID),
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
-		# Add user’s secret key
-		keyring = self.keyring()
-		if keyring:
-			parameters['secretKey'] = keyring.get_password(self.userKeychainKey(userID), 'secretKey')
 
 		parameters = self.addMachineIDToParameters(parameters)
 
@@ -1026,7 +1010,9 @@ class APIClient(object):
 
 		# Success
 		self.preferences.set('typeWorldUserAccount', userID)
+		assert userID == self.user()
 
+		keyring = self.keyring()
 		if keyring:
 			if 'userEmail' in response:
 				keyring.set_password(self.userKeychainKey(userID), 'userEmail', response['userEmail'])
@@ -1036,7 +1022,7 @@ class APIClient(object):
 		return True, None
 
 	def userKeychainKey(self, ID):
-		return 'https://type.world/user/%s@%s' % (self.anonymousAppID(), ID)
+		return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
 
 
 	def unlinkUser(self):
@@ -1071,14 +1057,10 @@ class APIClient(object):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'appVersion': typeWorld.api.VERSION,
+			'secretKey': self.secretKey(),
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
-
-		# Add user’s secret key
-		keyring = self.keyring()
-		if keyring:
-			parameters['secretKey'] = keyring.get_password(self.userKeychainKey(userID), 'secretKey')
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = self.mothership
@@ -1093,7 +1075,7 @@ class APIClient(object):
 		response = json.loads(response.read().decode())
 
 		continueFor = ['userUnknown']
-		if response['response'] != 'success' and not response['errors'] in continueFor:
+		if response['response'] != 'success' and not response['response'] in continueFor:
 			return False, '#(response.%s)' % response['response']
 
 		# Success
@@ -1386,7 +1368,11 @@ class APIClient(object):
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
 			# print('Error in addSubscription() from aboutToAddSubscription(): %s' % response)
-			return False, response, None, None
+			if type(response) == typeWorld.api.base.MultiLanguageText or response.startswith('#('):
+				message = response
+			else:
+				message = 'Response from protocol.aboutToAddSubscription(): %s' % response
+			return False, message, None, None
 
 
 		rootCommand = protocol.rootCommand()[1]
@@ -1405,7 +1391,7 @@ class APIClient(object):
 			success, message = self.uploadSubscriptions()
 			if not success:
 				# print('Error in addSubscription() from self.uploadSubscriptions(): %s' % message)
-				return False, message, None, None
+				return False, 'Response from client.uploadSubscriptions(): %s' % message, None, None
 
 		protocol.subscriptionAdded()
 
@@ -1822,7 +1808,7 @@ class APISubscription(object):
 				parameters['testScenario'] = self.parent.parent.testScenario
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = self.parent.parent.mothership
 			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -1833,14 +1819,10 @@ class APISubscription(object):
 
 			response = json.loads(response.read().decode())
 
-			if 'errors' in response and response['errors']:
-				return False, ', '.join(response['errors'])
-
-			if 'response' in response:
-				if response['response'] == 'success':
-					return True, None
-				else:
-					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if response['response'] == 'success':
+				return True, None
+			else:
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		else:
 			return False, '#(response.notOnline)'
@@ -1874,7 +1856,7 @@ class APISubscription(object):
 				parameters['testScenario'] = self.parent.parent.testScenario
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = 'https://type.world/jsonAPI/'
+			url = self.parent.parent.mothership
 			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
 				url = 'https://type.worlddd/jsonAPI/'
 
@@ -1885,11 +1867,10 @@ class APISubscription(object):
 
 			response = json.loads(response.read().decode())
 
-			if 'errors' in response and response['errors']:
-				return False, ', '.join(response['errors'])
-
-			if 'response' in response and response['response'] == 'success':
-					return True, None
+			if response['response'] == 'success':
+				return True, None
+			else:
+				return False, response['response']
 
 		else:
 			return False, '#(response.notOnline)'
@@ -1900,7 +1881,7 @@ class APISubscription(object):
 			acceptedInvitations = self.parent.parent.acceptedInvitations()
 			if acceptedInvitations:
 				for invitation in acceptedInvitations:
-					if self.protocol.completeURL() == invitation.url:
+					if self.protocol.secretURL() == invitation.url:
 						return True
 
 

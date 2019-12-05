@@ -14,10 +14,9 @@ from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults
 import tempfile, os, traceback
 from typeWorld.api import *
 
-
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-testUser = ('test1@type.world', 'abc')
+testUser1 = ('test1@type.world', 'abc')
 testUser2 = ('test2@type.world', 'def')
 testUser3 = ('test3@type.world', 'ghi')
 
@@ -210,16 +209,28 @@ class User(object):
 		self.login = login
 		self.prefFile = os.path.join(tempFolder, str(id(self)) + '.json')
 		self.loadClient()
+		self.credentials = ()
 
 		if self.login:
-			self.linkUser()
+			print('Login for %s: %s/%s' % (self.login[0], self.login[0], self.login[1]))
+			print('Deleting user account for %s' % self.login[0])
+			success, message = self.client.deleteUserAccount(*self.login)
+			if not success and message != '#(response.userUnknown)':
+				raise ValueError(message)
+			print('Creating user account for %s' % self.login[0])
+			success, message = self.client.createUserAccount('Test User', self.login[0], self.login[1], self.login[1])
+			if not success:
+				raise ValueError(message)
+			self.credentials = (self.client.user(), self.client.secretKey())
+			print('Credentials for %s: %s/%s' % (self.login[0], self.credentials[0], self.credentials[1]))
+
 			self.clearInvitations()
 			self.clearSubscriptions()
 
 	def linkUser(self):
 		self.unlinkUser()
 		if self.login:
-			return self.client.createUserAccount('Test User', self.login[0], self.login[1], self.login[1])
+			return self.client.linkUser(*self.credentials)
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
@@ -241,7 +252,6 @@ class User(object):
 		if self.login:
 			if self.client.user():
 				self.client.unlinkUser()
-			self.client.deleteUserAccount(*self.login)
 
 	def loadClient(self):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP)
@@ -252,12 +262,17 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_normalSubscription(self):
 
+		print('test_normalSubscription()')
+
+		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
+
+		self.assertTrue(user2.client.user())
 
 		parameters = {
 			'command': 'verifyCredentials',
-			'anonymousAppID': user1.client.anonymousAppID(),
-			'anonymousTypeWorldUserID': user1.client.user(),
-			'APIKey': 'qumBU7Sn5bc46gYyMV3zJ1n8jmKAg1dahBJBFUqf',
+			'anonymousAppID': user2.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user2.client.user(),
+			'APIKey': 'OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU',
 		}
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
@@ -274,14 +289,14 @@ class TestStringMethods(unittest.TestCase):
 
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
-		self.assertTrue(typeWorld.client.validURL(freeSubscription))
+		self.assertTrue(typeWorld.client.urlIsValid(freeSubscription)[0])
 
 		## Scenario 1:
 		## Test a simple subscription of free fonts without Type.World user account
 
-		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
-		print(success, message)
-
+		result = user0.client.addSubscription(freeSubscription)
+		print('Scenario 1:', result)
+		success, message, publisher, subscription = result
 		self.assertEqual(success, True)
 		self.assertEqual(user0.client.publishers()[0].canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
@@ -321,9 +336,10 @@ class TestStringMethods(unittest.TestCase):
 		result = user0.client.addSubscription(protectedSubscription)
 		print('Scenario 2:', result)
 		success, message, publisher, subscription = result
-
+		if type(message) == typeWorld.api.base.MultiLanguageText:
+			print('Message:', message.getText())
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.insufficientPermission)')
+		self.assertEqual(message, '#(response.validTypeWorldUserAccountRequired)')
 
 
 
@@ -336,6 +352,7 @@ class TestStringMethods(unittest.TestCase):
 		result = user1.client.addSubscription(protectedSubscription)
 		print('Scenario 3:', result)
 		success, message, publisher, subscription = result
+		print('Message:', message)
 
 		self.assertEqual(success, True)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
@@ -475,12 +492,14 @@ class TestStringMethods(unittest.TestCase):
 			'command': 'revokeAppInstance',
 			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
 			'authorizationKey': authKey,
+			'anonymousUserID': user1.client.user(),
+			'secretKey': user1.client.secretKey(),
 		}
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
+		url = MOTHERSHIP
 		response = urllib.request.urlopen(url, data, context=sslcontext)
 		response = json.loads(response.read().decode())
-		self.assertFalse(response['errors'])
+		self.assertEqual(response['response'], 'success')
 
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
@@ -497,12 +516,14 @@ class TestStringMethods(unittest.TestCase):
 			'command': 'reactivateAppInstance',
 			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
 			'authorizationKey': authKey,
+			'anonymousUserID': user1.client.user(),
+			'secretKey': user1.client.secretKey(),
 		}
 		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = 'https://type.world/jsonAPI/'
+		url = MOTHERSHIP
 		response = urllib.request.urlopen(url, data, context=sslcontext)
 		response = json.loads(response.read().decode())
-		self.assertFalse(response['errors'])
+		self.assertEqual(response['response'], 'success')
 
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
 
@@ -540,8 +561,11 @@ class TestStringMethods(unittest.TestCase):
 			)
 		self.assertTrue(user1.client.syncProblems())
 		user1.client.testScenario = None
+		success, message = user1.client.unlinkUser()
+		if not success:
+			print(message)
 		self.assertEqual(
-			user1.client.unlinkUser()[0],
+			success,
 			True
 			)
 		self.assertFalse(user1.client.syncProblems())
@@ -557,43 +581,51 @@ class TestStringMethods(unittest.TestCase):
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
-			user1.client.linkUser(*testUser)[0],
+			user1.client.linkUser(*user1.credentials)[0],
 			False
 			)
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
 		self.assertEqual(
-			user1.client.linkUser(*testUser)[0],
+			user1.client.linkUser(*user1.credentials)[0],
 			False
 			)
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
 		self.assertEqual(
-			user1.client.linkUser(*testUser)[0],
+			user1.client.linkUser(*user1.credentials)[0],
 			False
 			)
 		user1.client.testScenario = 'simulateNotOnline'
 		self.assertEqual(
-			user1.client.linkUser(*testUser)[0],
+			user1.client.linkUser(*user1.credentials)[0],
 			False
 			)
 		user1.client.testScenario = None
+		success, message = user1.client.linkUser(*user1.credentials)
+		print('linkUser:', success, message)
 		self.assertEqual(
-			user1.client.linkUser(*testUser)[0],
+			success,
 			True
 			)
+
+		# Unlink
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			True
+			)
+		# Log in
+		self.assertEqual(
+			user1.client.logInUserAccount(*testUser1)[0],
+			True
+			)
+
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(user1.client.userEmail(), 'test@type.world')
+		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
 
 		# Install again
 		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-
-		# Current Publisher
-		# user1.client.preferences.set('currentPublisher', user1.client.publishers()[0].canonicalURL)
-		# self.assertEqual(user1.client.currentPublisher(), user1.client.publishers()[0])
-		# user1.client.currentPublisher().set('currentSubscription', user1.client.currentPublisher().subscriptions()[0].url)
-		# self.assertEqual(user1.client.currentPublisher().currentSubscription(), user1.client.publishers()[0].subscriptions()[0])
 
 		# Sync subscription
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -634,7 +666,7 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateWrongMimeType'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
+		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
 		user2.client.testScenario = 'simulateNotHTTP200'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
@@ -751,6 +783,7 @@ class TestStringMethods(unittest.TestCase):
 
 		### ###
 
+		print('STATUS: -14')
 
 
 		# Invitations
@@ -765,10 +798,12 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(result, (False, ['#(response.unknownTargetEmail)', '#(response.unknownTargetEmail.headline)']))
 
 		# Invite same user
-		self.assertEqual(user1.client.userEmail(), 'test@type.world')
-		self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test@type.world')
+		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
+		# self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test1@type.world')
 		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
+
+		print('STATUS: -13')
 
 		# Invite real user
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -785,19 +820,35 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(result[0], False)
 		user1.client.testScenario = None
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		print(result)
 		self.assertEqual(result[0], True)
+
+		print('STATUS: -12')
 
 		# Update user2
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+
+		print('STATUS: -11.8')
+
 		self.assertEqual(len(user2.client.publishers()), 0)
+
+		print('STATUS: -11.7')
+
 		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
+
+		print('STATUS: -11.6')
+
 		self.assertEqual(len(user2.client.pendingInvitations()), 1)
+
+		print('STATUS: -11.5')
 
 		# Decline (exists only here in test script)
 		user2.clearInvitations()
 		# Invite again
 		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
 		self.assertEqual(result, (True, None))
+
+		print('STATUS: -11')
 
 		# Accept invitation
 		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
@@ -816,7 +867,10 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.pendingInvitations()[0].accept()
+		print(message)
 		self.assertEqual(success, True)
+
+		print('STATUS: -10')
 
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
@@ -827,8 +881,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user3.client.publishers()), 0)
 		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
 		self.assertEqual(result, (True, None))
-		user2.client.downloadSubscriptions()
+		success, message = user2.client.downloadSubscriptions()
+		if not success:
+			print(message)
+		self.assertEqual(success, True)
 		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		print('STATUS: -9')
 
 		# Decline invitation
 		user3.client.downloadSubscriptions()
@@ -862,11 +921,15 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.sentInvitations()), 1)
 
+		print('STATUS: -8')
+
 		# Accept invitation
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.pendingInvitations()), 1)
 		user3.client.pendingInvitations()[0].accept()
 		self.assertEqual(len(user3.client.publishers()), 1)
+
+		print('STATUS: -7')
 
 		# Revoke user
 		user2.client.testScenario = 'simulateCentralServerNotReachable'
@@ -883,12 +946,17 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		if not success:
+			print(message)
 		self.assertEqual(success, True)
 
+		print('STATUS: -6')
 
 		self.assertEqual(result, (True, None))
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.publishers()), 0)
+
+		print('STATUS: -5')
 
 		# Invite again
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
@@ -898,6 +966,8 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.sentInvitations()), 1)
 
+		print('STATUS: -4')
+
 		# Accept invitation
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user3.client.pendingInvitations()), 1)
@@ -905,14 +975,24 @@ class TestStringMethods(unittest.TestCase):
 		user3.client.pendingInvitations()[0].accept()
 		self.assertEqual(len(user3.client.publishers()), 1)
 
+		print('STATUS: -3')
+
 		# Invitation accepted
-		self.assertEqual(user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted(), True)
+		success = user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted()
+		if not success:
+			print(message)
+		self.assertEqual(success, True)
+
+
+		print('STATUS: -2')
 
 		# Get publisher's logo
 		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		print('STATUS: -1')
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].delete()
@@ -923,14 +1003,12 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-
-
-		# TODO:
-		# App revokation
-
+		print('done with test_normalSubscription()')
 
 
 	def test_RootResponse(self):
+
+		print('test_RootResponse()')
 
 		print(root)
 		# Dump and reload
@@ -1024,6 +1102,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_copy(self):
 
+		print('test_copy()')
+
 		i2 = copy.copy(installableFonts)
 		self.assertTrue(installableFonts.sameContent(i2))
 
@@ -1031,6 +1111,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertTrue(installableFonts.sameContent(i3))
 
 	def test_InstallableFontsResponse(self):
+
+		print('test_InstallableFontsResponse()')
 
 		print(installableFonts)
 		# Dump and reload
@@ -1104,6 +1186,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_Designer(self):
 
+		print('test_Designer()')
+
 		# name
 		i2 = copy.deepcopy(installableFonts)
 		i2.designers[0].name.en = ''
@@ -1135,6 +1219,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_LicenseDefinition(self):
 
+		print('test_LicenseDefinition()')
+
 		# name
 		i2 = copy.deepcopy(installableFonts)
 		i2.foundries[0].licenses[0].name.en = ''
@@ -1160,6 +1246,8 @@ class TestStringMethods(unittest.TestCase):
 		assert i2.foundries[0].licenses[0].parent == i2.foundries[0]
 
 	def test_Version(self):
+
+		print('test_Version()')
 
 		# description
 		# is optional, so this will pass
@@ -1198,6 +1286,8 @@ class TestStringMethods(unittest.TestCase):
 
 
 	def test_LicenseUsage(self):
+
+		print('test_LicenseUsage()')
 
 		# allowanceDescription
 		# is optional, so this will pass
@@ -1251,6 +1341,8 @@ class TestStringMethods(unittest.TestCase):
 		print(i2.foundries[0].families[0].fonts[0].usedLicenses[0])
 
 	def test_Font(self):
+
+		print('test_Font()')
 
 		# dateAddedForUser
 		i2 = copy.deepcopy(installableFonts)
@@ -1388,6 +1480,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_Family(self):
 
+		print('test_Family()')
+
 		# billboards
 		i2 = copy.deepcopy(installableFonts)
 		try:
@@ -1473,6 +1567,8 @@ class TestStringMethods(unittest.TestCase):
 
 
 	def test_Foundry(self):
+
+		print('test_Foundry()')
 
 		i2 = copy.deepcopy(installableFonts)
 		try:
@@ -1574,11 +1670,17 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_otherStuff(self):
 
+		print('test_otherStuff()')
+
 		assert type(root.supportedCommands.index('installableFonts')) == int
 		assert installableFonts.designers[0].parent == installableFonts
 
+		# TODO: Invite user to subscription with API endpoint as source
+
 
 	def test_InstallFontResponse(self):
+
+		print('test_InstallFontResponse()')
 
 		installFont = InstallFontResponse()
 		try:
@@ -1614,6 +1716,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_UninstallFontResponse(self):
 
+		print('test_UninstallFontResponse()')
+
 		uninstallFont = UninstallFontResponse()
 		try:
 			uninstallFont.type = 'abc'
@@ -1624,6 +1728,8 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_SetAnonymousAppIDStatus(self):
 
+		print('test_SetAnonymousAppIDStatus()')
+
 		status = SetAnonymousAppIDStatusResponse()
 		try:
 			status.type = 'abc'
@@ -1633,6 +1739,7 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_InstallableFontsResponse_Old(self):
 
+		print('test_InstallableFontsResponse_Old()')
 
 
 		# InstallFont
@@ -1854,11 +1961,13 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_helpers(self):
 
+		print('test_helpers()')
 
-		# validURL()
-		self.assertEqual(typeWorld.client.validURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), True)
-		self.assertEqual(typeWorld.client.validURL('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), False)
-		self.assertEqual(typeWorld.client.validURL('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), False)
+
+		# urlIsValid()
+		self.assertEqual(typeWorld.client.urlIsValid('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], True)
+		self.assertEqual(typeWorld.client.urlIsValid('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
+		self.assertEqual(typeWorld.client.urlIsValid('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
 
 		# splitJSONURL()
 		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
@@ -1908,14 +2017,10 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(addAttributeToURL('https://type.world/', 'hello=world'), 'https://type.world/?hello=world')
 		self.assertEqual(addAttributeToURL('https://type.world/?foo=bar', 'hello=world'), 'https://type.world/?foo=bar&hello=world')
 
-	def test_centralServer(self):
-
-		# TODO:
-		# verifyCredentials
-		pass
-
 
 	def test_simulateExternalScenarios(self):
+
+		print('test_simulateExternalScenarios()')
 
 		user0.takeDown()
 
@@ -1939,7 +2044,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'HTTP Error 500: Internal Server Error')
+		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Error retrieving https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/: HTTP Error 500: Internal Server Error')
 
 		success, message, publisher, subscription = user0.client.addSubscription('typeworld://unknownprotocol+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		self.assertEqual(success, False)
@@ -1959,10 +2064,9 @@ class TestStringMethods(unittest.TestCase):
 
 		success, message, publisher, subscription = user0.client.addSubscription('typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/:')
 		self.assertEqual(success, False)
-		self.assertEqual(message, "URL contains more than one : signs, so don’t know how to parse it.")
+		self.assertEqual(message, "URL contains more than one :// combination, so don’t know how to parse it.")
 
 		success, message, publisher, subscription = user0.client.addSubscription('typeworld://json+s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-		print('####################', success, message)
 		self.assertEqual(success, False)
 		self.assertEqual(message, "URL is malformed.")
 
@@ -1973,7 +2077,7 @@ def setUp():
 	global user0, user1, user2, user3, tempFolder
 	tempFolder = tempfile.mkdtemp()
 	user0 = User()
-	user1 = User(testUser)
+	user1 = User(testUser1)
 	user2 = User(testUser2)
 	user3 = User(testUser3)
 
