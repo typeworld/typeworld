@@ -1750,6 +1750,8 @@ class TestStringMethods(unittest.TestCase):
 
 		# TODO: Invite user to subscription with API endpoint as source
 
+		self.assertEqual(typeWorld.client.helpers.addAttributeToURL('https://type.world?hello=world#xyz', 'hello=type&world=type'), 'https://type.world?hello=type&world=type#xyz')
+
 	def test_InstallFontResponse(self):
 
 		print('test_InstallFontResponse()')
