@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import os, sys, json, platform, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl, threading
+import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl, threading
 from time import gmtime, strftime
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -17,8 +17,8 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
-MOTHERSHIP = 'https://typeworld.appspot.com/api'
-#MOTHERSHIP = 'http://127.0.0.1:8080/api'
+#MOTHERSHIP = 'https://typeworld.appspot.com/api'
+MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
 
 if MAC:
@@ -572,10 +572,13 @@ class APIClient(object):
 
 	def downloadSubscriptions(self, performCommands = True):
 
-		self.appendCommands('downloadSubscriptions')
+		if self.user():
+			self.appendCommands('downloadSubscriptions')
 
-		if performCommands:
-			return self.performCommands()
+			if performCommands:
+				return self.performCommands()
+			else:
+				return True, None
 		else:
 			return True, None
 
@@ -2069,7 +2072,7 @@ class APISubscription(object):
 						path = os.path.join(folder, font.filename(version))
 						break
 
-		if not path: return False, 'Font path couldn’t be determined'
+		assert path
 
 		self.parent.parent.delegate.fontWillInstall(font)
 

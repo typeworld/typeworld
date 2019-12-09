@@ -483,7 +483,7 @@ class TestStringMethods(unittest.TestCase):
 		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
 		parameters = {
 			'command': 'revokeAppInstance',
-			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
+			'anonymousAppID': user1.client.anonymousAppID(),
 			'authorizationKey': authKey,
 			'anonymousUserID': user1.client.user(),
 			'secretKey': user1.client.secretKey(),
@@ -497,17 +497,18 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
 
-		# Reinstall font, fails
+		# Reinstall font, fails because no permissions
 		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)[0],
-			False
-		)
+		response = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		success, message = response
+		print(response)
+		self.assertEqual(success, False)
+		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
 
 		# Reactivate app instance
 		parameters = {
 			'command': 'reactivateAppInstance',
-			'anonymousAppID': user1.client.preferences.get('anonymousAppID'),
+			'anonymousAppID': user1.client.anonymousAppID(),
 			'authorizationKey': authKey,
 			'anonymousUserID': user1.client.user(),
 			'secretKey': user1.client.secretKey(),
@@ -522,10 +523,8 @@ class TestStringMethods(unittest.TestCase):
 
 		# Reinstall font
 		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
-			(True, None)
-		)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, True)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
@@ -2172,7 +2171,7 @@ if __name__ == '__main__':
 
 	setUp()
 
-	unittest.main(exit=False)
+	unittest.main(exit = False)
 
 	tearDown()
 
