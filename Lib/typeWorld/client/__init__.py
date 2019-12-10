@@ -26,9 +26,9 @@ GOOGLE_PROJECT_ID = 'typeworld2'
 GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
 if 'TRAVIS' in os.environ and MAC or LINUX:
 	os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH
+elif 'TRAVIS' in os.environ and WIN:
+	os.system('set GOOGLE_APPLICATION_CREDENTIALS="%s"' % GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 else:
-	if WIN:
-		os.system('set GOOGLE_APPLICATION_CREDENTIALS="%s"' % GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 	from google.oauth2 import service_account
 	credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
