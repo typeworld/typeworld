@@ -243,8 +243,9 @@ class TypeWorldClientDelegate(object):
 	def fontHasUninstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
-	def subscriptionHasUpdated(self, subscription):
+	def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
 		assert type(subscription) == typeWorld.client.APISubscription
+		subscription.update()
 
 
 class APIInvitation(object):
@@ -1781,7 +1782,7 @@ class APISubscription(object):
 		message.ack()
 
 	def notifyGooglePubsubCallback(self):
-		self.parent.parent.delegate.subscriptionHasUpdated(self)
+		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
 
 	def googlePubsubSetup(self):
 		if not self.googlePubsubSubscription:
