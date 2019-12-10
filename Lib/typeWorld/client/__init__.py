@@ -1768,8 +1768,8 @@ class APISubscription(object):
 		if self.parent.parent.mode == 'gui':
 			stillAliveThread = threading.Thread(target=self.googlePubsubSetup)
 			stillAliveThread.start()
-		# elif self.parent.parent.mode == 'headless':
-		# 	self.googlePubsubSetup()
+		elif self.parent.parent.mode == 'headless':
+			self.googlePubsubSetup()
 		
 
 	def googlePubsubCallback(self, message):
@@ -1781,7 +1781,6 @@ class APISubscription(object):
 		self.parent.parent.delegate.subscriptionHasUpdated(self)
 
 	def googlePubsubSetup(self):
-		# print('googlePubsubSetup()')
 		if not self.googlePubsubSubscription:
 			try:
 				self.googlePubsubSubscriber.create_subscription(name=self.subscription_name, topic=self.topic_name)
@@ -1810,8 +1809,8 @@ class APISubscription(object):
 		if self.parent.parent.mode == 'gui':
 			stillAliveThread = threading.Thread(target=self.googlePubsubDeleteSubscription_worker)
 			stillAliveThread.start()
-		# elif self.parent.parent.mode == 'headless':
-		# 	self.googlePubsubDeleteSubscription_worker()
+		elif self.parent.parent.mode == 'headless':
+			self.googlePubsubDeleteSubscription_worker()
 
 
 	def stillAlive(self):
