@@ -2159,7 +2159,7 @@ if __name__ == '__main__':
 
 	setUp()
 
-	unittest.main(exit = False)
+	unittest.main(exit = True)
 
 	tearDown()
 
