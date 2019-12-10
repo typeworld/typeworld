@@ -131,10 +131,18 @@ class TypeWorldProtocolBase(object):
 
 		return url		
 
-	def secretURL(self):
+	def unsecretURL(self):
 		url = self.url
 		secretKey = self.getSecretKey()
 		if secretKey:
 			url = url.replace(':%s@' % secretKey, ':secretKey@')
+
+		return url		
+
+	def secretURL(self):
+		url = self.url
+		secretKey = self.getSecretKey()
+		if secretKey:
+			url = url.replace(':secretKey@', ':%s@' % secretKey)
 
 		return url		

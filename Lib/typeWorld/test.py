@@ -23,8 +23,9 @@ testUser3 = ('test3@type.world', 'ghi')
 
 MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
-	MOTHERSHIP = 'https://typeworld.appspot.com/api'
+	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
+#MOTHERSHIP = 'https://typeworld.appspot.com/api'
 
 ### RootResponse
 root = RootResponse()
@@ -998,19 +999,6 @@ class TestStringMethods(unittest.TestCase):
 
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
 		self.assertEqual(message, '#(PasswordsDontMatch)')
-
-		user0.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateNotOnline'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
 
 		user0.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')

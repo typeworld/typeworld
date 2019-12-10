@@ -10,6 +10,8 @@ from typeWorld.api import *
 from typeWorld.api.base import *
 
 from typeWorld.client.helpers import *
+from google.cloud import pubsub_v1
+import google.api_core.exceptions
 
 
 import platform
@@ -17,9 +19,12 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
-#MOTHERSHIP = 'https://typeworld.appspot.com/api'
 MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
+GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
+GOOGLE_PROJECT_ID = 'typeworld2'
+from google.oauth2 import service_account
+credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
 if MAC:
 	import objc
@@ -65,6 +70,7 @@ def urlIsValid(url):
 		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS)
 
 	if url.count('://') > 1:
+		# print(url)
 		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
 
 
@@ -232,6 +238,10 @@ class TypeWorldClientDelegate(object):
 	def fontHasUninstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
+	def subscriptionHasUpdated(self, subscription):
+		assert type(subscription) == typeWorld.client.APISubscription
+
+
 class APIInvitation(object):
 	keywords = ()
 
@@ -263,7 +273,7 @@ class APIClient(object):
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP):
+	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless'):
 		self.preferences = preferences
 		# if self.preferences:
 		# 	self.clearPendingOnlineCommands()
@@ -274,6 +284,7 @@ class APIClient(object):
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
 		self.delegate = delegate or TypeWorldClientDelegate()
 		self.mothership = mothership
+		self.mode = mode # gui or headless
 
 		# For Unit Testing
 		self.testScenario = None
@@ -575,10 +586,8 @@ class APIClient(object):
 		if self.user():
 			self.appendCommands('downloadSubscriptions')
 
-			if performCommands:
-				return self.performCommands()
-			else:
-				return True, None
+			if performCommands: return self.performCommands()
+			else: return True, None
 		else:
 			return True, None
 
@@ -1745,7 +1754,62 @@ class APISubscription(object):
 		self.stillAliveTouched = None
 		self._updatingProblem = None
 
-		# print('<API SUbscription %s>' % self.url)
+
+		# scope = 'https://www.googleapis.com/auth/pubsub'
+		# creds = service_account.Credentials.from_service_account_info(GOOGLE_APPLICATION_CREDENTIALS, scopes=(scope,))
+		self.googlePubsubSubscriber = pubsub_v1.SubscriberClient()
+		self.googlePubsubSubscription = None
+		self.topic_name = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, urllib.parse.quote_plus(self.protocol.unsecretURL()))
+		self.subscription_name = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
+		self.subscription_path = self.googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
+
+		if self.parent.parent.mode == 'gui':
+			stillAliveThread = threading.Thread(target=self.googlePubsubSetup)
+			stillAliveThread.start()
+		elif self.parent.parent.mode == 'headless':
+			self.googlePubsubSetup()
+		
+
+	def googlePubsubCallback(self, message):
+		self.notifyGooglePubsubCallback()
+		# print(json.loads(message.data.decode()))
+		message.ack()
+
+	def notifyGooglePubsubCallback(self):
+		self.parent.parent.delegate.subscriptionHasUpdated(self)
+
+	def googlePubsubSetup(self):
+		# print('googlePubsubSetup()')
+		if not self.googlePubsubSubscription:
+			try:
+				self.googlePubsubSubscriber.create_subscription(name=self.subscription_name, topic=self.topic_name)
+				self.googlePubsubSubscription = self.googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
+				self.notifyGooglePubsubCallback()
+			except google.api_core.exceptions.InvalidArgument:
+				print('google.api_core.exceptions.InvalidArgument')
+				pass
+			except google.api_core.exceptions.NotFound:
+				print('google.api_core.exceptions.NotFound')
+				print('Google Pub/Sub: No topic found for %s' % self.url)
+				#pass
+			except google.api_core.exceptions.AlreadyExists:
+				print('google.api_core.exceptions.AlreadyExists')
+				self.googlePubsubSubscription = self.googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
+
+	def googlePubsubDeleteSubscription_worker(self):
+		try:
+			self.googlePubsubSubscriber.delete_subscription(self.subscription_path)
+		except google.api_core.exceptions.InvalidArgument:
+			pass
+		except google.api_core.exceptions.NotFound:
+			pass
+
+	def googlePubsubDeleteSubscription(self):
+		if self.parent.parent.mode == 'gui':
+			stillAliveThread = threading.Thread(target=self.googlePubsubDeleteSubscription_worker)
+			stillAliveThread.start()
+		elif self.parent.parent.mode == 'headless':
+			self.googlePubsubDeleteSubscription_worker()
 
 
 	def stillAlive(self):
@@ -1883,7 +1947,7 @@ class APISubscription(object):
 			acceptedInvitations = self.parent.parent.acceptedInvitations()
 			if acceptedInvitations:
 				for invitation in acceptedInvitations:
-					if self.protocol.secretURL() == invitation.url:
+					if self.protocol.unsecretURL() == invitation.url:
 						return True
 
 
@@ -2258,6 +2322,9 @@ class APISubscription(object):
 			self.protocol.deleteSecretKey()
 		except:
 			pass
+
+		self.googlePubsubDeleteSubscription()
+
 
 		# Resources
 		resources = self.parent.parent.preferences.get('resources') or {}
