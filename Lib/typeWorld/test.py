@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, copy
+import sys, os, copy, time
 
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -264,6 +264,16 @@ class TestStringMethods(unittest.TestCase):
 
 		print('test_normalSubscription()')
 
+		# Announce subscription update
+		url = MOTHERSHIP
+		parameters = {"command": "subscriptionHasChanged",
+					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
+					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+
+
 		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
 
 		self.assertTrue(user2.client.user())
@@ -298,6 +308,15 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
+
+		# Announce subscription update
+		url = MOTHERSHIP
+		parameters = {"command": "subscriptionHasChanged",
+					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
+					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		response = urllib.request.urlopen(url, data, context=sslcontext)
 
 		# Logo
 		user0.client.testScenario = 'simulateProgrammingError'
