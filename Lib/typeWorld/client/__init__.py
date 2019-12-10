@@ -21,16 +21,13 @@ LINUX = platform.system() == 'Linux'
 
 MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
-
+# Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
 GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
-if 'TRAVIS' in os.environ and MAC or LINUX:
-	os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH
-elif 'TRAVIS' in os.environ and WIN:
-	os.system('set GOOGLE_APPLICATION_CREDENTIALS="%s"' % GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-else:
-	from google.oauth2 import service_account
-	credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+global googlePubsubSubscriber
+googlePubsubSubscriber = None
+
+
 
 if MAC:
 	import objc
@@ -1763,13 +1760,9 @@ class APISubscription(object):
 		self._updatingProblem = None
 
 
-		# scope = 'https://www.googleapis.com/auth/pubsub'
-		# creds = service_account.Credentials.from_service_account_info(GOOGLE_APPLICATION_CREDENTIALS, scopes=(scope,))
-		self.googlePubsubSubscriber = pubsub_v1.SubscriberClient()
 		self.googlePubsubSubscription = None
 		self.topic_name = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, urllib.parse.quote_plus(self.protocol.unsecretURL()))
 		self.subscription_name = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
-		self.subscription_path = self.googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
 
 		if self.parent.parent.mode == 'gui':
 			stillAliveThread = threading.Thread(target=self.googlePubsubSetup)
@@ -1780,32 +1773,34 @@ class APISubscription(object):
 
 	def googlePubsubCallback(self, message):
 		self.notifyGooglePubsubCallback()
-		# print(json.loads(message.data.decode()))
 		message.ack()
 
 	def notifyGooglePubsubCallback(self):
 		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
 
 	def googlePubsubSetup(self):
+		
+		global googlePubsubSubscriber
+
+		if not googlePubsubSubscriber:
+			googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+
 		if not self.googlePubsubSubscription:
 			try:
-				self.googlePubsubSubscriber.create_subscription(name=self.subscription_name, topic=self.topic_name)
-				self.googlePubsubSubscription = self.googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
+				googlePubsubSubscriber.create_subscription(name=self.subscription_name, topic=self.topic_name)
+				self.googlePubsubSubscription = googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
 				self.notifyGooglePubsubCallback()
 			except google.api_core.exceptions.InvalidArgument:
-				print('google.api_core.exceptions.InvalidArgument')
 				pass
 			except google.api_core.exceptions.NotFound:
-				print('google.api_core.exceptions.NotFound')
-				print('Google Pub/Sub: No topic found for %s' % self.url)
-				#pass
+				pass
 			except google.api_core.exceptions.AlreadyExists:
-				print('google.api_core.exceptions.AlreadyExists')
-				self.googlePubsubSubscription = self.googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
+				self.googlePubsubSubscription = googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
 
 	def googlePubsubDeleteSubscription_worker(self):
 		try:
-			self.googlePubsubSubscriber.delete_subscription(self.subscription_path)
+			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
+			googlePubsubSubscriber.delete_subscription(subscription_path)
 		except google.api_core.exceptions.InvalidArgument:
 			pass
 		except google.api_core.exceptions.NotFound:
