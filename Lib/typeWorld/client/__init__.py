@@ -24,7 +24,7 @@ MOTHERSHIP = 'http://127.0.0.1:8080/api'
 
 GOOGLE_PROJECT_ID = 'typeworld2'
 GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
-if 'TRAVIS' in os.environ:
+if 'TRAVIS' in os.environ and MAC or LINUX:
 	os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH
 else:
 	from google.oauth2 import service_account
