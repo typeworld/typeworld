@@ -1820,6 +1820,19 @@ class APISubscription(object):
 			self.googlePubsubDeleteSubscription_worker()
 
 
+	def hasProtectedFonts(self):
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+		for foundry in installabeFontsCommand.foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if font.protected:
+						return True
+
+		return False
+
+
 	def stillAlive(self):
 
 
