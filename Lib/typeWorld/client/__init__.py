@@ -20,6 +20,7 @@ MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
 MOTHERSHIP = 'http://127.0.0.1:8080/api'
+#MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
 # Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
@@ -74,7 +75,6 @@ def urlIsValid(url):
 		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS)
 
 	if url.count('://') > 1:
-		# print(url)
 		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
 
 
@@ -96,9 +96,9 @@ def splitJSONURL(url):
 
 
 	transportProtocol = None
-	if url.lower().startswith('https://'):
+	if url.startswith('https://'):
 		transportProtocol = 'https://'
-	elif url.lower().startswith('http://'):
+	elif url.startswith('http://'):
 		transportProtocol = 'http://'
 
 	urlRest = url[len(transportProtocol):]
@@ -127,6 +127,26 @@ def splitJSONURL(url):
 		domain = urlRest
 
 	return customProtocol, protocol, transportProtocol, subscriptionID, secretKey, domain
+
+
+def pubSubSubscription(topicName, subscriptionName, callback):
+	
+	global googlePubsubSubscriber
+	if not googlePubsubSubscriber:
+		googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+
+	try:
+		googlePubsubSubscriber.create_subscription(name=subscriptionName, topic=topicName)
+		subscription = googlePubsubSubscriber.subscribe(subscriptionName, callback)
+		callback(None)
+		return subscription
+	except google.api_core.exceptions.InvalidArgument:
+		pass
+	except google.api_core.exceptions.NotFound:
+		pass
+	except google.api_core.exceptions.AlreadyExists:
+		subscription = googlePubsubSubscriber.subscribe(subscriptionName, callback)
+		return subscription
 
 
 class Preferences(object):
@@ -246,6 +266,9 @@ class TypeWorldClientDelegate(object):
 		assert type(subscription) == typeWorld.client.APISubscription
 		subscription.update()
 
+	def userAccountUpdateNotificationHasBeenReceived(self):
+		pass
+
 
 class APIInvitation(object):
 	keywords = ()
@@ -296,6 +319,68 @@ class APIClient(object):
 
 		self._systemLocale = None
 		self._online = {}
+
+		# Pub/Sub
+		self.pubSubSetup()
+
+
+	###################################
+	### PUB/SUB
+
+
+	def pubSubSetup(self, direct = False):
+
+		if self.user():
+			self.pubSubTopicID = 'user-%s' % self.user()
+			self.pubSubSubscriptionID = 'appInstance-%s' % self.anonymousAppID()
+
+			if self.mode == 'gui' or direct:
+				stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
+				stillAliveThread.start()
+			elif self.mode == 'headless':
+				self.pubSubSetup_worker()
+
+	def pubSubSetup_worker(self):
+
+		if self.user():
+			topicName = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, self.pubSubTopicID)
+			subscriptionName = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
+			self.googlePubsubSubscription = pubSubSubscription(topicName, subscriptionName, self.pubSubCallback)
+
+			if self.googlePubsubSubscription:
+				print('Pub/Sub subscription successful for user account')
+
+	def pubSubCallback(self, message):
+		self.delegate.userAccountUpdateNotificationHasBeenReceived()
+		if message:
+			message.ack()
+
+	def pubSubDelete(self):
+
+		if self.user():
+			if self.parent.parent.mode == 'gui':
+				stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
+				stillAliveThread.start()
+			elif self.parent.parent.mode == 'headless':
+				self.pubSubDelete_worker()
+
+	def pubSubDelete_worker(self):
+
+		global googlePubsubSubscriber
+		if not googlePubsubSubscriber:
+			googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+
+		try:
+			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
+			googlePubsubSubscriber.delete_subscription(subscription_path)
+		except google.api_core.exceptions.InvalidArgument:
+			pass
+		except google.api_core.exceptions.NotFound:
+			pass
+
+
+	###################################
+
 
 	# def clearPendingOnlineCommands(self):
 	# 	commands = self.preferences.get('pendingOnlineCommands') or {}
@@ -422,7 +507,7 @@ class APIClient(object):
 
 		# Add commands to list
 		commands = self.preferences.get('pendingOnlineCommands')
-		if type(commandsList) == str:
+		if type(commandsList) in (str, int):
 			commandsList = [commandsList]
 		for commandListItem in commandsList:
 			if not commandListItem in commands[commandName]:
@@ -650,7 +735,7 @@ class APIClient(object):
 
 		oldURLs = self.completeSubscriptionURLs()
 
-#		print('executeDownloadSubscriptions():', response)
+		print('executeDownloadSubscriptions():', response)
 
 
 		if response['appInstanceIsRevoked']:
@@ -685,6 +770,8 @@ class APIClient(object):
 					subscription.delete(updateSubscriptionsOnServer = False)
 
 		# Success
+
+		self.pubSubSetup(direct = True)
 		return True, len(response['subscriptions']) - len(oldURLs)
 
 	def acceptInvitation(self, ID):
@@ -844,6 +931,9 @@ class APIClient(object):
 	def user(self):
 		return self.preferences.get('typeWorldUserAccount') or ''
 
+	def userKeychainKey(self, ID):
+		return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
+
 	def secretKey(self, userID = None):
 		keyring = self.keyring()
 		if keyring:
@@ -992,6 +1082,7 @@ class APIClient(object):
 		keyring = self.keyring()
 		if keyring:
 			keyring.set_password(self.userKeychainKey(userID), 'secretKey', secretKey)
+			assert self.secretKey(userID) == secretKey
 
 		self.appendCommands('linkUser', userID)
 		self.syncSubscriptions(performCommands = False)
@@ -1014,8 +1105,6 @@ class APIClient(object):
 
 		parameters = self.addMachineIDToParameters(parameters)
 
-		# print('performLinkUser() sentParameters:', parameters)
-
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		url = self.mothership
@@ -1029,7 +1118,6 @@ class APIClient(object):
 
 		response = json.loads(response.read().decode())
 
-		# print('performLinkUser():', response)
 
 		if response['response'] != 'success':
 			return False, '#(response.%s)' % response['response']
@@ -1037,6 +1125,7 @@ class APIClient(object):
 		# Success
 		self.preferences.set('typeWorldUserAccount', userID)
 		assert userID == self.user()
+		self.pubSubSetup()
 
 		keyring = self.keyring()
 		if keyring:
@@ -1046,9 +1135,6 @@ class APIClient(object):
 				keyring.set_password(self.userKeychainKey(userID), 'userName', response['userName'])
 
 		return True, None
-
-	def userKeychainKey(self, ID):
-		return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
 
 
 	def unlinkUser(self):
@@ -1109,7 +1195,8 @@ class APIClient(object):
 		self.preferences.remove('acceptedInvitations')
 		self.preferences.remove('pendingInvitations')
 		self.preferences.remove('sentInvitations')
-		# if self.preferences.get('currentPublisher') == 'pendingInvitations': self.preferences.set('currentPublisher', '')
+
+		self.pubSubDelete()
 
 		keyring = self.keyring()
 		keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
@@ -1235,7 +1322,6 @@ class APIClient(object):
 			# if username and password:
 			# 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
 			# 	request.add_header("Authorization", "Basic %s" % base64string)   
-				# print('with username and password %s:%s' % (username, password))
 
 			try:
 				response = urllib.request.urlopen(request, context=sslcontext)
@@ -1276,7 +1362,6 @@ class APIClient(object):
 
 	# 	try:
 
-	# 		# print('readGitHubResponse(%s)' % url)
 
 	# 		request = urllib.request.Request(url)
 	# 		if username and password:
@@ -1367,7 +1452,6 @@ class APIClient(object):
 			return protocol.rootCommand(testScenario = self.testScenario)
 
 		else:
-			# print('Error in addSubscription() from self.protocol(): %s' % message)
 			return False, message
 
 
@@ -1387,13 +1471,11 @@ class APIClient(object):
 		if success:
 			protocol = message
 		else:
-			# print('Error in addSubscription() from self.protocol(): %s' % message)
 			return False, message, None, None
 
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
-			# print('Error in addSubscription() from aboutToAddSubscription(): %s' % response)
 			if type(response) == typeWorld.api.base.MultiLanguageText or response.startswith('#('):
 				message = response
 			else:
@@ -1406,8 +1488,6 @@ class APIClient(object):
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
 
 		# Success
-		publisher.set('type', protocol.protocol)
-		# publisher.set('currentSubscription', protocol.saveURL())
 		subscription.save()
 		publisher.save()
 		subscription.stillAlive()
@@ -1416,7 +1496,6 @@ class APIClient(object):
 		if updateSubscriptionsOnServer:
 			success, message = self.uploadSubscriptions()
 			if not success:
-				# print('Error in addSubscription() from self.uploadSubscriptions(): %s' % message)
 				return False, 'Response from client.uploadSubscriptions(): %s' % message, None, None
 
 		protocol.subscriptionAdded()
@@ -1672,6 +1751,7 @@ class APIPublisher(object):
 			loadFromDB = False
 
 			if not protocol:
+				print('################', url)
 				success, message = self.parent.protocol(url)
 				if success:
 					protocol = message
@@ -1769,59 +1849,61 @@ class APISubscription(object):
 		self.stillAliveTouched = None
 		self._updatingProblem = None
 
+		# Pub/Sub
+		self.pubSubSetup()
 
-		self.googlePubsubSubscription = None
-		self.topic_name = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, urllib.parse.quote_plus(self.protocol.unsecretURL()))
-		self.subscription_name = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
+
+	###################################
+	### PUB/SUB
+
+
+	def pubSubSetup(self):
+
+		self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
+		self.pubSubSubscriptionID = 'appInstance-%s' % self.parent.parent.anonymousAppID()
 
 		if self.parent.parent.mode == 'gui':
-			stillAliveThread = threading.Thread(target=self.googlePubsubSetup)
+			stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
 			stillAliveThread.start()
 		elif self.parent.parent.mode == 'headless':
-			self.googlePubsubSetup()
-		
+			self.pubSubSetup_worker()
 
-	def googlePubsubCallback(self, message):
-		self.notifyGooglePubsubCallback()
-		message.ack()
+	def pubSubSetup_worker(self):
+		topicName = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, self.pubSubTopicID)
+		subscriptionName = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
+		self.googlePubsubSubscription = pubSubSubscription(topicName, subscriptionName, self.pubSubCallback)
 
-	def notifyGooglePubsubCallback(self):
+		if self.googlePubsubSubscription:
+			print('Pub/Sub subscription successful for %s' % self.url)
+
+	def pubSubCallback(self, message):
 		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
+		if message:
+			message.ack()
 
-	def googlePubsubSetup(self):
-		
+	def pubSubDelete(self):
+		if self.parent.parent.mode == 'gui':
+			stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
+			stillAliveThread.start()
+		elif self.parent.parent.mode == 'headless':
+			self.pubSubDelete_worker()
+
+	def pubSubDelete_worker(self):
+
 		global googlePubsubSubscriber
-
 		if not googlePubsubSubscriber:
 			googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
-		if not self.googlePubsubSubscription:
-			try:
-				googlePubsubSubscriber.create_subscription(name=self.subscription_name, topic=self.topic_name)
-				self.googlePubsubSubscription = googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
-				self.notifyGooglePubsubCallback()
-			except google.api_core.exceptions.InvalidArgument:
-				pass
-			except google.api_core.exceptions.NotFound:
-				pass
-			except google.api_core.exceptions.AlreadyExists:
-				self.googlePubsubSubscription = googlePubsubSubscriber.subscribe(self.subscription_name, self.googlePubsubCallback)
-
-	def googlePubsubDeleteSubscription_worker(self):
 		try:
-			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.parent.parent.anonymousAppID())
+			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
 			googlePubsubSubscriber.delete_subscription(subscription_path)
 		except google.api_core.exceptions.InvalidArgument:
 			pass
 		except google.api_core.exceptions.NotFound:
 			pass
 
-	def googlePubsubDeleteSubscription(self):
-		if self.parent.parent.mode == 'gui':
-			stillAliveThread = threading.Thread(target=self.googlePubsubDeleteSubscription_worker)
-			stillAliveThread.start()
-		elif self.parent.parent.mode == 'headless':
-			self.googlePubsubDeleteSubscription_worker()
+
+	###################################
 
 
 	def hasProtectedFonts(self):
@@ -2273,7 +2355,6 @@ class APISubscription(object):
 			# 	path = '/'.join(self.url.split('/')[7:])
 
 			# 	commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s/fonts' % (owner, repo, path)
-			# 	# print('commitsURL', commitsURL)
 
 			# 	# Read response
 			# 	commits, responses = self.parent.readGitHubResponse(commitsURL)
@@ -2295,7 +2376,6 @@ class APISubscription(object):
 			self.parent._updatingSubscriptions.remove(self.url)
 			self.parent.parent._subscriptionsUpdated.append(self.url)
 			self._updatingProblem = '#(response.serverNotReachable)'
-#			print('Error updating %s' % self)
 			return False, self._updatingProblem, False
 
 	def updatingProblem(self):
@@ -2348,7 +2428,7 @@ class APISubscription(object):
 		except:
 			pass
 
-		self.googlePubsubDeleteSubscription()
+		self.pubSubDelete()
 
 
 		# Resources
