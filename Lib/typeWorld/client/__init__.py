@@ -862,80 +862,90 @@ class APIClient(object):
 
 	def createUserAccount(self, name, email, password1, password2):
 
-		if not name or not email or not password1 or not password2:
-			return False, '#(RequiredFieldEmpty)'
+		if self.online():
 
-		if password1 != password2:
-			return False, '#(PasswordsDontMatch)'
+			if not name or not email or not password1 or not password2:
+				return False, '#(RequiredFieldEmpty)'
 
-		parameters = {
-			'command': 'createUserAccount',
-			'name': name,
-			'email': email,
-			'password': password1,
-		}
-		if self.testScenario:
-			parameters['testScenario'] = self.testScenario
+			if password1 != password2:
+				return False, '#(PasswordsDontMatch)'
 
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = self.mothership
-		if self.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
+			parameters = {
+				'command': 'createUserAccount',
+				'name': name,
+				'email': email,
+				'password': password1,
+			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 
-		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+			url = self.mothership
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
-		response = json.loads(response.read().decode())
+			try:
+				response = urllib.request.urlopen(url, data, context=sslcontext)
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
-		# print('createUserAccount():', response)
+			response = json.loads(response.read().decode())
 
-		if response['response'] != 'success':
-			return False, '#(response.%s)' % response['response']
+			# print('createUserAccount():', response)
 
-		# success
-		return self.linkUser(response['anonymousUserID'], response['secretKey'])
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
+
+			# success
+			return self.linkUser(response['anonymousUserID'], response['secretKey'])
+
+		else:
+			return False, '#(response.notOnline)'
+
 
 
 	def deleteUserAccount(self, email, password):
 
-		if not email or not password:
-			return False, '#(RequiredFieldEmpty)'
+		if self.online():
 
-		parameters = {
-			'command': 'deleteUserAccount',
-			'email': email,
-			'password': password,
-		}
-		if self.testScenario:
-			parameters['testScenario'] = self.testScenario
+			if not email or not password:
+				return False, '#(RequiredFieldEmpty)'
 
-		# Add user’s secret key
-		# keyring = self.keyring()
-		# if keyring:
-		# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
+			parameters = {
+				'command': 'deleteUserAccount',
+				'email': email,
+				'password': password,
+			}
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
 
-		# parameters = self.addMachineIDToParameters(parameters)
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = self.mothership
-		if self.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
+			# Add user’s secret key
+			# keyring = self.keyring()
+			# if keyring:
+			# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
 
-		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+			# parameters = self.addMachineIDToParameters(parameters)
+			data = urllib.parse.urlencode(parameters).encode('ascii')
+			url = self.mothership
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
 
-		response = json.loads(response.read().decode())
+			try:
+				response = urllib.request.urlopen(url, data, context=sslcontext)
+			except:
+				return False, traceback.format_exc().splitlines()[-1]
 
-		if response['response'] != 'success':
-			return False, '#(response.%s)' % response['response']
+			response = json.loads(response.read().decode())
 
-		# success
+			if response['response'] != 'success':
+				return False, '#(response.%s)' % response['response']
 
-		return True, None
+			# success
 
+			return True, None
+
+		else:
+			return False, '#(response.notOnline)'
 
 	def logInUserAccount(self, email, password):
 
@@ -1354,7 +1364,7 @@ class APIClient(object):
 			protocol = message
 
 			# Get Root Command
-			return protocol.rootCommand()
+			return protocol.rootCommand(testScenario = self.testScenario)
 
 		else:
 			# print('Error in addSubscription() from self.protocol(): %s' % message)

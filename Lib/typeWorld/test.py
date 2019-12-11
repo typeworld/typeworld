@@ -25,6 +25,11 @@ MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
+global errors, failures
+errors = []
+failures = []
+
+
 #MOTHERSHIP = 'https://typeworld.appspot.com/api'
 
 ### RootResponse
@@ -260,821 +265,7 @@ class User(object):
 class TestStringMethods(unittest.TestCase):
 
 
-	def test_normalSubscription(self):
-
-		print('test_normalSubscription()')
-
-		# Announce subscription update
-		url = MOTHERSHIP
-		parameters = {"command": "subscriptionHasChanged",
-					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
-					}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-
-
-		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
-
-		self.assertTrue(user2.client.user())
-
-		parameters = {
-			'command': 'verifyCredentials',
-			'anonymousAppID': user2.client.anonymousAppID(),
-			'anonymousTypeWorldUserID': user2.client.user(),
-			'APIKey': 'OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU',
-		}
-
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
-
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-		response = json.loads(response.read().decode())
-		self.assertEqual(response['response'], 'success')
-
-
-		# General stuff
-		self.assertEqual(type(user0.client.locale()), list)
-		self.assertTrue(typeWorld.client.urlIsValid(freeSubscription)[0])
-
-		## Scenario 1:
-		## Test a simple subscription of free fonts without Type.World user account
-
-		result = user0.client.addSubscription(freeSubscription)
-		print('Scenario 1:', result)
-		success, message, publisher, subscription = result
-		self.assertEqual(success, True)
-		self.assertEqual(user0.client.publishers()[0].canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
-		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
-
-		# Announce subscription update
-		url = MOTHERSHIP
-		parameters = {"command": "subscriptionHasChanged",
-					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
-					}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-
-		# Logo
-		user0.client.testScenario = 'simulateProgrammingError'
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		self.assertEqual(success, False)
-
-		user0.client.testScenario = None
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		self.assertEqual(success, True)
-		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
-
-		# Name
-		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')
-		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].name(), 'Free Fonts')
-
-		# Reload client
-		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
-		user0.loadClient()
-
-		user0.clearSubscriptions()
-
-
-
-
-		### ###
-
-
-
-		# Scenario 2:
-		# Protected subscription, installation on machine without user account
-		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
-		result = user0.client.addSubscription(protectedSubscription)
-		print('Scenario 2:', result)
-		success, message, publisher, subscription = result
-		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.validTypeWorldUserAccountRequired)')
-
-
-
-		### ###
-
-
-
-		# Scenario 3:
-		# Protected subscription, installation on first machine with Type.World user account
-		result = user1.client.addSubscription(protectedSubscription)
-		print('Scenario 3:', result)
-		success, message, publisher, subscription = result
-		print('Message:', message)
-
-		self.assertEqual(success, True)
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
-
-
-		# saveURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-		# completeURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-
-		# Reload client
-		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
-		user1.loadClient()
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
-
-
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		self.assertEqual(
-			user1.client.downloadSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		self.assertEqual(
-			user1.client.downloadSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		self.assertEqual(
-			user1.client.downloadSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateNotOnline'
-		self.assertEqual(
-			user1.client.downloadSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.downloadSubscriptions()[0],
-			True
-			)
-		success, message, changes = user1.client.publishers()[0].update()
-		print('Updating publisher:', success, message, changes)
-		self.assertEqual(success, True)
-		self.assertEqual(changes, False)
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		print('Updating subscription 1:', success, message, changes)
-		self.assertEqual(success, True)
-		self.assertEqual(changes, False)
-		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
-		print(user1.client.publishers()[0].updatingProblem())
-		self.assertEqual(user1.client.allSubscriptionsUpdated(), True)
-
-		# Install Font
-		# First it's meant to fail because the user hasn't accepted the Terms & Conditions
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
-		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
-		# Then it's supposed to fail because the server requires the revealted user identity for this subscription
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].prefersRevealedUserIdentity, True)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
-		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-
-		# Finally supposed to pass
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
-
-		# Simulations
-		user1.client.testScenario = 'simulateNotOnline'
-		success, message, changes = user1.client.publishers()[0].update()
-		self.assertEqual(success, False)
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		self.assertEqual(success, False)
-		user1.client.testScenario = 'simulateProgrammingError'
-		success, message, changes = user1.client.publishers()[0].update()
-		self.assertEqual(success, False)
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		self.assertEqual(success, False)
-		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message, changes = user1.client.publishers()[0].update()
-		self.assertEqual(success, False)
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		self.assertEqual(success, False)
-		user1.client.testScenario = 'simulateCustomError'
-		success, message, changes = user1.client.publishers()[0].update()
-		self.assertEqual(success, False)
-		self.assertEqual(message.getText(), 'simulateCustomError')
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		self.assertEqual(success, False)
-		self.assertEqual(message.getText(), 'simulateCustomError')
-
-		# Simulate unexpected empty subscription
-		user1.client.testScenario = 'simulateNoFontsAvailable'
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-		print('Updating subscription 2:', success, message, changes)
-		self.assertEqual(success, True)
-		self.assertEqual(changes, True)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
-		user1.client.testScenario = None
-		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
-
-		# Repeat font installation
-		user1.client.testScenario = 'simulateProgrammingError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulatePermissionError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateCustomError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-		self.assertEqual(message.getText(), 'simulateCustomError')
-
-		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-
-		# Supposed to pass
-		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
-			(True, None)
-		)
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
-
-
-		# Revoke app instance
-		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password(MOTHERSHIP, 'revokeAppInstance')
-		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
-		parameters = {
-			'command': 'revokeAppInstance',
-			'anonymousAppID': user1.client.anonymousAppID(),
-			'authorizationKey': authKey,
-			'anonymousUserID': user1.client.user(),
-			'secretKey': user1.client.secretKey(),
-		}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-		response = json.loads(response.read().decode())
-		self.assertEqual(response['response'], 'success')
-
-		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
-
-		# Reinstall font, fails because no permissions
-		user1.client.testScenario = None
-		response = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		success, message = response
-		print(response)
-		self.assertEqual(success, False)
-		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
-
-		# Reactivate app instance
-		parameters = {
-			'command': 'reactivateAppInstance',
-			'anonymousAppID': user1.client.anonymousAppID(),
-			'authorizationKey': authKey,
-			'anonymousUserID': user1.client.user(),
-			'secretKey': user1.client.secretKey(),
-		}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-		response = json.loads(response.read().decode())
-		self.assertEqual(response['response'], 'success')
-
-		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
-
-		# Reinstall font
-		user1.client.testScenario = None
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, True)
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
-
-
-
-		# This is also supposed to delete the installed protected font
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		self.assertEqual(
-			user1.client.unlinkUser()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		self.assertEqual(
-			user1.client.unlinkUser()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		self.assertEqual(
-			user1.client.unlinkUser()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateNotOnline'
-		self.assertEqual(
-			user1.client.unlinkUser()[0],
-			False
-			)
-		self.assertTrue(user1.client.syncProblems())
-		user1.client.testScenario = None
-		success, message = user1.client.unlinkUser()
-		self.assertEqual(
-			success,
-			True
-			)
-		self.assertFalse(user1.client.syncProblems())
-		self.assertEqual(user1.client.userEmail(), None)
-		self.assertEqual(user1.client.user(), '')
-
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
-
-		# Delete subscription from user-less app, so that it can be re-added during upcoming user linking
-		user1.client.publishers()[0].subscriptions()[0].delete()
-		self.assertEqual(len(user1.client.publishers()), 0)
-
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		self.assertEqual(
-			user1.client.linkUser(*user1.credentials)[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		self.assertEqual(
-			user1.client.linkUser(*user1.credentials)[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		self.assertEqual(
-			user1.client.linkUser(*user1.credentials)[0],
-			False
-			)
-		user1.client.testScenario = 'simulateNotOnline'
-		self.assertEqual(
-			user1.client.linkUser(*user1.credentials)[0],
-			False
-			)
-		user1.client.testScenario = None
-		success, message = user1.client.linkUser(*user1.credentials)
-		print('linkUser:', success, message)
-		self.assertEqual(
-			success,
-			True
-			)
-
-		# Unlink
-		self.assertEqual(
-			user1.client.unlinkUser()[0],
-			True
-			)
-		# Log in
-		self.assertEqual(
-			user1.client.logInUserAccount(*testUser1)[0],
-			True
-			)
-
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
-		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
-
-		# Install again
-		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
-		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-
-		# Sync subscription
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		self.assertEqual(
-			user1.client.syncSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		self.assertEqual(
-			user1.client.syncSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		self.assertEqual(
-			user1.client.syncSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = 'simulateNotOnline'
-		self.assertEqual(
-			user1.client.syncSubscriptions()[0],
-			False
-			)
-		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.syncSubscriptions()[0],
-			True
-			)
-
-
-		### ###
-
-
-
-		# Scenario 4:
-		# Protected subscription, installation on second machine
-
-
-		user2.client.testScenario = 'simulateWrongMimeType'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
-		user2.client.testScenario = 'simulateNotHTTP200'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateProgrammingError'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateInvalidAPIJSONResponse'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateFaultyAPIJSONResponse'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateNotOnline'
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, False)
-		user2.client.testScenario = None
-		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
-		self.assertEqual(success, True)
-		print(success, message)
-
-		# Two versions available
-		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions())), 2)
-
-		# Supposed to reject because seats are limited to 1
-		user2.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
-		user2.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(
-			user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), 
-			(False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)'])
-			)
-
-		# Uninstall font for user1
-		user1.client.testScenario = 'simulatePermissionError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
-
-		# user1.client.testScenario = 'simulateMissingFont'
-		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		# self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateCustomError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
-		self.assertEqual(message.getText(), 'simulateCustomError')
-
-		user1.client.testScenario = 'simulateProgrammingError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateUnknownFontError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = None
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
-		self.assertEqual(success, True)
-
-		# Uninstall font for user2, must fail because deleting same font file (doesn't make sense in normal setup)
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
-		print(result)
-		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
-
-		# Try again for user2
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (True, None))
-
-		# Uninstall font on for user2
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
-
-		# Install older version on second client
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[0].number), (True, None))
-
-		# Check amount
-		self.assertEqual(user2.client.publishers()[0].amountInstalledFonts(), 1)
-
-		# One font must be outdated
-		self.assertEqual(user2.client.amountOutdatedFonts(), 1)
-		self.assertEqual(user2.client.publishers()[0].amountOutdatedFonts(), 1)
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1)
-
-		# Uninstall font for user2
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
-		print(result)
-		self.assertEqual(result, (True, None))
-
-		# Family By ID
-		family = user2.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0]
-		self.assertEqual(family, user2.client.publishers()[0].subscriptions()[-1].familyByID(family.uniqueID))
-
-		# Font By ID
-		font = family.fonts[0]
-		self.assertEqual(font, user2.client.publishers()[0].subscriptions()[-1].fontByID(font.uniqueID))
-
-		# Clear
-		user2.clearSubscriptions()
-		self.assertEqual(len(user2.client.publishers()), 0)
-
-
-
-
-		### ###
-
-		print('STATUS: -14')
-
-
-		# Invitations
-		# Invite to client without linked user account
-		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
-		self.assertEqual(success, True)
-		result = user0.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
-		self.assertEqual(result, (False, 'No source user linked.'))
-
-		# Invite unknown user
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
-		self.assertEqual(result, (False, ['#(response.unknownTargetEmail)', '#(response.unknownTargetEmail.headline)']))
-
-		# Invite same user
-		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
-		# self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test1@type.world')
-		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
-
-		print('STATUS: -13')
-
-		# Invite real user
-		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result[0], False)
-		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result[0], False)
-		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result[0], False)
-		user1.client.testScenario = 'simulateNotOnline'
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result[0], False)
-		user1.client.testScenario = None
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		print(result)
-		self.assertEqual(result[0], True)
-
-		print('STATUS: -12')
-
-		# Update user2
-		self.assertEqual(len(user2.client.pendingInvitations()), 0)
-
-		print('STATUS: -11.8')
-
-		self.assertEqual(len(user2.client.publishers()), 0)
-
-		print('STATUS: -11.7')
-
-		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
-
-		print('STATUS: -11.6')
-
-		self.assertEqual(len(user2.client.pendingInvitations()), 1)
-
-		print('STATUS: -11.5')
-
-		# Decline (exists only here in test script)
-		user2.clearInvitations()
-		# Invite again
-		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
-		self.assertEqual(result, (True, None))
-
-		print('STATUS: -11')
-
-		# Accept invitation
-		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
-
-		user2.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user2.client.pendingInvitations()[0].accept()
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user2.client.pendingInvitations()[0].accept()
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user2.client.pendingInvitations()[0].accept()
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateNotOnline'
-		success, message = user2.client.pendingInvitations()[0].accept()
-		self.assertEqual(success, False)
-		user2.client.testScenario = None
-		success, message = user2.client.pendingInvitations()[0].accept()
-		print(message)
-		self.assertEqual(success, True)
-
-		print('STATUS: -10')
-
-		user2.client.downloadSubscriptions()
-		self.assertEqual(len(user2.client.pendingInvitations()), 0)
-		self.assertEqual(len(user2.client.publishers()), 1)
-
-		# Invite yet another user
-		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-		self.assertEqual(len(user3.client.publishers()), 0)
-		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
-		self.assertEqual(result, (True, None))
-		success, message = user2.client.downloadSubscriptions()
-		self.assertEqual(success, True)
-		self.assertEqual(len(user2.client.sentInvitations()), 1)
-
-		print('STATUS: -9')
-
-		# Decline invitation
-		user3.client.downloadSubscriptions()
-		self.assertEqual(len(user3.client.pendingInvitations()), 1)
-
-		user3.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user3.client.pendingInvitations()[0].decline()
-		self.assertEqual(success, False)
-		user3.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user3.client.pendingInvitations()[0].decline()
-		self.assertEqual(success, False)
-		user3.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user3.client.pendingInvitations()[0].decline()
-		self.assertEqual(success, False)
-		user3.client.testScenario = 'simulateNotOnline'
-		success, message = user3.client.pendingInvitations()[0].decline()
-		self.assertEqual(success, False)
-		user3.client.testScenario = None
-		success, message = user3.client.pendingInvitations()[0].decline()
-		self.assertEqual(success, True)
-
-		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-		user2.client.downloadSubscriptions()
-		self.assertEqual(len(user2.client.sentInvitations()), 0)
-
-		# Invite again
-		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-		self.assertEqual(len(user3.client.publishers()), 0)
-		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
-		self.assertEqual(result, (True, None))
-		user2.client.downloadSubscriptions()
-		self.assertEqual(len(user2.client.sentInvitations()), 1)
-
-		print('STATUS: -8')
-
-		# Accept invitation
-		user3.client.downloadSubscriptions()
-		self.assertEqual(len(user3.client.pendingInvitations()), 1)
-		user3.client.pendingInvitations()[0].accept()
-		self.assertEqual(len(user3.client.publishers()), 1)
-
-		print('STATUS: -7')
-
-		# Revoke user
-		user2.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		self.assertEqual(success, False)
-		user2.client.testScenario = 'simulateNotOnline'
-		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		self.assertEqual(success, False)
-		user2.client.testScenario = None
-		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		self.assertEqual(success, True)
-
-		print('STATUS: -6')
-
-		self.assertEqual(result, (True, None))
-		user3.client.downloadSubscriptions()
-		self.assertEqual(len(user3.client.publishers()), 0)
-
-		print('STATUS: -5')
-
-		# Invite again
-		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-		self.assertEqual(len(user3.client.publishers()), 0)
-		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
-		self.assertEqual(result, (True, None))
-		user2.client.downloadSubscriptions()
-		self.assertEqual(len(user2.client.sentInvitations()), 1)
-
-		print('STATUS: -4')
-
-		# Accept invitation
-		user3.client.downloadSubscriptions()
-		self.assertEqual(len(user3.client.pendingInvitations()), 1)
-		self.assertEqual(len(user3.client.publishers()), 0)
-		user3.client.pendingInvitations()[0].accept()
-		self.assertEqual(len(user3.client.publishers()), 1)
-
-		print('STATUS: -3')
-
-		# Invitation accepted
-		success = user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted()
-		self.assertEqual(success, True)
-
-
-		print('STATUS: -2')
-
-		# Get publisher's logo
-		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
-		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
-		self.assertEqual(success, True)
-		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
-
-		print('STATUS: -1')
-
-		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
-		user1.client.publishers()[0].delete()
-		user2.client.downloadSubscriptions()
-		user3.client.downloadSubscriptions()
-		self.assertEqual(len(user2.client.pendingInvitations()), 0)
-		self.assertEqual(len(user3.client.pendingInvitations()), 0)
-
-
-
-
-
-
-
-		# Create user account
-
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', '', '')
-		self.assertEqual(message, '#(RequiredFieldEmpty)')
-
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(message, '#(PasswordsDontMatch)')
-
-		user0.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateNotOnline'
-		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
-		self.assertEqual(success, False)
-
-		# Delete User Account
-
-		success, message = user0.client.deleteUserAccount('test0@type.world', '')
-		self.assertEqual(message, '#(RequiredFieldEmpty)')
-
-		user0.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateNotOnline'
-		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
-		self.assertEqual(success, False)
-
-		# Log In User Account
-
-		success, message = user0.client.logInUserAccount('test0@type.world', '')
-		self.assertEqual(message, '#(RequiredFieldEmpty)')
-
-		user0.client.testScenario = 'simulateCentralServerNotReachable'
-		success, message = user0.client.logInUserAccount(*testUser1)
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerProgrammingError'
-		success, message = user0.client.logInUserAccount(*testUser1)
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
-		success, message = user0.client.logInUserAccount(*testUser1)
-		self.assertEqual(success, False)
-		user0.client.testScenario = 'simulateNotOnline'
-		success, message = user0.client.logInUserAccount(*testUser1)
-		self.assertEqual(success, False)
-
-		user0.client.testScenario = None
-		success, message = user0.client.logInUserAccount(*testUser1)
-		self.assertEqual(success, True)
-		success, message = user0.client.unlinkUser()
-		self.assertEqual(success, True)
-
-
+	currentResult = None
 
 
 	def test_RootResponse(self):
@@ -1746,14 +937,29 @@ class TestStringMethods(unittest.TestCase):
 		assert type(root.supportedCommands.index('installableFonts')) == int
 		assert installableFonts.designers[0].parent == installableFonts
 
-		success, rootCommand = user1.client.rootCommand(protectedSubscription)
+		success, message = user1.client.rootCommand(protectedSubscription)
 		self.assertTrue(success)
-		success, rootCommand = user1.client.rootCommand(protectedSubscription[1:])
+
+		success, message = user1.client.rootCommand(protectedSubscription[1:])
 		self.assertFalse(success)
+		self.assertEqual(message, 'Unknown custom protocol, known are: [\'typeworld\']')
+
+		user1.client.testScenario = 'simulateInvalidAPIJSONResponse'
+		success, message = user1.client.rootCommand(protectedSubscription)
+		self.assertFalse(success)
+		self.assertEqual(message, 'Unknown license identifier: "mefowefbhrf". See https://spdx.org/licenses/')
+
+		user1.client.testScenario = 'simulateFaultyAPIJSONResponse'
+		success, message = user1.client.rootCommand(protectedSubscription)
+		self.assertFalse(success)
+		self.assertTrue('Invalid control character at:' in message)
 
 		# TODO: Invite user to subscription with API endpoint as source
 
 		self.assertEqual(typeWorld.client.helpers.addAttributeToURL('https://type.world?hello=world#xyz', 'hello=type&world=type'), 'https://type.world?hello=type&world=type#xyz')
+
+
+		
 
 	def test_InstallFontResponse(self):
 
@@ -2148,6 +1354,853 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(message, "URL is malformed.")
 
 
+	def test_normalSubscription(self):
+
+		print('test_normalSubscription()')
+
+		# Announce subscription update
+		url = MOTHERSHIP
+		parameters = {"command": "subscriptionHasChanged",
+					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
+					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+
+
+		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
+
+		self.assertTrue(user2.client.user())
+
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user2.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user2.client.user(),
+			'APIKey': 'OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU',
+		}
+
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+		self.assertEqual(response['response'], 'success')
+
+
+		# General stuff
+		self.assertEqual(type(user0.client.locale()), list)
+		self.assertTrue(typeWorld.client.urlIsValid(freeSubscription)[0])
+
+		## Scenario 1:
+		## Test a simple subscription of free fonts without Type.World user account
+
+		result = user0.client.addSubscription(freeSubscription)
+		print('Scenario 1:', result)
+		success, message, publisher, subscription = result
+		self.assertEqual(success, True)
+		self.assertEqual(user0.client.publishers()[0].canonicalURL, 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
+
+		# Announce subscription update
+		url = MOTHERSHIP
+		parameters = {"command": "subscriptionHasChanged",
+					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
+					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+
+		# Logo
+		user0.client.testScenario = 'simulateProgrammingError'
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = None
+		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Name
+		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].name(), 'Free Fonts')
+
+		# Reload client
+		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
+		user0.loadClient()
+
+		user0.clearSubscriptions()
+
+
+
+
+		### ###
+
+
+
+		# Scenario 2:
+		# Protected subscription, installation on machine without user account
+		# This is supposed to fail because accessing protected subscriptions requires a valid Type.World user account, but user0 is not linked with a user account
+		result = user0.client.addSubscription(protectedSubscription)
+		print('Scenario 2:', result)
+		success, message, publisher, subscription = result
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.validTypeWorldUserAccountRequired)')
+
+
+
+		### ###
+
+
+
+		# Scenario 3:
+		# Protected subscription, installation on first machine with Type.World user account
+		result = user1.client.addSubscription(protectedSubscription)
+		print('Scenario 3:', result)
+		success, message, publisher, subscription = result
+		print('Message:', message)
+
+		self.assertEqual(success, True)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
+
+		success, protocol = user1.client.protocol(protectedSubscription)
+		self.assertEqual(protocol.secretURL(), protectedSubscription)
+		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':bN0QnnNsaE4LfHlOMGkm@', ':secretKey@'))
+
+
+		# saveURL
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		# completeURL
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+
+		# Reload client
+		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
+		user1.loadClient()
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+
+
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.downloadSubscriptions()[0],
+			True
+			)
+		success, message, changes = user1.client.publishers()[0].update()
+		print('Updating publisher:', success, message, changes)
+		self.assertEqual(success, True)
+		self.assertEqual(changes, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		print('Updating subscription 1:', success, message, changes)
+		self.assertEqual(success, True)
+		self.assertEqual(changes, False)
+		self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
+		print(user1.client.publishers()[0].updatingProblem())
+		self.assertEqual(user1.client.allSubscriptionsUpdated(), True)
+
+		# Install Font
+		# First it's meant to fail because the user hasn't accepted the Terms & Conditions
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
+		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		# Then it's supposed to fail because the server requires the revealted user identity for this subscription
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].prefersRevealedUserIdentity, True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
+		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+
+		# Finally supposed to pass
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+		# Simulations
+		user1.client.testScenario = 'simulateNotOnline'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateCustomError'
+		success, message, changes = user1.client.publishers()[0].update()
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		# Simulate unexpected empty subscription
+		user1.client.testScenario = 'simulateNoFontsAvailable'
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+		print('Updating subscription 2:', success, message, changes)
+		self.assertEqual(success, True)
+		self.assertEqual(changes, True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
+		user1.client.testScenario = None
+		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
+
+		# Repeat font installation
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulatePermissionError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateCustomError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
+
+
+		# Supposed to pass
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
+			(True, None)
+		)
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+
+		# Revoke app instance
+		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password(MOTHERSHIP, 'revokeAppInstance')
+		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
+		parameters = {
+			'command': 'revokeAppInstance',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'authorizationKey': authKey,
+			'anonymousUserID': user1.client.user(),
+			'secretKey': user1.client.secretKey(),
+		}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+		self.assertEqual(response['response'], 'success')
+
+		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
+
+		# Reinstall font, fails because no permissions
+		user1.client.testScenario = None
+		response = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		success, message = response
+		print(response)
+		self.assertEqual(success, False)
+		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
+
+		# Reactivate app instance
+		parameters = {
+			'command': 'reactivateAppInstance',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'authorizationKey': authKey,
+			'anonymousUserID': user1.client.user(),
+			'secretKey': user1.client.secretKey(),
+		}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		url = MOTHERSHIP
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+		self.assertEqual(response['response'], 'success')
+
+		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
+
+		# Reinstall font
+		user1.client.testScenario = None
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, True)
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+
+
+		# This is also supposed to delete the installed protected font
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			False
+			)
+		self.assertTrue(user1.client.syncProblems())
+		user1.client.testScenario = None
+		success, message = user1.client.unlinkUser()
+		self.assertEqual(
+			success,
+			True
+			)
+		self.assertFalse(user1.client.syncProblems())
+		self.assertEqual(user1.client.userEmail(), None)
+		self.assertEqual(user1.client.user(), '')
+
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+
+		# Delete subscription from user-less app, so that it can be re-added during upcoming user linking
+		user1.client.publishers()[0].subscriptions()[0].delete()
+		self.assertEqual(len(user1.client.publishers()), 0)
+
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.linkUser(*user1.credentials)[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.linkUser(*user1.credentials)[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.linkUser(*user1.credentials)[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.linkUser(*user1.credentials)[0],
+			False
+			)
+		user1.client.testScenario = None
+		success, message = user1.client.linkUser(*user1.credentials)
+		print('linkUser:', success, message)
+		self.assertEqual(
+			success,
+			True
+			)
+
+		# Unlink
+		self.assertEqual(
+			user1.client.unlinkUser()[0],
+			True
+			)
+		# Log in
+		self.assertEqual(
+			user1.client.logInUserAccount(*testUser1)[0],
+			True
+			)
+
+		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
+
+		# Install again
+		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+
+		# Sync subscription
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = 'simulateNotOnline'
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			False
+			)
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.syncSubscriptions()[0],
+			True
+			)
+
+
+		### ###
+
+
+
+		# Scenario 4:
+		# Protected subscription, installation on second machine
+
+
+		user2.client.testScenario = 'simulateWrongMimeType'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
+		user2.client.testScenario = 'simulateNotHTTP200'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateInvalidAPIJSONResponse'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateFaultyAPIJSONResponse'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		self.assertEqual(success, True)
+		print(success, message)
+
+		# Two versions available
+		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions())), 2)
+
+		# Supposed to reject because seats are limited to 1
+		user2.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		user2.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
+		self.assertEqual(
+			user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), 
+			(False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)'])
+			)
+
+		# Uninstall font for user1
+		user1.client.testScenario = 'simulatePermissionError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		# user1.client.testScenario = 'simulateMissingFont'
+		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		# self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateCustomError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateUnknownFontError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = None
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		self.assertEqual(success, True)
+
+		# Uninstall font for user2, must fail because deleting same font file (doesn't make sense in normal setup)
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
+
+		# Try again for user2
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (True, None))
+
+		# Uninstall font on for user2
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
+
+		# Install older version on second client
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[0].number), (True, None))
+
+		# Check amount
+		self.assertEqual(user2.client.publishers()[0].amountInstalledFonts(), 1)
+
+		# One font must be outdated
+		self.assertEqual(user2.client.amountOutdatedFonts(), 1)
+		self.assertEqual(user2.client.publishers()[0].amountOutdatedFonts(), 1)
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1)
+
+		# Uninstall font for user2
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		print(result)
+		self.assertEqual(result, (True, None))
+
+		# Family By ID
+		family = user2.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0]
+		self.assertEqual(family, user2.client.publishers()[0].subscriptions()[-1].familyByID(family.uniqueID))
+
+		# Font By ID
+		font = family.fonts[0]
+		self.assertEqual(font, user2.client.publishers()[0].subscriptions()[-1].fontByID(font.uniqueID))
+
+		# Clear
+		user2.clearSubscriptions()
+		self.assertEqual(len(user2.client.publishers()), 0)
+
+
+
+
+		### ###
+
+		print('STATUS: -14')
+
+
+		# Invitations
+		# Invite to client without linked user account
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, True)
+		result = user0.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
+		self.assertEqual(result, (False, 'No source user linked.'))
+
+		# Invite unknown user
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test12345@type.world')
+		self.assertEqual(result, (False, ['#(response.unknownTargetEmail)', '#(response.unknownTargetEmail.headline)']))
+
+		# Invite same user
+		self.assertEqual(user1.client.userEmail(), 'test1@type.world')
+		# self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test1@type.world')
+		self.assertEqual(result, (False, ['#(response.sourceAndTargetIdentical)', '#(response.sourceAndTargetIdentical.headline)']))
+
+		print('STATUS: -13')
+
+		# Invite real user
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = 'simulateNotOnline'
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result[0], False)
+		user1.client.testScenario = None
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		print(result)
+		self.assertEqual(result[0], True)
+
+		print('STATUS: -12')
+
+		# Update user2
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+
+		print('STATUS: -11.8')
+
+		self.assertEqual(len(user2.client.publishers()), 0)
+
+		print('STATUS: -11.7')
+
+		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
+
+		print('STATUS: -11.6')
+
+		self.assertEqual(len(user2.client.pendingInvitations()), 1)
+
+		print('STATUS: -11.5')
+
+		# Decline (exists only here in test script)
+		user2.clearInvitations()
+		# Invite again
+		result = user1.client.publishers()[0].subscriptions()[-1].inviteUser('test2@type.world')
+		self.assertEqual(result, (True, None))
+
+		print('STATUS: -11')
+
+		# Accept invitation
+		self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
+
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
+		success, message = user2.client.pendingInvitations()[0].accept()
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message = user2.client.pendingInvitations()[0].accept()
+		print(message)
+		self.assertEqual(success, True)
+
+		print('STATUS: -10')
+
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+		self.assertEqual(len(user2.client.publishers()), 1)
+
+		# Invite yet another user
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		success, message = user2.client.downloadSubscriptions()
+		self.assertEqual(success, True)
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		print('STATUS: -9')
+
+		# Decline invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+
+		user3.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = 'simulateNotOnline'
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, False)
+		user3.client.testScenario = None
+		success, message = user3.client.pendingInvitations()[0].decline()
+		self.assertEqual(success, True)
+
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 0)
+
+		# Invite again
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		print('STATUS: -8')
+
+		# Accept invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		user3.client.pendingInvitations()[0].accept()
+		self.assertEqual(len(user3.client.publishers()), 1)
+
+		print('STATUS: -7')
+
+		# Revoke user
+		user2.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = 'simulateNotOnline'
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, False)
+		user2.client.testScenario = None
+		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		self.assertEqual(success, True)
+
+		print('STATUS: -6')
+
+		self.assertEqual(result, (True, None))
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.publishers()), 0)
+
+		print('STATUS: -5')
+
+		# Invite again
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		result = user2.client.publishers()[0].subscriptions()[-1].inviteUser('test3@type.world')
+		self.assertEqual(result, (True, None))
+		user2.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.sentInvitations()), 1)
+
+		print('STATUS: -4')
+
+		# Accept invitation
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user3.client.pendingInvitations()), 1)
+		self.assertEqual(len(user3.client.publishers()), 0)
+		user3.client.pendingInvitations()[0].accept()
+		self.assertEqual(len(user3.client.publishers()), 1)
+
+		print('STATUS: -3')
+
+		# Invitation accepted
+		success = user3.client.publishers()[-1].subscriptions()[-1].invitationAccepted()
+		self.assertEqual(success, True)
+
+
+		print('STATUS: -2')
+
+		# Get publisher's logo
+		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		print('STATUS: -1')
+
+		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
+		user1.client.publishers()[0].delete()
+		user2.client.downloadSubscriptions()
+		user3.client.downloadSubscriptions()
+		self.assertEqual(len(user2.client.pendingInvitations()), 0)
+		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+
+
+
+	def test_UserAccounts(self):
+
+
+
+		# Create user account
+
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', '', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'def')
+		self.assertEqual(message, '#(PasswordsDontMatch)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
+		self.assertEqual(success, False)
+		self.assertEqual(message, 'urllib.error.HTTPError: HTTP Error 500: INTERNAL SERVER ERROR')
+
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.simulateCentralServerErrorInResponse)')
+
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.notOnline)')
+
+		# Delete User Account
+
+		user0.client.testScenario = None
+		success, message = user0.client.deleteUserAccount('test0@type.world', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.notOnline)')
+
+		# Log In User Account
+
+		success, message = user0.client.logInUserAccount('test0@type.world', '')
+		self.assertEqual(message, '#(RequiredFieldEmpty)')
+
+		user0.client.testScenario = 'simulateCentralServerNotReachable'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerProgrammingError'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+		user0.client.testScenario = 'simulateNotOnline'
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, False)
+
+		user0.client.testScenario = None
+		success, message = user0.client.logInUserAccount(*testUser1)
+		self.assertEqual(success, True)
+		success, message = user0.client.unlinkUser()
+		self.assertEqual(success, True)
+
+	def run(self, result=None):
+		self.currentResult = result # remember result for use in tearDown
+		unittest.TestCase.run(self, result) # call superclass run method
+
+	# from https://stackoverflow.com/questions/4414234/getting-pythons-unittest-results-in-a-teardown-method
+	def tearDown(self):
+		if hasattr(self, '_outcome'):  # Python 3.4+
+			result = self.defaultTestResult()  # these 2 methods have no side effects
+			self._feedErrorsToResult(result, self._outcome.errors)
+		else:  # Python 3.2 - 3.3 or 3.0 - 3.1 and 2.7
+			result = getattr(self, '_outcomeForDoCleanups', self._resultForDoCleanups)
+		errors.extend(result.errors)
+		failures.extend(result.failures)
+
+	# def tearDown(self):
+
+	# 	global errors, failures
+	# 	errors.append(self.currentResult.errors)
+	# 	failures.append(self.currentResult.failures)
+
 
 def setUp():
 
@@ -2178,7 +2231,12 @@ if __name__ == '__main__':
 
 	setUp()
 
-	unittest.main(exit = True)
+	result = unittest.main(exit = False, failfast = True)
 
 	tearDown()
+
+	if errors:
+		raise ValueError()
+	if failures:
+		raise ValueError()
 
