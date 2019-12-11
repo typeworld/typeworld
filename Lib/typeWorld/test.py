@@ -2125,7 +2125,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateCentralServerProgrammingError'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'urllib.error.HTTPError: HTTP Error 500: INTERNAL SERVER ERROR')
+		self.assertTrue('HTTP Error 500' in message)
 
 		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
