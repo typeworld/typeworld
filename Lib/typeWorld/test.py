@@ -21,7 +21,8 @@ testUser2 = ('test2@type.world', 'def')
 testUser3 = ('test3@type.world', 'ghi')
 
 
-MOTHERSHIP = 'http://127.0.0.1:8080/api'
+MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+#MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
@@ -1403,6 +1404,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
+		self.assertFalse(subscription.hasProtectedFonts())
+
 		# Announce subscription update
 		url = MOTHERSHIP
 		parameters = {"command": "subscriptionHasChanged",
@@ -1484,15 +1487,15 @@ class TestStringMethods(unittest.TestCase):
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
-		subscription.stillAlive()
+		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 		user1.client.testScenario = 'simulateCentralServerProgrammingError'
-		subscription.stillAlive()
+		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
-		subscription.stillAlive()
+		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 		user1.client.testScenario = 'simulateNotOnline'
-		subscription.stillAlive()
+		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 		user1.client.testScenario = None
-		subscription.stillAlive()
+		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'

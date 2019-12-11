@@ -140,8 +140,8 @@ def pubSubSubscription(topicName, subscriptionName, callback):
 		subscription = googlePubsubSubscriber.subscribe(subscriptionName, callback)
 		callback(None)
 		return subscription
-	except google.api_core.exceptions.InvalidArgument:
-		pass
+	# except google.api_core.exceptions.InvalidArgument:
+	# 	pass
 	except google.api_core.exceptions.NotFound:
 		pass
 	except google.api_core.exceptions.AlreadyExists:
@@ -358,23 +358,22 @@ class APIClient(object):
 	def pubSubDelete(self):
 
 		if self.user():
-			if self.parent.parent.mode == 'gui':
+			if self.mode == 'gui':
 				stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
 				stillAliveThread.start()
-			elif self.parent.parent.mode == 'headless':
+			elif self.mode == 'headless':
 				self.pubSubDelete_worker()
 
 	def pubSubDelete_worker(self):
 
 		global googlePubsubSubscriber
-		if not googlePubsubSubscriber:
-			googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+		if not googlePubsubSubscriber: googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
 		try:
 			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
 			googlePubsubSubscriber.delete_subscription(subscription_path)
-		except google.api_core.exceptions.InvalidArgument:
-			pass
+		# except google.api_core.exceptions.InvalidArgument:
+		# 	pass
 		except google.api_core.exceptions.NotFound:
 			pass
 
@@ -1191,12 +1190,13 @@ class APIClient(object):
 			return False, '#(response.%s)' % response['response']
 
 		# Success
+		self.pubSubDelete()
+
 		self.preferences.set('typeWorldUserAccount', '')
 		self.preferences.remove('acceptedInvitations')
 		self.preferences.remove('pendingInvitations')
 		self.preferences.remove('sentInvitations')
 
-		self.pubSubDelete()
 
 		keyring = self.keyring()
 		keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
@@ -1444,15 +1444,9 @@ class APIClient(object):
 			return False, response
 
 		# Get subscription
-		success, message = self.protocol(url)
-		if success:
-			protocol = message
-
-			# Get Root Command
-			return protocol.rootCommand(testScenario = self.testScenario)
-
-		else:
-			return False, message
+		success, protocol = self.protocol(url)
+		# Get Root Command
+		return protocol.rootCommand(testScenario = self.testScenario)
 
 
 
@@ -1891,14 +1885,13 @@ class APISubscription(object):
 	def pubSubDelete_worker(self):
 
 		global googlePubsubSubscriber
-		if not googlePubsubSubscriber:
-			googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+		if not googlePubsubSubscriber: googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
 		try:
 			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
 			googlePubsubSubscriber.delete_subscription(subscription_path)
-		except google.api_core.exceptions.InvalidArgument:
-			pass
+		# except google.api_core.exceptions.InvalidArgument:
+		# 	pass
 		except google.api_core.exceptions.NotFound:
 			pass
 
