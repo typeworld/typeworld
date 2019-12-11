@@ -2201,19 +2201,10 @@ class TestStringMethods(unittest.TestCase):
 
 	# from https://stackoverflow.com/questions/4414234/getting-pythons-unittest-results-in-a-teardown-method
 	def tearDown(self):
-		if hasattr(self, '_outcome'):  # Python 3.4+
-			result = self.defaultTestResult()  # these 2 methods have no side effects
-			self._feedErrorsToResult(result, self._outcome.errors)
-		else:  # Python 3.2 - 3.3 or 3.0 - 3.1 and 2.7
-			result = getattr(self, '_outcomeForDoCleanups', self._resultForDoCleanups)
+		result = self.defaultTestResult()  # these 2 methods have no side effects
+		self._feedErrorsToResult(result, self._outcome.errors)
 		errors.extend(result.errors)
 		failures.extend(result.failures)
-
-	# def tearDown(self):
-
-	# 	global errors, failures
-	# 	errors.append(self.currentResult.errors)
-	# 	failures.append(self.currentResult.failures)
 
 
 def setUp():
@@ -2249,8 +2240,6 @@ if __name__ == '__main__':
 
 	tearDown()
 
-	if errors:
-		raise ValueError()
-	if failures:
-		raise ValueError()
+	if errors: raise ValueError()
+	if failures: raise ValueError()
 
