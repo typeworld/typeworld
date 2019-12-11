@@ -975,7 +975,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 
     def loadDict(self, d):
-        for key in list(d.keys()):
+        for key in d:
             self.set(key, d[key])
 
 def MultiLanguageText_Parent(self):
