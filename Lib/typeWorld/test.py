@@ -1465,6 +1465,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
 
+		self.assertTrue(subscription.hasProtectedFonts())
+
 		success, protocol = user1.client.protocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
 		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':bN0QnnNsaE4LfHlOMGkm@', ':secretKey@'))
@@ -1479,6 +1481,18 @@ class TestStringMethods(unittest.TestCase):
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
 		user1.loadClient()
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+
+
+		user1.client.testScenario = 'simulateCentralServerNotReachable'
+		subscription.stillAlive()
+		user1.client.testScenario = 'simulateCentralServerProgrammingError'
+		subscription.stillAlive()
+		user1.client.testScenario = 'simulateCentralServerErrorInResponse'
+		subscription.stillAlive()
+		user1.client.testScenario = 'simulateNotOnline'
+		subscription.stillAlive()
+		user1.client.testScenario = None
+		subscription.stillAlive()
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -2231,7 +2245,7 @@ if __name__ == '__main__':
 
 	setUp()
 
-	result = unittest.main(exit = True, failfast = True)
+	result = unittest.main(exit = False, failfast = True)
 
 	tearDown()
 

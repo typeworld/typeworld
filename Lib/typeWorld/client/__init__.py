@@ -1866,10 +1866,10 @@ class APISubscription(object):
 
 			response = json.loads(response.read().decode())
 
-			if response['response'] == 'success':
-				self.parent.parent.log('API endpoint alive success.')
-			else:
-				self.parent.parent.log('API endpoint alive error: %s' % response['response'])
+			# if response['response'] == 'success':
+			# 	self.parent.parent.log('API endpoint alive success.')
+			# else:
+			# 	self.parent.parent.log('API endpoint alive error: %s' % response['response'])
 
 
 		# Touch only once
