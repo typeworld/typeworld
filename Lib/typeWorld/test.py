@@ -2120,7 +2120,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateCentralServerNotReachable'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>')
+		self.assertTrue('urlopen error' in message)
 
 		user0.client.testScenario = 'simulateCentralServerProgrammingError'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
@@ -2231,7 +2231,7 @@ if __name__ == '__main__':
 
 	setUp()
 
-	result = unittest.main(exit = False, failfast = True)
+	result = unittest.main(exit = True, failfast = True)
 
 	tearDown()
 
