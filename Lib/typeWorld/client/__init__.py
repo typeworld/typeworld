@@ -19,8 +19,8 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
-MOTHERSHIP = 'http://127.0.0.1:8080/api'
-#MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+#MOTHERSHIP = 'http://127.0.0.1:8080/api'
+MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
 # Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
@@ -82,6 +82,7 @@ def urlIsValid(url):
 
 
 def getProtocol(url):
+
 
 	customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
 	if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py')):
@@ -300,26 +301,27 @@ class PubSubClient(object):
 
 	def pubSubSetup(self, direct = False):
 
-		print('Pub/Sub subscription setup for %s' % self)
+		if self.__class__ == APIClient:
+			client = self
+		else:
+			client = self.parent.parent
 
-		if not self.pubsubSubscription:
+		if client.pubSubSubscriptions:
+			print('Pub/Sub subscription setup for %s' % self)
 
-			if self.__class__ == APIClient:
-				client = self
-			else:
-				client = self.parent.parent
+			if not self.pubsubSubscription:
 
-			self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-			self.pubSubSubscriptionID = '%s-appInstance-%s' % (self.pubSubTopicID, client.anonymousAppID())
-			self.topicPath = self.pubSubSubscriber.topic_path(GOOGLE_PROJECT_ID, self.pubSubTopicID)
-			self.subscriptionPath = self.pubSubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
+				self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+				self.pubSubSubscriptionID = '%s-appInstance-%s' % (self.pubSubTopicID, client.anonymousAppID())
+				self.topicPath = self.pubSubSubscriber.topic_path(GOOGLE_PROJECT_ID, self.pubSubTopicID)
+				self.subscriptionPath = self.pubSubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
 
-			if self.executeCondition():
-				if client.mode == 'gui' or direct:
-					stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
-					stillAliveThread.start()
-				elif client.mode == 'headless':
-					self.pubSubSetup_worker()
+				if self.executeCondition():
+					if client.mode == 'gui' or direct:
+						stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
+						stillAliveThread.start()
+					elif client.mode == 'headless':
+						self.pubSubSetup_worker()
 
 
 	def pubSubSetup_worker(self):
@@ -342,18 +344,20 @@ class PubSubClient(object):
 
 	def pubSubDelete(self):
 
-		if self.executeCondition():
+		if self.__class__ == APIClient:
+			client = self
+		else:
+			client = self.parent.parent
 
-			if self.__class__ == APIClient:
-				client = self
-			else:
-				client = self.parent.parent
+		if client.pubSubSubscriptions:
+			if self.executeCondition():
 
-			if client.mode == 'gui':
-				stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
-				stillAliveThread.start()
-			elif client.mode == 'headless':
-				self.pubSubDelete_worker()
+
+				if client.mode == 'gui':
+					stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
+					stillAliveThread.start()
+				elif client.mode == 'headless':
+					self.pubSubDelete_worker()
 
 	def pubSubDelete_worker(self):
 
@@ -1860,7 +1864,6 @@ class APISubscription(PubSubClient):
 		if self.parent.parent.pubSubSubscriptions:
 			self.pubsubSubscription = None
 			self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
-			print(self.pubSubTopicID)
 			self.pubSubExecuteConditionMethod = None
 			self.pubSubSetup()
 

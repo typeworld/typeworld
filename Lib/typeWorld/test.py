@@ -260,7 +260,7 @@ class User(object):
 				self.client.unlinkUser()
 
 	def loadClient(self):
-		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP)
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP, pubSubSubscriptions = True)
 
 
 class TestStringMethods(unittest.TestCase):
@@ -1470,7 +1470,7 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertTrue(subscription.hasProtectedFonts())
 
-		success, protocol = user1.client.protocol(protectedSubscription)
+		success, protocol = typeWorld.client.getProtocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
 		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':bN0QnnNsaE4LfHlOMGkm@', ':secretKey@'))
 
