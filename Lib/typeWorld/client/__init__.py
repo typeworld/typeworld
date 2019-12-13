@@ -129,26 +129,6 @@ def splitJSONURL(url):
 	return customProtocol, protocol, transportProtocol, subscriptionID, secretKey, domain
 
 
-def pubSubSubscription(topicName, subscriptionName, callback):
-	
-	global googlePubsubSubscriber
-	if not googlePubsubSubscriber:
-		googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-
-	try:
-		googlePubsubSubscriber.create_subscription(name=subscriptionName, topic=topicName)
-		subscription = googlePubsubSubscriber.subscribe(subscriptionName, callback)
-		callback(None)
-		return subscription
-	# except google.api_core.exceptions.InvalidArgument:
-	# 	pass
-	except google.api_core.exceptions.NotFound:
-		pass
-	except google.api_core.exceptions.AlreadyExists:
-		subscription = googlePubsubSubscriber.subscribe(subscriptionName, callback)
-		return subscription
-
-
 class Preferences(object):
 	def __init__(self):
 		self._dict = {}
@@ -296,12 +276,89 @@ class APISentInvitation(APIInvitation):
 	keywords = ('url', 'invitedUserName', 'invitedUserEmail', 'invitedTime', 'acceptedTime', 'confirmed')
 
 
-class APIClient(object):
+class PubSubClient(object):
+
+	def executeCondition(self):
+		return self.pubSubExecuteConditionMethod == None or callable(self.pubSubExecuteConditionMethod) and self.pubSubExecuteConditionMethod()
+
+	def pubSubSetup(self, direct = False):
+
+		print('Pub/Sub subscription setup for %s' % self)
+
+		if not self.pubsubSubscription:
+
+			if self.__class__ == APIClient:
+				client = self
+			else:
+				client = self.parent.parent
+
+			self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+			self.pubSubSubscriptionID = '%s-appInstance-%s' % (self.pubSubTopicID, client.anonymousAppID())
+			self.topicPath = self.pubSubSubscriber.topic_path(GOOGLE_PROJECT_ID, self.pubSubTopicID)
+			self.subscriptionPath = self.pubSubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
+
+			if self.executeCondition():
+				if client.mode == 'gui' or direct:
+					stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
+					stillAliveThread.start()
+				elif client.mode == 'headless':
+					self.pubSubSetup_worker()
+
+
+	def pubSubSetup_worker(self):
+
+		if self.executeCondition():
+
+			try:
+				self.pubSubSubscriber.create_subscription(name=self.subscriptionPath, topic=self.topicPath)
+				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
+				self.pubSubCallback(None)
+			except google.api_core.exceptions.NotFound:
+				print('NotFound for %s' % self)
+			except google.api_core.exceptions.DeadlineExceeded:
+				print('DeadlineExceeded for %s' % self)
+			except google.api_core.exceptions.AlreadyExists:
+				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
+
+			if self.pubsubSubscription:
+				print('Pub/Sub subscription SUCCESSFUL for %s' % self)
+
+	def pubSubDelete(self):
+
+		if self.executeCondition():
+
+			if self.__class__ == APIClient:
+				client = self
+			else:
+				client = self.parent.parent
+
+			if client.mode == 'gui':
+				stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
+				stillAliveThread.start()
+			elif client.mode == 'headless':
+				self.pubSubDelete_worker()
+
+	def pubSubDelete_worker(self):
+
+		if not self.pubSubSubscriber:
+			self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+
+		try:
+			self.pubSubSubscriber.delete_subscription(self.subscriptionPath)
+		except google.api_core.exceptions.NotFound:
+			pass
+
+	def pubSubCallback(self, message):
+		'''Overwrite this one'''
+		raise NotImplementedError
+
+
+class APIClient(PubSubClient):
 	"""\
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless'):
+	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False):
 		self.preferences = preferences
 		# if self.preferences:
 		# 	self.clearPendingOnlineCommands()
@@ -321,64 +378,18 @@ class APIClient(object):
 		self._online = {}
 
 		# Pub/Sub
-		self.pubSubSetup()
-
-
-	###################################
-	### PUB/SUB
-
-
-	def pubSubSetup(self, direct = False):
-
-		if self.user():
+		if self.pubSubSubscriptions:
+			self.pubsubSubscription = None
 			self.pubSubTopicID = 'user-%s' % self.user()
-			self.pubSubSubscriptionID = 'appInstance-%s' % self.anonymousAppID()
-
-			if self.mode == 'gui' or direct:
-				stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
-				stillAliveThread.start()
-			elif self.mode == 'headless':
-				self.pubSubSetup_worker()
-
-	def pubSubSetup_worker(self):
-
-		if self.user():
-			topicName = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, self.pubSubTopicID)
-			subscriptionName = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
-			self.googlePubsubSubscription = pubSubSubscription(topicName, subscriptionName, self.pubSubCallback)
-
-			if self.googlePubsubSubscription:
-				print('Pub/Sub subscription successful for user account')
+			self.pubSubExecuteConditionMethod = self.user
+			self.pubSubSetup()
 
 	def pubSubCallback(self, message):
 		self.delegate.userAccountUpdateNotificationHasBeenReceived()
+
 		if message:
 			message.ack()
-
-	def pubSubDelete(self):
-
-		if self.user():
-			if self.mode == 'gui':
-				stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
-				stillAliveThread.start()
-			elif self.mode == 'headless':
-				self.pubSubDelete_worker()
-
-	def pubSubDelete_worker(self):
-
-		global googlePubsubSubscriber
-		if not googlePubsubSubscriber: googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-
-		try:
-			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
-			googlePubsubSubscriber.delete_subscription(subscription_path)
-		# except google.api_core.exceptions.InvalidArgument:
-		# 	pass
-		except google.api_core.exceptions.NotFound:
-			pass
-
-
-	###################################
+			self.preferences.set('lastPubSubMessage', int(time.time()))
 
 
 	# def clearPendingOnlineCommands(self):
@@ -734,7 +745,7 @@ class APIClient(object):
 
 		oldURLs = self.completeSubscriptionURLs()
 
-		print('executeDownloadSubscriptions():', response)
+		# print('executeDownloadSubscriptions():', response)
 
 
 		if response['appInstanceIsRevoked']:
@@ -1827,7 +1838,7 @@ class APIPublisher(object):
 
 
 
-class APISubscription(object):
+class APISubscription(PubSubClient):
 	"""\
 	Represents a subscription, identified and grouped by the canonical URL attribute of the API responses.
 	"""
@@ -1844,59 +1855,19 @@ class APISubscription(object):
 		self._updatingProblem = None
 
 		# Pub/Sub
-		self.pubSubSetup()
+		if self.parent.parent.pubSubSubscriptions:
+			self.pubsubSubscription = None
+			self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
+			print(self.pubSubTopicID)
+			self.pubSubExecuteConditionMethod = None
+			self.pubSubSetup()
 
-
-	###################################
-	### PUB/SUB
-
-
-	def pubSubSetup(self):
-
-		self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
-		self.pubSubSubscriptionID = 'appInstance-%s' % self.parent.parent.anonymousAppID()
-
-		if self.parent.parent.mode == 'gui':
-			stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
-			stillAliveThread.start()
-		elif self.parent.parent.mode == 'headless':
-			self.pubSubSetup_worker()
-
-	def pubSubSetup_worker(self):
-		topicName = 'projects/%s/topics/%s' % (GOOGLE_PROJECT_ID, self.pubSubTopicID)
-		subscriptionName = 'projects/%s/subscriptions/%s' % (GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
-		self.googlePubsubSubscription = pubSubSubscription(topicName, subscriptionName, self.pubSubCallback)
-
-		if self.googlePubsubSubscription:
-			print('Pub/Sub subscription successful for %s' % self.url)
 
 	def pubSubCallback(self, message):
 		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
 		if message:
 			message.ack()
-
-	def pubSubDelete(self):
-		if self.parent.parent.mode == 'gui':
-			stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
-			stillAliveThread.start()
-		elif self.parent.parent.mode == 'headless':
-			self.pubSubDelete_worker()
-
-	def pubSubDelete_worker(self):
-
-		global googlePubsubSubscriber
-		if not googlePubsubSubscriber: googlePubsubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-
-		try:
-			subscription_path = googlePubsubSubscriber.subscription_path(GOOGLE_PROJECT_ID, self.pubSubSubscriptionID)
-			googlePubsubSubscriber.delete_subscription(subscription_path)
-		# except google.api_core.exceptions.InvalidArgument:
-		# 	pass
-		except google.api_core.exceptions.NotFound:
-			pass
-
-
-	###################################
+			self.set('lastPubSubMessage', int(time.time()))
 
 
 	def hasProtectedFonts(self):
@@ -2421,8 +2392,8 @@ class APISubscription(object):
 		except:
 			pass
 
-		self.pubSubDelete()
 
+		self.pubSubDelete()
 
 		# Resources
 		resources = self.parent.parent.preferences.get('resources') or {}
@@ -2440,6 +2411,7 @@ class APISubscription(object):
 		subscriptions.remove(self.protocol.saveURL())
 		self.parent.set('subscriptions', subscriptions)
 		self.parent._subscriptions = {}
+
 
 		# # currentSubscription
 		# if self.parent.get('currentSubscription') == self.protocol.saveURL():
