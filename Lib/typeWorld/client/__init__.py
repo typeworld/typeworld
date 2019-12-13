@@ -370,6 +370,7 @@ class APIClient(PubSubClient):
 		self.delegate = delegate or TypeWorldClientDelegate()
 		self.mothership = mothership
 		self.mode = mode # gui or headless
+		self.pubSubSubscriptions = pubSubSubscriptions
 
 		# For Unit Testing
 		self.testScenario = None
