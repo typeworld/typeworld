@@ -81,6 +81,23 @@ def urlIsValid(url):
 	return True, None
 
 
+def getProtocol(url):
+
+	customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
+	if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py')):
+
+		import importlib
+		spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py'))
+		module = importlib.util.module_from_spec(spec)
+		spec.loader.exec_module(module)
+		
+		protocolObject = module.TypeWorldProtocol(url)
+
+		return True, protocolObject
+	else:
+		return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
+
+
 def splitJSONURL(url):
 
 	customProtocol = 'typeworld://'
@@ -1432,23 +1449,6 @@ class APIClient(PubSubClient):
 		return anonymousAppID
 
 
-	def protocol(self, url):
-
-		customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
-		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py')):
-
-			import importlib
-			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py'))
-			module = importlib.util.module_from_spec(spec)
-			spec.loader.exec_module(module)
-			
-			protocolObject = module.TypeWorldProtocol(url)
-			protocolObject.client = self
-
-			return True, protocolObject
-		else:
-			return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
-
 	def rootCommand(self, url):
 		# Check for URL validity
 		success, response = urlIsValid(url)
@@ -1456,7 +1456,7 @@ class APIClient(PubSubClient):
 			return False, response
 
 		# Get subscription
-		success, protocol = self.protocol(url)
+		success, protocol = getProtocol(url)
 		# Get Root Command
 		return protocol.rootCommand(testScenario = self.testScenario)
 
@@ -1473,9 +1473,10 @@ class APIClient(PubSubClient):
 			return False, response, None, None
 
 		# Get subscription
-		success, message = self.protocol(url)
+		success, message = getProtocol(url)
 		if success:
 			protocol = message
+			protocol.client = self
 		else:
 			return False, message, None, None
 
@@ -1757,8 +1758,7 @@ class APIPublisher(object):
 			loadFromDB = False
 
 			if not protocol:
-				print('################', url)
-				success, message = self.parent.protocol(url)
+				success, message = getProtocol(url)
 				if success:
 					protocol = message
 					loadFromDB = True
@@ -1850,6 +1850,7 @@ class APISubscription(PubSubClient):
 		self.secretKey = None
 		self.protocol = protocol
 		self.protocol.subscription = self
+		self.protocol.client = self.parent.parent
 		self.url = self.protocol.saveURL()
 
 		self.stillAliveTouched = None
