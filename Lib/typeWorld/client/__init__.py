@@ -334,8 +334,8 @@ class PubSubClient(object):
 				self.pubSubCallback(None)
 			except google.api_core.exceptions.NotFound:
 				print('NotFound for %s' % self)
-			except google.api_core.exceptions.DeadlineExceeded:
-				print('DeadlineExceeded for %s' % self)
+			# except google.api_core.exceptions.DeadlineExceeded:
+			# 	print('DeadlineExceeded for %s' % self)
 			except google.api_core.exceptions.AlreadyExists:
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 
