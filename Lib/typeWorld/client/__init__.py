@@ -352,26 +352,22 @@ class PubSubClient(object):
 		if client.pubSubSubscriptions:
 			if self.executeCondition():
 
-
-				if client.mode == 'gui':
-					stillAliveThread = threading.Thread(target=self.pubSubDelete_worker)
-					stillAliveThread.start()
-				elif client.mode == 'headless':
-					self.pubSubDelete_worker()
+				if client.mode == 'gui': stillAliveThread = threading.Thread(target=self.pubSubDelete_worker).start()
+				elif client.mode == 'headless': self.pubSubDelete_worker()
 
 	def pubSubDelete_worker(self):
 
-		if not self.pubSubSubscriber:
-			self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
+		# if not self.pubSubSubscriber:
+		# 	self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
 		try:
 			self.pubSubSubscriber.delete_subscription(self.subscriptionPath)
 		except google.api_core.exceptions.NotFound:
 			pass
 
-	def pubSubCallback(self, message):
-		'''Overwrite this one'''
-		raise NotImplementedError
+	# def pubSubCallback(self, message):
+	# 	'''Overwrite this one'''
+	# 	raise NotImplementedError
 
 
 class APIClient(PubSubClient):
