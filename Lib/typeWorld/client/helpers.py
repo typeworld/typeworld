@@ -63,13 +63,13 @@ def MachineName():
 	if platform.system() == 'Windows':
 
 		specsDescription = get_registry_value(
-            "HKEY_LOCAL_MACHINE", 
-            "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
-            "ProcessorNameString")
+			"HKEY_LOCAL_MACHINE", 
+			"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+			"ProcessorNameString")
 		humanReadableName = get_registry_value(
-            "HKEY_LOCAL_MACHINE", 
-            "HARDWARE\\DESCRIPTION\\System\\BIOS",
-            "SystemProductName")
+			"HKEY_LOCAL_MACHINE", 
+			"HARDWARE\\DESCRIPTION\\System\\BIOS",
+			"SystemProductName")
 
 	if platform.system() == 'Linux':
 		
@@ -139,9 +139,9 @@ def OSName():
 	elif platform.system() == 'Windows':
 
 		return get_registry_value(
-            "HKEY_LOCAL_MACHINE", 
-            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-            "ProductName") + ', ' + str(platform.version())
+			"HKEY_LOCAL_MACHINE", 
+			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+			"ProductName") + ', ' + str(platform.version())
 
 	elif platform.system() == 'Linux':
 		return ' '.join(platform.linux_distribution())
