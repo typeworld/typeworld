@@ -100,14 +100,6 @@ def MachineName():
 		data = plistlib.loads(Execute('system_profiler -xml SPHardwareDataType'))
 		model = subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.model"]).strip()
 
-		serverInfoBundle=NSBundle.bundleWithPath_("/System/Library/PrivateFrameworks/ServerInformation.framework/")
-		sysinfofile=serverInfoBundle.URLForResource_withExtension_subdirectory_("SIMachineAttributes", "plist", "")
-
-		plist = plistlib.readPlist(sysinfofile.path())
-
-		# if (model in plist):
-		# 	name = plist[model]["_LOCALIZABLE_"]["marketingModel"]
-
 		# Approach 2
 		if not name:
 			name = data[0]['_items'][0]['machine_name']
