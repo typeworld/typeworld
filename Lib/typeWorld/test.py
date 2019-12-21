@@ -959,7 +959,16 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertEqual(typeWorld.client.helpers.addAttributeToURL('https://type.world?hello=world#xyz', 'hello=type&world=type'), 'https://type.world?hello=type&world=type#xyz')
 
-
+		# load json/dict
+		d = {
+			'en': 'Hello World',
+			'de': 'Hallo Welt'
+		}
+		j = json.dumps(d)
+		d1 = typeWorld.api.MultiLanguageText(json=j).dumpDict()
+		d2 = typeWorld.api.MultiLanguageText(dict=d).dumpDict()
+		from deepdiff import DeepDiff
+		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		
 
 	def test_InstallFontResponse(self):
