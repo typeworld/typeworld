@@ -28,13 +28,9 @@ GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.
 global googlePubsubSubscriber
 googlePubsubSubscriber = None
 
-
-
 if MAC:
 	import objc
 	from AppKit import NSDictionary, NSUserDefaults
-
-
 
 class DummyKeyring(object):
 	def __init__(self):
@@ -675,8 +671,8 @@ class APIClient(PubSubClient):
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
-				'appVersion': typeWorld.api.VERSION,
 				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
@@ -723,12 +719,17 @@ class APIClient(PubSubClient):
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'userTimezone': self.timezone(),
-				'appVersion': typeWorld.api.VERSION,
 				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 
 			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
+				if self.testScenario == 'simulateFaultyClientVersion':
+					parameters['clientVersion'] = 'abc'
+				elif self.testScenario == 'simulateNoClientVersion':
+					del parameters['clientVersion']
+				else:
+					parameters['testScenario'] = self.testScenario
 
 			data = urllib.parse.urlencode(parameters).encode('ascii')
 			url = self.mothership
@@ -825,8 +826,8 @@ class APIClient(PubSubClient):
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
-				'appVersion': typeWorld.api.VERSION,
 				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
@@ -873,8 +874,8 @@ class APIClient(PubSubClient):
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
-				'appVersion': typeWorld.api.VERSION,
 				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
@@ -921,8 +922,8 @@ class APIClient(PubSubClient):
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
-				'appVersion': typeWorld.api.VERSION,
 				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
@@ -1125,8 +1126,8 @@ class APIClient(PubSubClient):
 			'command': 'linkTypeWorldUserAccount',
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
-			'appVersion': typeWorld.api.VERSION,
 			'secretKey': self.secretKey(userID),
+			'clientVersion': typeWorld.api.VERSION,
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
@@ -1196,8 +1197,8 @@ class APIClient(PubSubClient):
 			'command': 'unlinkTypeWorldUserAccount',
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
-			'appVersion': typeWorld.api.VERSION,
 			'secretKey': self.secretKey(),
+			'clientVersion': typeWorld.api.VERSION,
 		}
 		if self.testScenario:
 			parameters['testScenario'] = self.testScenario
@@ -1941,6 +1942,7 @@ class APISubscription(PubSubClient):
 				'targetUserEmail': targetEmail,
 				'sourceUserEmail': self.parent.parent.userEmail(),
 				'subscriptionURL': self.protocol.completeURL(),
+				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.parent.parent.testScenario:
 				parameters['testScenario'] = self.parent.parent.testScenario

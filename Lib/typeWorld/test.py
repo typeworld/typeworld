@@ -1507,6 +1507,16 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.publishers()[0].subscriptions()[0].stillAlive()
 
 
+		user1.client.testScenario = 'simulateFaultyClientVersion'
+		success, message = user1.client.downloadSubscriptions()
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.clientVersionInvalid)')
+
+		user1.client.testScenario = 'simulateNoClientVersion'
+		success, message = user1.client.downloadSubscriptions()
+		self.assertEqual(success, False)
+		self.assertEqual(message, '#(response.Required parameter clientVersion is missing.)')
+
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
 			user1.client.downloadSubscriptions()[0],
