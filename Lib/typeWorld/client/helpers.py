@@ -43,6 +43,7 @@ def Execute(command):
 	os.waitpid(process.pid, 0)
 	response = process.stdout.read().strip()
 	process.stdout.close()
+	process.wait()
 	return response
 
 
