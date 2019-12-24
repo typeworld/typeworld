@@ -21,8 +21,8 @@ testUser2 = ('test2@type.world', 'def')
 testUser3 = ('test3@type.world', 'ghi')
 
 
-MOTHERSHIP = 'https://typeworld2.appspot.com/api'
-#MOTHERSHIP = 'http://127.0.0.1:8080/api'
+#MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
