@@ -156,8 +156,30 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			for foundry in self._installableFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						self.removeFont(font.uniqueID)
+						success, message = self.subscription.removeFont(font.uniqueID)
+						# if success == False:
+						# 	return False, message, False
 
+		# Previously available fonts
+		oldIDs = []
+		for foundry in self._installableFontsCommand.foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					oldIDs.append(font.uniqueID)
+		# Newly available fonts
+		newIDs = []
+		for foundry in api.foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					newIDs.append(font.uniqueID)
+
+		# Deleted
+		deletedFonts = list( set(oldIDs) - set(newIDs) )
+		if deletedFonts:
+			for fontID in deletedFonts:
+				success, message = self.subscription.removeFont(fontID)
+				# if success == False:
+				# 	return False, message, False
 
 		identical = self._installableFontsCommand.sameContent(api)
 		self._installableFontsCommand = api
