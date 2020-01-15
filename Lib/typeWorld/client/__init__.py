@@ -766,11 +766,11 @@ class APIClient(PubSubClient):
 
 		# print('executeDownloadSubscriptions():', response)
 
-
+		# Uninstall all protected fonts in case app instance is reported as revoked.
 		if response['appInstanceIsRevoked']:
 			self.uninstallAllProtectedFonts()
 
-		# Subscriptions
+		# Add new subscriptions
 		for url in response['subscriptions']:
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
@@ -792,7 +792,7 @@ class APIClient(PubSubClient):
 		preloadThread = threading.Thread(target=self.preloadLogos)
 		preloadThread.start()
 
-		# Add new subscriptions
+		# Delete subscriptions
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
 				if not subscription.protocol.completeURL() in response['subscriptions']:
