@@ -21,8 +21,8 @@ testUser2 = ('test2@type.world', 'def')
 testUser3 = ('test3@type.world', 'ghi')
 
 
-#MOTHERSHIP = 'https://typeworld2.appspot.com/api'
-MOTHERSHIP = 'http://127.0.0.1:8080/api'
+MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+#MOTHERSHIP = 'http://127.0.0.1:8080/api'
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
@@ -1923,6 +1923,16 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user2.client.publishers()), 0)
 
 
+
+		# Uninstallation of fonts when they aren't present in the subscription anymore
+		user0.client.addSubscription(freeSubscription)
+		user0.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
+		font = user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[-1]
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (True, None))
+		self.assertTrue(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), font.filename(font.getVersions()[-1].number))))
+		user0.client.testScenario = 'simulateFontNoLongerIncluded'
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].update(), (True, None, True))
+		self.assertFalse(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), font.filename(font.getVersions()[-1].number))))
 
 
 		### ###
