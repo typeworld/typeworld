@@ -237,7 +237,7 @@ class User(object):
 	# 		return self.client.linkUser(*self.credentials)
 
 	def testFont(self):
-		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[0]
+		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[-1].fonts[-1]
 
 	def clearSubscriptions(self):
 		for publisher in self.client.publishers():
@@ -953,7 +953,8 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateFaultyAPIJSONResponse'
 		success, message = user1.client.rootCommand(protectedSubscription)
 		self.assertFalse(success)
-		self.assertTrue('Invalid control character at:' in message)
+		print(message)
+		self.assertTrue("Expecting ',' delimiter" in message)
 
 		# TODO: Invite user to subscription with API endpoint as source
 
@@ -1863,6 +1864,7 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
 		self.assertEqual(success, False)
+		print(message)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
 		user1.client.testScenario = 'simulateProgrammingError'
