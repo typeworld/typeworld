@@ -1254,7 +1254,7 @@ __Type:__ List of Str objects<br />
 
 ### dateFirstPublished
 
-Date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#user-content-class-font-attribute-datefirstpublished).
+Human readable date of the initial release of the family. May be overriden on font level at [Font.dateFirstPublished](#user-content-class-font-attribute-datefirstpublished).
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1441,7 +1441,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1453,7 +1453,7 @@ Requires deepdiff module.
 
 ### dateFirstPublished
 
-Date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#user-content-class-family-attribute-datefirstpublished).
+Human readable date of the initial release of the font. May also be defined family-wide at [Family.dateFirstPublished](#user-content-class-family-attribute-datefirstpublished).
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1466,11 +1466,27 @@ List of keywords referencing designers. These are defined at [InstallableFontsRe
 
 __Required:__ False<br />
 __Type:__ List of Str objects<br />
+<div id="class-font-attribute-expiry"></div>
+
+### expiry
+
+Unix timestamp of font’s expiry. The font will be deleted on that moment. This could be set either upon initial installation of a trial font, or also before initial installation as a general expiry moment.
+
+__Required:__ False<br />
+__Type:__ Int<br />
+<div id="class-font-attribute-expiryDuration"></div>
+
+### expiryDuration
+
+Minutes for which the user will be able to use the font after initial installation. This attribute is used only as a visual hint in the UI and should be set for trial fonts that expire a certain period after initial installation, such as 60 minutes. If the font is a trial font limited to a certain usage period after initial installation, it must also be marked as [Font.protected](#user-content-class-font-attribute-protected), with no [Font.expiry](#user-content-class-font-attribute-expiry) timestamp set at first (because the expiry depends on the moment of initial installation). On initial font installation by the user, the publisher’s server needs to record that moment’s time, and from there onwards serve the subscription with [Font.expiry](#user-content-class-font-attribute-expiry) attribute set in the future. Because the font is marked as [Font.protected](#user-content-class-font-attribute-protected), the app will update the subscription directly after font installation, upon when it will learn of the newly added [Font.expiry](#user-content-class-font-attribute-expiry) attribute. Please note that you *have* to set [Font.expiry](#user-content-class-font-attribute-expiry) after initial installation yourself. The Type.World app will not follow up on its own on installed fonts just with the [Font.expiryDuration](#user-content-class-font-attribute-expiryduration) attribute, which is used only for display.
+
+__Required:__ False<br />
+__Type:__ Int<br />
 <div id="class-font-attribute-format"></div>
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'woff', 'ttf', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
