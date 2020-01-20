@@ -239,6 +239,11 @@ class VersionDataType(StringDataType):
     def formatHint(self):
         return 'Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)'
 
+
+class TimestampDataType(IntegerDataType):
+    pass
+
+
 class DateDataType(StringDataType):
 
     def valid(self):
