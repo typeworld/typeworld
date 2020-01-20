@@ -303,7 +303,7 @@ class PubSubClient(object):
 			client = self.parent.parent
 
 		if client.pubSubSubscriptions:
-			print('Pub/Sub subscription setup for %s' % self)
+#			print('Pub/Sub subscription setup for %s' % self)
 
 			if not self.pubsubSubscription:
 
@@ -329,14 +329,16 @@ class PubSubClient(object):
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 				self.pubSubCallback(None)
 			except google.api_core.exceptions.NotFound:
-				print('NotFound for %s' % self)
+#				print('NotFound for %s' % self)
+				pass
 			# except google.api_core.exceptions.DeadlineExceeded:
 			# 	print('DeadlineExceeded for %s' % self)
 			except google.api_core.exceptions.AlreadyExists:
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 
 			if self.pubsubSubscription:
-				print('Pub/Sub subscription SUCCESSFUL for %s' % self)
+#				print('Pub/Sub subscription SUCCESSFUL for %s' % self)
+				pass
 
 	def pubSubDelete(self):
 
@@ -629,7 +631,7 @@ class APIClient(PubSubClient):
 				if success:
 					commands['downloadSubscriptions'] = []
 					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('downloadSubscriptions finished successfully')
+#					self.log('downloadSubscriptions finished successfully')
 
 				else:
 					self.log('downloadSubscriptions failure:', message)
