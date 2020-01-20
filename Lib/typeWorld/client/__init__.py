@@ -1270,6 +1270,12 @@ class APIClient(PubSubClient):
 
 		return _locale
 
+	def expiringInstalledFonts(self):
+		fonts = []
+		for publisher in self.publishers():
+			for subscription in publisher.subscriptions():
+				fonts.extend(subscription.expiringInstalledFonts())
+		return fonts
 
 	def amountOutdatedFonts(self):
 		amount = 0
@@ -2086,7 +2092,21 @@ class APISubscription(PubSubClient):
 				for font in family.fonts:
 					if self.installedFontVersion(font.uniqueID):
 						if not font in l:
-							l.append(font.uniqueID)
+							l.append(font)
+		return l
+
+	def expiringInstalledFonts(self):
+		l = []
+		# Get font
+
+		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+		for foundry in installabeFontsCommand.foundries:
+			for family in foundry.families:
+				for font in family.fonts:
+					if self.installedFontVersion(font.uniqueID) and font.expiry:
+						if not font in l:
+							l.append(font)
 		return l
 
 	def amountOutdatedFonts(self):
@@ -2118,9 +2138,11 @@ class APISubscription(PubSubClient):
 				for family in foundry.families:
 					for font in family.fonts:
 						if font.uniqueID == fontID:
-							break
-
-		if font:
+							for version in font.getVersions():
+								path = os.path.join(folder, font.filename(version.number))
+								if os.path.exists(path):
+									return version.number
+		else:
 			for version in font.getVersions():
 				path = os.path.join(folder, font.filename(version.number))
 				if os.path.exists(path):
