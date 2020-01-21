@@ -202,6 +202,12 @@ class StringDataType(DataType):
     def shapeValue(self, value):
         return str(value)
 
+class DictionaryDataType(DataType):
+    dataType = dict
+
+    def shapeValue(self, value):
+        return dict(value)
+
 
 class UnicodeDataType(DataType):
     dataType = str
@@ -1051,6 +1057,32 @@ class MultiLanguageLongTextProxy(MultiLanguageTextProxy):
 ####################################################################################################################################
 
 #  Object model
+
+
+class LanguageSupportDataType(DictionaryDataType):
+
+    def valid(self):
+        for script in self.value:
+            if not len(script) == 4 or not script.islower():
+                return 'Script tag "%s" needs to be a four-letter lowercase tag.' % (script)
+
+            for language in self.value[script]:
+                if not len(language) == 3 or not language.isupper():
+                    return 'Language tag "%s" needs to be a three-letter uppercase tag.' % (language)
+
+        return True
+
+class OpenTypeFeatureDataType(StringDataType):
+
+    def valid(self):
+
+        if not len(self.value) == 4 or not self.value.islower():
+            return 'OpenType feature tag "%s" needs to be a four-letter lowercase tag.' % (self.value)
+
+        return True
+
+class OpenTypeFeatureListProxy(ListProxy):
+    dataType = OpenTypeFeatureDataType
 
 class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
     
