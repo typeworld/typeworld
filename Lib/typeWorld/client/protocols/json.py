@@ -324,7 +324,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		# Predefined response messages
 		if api.type != 'error' and api.type != 'success':
-			return False, '#(response.%s)' % api.type
+			return False, ['#(response.%s)' % api.type, '#(response.%s.headline)' % api.type]
 
 		# Success
 

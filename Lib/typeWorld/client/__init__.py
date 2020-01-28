@@ -645,7 +645,7 @@ class APIClient(PubSubClient):
 		else:
 
 			self._syncProblems.append('#(response.notOnline)')
-			return False, '#(response.notOnline)'
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
 
 	def uploadSubscriptions(self, performCommands = True):
@@ -692,7 +692,7 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		# Success
 		return True, None
@@ -746,7 +746,7 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			return self.executeDownloadSubscriptions(response)
 
@@ -847,7 +847,7 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Success
 			return self.executeDownloadSubscriptions(response)
@@ -895,7 +895,7 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Success
 			return self.executeDownloadSubscriptions(response)
@@ -943,7 +943,7 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Add new subscriptions
 			for url in response['subscriptions']:
@@ -1015,13 +1015,13 @@ class APIClient(PubSubClient):
 			# print('createUserAccount():', response)
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# success
 			return self.linkUser(response['anonymousUserID'], response['secretKey'])
 
 		else:
-			return False, '#(response.notOnline)'
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
 
 
@@ -1059,14 +1059,14 @@ class APIClient(PubSubClient):
 			response = json.loads(response.read().decode())
 
 			if response['response'] != 'success':
-				return False, '#(response.%s)' % response['response']
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# success
 
 			return True, None
 
 		else:
-			return False, '#(response.notOnline)'
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
 	def logInUserAccount(self, email, password):
 
@@ -1102,7 +1102,7 @@ class APIClient(PubSubClient):
 		# print(response)
 
 		if response['response'] != 'success':
-			return False, '#(response.%s)' % response['response']
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		# success
 		return self.linkUser(response['anonymousUserID'], response['secretKey'])
@@ -1151,7 +1151,7 @@ class APIClient(PubSubClient):
 
 
 		if response['response'] != 'success':
-			return False, '#(response.%s)' % response['response']
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		# Success
 		self.preferences.set('typeWorldUserAccount', userID)
@@ -1219,7 +1219,7 @@ class APIClient(PubSubClient):
 
 		continueFor = ['userUnknown']
 		if response['response'] != 'success' and not response['response'] in continueFor:
-			return False, '#(response.%s)' % response['response']
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		# Success
 		self.pubSubDelete()
@@ -1492,7 +1492,7 @@ class APIClient(PubSubClient):
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
-			if type(response) == typeWorld.api.base.MultiLanguageText or response.startswith('#('):
+			if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 				message = response
 			else:
 				message = 'Response from protocol.aboutToAddSubscription(): %s' % response
@@ -1803,7 +1803,7 @@ class APIPublisher(object):
 			return True, None, changes
 
 		else:
-			return False, '#(response.notOnline)', False
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)'], False
 
 	def save(self):
 		publishers = self.parent.preferences.get('publishers') or []
@@ -1973,7 +1973,7 @@ class APISubscription(PubSubClient):
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		else:
-			return False, '#(response.notOnline)'
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
 
 
@@ -2021,7 +2021,7 @@ class APISubscription(PubSubClient):
 				return False, response['response']
 
 		else:
-			return False, '#(response.notOnline)'
+			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
 	def invitationAccepted(self):
 

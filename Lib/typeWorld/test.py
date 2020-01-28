@@ -2,6 +2,8 @@
 
 import sys, os, copy, time
 
+print('Started...')
+
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -205,7 +207,7 @@ installableFonts.userEmail = 'post@yanone.de'
 installableFonts.userName.en = 'Yanone'
 installableFonts.version = '0.1.7-alpha'
 installableFonts.foundries.append(foundry)
-print(installableFonts.designers)
+#print(installableFonts.designers)
 
 
 
@@ -218,15 +220,15 @@ class User(object):
 		self.credentials = ()
 
 		if self.login:
-			print('Login for %s: %s/%s' % (self.login[0], self.login[0], self.login[1]))
-			print('Deleting user account for %s' % self.login[0])
+			# print('Login for %s: %s/%s' % (self.login[0], self.login[0], self.login[1]))
+			# print('Deleting user account for %s' % self.login[0])
 			success, message = self.client.deleteUserAccount(*self.login)
-			if not success and message != '#(response.userUnknown)': raise ValueError(message)
-			print('Creating user account for %s' % self.login[0])
+			if not success and message != ['#(response.userUnknown)', '#(response.userUnknown.headline)']: raise ValueError(message)
+			# print('Creating user account for %s' % self.login[0])
 			success, message = self.client.createUserAccount('Test User', self.login[0], self.login[1], self.login[1])
 			if not success: raise ValueError(message)
 			self.credentials = (self.client.user(), self.client.secretKey())
-			print('Credentials for %s: %s/%s' % (self.login[0], self.credentials[0], self.credentials[1]))
+			# print('Credentials for %s: %s/%s' % (self.login[0], self.credentials[0], self.credentials[1]))
 
 			self.clearInvitations()
 			self.clearSubscriptions()
@@ -1459,7 +1461,7 @@ class TestStringMethods(unittest.TestCase):
 		print('Scenario 2:', result)
 		success, message, publisher, subscription = result
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.validTypeWorldUserAccountRequired)')
+		self.assertEqual(message, ['#(response.validTypeWorldUserAccountRequired)', '#(response.validTypeWorldUserAccountRequired.headline)'])
 
 
 
@@ -1511,12 +1513,12 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = 'simulateFaultyClientVersion'
 		success, message = user1.client.downloadSubscriptions()
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.clientVersionInvalid)')
+		self.assertEqual(message, ['#(response.clientVersionInvalid)', '#(response.clientVersionInvalid.headline)'])
 
 		user1.client.testScenario = 'simulateNoClientVersion'
 		success, message = user1.client.downloadSubscriptions()
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.Required parameter clientVersion is missing.)')
+		self.assertEqual(message, ['#(response.Required parameter clientVersion is missing.)', '#(response.Required parameter clientVersion is missing..headline)'])
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
 		self.assertEqual(
@@ -2178,12 +2180,12 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateCentralServerErrorInResponse'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.simulateCentralServerErrorInResponse)')
+		self.assertEqual(message, ['#(response.simulateCentralServerErrorInResponse)', '#(response.simulateCentralServerErrorInResponse.headline)'])
 
 		user0.client.testScenario = 'simulateNotOnline'
 		success, message = user0.client.createUserAccount('Test', 'test0@type.world', 'abc', 'abc')
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.notOnline)')
+		self.assertEqual(message, ['#(response.notOnline)', '#(response.notOnline.headline)'])
 
 		# Delete User Account
 
@@ -2203,7 +2205,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateNotOnline'
 		success, message = user0.client.deleteUserAccount('test0@type.world', 'abc')
 		self.assertEqual(success, False)
-		self.assertEqual(message, '#(response.notOnline)')
+		self.assertEqual(message, ['#(response.notOnline)', '#(response.notOnline.headline)'])
 
 		# Log In User Account
 
