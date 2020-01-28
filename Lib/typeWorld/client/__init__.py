@@ -2366,7 +2366,7 @@ class APISubscription(PubSubClient):
 		else:
 			self.parent._updatingSubscriptions.remove(self.url)
 			self.parent.parent._subscriptionsUpdated.append(self.url)
-			self._updatingProblem = '#(response.serverNotReachable)'
+			self._updatingProblem = ['#(response.serverNotReachable)', '#(response.serverNotReachable.headline)']
 			return False, self._updatingProblem, False
 
 	def updatingProblem(self):
