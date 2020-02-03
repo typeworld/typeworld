@@ -541,7 +541,7 @@ response.adminEmail = 'admin@fontpublisher.com'
 response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
 ```
 
-        
+    
 
 ### Attributes
 
@@ -1005,7 +1005,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
 
 ### Methods
 
@@ -1097,6 +1097,43 @@ Skype handle for this foundry
 
 __Required:__ False<br />
 __Type:__ Str<br />
+<div id="class-foundry-attribute-styling"></div>
+
+### styling
+
+Dictionary of styling values, for light and dark theme.
+
+__Required:__ False<br />
+__Type:__ Dict<br />
+Example:
+```json
+{
+    "light": {
+        "headerColor": "FFFFFF",
+        "headerTextColor": "FFFFFF",
+        "headerLinkColor": "FFFFFF",
+        "backgroundColor": "FFFFFF",
+        "textColor": "000000",
+        "linkColor": "000000",
+        "selectionColor": "000000",
+        "selectionTextColor": "000000",
+        "buttonColor": "000000",
+        "buttonTextColor": "000000"
+    },
+    "dark": {
+        "headerColor": "FFFFFF",
+        "headerTextColor": "FFFFFF",
+        "headerLinkColor": "FFFFFF",
+        "backgroundColor": "FFFFFF",
+        "textColor": "000000",
+        "linkColor": "000000",
+        "selectionColor": "000000",
+        "selectionTextColor": "000000",
+        "buttonColor": "000000",
+        "buttonTextColor": "000000"
+    }
+}
+```
 <div id="class-foundry-attribute-supportEmail"></div>
 
 ### supportEmail
@@ -1353,7 +1390,7 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 #### getAllDesigners()
 
 Returns a list of [Designer](#user-content-class-designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
-                
+        
 
 <div id="class-family-method-samecontent"></div>
 
@@ -1419,7 +1456,7 @@ __Format:__ YYYY-MM-DD<br />
 #### isFontSpecific()
 
 Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
-                
+        
 
 <div id="class-version-method-samecontent"></div>
 
@@ -1441,7 +1478,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1482,11 +1519,19 @@ Minutes for which the user will be able to use the font after initial installati
 
 __Required:__ False<br />
 __Type:__ Int<br />
+<div id="class-font-attribute-features"></div>
+
+### features
+
+List of supported OpenType features as per https://docs.microsoft.com/en-us/typography/opentype/spec/featuretags
+
+__Required:__ False<br />
+__Type:__ List of Str objects<br />
 <div id="class-font-attribute-format"></div>
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'woff', 'ttf', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1498,6 +1543,14 @@ Font is freeware. For UI signaling
 
 __Required:__ False<br />
 __Type:__ Bool<br />
+<div id="class-font-attribute-languageSupport"></div>
+
+### languageSupport
+
+Dictionary of suppported languages as script/language combinations
+
+__Required:__ False<br />
+__Type:__ Dict<br />
 <div id="class-font-attribute-name"></div>
 
 ### name
@@ -1612,7 +1665,7 @@ It is composed of the font’s uniqueID, its version string and the file extensi
 #### getDesigners()
 
 Returns a list of [Designer](#user-content-class-designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
-                
+        
 
 <div id="class-font-method-getversions"></div>
 
@@ -1709,7 +1762,7 @@ __Type:__ Str<br />
 #### getLicense()
 
 Returns the [License](#user-content-class-license) object that this font references.
-                
+        
 
 <div id="class-licenseusage-method-samecontent"></div>
 
