@@ -180,6 +180,9 @@ class DataType(object):
     def formatHint(self):
         return None
 
+    def exampleData(self):
+        return None
+
 
 class BooleanDataType(DataType):
     dataType = bool
@@ -524,6 +527,13 @@ class DictBasedObject(object):
             if self._structure[key][2] != None:
                 attributes += '__Default value:__ %s' % self._structure[key][2] + '\n\n'
 
+            # Example Data
+            example = self._structure[key][0]().exampleData()
+            if example:
+                attributes += 'Example:\n'
+                attributes += '```json\n'
+                attributes += json.dumps(example, indent=4)
+                attributes += '\n```\n'
 
         method_list = [func for func in dir(self) if callable(getattr(self, func)) and not func.startswith("__") and inspect.getdoc(getattr(self, func))]
 
@@ -603,7 +613,7 @@ class DictBasedObject(object):
         object.__setattr__(self, '_allowedKeys', set(self._structure.keys()) | set(self._possible_keys))
 
         # Fill default values
-        for key in list(self._structure.keys()):
+        for key in self._structure:
 
             # if required and default value is not empty
             if self._structure[key][1] and self._structure[key][2] is not None:

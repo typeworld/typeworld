@@ -178,7 +178,7 @@ foundry.email = 'font@yanone.de'
 foundry.facebook = 'https://facebook.com/pages/YanoneYanone'
 foundry.instagram = 'instagram'
 foundry.licenses.append(license)
-foundry.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+#foundry.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
 foundry.name.en = 'Awesome Fonts'
 foundry.name.de = 'Tolle Schriften'
 foundry.skype = 'yanone'
@@ -863,11 +863,11 @@ class TestStringMethods(unittest.TestCase):
 			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
 
 		# logo
-		i2 = copy.deepcopy(installableFonts)
-		try:
-			i2.foundries[0].logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Needs to start with http:// or https://')
+		# i2 = copy.deepcopy(installableFonts)
+		# try:
+		# 	i2.foundries[0].logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		# except ValueError as e:
+		# 	self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
 		# name
 		i2 = copy.deepcopy(installableFonts)
@@ -1427,15 +1427,15 @@ class TestStringMethods(unittest.TestCase):
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		response = urllib.request.urlopen(url, data, context=sslcontext)
 
-		# Logo
-		user0.client.testScenario = 'simulateProgrammingError'
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		self.assertEqual(success, False)
+		# # Logo
+		# user0.client.testScenario = 'simulateProgrammingError'
+		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		# self.assertEqual(success, False)
 
-		user0.client.testScenario = None
-		success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
-		self.assertEqual(success, True)
-		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+		# user0.client.testScenario = None
+		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		# self.assertEqual(success, True)
+		# self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
 		# Name
 		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')

@@ -1005,7 +1005,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[backgroundColor](#class-foundry-attribute-backgroundcolor)<br />[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[logo](#class-foundry-attribute-logo)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
 
 ### Methods
 
@@ -1013,15 +1013,6 @@ Requires deepdiff module.
 
 ## Attributes
 
-<div id="class-foundry-attribute-backgroundColor"></div>
-
-### backgroundColor
-
-Foundry’s preferred background color. This is meant to go as a background color to the logo at [Foundry.logo](#user-content-class-foundry-attribute-logo)
-
-__Required:__ False<br />
-__Type:__ Str<br />
-__Format:__ Hex RRGGBB (without leading #)<br />
 <div id="class-foundry-attribute-description"></div>
 
 ### description
@@ -1071,15 +1062,6 @@ List of [LicenseDefinition](#user-content-class-licensedefinition) objects under
 
 __Required:__ True<br />
 __Type:__ List of [LicenseDefinition](#user-content-class-licensedefinition) objects<br />
-<div id="class-foundry-attribute-logo"></div>
-
-### logo
-
-URL of foundry’s logo. Specifications to follow.
-
-__Required:__ False<br />
-__Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
 <div id="class-foundry-attribute-name"></div>
 
 ### name
@@ -1101,36 +1083,50 @@ __Type:__ Str<br />
 
 ### styling
 
-Dictionary of styling values, for light and dark theme.
+Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.
 
 __Required:__ False<br />
 __Type:__ Dict<br />
+__Default value:__ {'light': {}, 'dark': {}}
+
 Example:
 ```json
 {
     "light": {
-        "headerColor": "FFFFFF",
-        "headerTextColor": "FFFFFF",
-        "headerLinkColor": "FFFFFF",
+        "headerColor": "219BD3",
+        "headerTextColor": "000000",
+        "headerLinkColor": "145F7F",
         "backgroundColor": "FFFFFF",
         "textColor": "000000",
-        "linkColor": "000000",
-        "selectionColor": "000000",
+        "linkColor": "F7AD22",
+        "selectionColor": "F7AD22",
         "selectionTextColor": "000000",
-        "buttonColor": "000000",
-        "buttonTextColor": "000000"
+        "buttonColor": "197AA3",
+        "buttonTextColor": "FFFFFF",
+        "informationViewBackgroundColor": "F2F2F2",
+        "informationViewTextColor": "000000",
+        "informationViewLinkColor": "1D89B8",
+        "informationViewButtonColor": "197AA3",
+        "informationViewButtonTextColor": "FFFFFF",
+        "logo": "https://awesomefoundry.com/logo-lighttheme.svg"
     },
     "dark": {
-        "headerColor": "FFFFFF",
-        "headerTextColor": "FFFFFF",
-        "headerLinkColor": "FFFFFF",
-        "backgroundColor": "FFFFFF",
-        "textColor": "000000",
-        "linkColor": "000000",
-        "selectionColor": "000000",
+        "headerColor": "156486",
+        "headerTextColor": "000000",
+        "headerLinkColor": "53B9E4",
+        "backgroundColor": "404040",
+        "textColor": "999999",
+        "linkColor": "C07F07",
+        "selectionColor": "9A6606",
         "selectionTextColor": "000000",
-        "buttonColor": "000000",
-        "buttonTextColor": "000000"
+        "buttonColor": "22A4DC",
+        "buttonTextColor": "000000",
+        "informationViewBackgroundColor": "4D4D4D",
+        "informationViewTextColor": "999999",
+        "informationViewLinkColor": "53B9E4",
+        "informationViewButtonColor": "22A4DC",
+        "informationViewButtonTextColor": "000000",
+        "logo": "https://awesomefoundry.com/logo-lighttheme.svg"
     }
 }
 ```
@@ -1531,7 +1527,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'woff', 'ttf', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'otf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />

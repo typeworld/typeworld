@@ -380,12 +380,64 @@ class FamiliesListProxy(ListProxy):
 
 #  Font Foundry
 
+
+class StylingDataType(DictionaryDataType):
+    
+    def exampleData(self):
+        return {"light": {
+            "headerColor": "219BD3",
+            "headerTextColor": "000000",
+            "headerLinkColor": "145F7F",
+
+            "backgroundColor": "FFFFFF",
+            "textColor": "000000",
+            "linkColor": "F7AD22",
+
+            "selectionColor": "F7AD22",
+            "selectionTextColor": "000000",
+
+            "buttonColor": "197AA3",
+            "buttonTextColor": "FFFFFF",
+
+            "informationViewBackgroundColor": "F2F2F2",
+            "informationViewTextColor": "000000",
+            "informationViewLinkColor": "1D89B8",
+
+            "informationViewButtonColor": "197AA3",
+            "informationViewButtonTextColor": "FFFFFF",
+
+            "logo": "https://awesomefoundry.com/logo-lighttheme.svg",
+        }, "dark": {
+            "headerColor": "156486",
+            "headerTextColor": "000000",
+            "headerLinkColor": "53B9E4",
+
+            "backgroundColor": "404040",
+            "textColor": "999999",
+            "linkColor": "C07F07",
+
+            "selectionColor": "9A6606",
+            "selectionTextColor": "000000",
+
+            "buttonColor": "22A4DC",
+            "buttonTextColor": "000000",
+
+            "informationViewBackgroundColor": "4D4D4D",
+            "informationViewTextColor": "999999",
+            "informationViewLinkColor": "53B9E4",
+
+            "informationViewButtonColor": "22A4DC",
+            "informationViewButtonTextColor": "000000",
+
+            "logo": "https://awesomefoundry.com/logo-lighttheme.svg",
+        }}
+
+
 class Foundry(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
         'uniqueID':                 [StringDataType,        True,   None,   'An string that uniquely identifies this foundry within the publisher.'],
         'name':                     [MultiLanguageTextProxy,True,   None,   'Name of foundry'],
-        'logo':                     [WebResourceURLDataType,False,  None,   'URL of foundry’s logo. Specifications to follow.'],
         'description':              [MultiLanguageLongTextProxy,False,  None,   'Description of foundry'],
         'email':                    [EmailDataType,         False,  None,   'General email address for this foundry.'],
         'website':                  [WebURLDataType,        False,  None,   'Website for this foundry'],
@@ -397,14 +449,30 @@ class Foundry(DictBasedObject):
         'supportEmail':             [EmailDataType,         False,  None,   'Support email address for this foundry.'],
         'supportWebsite':           [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
         'supportTelephone':         [UnicodeDataType,       False,  None,   'Support telephone number for this foundry.'],
-
-        #styling
-        'backgroundColor':          [HexColorDataType,      False,  None,   'Foundry’s preferred background color. This is meant to go as a background color to the logo at ::Foundry.logo::'],
+        'styling':                  [StylingDataType,    False,  {'light': {}, 'dark': {}},   'Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.'],
 
         # data
         'licenses':                 [LicenseDefinitionListProxy,True,   None,   'List of ::LicenseDefinition:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.'],
         'families':                 [FamiliesListProxy,     True,   None,   'List of ::Family:: objects.'],
     }
+
+    _stylingColorAttributes = (
+            'headerColor', 
+            'headerTextColor', 
+            'headerLinkColor', 
+            'backgroundColor', 
+            'textColor', 
+            'linkColor', 
+            'selectionColor', 
+            'selectionTextColor', 
+            'buttonColor', 
+            'buttonTextColor',
+            'informationViewBackgroundColor',
+            'informationViewTextColor',
+            'informationViewLinkColor',
+            'informationViewButtonColor',
+            'informationViewButtonTextColor',
+            )
 
     def __repr__(self):
         return '<Foundry "%s">' % self.name.getText() or 'undefined'
@@ -417,6 +485,35 @@ class Foundry(DictBasedObject):
 
         if keyword in self._licensesDict:
             return self._licensesDict[keyword]
+
+    def customValidation(self):
+        information, warnings, critical = [], [], []
+
+        themes = ['light', 'dark']
+
+        if self.styling:
+            for theme in self.styling:
+                if theme not in themes:
+                    critical.append('Styling keyword %s is unknown. Known are %s.' % (theme, themes))
+
+                for colorKey in self._stylingColorAttributes:
+                    if colorKey in self.styling[theme]:
+
+                        c = HexColorDataType()
+                        c.value = self.styling[theme][colorKey]
+                        valid = c.valid()
+                        if valid != True:
+                            critical.append('Color attribute %s: %s' % (colorKey, valid))
+
+                if 'logo' in self.styling[theme]:
+                    l = WebURLDataType()
+                    l.value = self.styling[theme]['logo']
+                    valid = c.valid()
+                    if valid != True:
+                        critical.append('Logo URL attribute: %s' % (valid))
+
+
+        return information, warnings, critical
 
 
 def Foundry_Parent(self):
