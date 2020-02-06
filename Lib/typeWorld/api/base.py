@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime, lxml.html, markdown, semver
+import json, copy, types, inspect, re, traceback, datetime, markdown, semver
 
 import typeWorld.api
 import typeWorld.api.base
@@ -968,7 +968,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                 if len(string) > self._length:
                     critical.append('%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length))
 
-                if lxml.html.fromstring(string).find('.//*') is not None:
+                if re.findall(r'(<.+?>)', string):
                     if self._markdownAllowed:
                         critical.append('String contains HTML code, which is not allowed. You may use Markdown for text formatting.')
                     else:

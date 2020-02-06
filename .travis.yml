@@ -18,7 +18,6 @@ jobs:
         - pip install codecov
         - pip install certifi
         - pip install keyring
-        - pip install lxml
         - pip install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
@@ -55,7 +54,6 @@ jobs:
         - pip install certifi
         - pip install pyobjc
         - pip install keyring
-        - pip install lxml
         - pip install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
@@ -80,7 +78,6 @@ jobs:
         - pip3 install codecov
         - pip3 install certifi
         - pip3 install keyring
-        - pip3 install lxml
         - pip3 install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
