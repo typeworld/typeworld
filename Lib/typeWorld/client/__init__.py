@@ -268,6 +268,14 @@ class TypeWorldClientDelegate(object):
 	def userAccountUpdateNotificationHasBeenReceived(self):
 		pass
 
+	def subscriptionWasDeleted(self, subscription):
+		pass
+
+	def publisherWasDeleted(self, publisher):
+		pass
+
+	def subscriptionWasAdded(self, publisher, subscription):
+		pass
 
 class APIInvitation(object):
 	keywords = ()
@@ -781,6 +789,8 @@ class APIClient(PubSubClient):
 		for url in response['subscriptions']:
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
+
+				if success: self.delegate.subscriptionWasAdded(publisher, subscription)
 
 				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
 
@@ -1848,6 +1858,8 @@ class APIPublisher(object):
 		publishers.remove(self.canonicalURL)
 		self.parent.preferences.set('publishers', publishers)
 		# self.parent.preferences.set('currentPublisher', '')
+		
+		self.parent.delegate.publisherWasDeleted(self)
 
 		self.parent._publishers = {}
 
@@ -2450,11 +2462,12 @@ class APISubscription(PubSubClient):
 		# 	if len(subscriptions) >= 1:
 		# 		self.parent.set('currentSubscription', subscriptions[0])
 
+		self.parent._subscriptions = {}
 
 		if len(subscriptions) == 0 and calledFromParent == False:
 			self.parent.delete()
 
-		self.parent._subscriptions = {}
+		self.parent.parent.delegate.subscriptionWasDeleted(self)
 
 		if updateSubscriptionsOnServer:
 			self.parent.parent.uploadSubscriptions()
