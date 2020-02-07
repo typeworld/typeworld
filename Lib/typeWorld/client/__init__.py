@@ -1311,21 +1311,13 @@ class APIClient(PubSubClient):
 
 		elif WIN:
 
-			try:
-				import keyring
-				from keyring.backends.Windows import WinVaultKeyring
-				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
-				usingRealKeyring = True
-				# Supposed to cause crash on Travis CI
-				keyring.set_password('Type.World Test Password', 'Test User', 'Secret Key')
-
-			except:
+			if 'TRAVIS' in os.environ:
 				keyring = dummyKeyRing
-				usingRealKeyring = False
+				return keyring
 
-			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
-			if usingRealKeyring: keyring.delete_password('Type.World Test Password', 'Test User')
-
+			import keyring
+			from keyring.backends.Windows import WinVaultKeyring
+			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 			return keyring
 
 		elif LINUX:
