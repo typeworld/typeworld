@@ -407,12 +407,13 @@ class StylingDataType(DictionaryDataType):
             "informationViewButtonTextColor": "FFFFFF",
 
             "logo": "https://awesomefoundry.com/logo-lighttheme.svg",
+
         }, "dark": {
             "headerColor": "156486",
             "headerTextColor": "000000",
             "headerLinkColor": "53B9E4",
 
-            "backgroundColor": "404040",
+            "backgroundColor": "262626",
             "textColor": "999999",
             "linkColor": "C07F07",
 
@@ -422,7 +423,7 @@ class StylingDataType(DictionaryDataType):
             "buttonColor": "22A4DC",
             "buttonTextColor": "000000",
 
-            "informationViewBackgroundColor": "4D4D4D",
+            "informationViewBackgroundColor": "1A1A1A",
             "informationViewTextColor": "999999",
             "informationViewLinkColor": "53B9E4",
 
