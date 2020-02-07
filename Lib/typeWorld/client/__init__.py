@@ -85,18 +85,19 @@ def getProtocol(url):
 
 
 	customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
-	if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py')):
+	for ext in ('.py', '.pyc'):
+		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
 
-		import importlib
-		spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + '.py'))
-		module = importlib.util.module_from_spec(spec)
-		spec.loader.exec_module(module)
-		
-		protocolObject = module.TypeWorldProtocol(url)
+			import importlib
+			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
+			module = importlib.util.module_from_spec(spec)
+			spec.loader.exec_module(module)
+			
+			protocolObject = module.TypeWorldProtocol(url)
 
-		return True, protocolObject
-	else:
-		return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
+			return True, protocolObject
+
+	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
 
 def splitJSONURL(url):
