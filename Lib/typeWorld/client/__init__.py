@@ -309,7 +309,7 @@ class PubSubClient(object):
 			client = self.parent.parent
 
 		if client.pubSubSubscriptions:
-#			print('Pub/Sub subscription setup for %s' % self)
+			print('Pub/Sub subscription setup for %s' % self)
 
 			if not self.pubsubSubscription:
 
@@ -1174,6 +1174,9 @@ class APIClient(PubSubClient):
 		# Success
 		self.preferences.set('typeWorldUserAccount', userID)
 		assert userID == self.user()
+
+		# Pub/Sub
+		self.pubSubTopicID = 'user-%s' % self.user()
 		self.pubSubSetup()
 
 		keyring = self.keyring()
@@ -1239,14 +1242,14 @@ class APIClient(PubSubClient):
 		if response['response'] != 'success' and not response['response'] in continueFor:
 			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-		# Success
-		self.pubSubDelete()
-
 		self.preferences.set('typeWorldUserAccount', '')
 		self.preferences.remove('acceptedInvitations')
 		self.preferences.remove('pendingInvitations')
 		self.preferences.remove('sentInvitations')
 
+		# Success
+		self.pubSubTopicID = 'user-%s' % self.user()
+		self.pubSubDelete()
 
 		keyring = self.keyring()
 		keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
