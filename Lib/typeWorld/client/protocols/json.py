@@ -1,7 +1,6 @@
 from typeWorld.client.protocols import *
 
 
-
 def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 	d = {}
 	d['errors'] = []
@@ -22,6 +21,8 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 	data = data.encode('ascii')
 	
 	try:
+		import ssl, certifi
+		sslcontext = ssl.create_default_context(cafile=certifi.where())
 		response = urllib.request.urlopen(request, data, context=sslcontext)
 
 		incomingMIMEType = response.headers['content-type'].split(';')[0]

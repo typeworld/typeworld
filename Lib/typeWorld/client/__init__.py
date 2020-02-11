@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, certifi, socket, subprocess, ssl, threading
+import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, socket, subprocess, threading
 from time import gmtime, strftime
-sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 import typeWorld.api, typeWorld.api.base
 from typeWorld.api import *
 from typeWorld.api.base import *
 
 from typeWorld.client.helpers import *
-from google.cloud import pubsub_v1
-import google.api_core.exceptions
-
 
 import platform
 WIN = platform.system() == 'Windows'
@@ -24,13 +20,10 @@ MOTHERSHIP = 'https://typeworld2.appspot.com/api'
 
 # Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
-# In App
 if '/Contents/Resources' in __file__:
 	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'typeworld2-cfd080814f09.json'))
 else:
 	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
-global googlePubsubSubscriber
-googlePubsubSubscriber = None
 
 if MAC:
 	import objc
@@ -55,8 +48,6 @@ dummyKeyRing = DummyKeyring()
 if 'TRAVIS' in os.environ:
 	import tempfile
 	tempFolder = tempfile.mkdtemp()
-
-
 
 def urlIsValid(url):
 
@@ -310,6 +301,8 @@ class PubSubClient(object):
 
 	def pubSubSetup(self, direct = False):
 
+		from google.cloud import pubsub_v1
+
 		if self.__class__ == APIClient:
 			client = self
 		else:
@@ -334,6 +327,8 @@ class PubSubClient(object):
 
 
 	def pubSubSetup_worker(self):
+
+		import google.api_core
 
 		if self.executeCondition():
 
@@ -368,6 +363,8 @@ class PubSubClient(object):
 
 	def pubSubDelete_worker(self):
 
+		import google.api_core
+
 		# if not self.pubSubSubscriber:
 		# 	self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
 
@@ -386,7 +383,7 @@ class APIClient(PubSubClient):
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False):
+	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False, online = True):
 		self.preferences = preferences
 		# if self.preferences:
 		# 	self.clearPendingOnlineCommands()
@@ -400,6 +397,10 @@ class APIClient(PubSubClient):
 		self.mode = mode # gui or headless
 		self.pubSubSubscriptions = pubSubSubscriptions
 
+		if online:
+			import certifi, ssl
+			self.sslcontext = ssl.create_default_context(cafile=certifi.where())
+
 		# For Unit Testing
 		self.testScenario = None
 
@@ -408,6 +409,8 @@ class APIClient(PubSubClient):
 
 		# Pub/Sub
 		if self.pubSubSubscriptions:
+
+			# In App
 			self.pubsubSubscription = None
 			self.pubSubTopicID = 'user-%s' % self.user()
 			self.pubSubExecuteConditionMethod = self.user
@@ -698,7 +701,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -752,7 +755,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, 'Response from %s: %s' % (url, traceback.format_exc().splitlines()[-1])
 
@@ -855,7 +858,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -903,7 +906,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -951,7 +954,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -1021,7 +1024,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -1067,7 +1070,7 @@ class APIClient(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -1108,7 +1111,7 @@ class APIClient(PubSubClient):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
+			response = urllib.request.urlopen(url, data, context=self.sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -1158,7 +1161,7 @@ class APIClient(PubSubClient):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
+			response = urllib.request.urlopen(url, data, context=self.sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -1226,7 +1229,7 @@ class APIClient(PubSubClient):
 			url = 'https://type.worlddd/jsonAPI/'
 
 		try:
-			response = urllib.request.urlopen(url, data, context=sslcontext)
+			response = urllib.request.urlopen(url, data, context=self.sslcontext)
 		except:
 			return False, traceback.format_exc().splitlines()[-1]
 
@@ -1369,7 +1372,7 @@ class APIClient(PubSubClient):
 			# 	request.add_header("Authorization", "Basic %s" % base64string)   
 
 			try:
-				response = urllib.request.urlopen(request, context=sslcontext)
+				response = urllib.request.urlopen(request, context=self.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1], None
 
@@ -1412,7 +1415,7 @@ class APIClient(PubSubClient):
 	# 		if username and password:
 	# 			base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
 	# 			request.add_header("Authorization", "Basic %s" % base64string)   
-	# 		response = urllib.request.urlopen(request, context=sslcontext)
+	# 		response = urllib.request.urlopen(request, context=self.sslcontext)
 
 	# 		if response.getcode() == 404:
 	# 			d['errors'].append('Server returned with error 404 (Not found).')
@@ -1923,7 +1926,7 @@ class APISubscription(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
 			except:
 				self.parent.parent.log('stillAliveWorker(): ' + traceback.format_exc())
 				return
@@ -1970,7 +1973,7 @@ class APISubscription(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
@@ -2018,7 +2021,7 @@ class APISubscription(PubSubClient):
 				url = 'https://type.worlddd/jsonAPI/'
 
 			try:
-				response = urllib.request.urlopen(url, data, context=sslcontext)
+				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
 			except:
 				return False, traceback.format_exc().splitlines()[-1]
 
