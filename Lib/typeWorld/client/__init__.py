@@ -383,8 +383,8 @@ class APIClient(PubSubClient):
 	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
 	"""
 
-	def __init__(self, preferences = Preferences(), secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False, online = True):
-		self.preferences = preferences
+	def __init__(self, preferences = None, secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False, online = True):
+		self.preferences = preferences or Preferences()
 		# if self.preferences:
 		# 	self.clearPendingOnlineCommands()
 		self._publishers = {}
