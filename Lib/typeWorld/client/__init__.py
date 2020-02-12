@@ -508,6 +508,9 @@ class APIClient(PubSubClient):
 		if self.testScenario == 'simulateNotOnline':
 			return False
 
+		if 'GAE_DEPLOYMENT_ID' in os.environ:
+			return True
+
 		if not server:
 			server = 'type.world'
 
