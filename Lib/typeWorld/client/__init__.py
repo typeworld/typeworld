@@ -1052,10 +1052,12 @@ class APIClient(PubSubClient):
 				return False, '#(RequiredFieldEmpty)'
 
 			# Unlink user first
-			if self.userEmail() == email and self.secretKey() == password:
+			if self.userEmail() == email:
 				success, message = self.performUnlinkUser()
 				if not success:
 					return False, message
+
+
 
 			parameters = {
 				'command': 'deleteUserAccount',
