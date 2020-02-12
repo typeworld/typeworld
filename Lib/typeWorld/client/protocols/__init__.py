@@ -91,18 +91,21 @@ class TypeWorldProtocolBase(object):
 		data[key] = value
 		self.subscription.set('data', data)
 
+	def keychainKey(self):
+		return '%s, App:%s' % (self.saveURL(), self.client.anonymousAppID())
+
 	def getSecretKey(self):
 		if self.client:
 			keyring = self.client.keyring()
-			return keyring.get_password(self.saveURL(), self.subscriptionID)
+			return keyring.get_password(self.keychainKey(), self.subscriptionID)
 
 	def setSecretKey(self, secretKey):
 		keyring = self.client.keyring()
-		keyring.set_password(self.saveURL(), self.subscriptionID, secretKey)
+		keyring.set_password(self.keychainKey(), self.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
 		keyring = self.client.keyring()
-		keyring.delete_password(self.saveURL(), self.subscriptionID)
+		keyring.delete_password(self.keychainKey(), self.subscriptionID)
 
 	def saveURL(self):
 
