@@ -1375,7 +1375,7 @@ class TestStringMethods(unittest.TestCase):
 		url = MOTHERSHIP
 		parameters = {"command": "subscriptionHasChanged",
 					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					"APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
 					}
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		response = urllib.request.urlopen(url, data, context=sslcontext)
@@ -1389,7 +1389,7 @@ class TestStringMethods(unittest.TestCase):
 			'command': 'verifyCredentials',
 			'anonymousAppID': user2.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user2.client.user(),
-			'APIKey': 'OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU',
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 		}
 
 		data = urllib.parse.urlencode(parameters).encode('ascii')
@@ -1422,7 +1422,7 @@ class TestStringMethods(unittest.TestCase):
 		url = MOTHERSHIP
 		parameters = {"command": "subscriptionHasChanged",
 					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "OgS5nJ8HmJVNirdvAR9QFfLJVpqlnZsV01MipxVU",
+					"APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
 					}
 		data = urllib.parse.urlencode(parameters).encode('ascii')
 		response = urllib.request.urlopen(url, data, context=sslcontext)
