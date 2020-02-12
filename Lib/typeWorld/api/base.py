@@ -822,7 +822,7 @@ class DictBasedObject(object):
                         d[key] = getattr(self, key)
 
                     # delete empty sets that are not required
-                    if (key in self._structure and self._structure[key][1] == False) and not d[key]:
+                    if (key in self._structure and self._structure[key][1] == False) and d[key] == None:
                         del d[key]
 
 
