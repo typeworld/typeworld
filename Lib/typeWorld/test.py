@@ -18,9 +18,9 @@ from typeWorld.api import *
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-testUser1 = ('test1@type.world', 'abc')
-testUser2 = ('test2@type.world', 'def')
-testUser3 = ('test3@type.world', 'ghi')
+testUser1 = ('test1@type.world', '12345678')
+testUser2 = ('test2@type.world', '01234567')
+testUser3 = ('test3@type.world', '23456789')
 
 
 MOTHERSHIP = 'https://typeworld2.appspot.com/api'

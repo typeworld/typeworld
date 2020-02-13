@@ -1060,8 +1060,6 @@ class APIClient(PubSubClient):
 				if not success:
 					return False, message
 
-
-
 			parameters = {
 				'command': 'deleteUserAccount',
 				'email': email,
