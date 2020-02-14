@@ -21,6 +21,7 @@ jobs:
         - pip install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
+        - pip install coverage
 
     - stage: mac
       os: osx
@@ -57,6 +58,7 @@ jobs:
         - pip install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
+        - pip install coverage
 
     - stage: windows
       os: windows           # Windows 10.0.17134 N/A Build 17134
@@ -81,6 +83,7 @@ jobs:
         - pip3 install markdown
         - pip install google-cloud-ndb
         - pip install google-cloud-pubsub
+        - pip install coverage
 
 
 
