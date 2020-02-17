@@ -1522,7 +1522,7 @@ class APIClient(PubSubClient):
 			return False, message, None, None
 
 
-		success, message = self.rootCommand()
+		success, message = self.rootCommand(url)
 		if success:
 			rootCommand = message
 		else:
