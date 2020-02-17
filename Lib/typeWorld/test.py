@@ -1340,7 +1340,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.testScenario = 'simulateProgrammingError'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Error retrieving https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/: HTTP Error 500: Internal Server Error')
+		self.assertEqual(message, 'Error retrieving https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/: HTTP Error 500: Internal Server Error')
 
 		success, message, publisher, subscription = user0.client.addSubscription('typeworld://unknownprotocol+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		self.assertEqual(success, False)
@@ -1813,7 +1813,7 @@ class TestStringMethods(unittest.TestCase):
 		user2.client.testScenario = 'simulateWrongMimeType'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)
-		self.assertEqual(message, 'Response from protocol.aboutToAddSubscription(): Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
+		self.assertEqual(message, 'Resource headers returned wrong MIME type: "text/html". Expected is "[\'application/json\']".')
 		user2.client.testScenario = 'simulateNotHTTP200'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)

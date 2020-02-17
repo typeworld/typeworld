@@ -1512,21 +1512,21 @@ class APIClient(PubSubClient):
 		else:
 			return False, message, None, None
 
+		# Initial rootCommand
+		success, message = self.rootCommand(url)
+		if success:
+			rootCommand = message
+		else:
+			return False, message, None, None
+
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
 			if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 				message = response
 			else:
-				message = 'Response from protocol.aboutToAddSubscription(): %s' % response
+				message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
 			return False, message, None, None
-
-
-		success, message = self.rootCommand(url)
-		if success:
-			rootCommand = message
-		else:
-			return False, message
 
 		publisher = self.publisher(rootCommand.canonicalURL)
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
@@ -1540,7 +1540,7 @@ class APIClient(PubSubClient):
 		if updateSubscriptionsOnServer:
 			success, message = self.uploadSubscriptions()
 			if not success:
-				return False, 'Response from client.uploadSubscriptions(): %s' % message, None, None
+				return False, message, None, None # 'Response from client.uploadSubscriptions(): %s' % 
 
 		protocol.subscriptionAdded()
 
