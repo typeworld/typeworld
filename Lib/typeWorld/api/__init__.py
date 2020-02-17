@@ -555,6 +555,8 @@ class BaseResponse(DictBasedObject):
 
 class InstallableFontsResponseType(ResponseCommandDataType):
     def valid(self):
+        if not self.value: return True
+
         if self.value in INSTALLABLEFONTSCOMMAND['responseTypes']:
             return True
         else:
@@ -657,6 +659,8 @@ class InstallableFontsResponse(BaseResponse):
 
 class InstallFontResponseType(ResponseCommandDataType):
     def valid(self):
+        if not self.value: return True
+
         if self.value in INSTALLFONTCOMMAND['responseTypes']:
             return True
         else:
@@ -717,6 +721,8 @@ class InstallFontResponse(BaseResponse):
 
 class UninstallFontResponseType(ResponseCommandDataType):
     def valid(self):
+        if not self.value: return True
+
         if self.value in UNINSTALLFONTCOMMAND['responseTypes']:
             return True
         else:
@@ -757,6 +763,8 @@ class UninstallFontResponse(BaseResponse):
 
 class SetAnonymousAppIDStatusResponseType(ResponseCommandDataType):
     def valid(self):
+        if not self.value: return True
+
         if self.value in SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']:
             return True
         else:

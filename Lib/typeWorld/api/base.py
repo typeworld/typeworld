@@ -151,6 +151,7 @@ class DataType(object):
     #     return '<%s "%s">' % (self.__class__.__name__, self.get())
 
     def valid(self):
+        if not self.value: return True
         if type(self.value) == self.dataType:
             return True
         else:
@@ -226,6 +227,7 @@ class FontDataType(StringDataType):
 class FontEncodingDataType(StringDataType):
 
     def valid(self):
+        if not self.value: return True
         
         if self.value not in FONTENCODINGS:
             return 'Encoding %s is unknown. Known are: %s' % (self.value, FONTENCODINGS)
@@ -236,6 +238,7 @@ class VersionDataType(StringDataType):
     dataType = str
 
     def valid(self):
+        if not self.value: return True
         
         # Append .0 for semver comparison
         value = makeSemVer(self.value)
@@ -256,6 +259,7 @@ class TimestampDataType(IntegerDataType):
 class DateDataType(StringDataType):
 
     def valid(self):
+        if not self.value: return True
 
         try:
             date_obj = datetime.datetime.strptime(self.value, '%Y-%m-%d')
@@ -271,6 +275,8 @@ class DateDataType(StringDataType):
 class WebURLDataType(UnicodeDataType):
 
     def valid(self):
+        if not self.value: return True
+
         if not self.value.startswith('http://') and not self.value.startswith('https://'):
             return 'Needs to start with http:// or https://'
         else:
@@ -284,6 +290,7 @@ class WebResourceURLDataType(WebURLDataType):
 class EmailDataType(UnicodeDataType):
 
     def valid(self):
+        if not self.value: return True
         if \
             '@' in self.value and '.' in self.value and \
             self.value.find('.', self.value.find('@')) > 0 and \
@@ -297,6 +304,7 @@ class EmailDataType(UnicodeDataType):
 class HexColorDataType(StringDataType):
 
     def valid(self):
+        if not self.value: return True
         if \
             (len(self.value) == 3 or len(self.value) == 6) and \
             re.match("^[A-Fa-f0-9]*$", self.value):
@@ -1072,6 +1080,7 @@ class MultiLanguageLongTextProxy(MultiLanguageTextProxy):
 class LanguageSupportDataType(DictionaryDataType):
 
     def valid(self):
+        if not self.value: return True
         for script in self.value:
             if not len(script) == 4 or not script.islower():
                 return 'Script tag "%s" needs to be a four-letter lowercase tag.' % (script)
@@ -1085,6 +1094,7 @@ class LanguageSupportDataType(DictionaryDataType):
 class OpenTypeFeatureDataType(StringDataType):
 
     def valid(self):
+        if not self.value: return True
 
         if not len(self.value) == 4 or not self.value.islower():
             return 'OpenType feature tag "%s" needs to be a four-letter lowercase tag.' % (self.value)
@@ -1097,6 +1107,7 @@ class OpenTypeFeatureListProxy(ListProxy):
 class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
     
     def valid(self):
+        if not self.value: return True
         if self.value in OPENSOURCELICENSES:
             return True
         else:
@@ -1108,6 +1119,7 @@ class SupportedAPICommandsDataType(UnicodeDataType):
     commands = [x['keyword'] for x in COMMANDS]
 
     def valid(self):
+        if not self.value: return True
         if self.value in self.commands:
             return True
         else:
@@ -1119,6 +1131,7 @@ class SupportedAPICommandsListProxy(ListProxy):
 
 class FontPurposeDataType(UnicodeDataType):
     def valid(self):
+        if not self.value: return True
 
         if not self.value: return True
 
@@ -1134,7 +1147,6 @@ class FontStatusDataType(UnicodeDataType):
 
 
     def valid(self):
-
         if not self.value: return True
 
         if self.value in self.statuses:
@@ -1145,10 +1157,9 @@ class FontStatusDataType(UnicodeDataType):
 
 class FontExtensionDataType(UnicodeDataType):
     def valid(self):
+        if not self.value: return True
 
         found = False
-
-        if not self.value: return True
 
         for mimeType in list(MIMETYPES.keys()):
             if self.value in MIMETYPES[mimeType]['fileExtensions']:
