@@ -1522,7 +1522,12 @@ class APIClient(PubSubClient):
 			return False, message, None, None
 
 
-		rootCommand = protocol.rootCommand()[1]
+		success, message = self.rootCommand()
+		if success:
+			rootCommand = message
+		else:
+			return False, message
+
 		publisher = self.publisher(rootCommand.canonicalURL)
 		subscription = publisher.subscription(protocol.saveURL(), protocol)
 
