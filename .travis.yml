@@ -61,8 +61,6 @@ jobs:
       install:
         - pip install -r requirements.txt
 
-
-
 script: coverage run ./Lib/typeWorld/test.py
 
 after_success:
