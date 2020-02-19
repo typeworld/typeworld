@@ -72,6 +72,12 @@ def urlIsValid(url):
 	return True, None
 
 
+class URL(object):
+	def __init__(self, url):
+		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.restDomain = splitJSONURL(url)
+	def unsecretURL(self):
+		return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + 'secretKey' + '@' + str(self.restDomain)
+
 def getProtocol(url):
 
 
