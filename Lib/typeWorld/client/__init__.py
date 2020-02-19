@@ -800,7 +800,6 @@ class APIClient(PubSubClient):
 	def executeDownloadSubscriptions(self, response):
 
 		oldURLs = self.secretSubscriptionURLs()
-		secretKeysChanged = False
 
 		# print('executeDownloadSubscriptions():', response)
 
@@ -816,9 +815,6 @@ class APIClient(PubSubClient):
 				if success: self.delegate.subscriptionWasAdded(publisher, subscription)
 
 				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
-
-				if message == 'secretKeyChanged':
-					secretKeysChanged = True
 
 		def replace_item(obj, key, replace_value):
 			for k, v in obj.items():
@@ -845,10 +841,7 @@ class APIClient(PubSubClient):
 
 		self.pubSubSetup(direct = True)
 
-		if secretKeysChanged:
-			return self.uploadSubscriptions()
-		else:
-			return True, None
+		return True, None
 
 	def acceptInvitation(self, ID):
 
@@ -1545,31 +1538,26 @@ class APIClient(PubSubClient):
 		# Change secret key
 		if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
 			protocol.setSecretKey(protocol.secretKey)
-			print('Changed secret key')
 			publisher = self.publisher(rootCommand.canonicalURL)
 			subscription = publisher.subscription(protocol.saveURL(), protocol)
 
-			# TODO: Upload subscriptions to central server
+		else:
+			# Initial Health Check
+			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
+			if not success:
+				if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+					message = response
+				else:
+					message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
+				return False, message, None, None
 
-			return True, 'secretKeyChanged', publisher, subscription
+			publisher = self.publisher(rootCommand.canonicalURL)
+			subscription = publisher.subscription(protocol.saveURL(), protocol)
 
-		# Initial Health Check
-		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
-		if not success:
-			if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
-				message = response
-			else:
-				message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
-			return False, message, None, None
-
-		publisher = self.publisher(rootCommand.canonicalURL)
-		subscription = publisher.subscription(protocol.saveURL(), protocol)
-
-		# Success
-		subscription.save()
-		publisher.save()
-		subscription.stillAlive()
-
+			# Success
+			subscription.save()
+			publisher.save()
+			subscription.stillAlive()
 
 		if updateSubscriptionsOnServer:
 			success, message = self.uploadSubscriptions()
