@@ -1083,31 +1083,11 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-		# SetAnonymousAppIDStatusResponse
-
-		responseCommand = SetAnonymousAppIDStatusResponse()
-		responseCommand.type = 'success'
-		print(responseCommand)
-
-		# Output API response as JSON, includes validation
-		json = responseCommand.dumpJSON()
-
-		responseCommandInput = UninstallFontResponse()
-		responseCommandInput.loadJSON(json)
-
-		# Let’s see if they are identical
-		assert responseCommandInput.sameContent(responseCommand) == True
-
-		responseCommandInput.validate()
-
-
-
 		## DOCU
 		docu = RootResponse().docu()
 		docu = InstallableFontsResponse().docu()
 		docu = InstallFontResponse().docu()
 		docu = UninstallFontResponse().docu()
-		docu = SetAnonymousAppIDStatusResponse().docu()
 
 
 		# Data types
