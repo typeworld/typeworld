@@ -17,7 +17,7 @@ import tempfile, os, traceback
 from typeWorld.api import *
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 testUser1 = ('test1@type.world', '12345678')
 testUser2 = ('test2@type.world', '01234567')
 testUser3 = ('test3@type.world', '23456789')
