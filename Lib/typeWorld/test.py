@@ -242,14 +242,17 @@ class User(object):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[-1].fonts[-1]
 
 	def clearSubscriptions(self):
+		self.client.testScenario = None
 		for publisher in self.client.publishers():
 			publisher.delete()
 
 	def clearInvitations(self):
+		self.client.testScenario = None
 		for invitation in self.client.pendingInvitations():
 			invitation.decline()
 
 	def takeDown(self):
+		self.client.testScenario = None
 		self.clearInvitations()
 		self.clearSubscriptions()
 		self.unlinkUser()
@@ -257,6 +260,7 @@ class User(object):
 			self.client.deleteUserAccount(*self.login)
 
 	def unlinkUser(self):
+		self.client.testScenario = None
 		if self.login:
 			if self.client.user():
 				self.client.unlinkUser()
