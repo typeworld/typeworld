@@ -269,6 +269,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 	currentResult = None
+	maxDiff = None
 
 
 	def test_RootResponse(self):
@@ -412,7 +413,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'accessExpired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
 
 		# userEmail
 		i2 = copy.deepcopy(installableFonts)
@@ -683,7 +684,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.foundries[0].families[0].fonts[0].status = 'instable'
 		except ValueError as e:
-			self.assertEqual(str(e), "Unknown API command: \"instable\". Possible: [\'prerelease\', \'trial\', \'stable\']")
+			self.assertEqual(str(e), "Unknown Font Status: \"instable\". Possible: [\'prerelease\', \'trial\', \'stable\']")
 
 		# uniqueID
 		i2 = copy.deepcopy(installableFonts)
@@ -982,7 +983,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			installFont.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'duplicateInstallation\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'duplicateInstallation\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
 
 		installFont = InstallFontResponse()
 		installFont.type = 'success'
@@ -1018,19 +1019,8 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			uninstallFont.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
 
-
-
-	def test_SetAnonymousAppIDStatus(self):
-
-		print('test_SetAnonymousAppIDStatus()')
-
-		status = SetAnonymousAppIDStatusResponse()
-		try:
-			status.type = 'abc'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'insufficientPermission\', \'temporarilyUnavailable\']')
 
 
 	def test_InstallableFontsResponse_Old(self):
@@ -1299,6 +1289,12 @@ class TestStringMethods(unittest.TestCase):
 		print('test_simulateExternalScenarios()')
 
 		user0.takeDown()
+
+		user0.client.testScenario = 'simulateLoginRequired'
+		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
+		self.assertEqual(success, False)
+		self.assertEqual(message, ['#(response.loginRequired)', '#(response.loginRequired.headline)'])
+
 
 		user0.client.testScenario = 'simulateEndpointDoesntSupportInstallFontCommand'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)

@@ -1493,7 +1493,6 @@ class APIClient(PubSubClient):
 		return protocol.rootCommand(testScenario = self.testScenario)
 
 
-
 	def addSubscription(self, url, username = None, password = None, updateSubscriptionsOnServer = True, JSON = None, secretTypeWorldAPIKey = None):
 		'''
 		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.

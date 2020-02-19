@@ -134,10 +134,6 @@ Subscriptions are synchronized with the central server for registered users and 
 
 The main incentive for the user to de-authorize his/her older app instances that are not accessible any more is to free up font installations, because the font installations of the lost computer are still counted in the publisher's tracking of installed seats with regards to each font license. 
 
-The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
-
-A publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
-
 Should the de-authorized app instance regain access to the internet (in case the computer is actually stolen rather than lost/broken), all fonts and subscriptions will be deleted from it instantly, and because all referenced publishers have already been informed of the de-authorization, new font installations thereafter will also be rejected (by the publishers directly). And in case the stolen computer does not regain access to the internet again, the already installed fonts will inevitably continue to live on it, but new installations will be rejected, and seats will be freed for the user anyway.
 
 
@@ -146,15 +142,13 @@ Should the de-authorized app instance regain access to the internet (in case the
 
 Because spreading subscription URLs by email (or other means) is potentially unsafe from eavesropping, the central Type.World server provides an invitation API using its JSON API under the `inviteTypeWorldUserToSubscription` command (or directly in the app’s GUI). Therefore, only users with a registered Type.World user account can be invited. Here, users will be identified by the email address of their Type.World user account (like Dropbox or Google Documents). There is no way to search the Type.World user database for users. Only valid registered email addresses will be accepted.
 
-When a subscription gets activated after an invitation, the central server will inform the publisher’s API endpoint of the successful invitation under the `setAnonymousAppIDStatus` command. The publisher’s server will then save the newly introduced `anonymousAppID` to be valid in combination with the `anonymousTypeWorldUserID` parameter.
-
 It is not possible to provide this invitation infrastructure to users without a Type.World user account, because otherwise a notification about the invitation needs to be sent out which can be intercepted and accessed before the legitimate user gets access. 
 
 Without a Type.World user account, this notification, however formed, would be the key to the subscription. With a Type.World user account, the account itself is the key, and any form of notification of the invitation, such as by email, is meaningless without the previously existing user account.
 
 ### Central server authorization
 
-API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
+API calls from the central Type.World server to the publisher’s API endpoint will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
 
 Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that same secret API key.
 
@@ -211,7 +205,6 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 - [LicenseUsage](#user-content-class-licenseusage)<br />
 - [InstallFontResponse](#user-content-class-installfontresponse)<br />
 - [UninstallFontResponse](#user-content-class-uninstallfontresponse)<br />
-- [SetAnonymousAppIDStatusResponse](#user-content-class-setanonymousappidstatusresponse)<br />
 
 
 
@@ -357,8 +350,7 @@ Will output the following JSON code:
   "supportedCommands": [
     "installableFonts",
     "installFont",
-    "uninstallFont",
-    "setAnonymousAppIDStatus"
+    "uninstallFont"
   ]
 }
 ```
@@ -545,7 +537,7 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
 
 ### Attributes
 
-[adminEmail](#class-rootresponse-attribute-adminemail)<br />[backgroundColor](#class-rootresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-rootresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-rootresponse-attribute-licenseidentifier)<br />[logo](#class-rootresponse-attribute-logo)<br />[name](#class-rootresponse-attribute-name)<br />[privacyPolicy](#class-rootresponse-attribute-privacypolicy)<br />[public](#class-rootresponse-attribute-public)<br />[supportedCommands](#class-rootresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-rootresponse-attribute-termsofserviceagreement)<br />[version](#class-rootresponse-attribute-version)<br />[website](#class-rootresponse-attribute-website)<br />
+[adminEmail](#class-rootresponse-attribute-adminemail)<br />[backgroundColor](#class-rootresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-rootresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-rootresponse-attribute-licenseidentifier)<br />[loginURL](#class-rootresponse-attribute-loginurl)<br />[logo](#class-rootresponse-attribute-logo)<br />[name](#class-rootresponse-attribute-name)<br />[privacyPolicy](#class-rootresponse-attribute-privacypolicy)<br />[public](#class-rootresponse-attribute-public)<br />[supportedCommands](#class-rootresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-rootresponse-attribute-termsofserviceagreement)<br />[version](#class-rootresponse-attribute-version)<br />[website](#class-rootresponse-attribute-website)<br />
 
 ### Methods
 
@@ -588,6 +580,14 @@ __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ CC-BY-NC-ND-4.0
 
+<div id="class-rootresponse-attribute-loginURL"></div>
+
+### loginURL
+
+URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.
+
+__Required:__ False<br />
+__Type:__ Str<br />
 <div id="class-rootresponse-attribute-logo"></div>
 
 ### logo
@@ -632,7 +632,7 @@ __Default value:__ False
 
 ### supportedCommands
 
-List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont', 'setAnonymousAppIDStatus']
+List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
@@ -824,7 +824,7 @@ __Default value:__ False
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'noFontsAvailable', 'insufficientPermission', 'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', 'accessTokenExpired']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'noFontsAvailable', 'insufficientPermission', 'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', 'loginRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallableFontsResponse.errorMessage](#user-content-class-installablefontsresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1114,14 +1114,14 @@ Example:
         "headerColor": "156486",
         "headerTextColor": "000000",
         "headerLinkColor": "53B9E4",
-        "backgroundColor": "404040",
+        "backgroundColor": "262626",
         "textColor": "999999",
         "linkColor": "C07F07",
         "selectionColor": "9A6606",
         "selectionTextColor": "000000",
         "buttonColor": "22A4DC",
         "buttonTextColor": "000000",
-        "informationViewBackgroundColor": "4D4D4D",
+        "informationViewBackgroundColor": "1A1A1A",
         "informationViewTextColor": "999999",
         "informationViewLinkColor": "53B9E4",
         "informationViewButtonColor": "22A4DC",
@@ -1527,7 +1527,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'otf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1836,7 +1836,7 @@ __Type:__ Str<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'temporarilyUnavailable', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired', 'revealedUserIdentityRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'insufficientPermission', 'temporarilyUnavailable', 'duplicateInstallation', 'seatAllowanceReached', 'validTypeWorldUserAccountRequired', 'revealedUserIdentityRequired', 'loginRequired']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1908,7 +1908,7 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 ### type
 
-Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation', 'insufficientPermission', 'temporarilyUnavailable', 'validTypeWorldUserAccountRequired']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
+Type of response. This can be any of ['success', 'error', 'unknownFont', 'unknownInstallation', 'insufficientPermission', 'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', 'loginRequired']. In case of "error", you may specify an additional message to be presented to the user under [UninstallFontResponse.errorMessage](#user-content-class-uninstallfontresponse-attribute-errormessage).
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1929,67 +1929,6 @@ __Default value:__ 0.1.7-alpha
 ## Methods
 
 <div id="class-uninstallfontresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
-
-
-<div id="class-setanonymousappidstatusresponse"></div>
-
-# _class_ SetAnonymousAppIDStatusResponse()
-
-
-
-### Attributes
-
-[errorMessage](#class-setanonymousappidstatusresponse-attribute-errormessage)<br />[type](#class-setanonymousappidstatusresponse-attribute-type)<br />[version](#class-setanonymousappidstatusresponse-attribute-version)<br />
-
-### Methods
-
-[sameContent()](#class-setanonymousappidstatusresponse-method-samecontent)<br />
-
-## Attributes
-
-<div id="class-setanonymousappidstatusresponse-attribute-errorMessage"></div>
-
-### errorMessage
-
-Description of error in case of custom response type
-
-__Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-__Format:__ Maximum allowed characters: 100.<br />
-<div id="class-setanonymousappidstatusresponse-attribute-type"></div>
-
-### type
-
-Type of response. This can be any of ['success', 'error', 'insufficientPermission', 'temporarilyUnavailable']. In case of "error", you may specify an additional message to be presented to the user under [InstallFontResponse.errorMessage](#user-content-class-installfontresponse-attribute-errormessage).
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
-<div id="class-setanonymousappidstatusresponse-attribute-version"></div>
-
-### version
-
-Version of "setAnonymousAppIDStatus" response
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.7-alpha
-
-
-
-## Methods
-
-<div id="class-setanonymousappidstatusresponse-method-samecontent"></div>
 
 #### sameContent()
 
