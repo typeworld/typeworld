@@ -788,14 +788,14 @@ class APIClient(PubSubClient):
 		return True, None
 
 
-	def preloadLogos(self):
+	# def preloadLogos(self):
 
-		for invitation in self.acceptedInvitations():
-			if invitation.logoURL:
-				success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
-		for invitation in self.pendingInvitations():
-			if invitation.logoURL:
-				success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
+	# 	for invitation in self.acceptedInvitations():
+	# 		if invitation.logoURL:
+	# 			success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
+	# 	for invitation in self.pendingInvitations():
+	# 		if invitation.logoURL:
+	# 			success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
 
 	def executeDownloadSubscriptions(self, response):
 
@@ -831,9 +831,9 @@ class APIClient(PubSubClient):
 		self.preferences.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
 		self.preferences.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
 
-		import threading
-		preloadThread = threading.Thread(target=self.preloadLogos)
-		preloadThread.start()
+		# import threading
+		# preloadThread = threading.Thread(target=self.preloadLogos)
+		# preloadThread.start()
 
 		# Delete subscriptions
 		for publisher in self.publishers():
