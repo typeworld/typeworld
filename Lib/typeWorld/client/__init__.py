@@ -800,6 +800,7 @@ class APIClient(PubSubClient):
 	def executeDownloadSubscriptions(self, response):
 
 		oldURLs = self.secretSubscriptionURLs()
+		secretKeysChanged = False
 
 		# print('executeDownloadSubscriptions():', response)
 
@@ -815,6 +816,9 @@ class APIClient(PubSubClient):
 				if success: self.delegate.subscriptionWasAdded(publisher, subscription)
 
 				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
+
+				if message == 'secretKeyChanged':
+					secretKeysChanged = True
 
 		def replace_item(obj, key, replace_value):
 			for k, v in obj.items():
@@ -840,7 +844,11 @@ class APIClient(PubSubClient):
 		# Success
 
 		self.pubSubSetup(direct = True)
-		return True, len(response['subscriptions']) - len(oldURLs)
+
+		if secretKeysChanged:
+			return self.uploadSubscriptions()
+		else:
+			return True, None
 
 	def acceptInvitation(self, ID):
 
@@ -1543,7 +1551,7 @@ class APIClient(PubSubClient):
 
 			# TODO: Upload subscriptions to central server
 
-			return True, None, publisher, subscription
+			return True, 'secretKeyChanged', publisher, subscription
 
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
