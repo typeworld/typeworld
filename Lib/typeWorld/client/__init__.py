@@ -469,7 +469,7 @@ class APIClient(PubSubClient):
 				_list.append(invitation)
 		return _list
 
-	def completeSubscriptionURLs(self):
+	def secretSubscriptionURLs(self):
 
 		_list = []
 
@@ -675,7 +675,7 @@ class APIClient(PubSubClient):
 
 	def uploadSubscriptions(self, performCommands = True):
 
-		self.appendCommands('uploadSubscriptions', self.completeSubscriptionURLs() or ['empty'])
+		self.appendCommands('uploadSubscriptions', self.secretSubscriptionURLs() or ['empty'])
 		self.appendCommands('downloadSubscriptions')
 
 		success, message = True, None
@@ -789,7 +789,7 @@ class APIClient(PubSubClient):
 
 	def executeDownloadSubscriptions(self, response):
 
-		oldURLs = self.completeSubscriptionURLs()
+		oldURLs = self.secretSubscriptionURLs()
 
 		# print('executeDownloadSubscriptions():', response)
 
@@ -844,7 +844,7 @@ class APIClient(PubSubClient):
 	def performAcceptInvitation(self, IDs):
 
 		userID = self.user()
-		oldURLs = self.completeSubscriptionURLs()
+		oldURLs = self.secretSubscriptionURLs()
 
 		if userID:
 
@@ -892,7 +892,7 @@ class APIClient(PubSubClient):
 	def performDeclineInvitation(self, IDs):
 
 		userID = self.user()
-		oldURLs = self.completeSubscriptionURLs()
+		oldURLs = self.secretSubscriptionURLs()
 
 		if userID:
 
@@ -929,7 +929,7 @@ class APIClient(PubSubClient):
 
 
 	def syncSubscriptions(self, performCommands = True):
-		self.appendCommands('syncSubscriptions', self.completeSubscriptionURLs() or ['empty'])
+		self.appendCommands('syncSubscriptions', self.secretSubscriptionURLs() or ['empty'])
 
 		if performCommands:
 			return self.performCommands()
