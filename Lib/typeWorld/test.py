@@ -412,7 +412,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'accessTokenExpired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'accessExpired\']')
 
 		# userEmail
 		i2 = copy.deepcopy(installableFonts)
