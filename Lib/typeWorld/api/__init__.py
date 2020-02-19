@@ -759,30 +759,6 @@ class UninstallFontResponse(BaseResponse):
 
 ####################################################################################################################################
 
-#  SetAnonymousAppIDStatus
-
-class SetAnonymousAppIDStatusResponseType(ResponseCommandDataType):
-    def valid(self):
-        if not self.value: return True
-
-        if self.value in SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']:
-            return True
-        else:
-            return 'Unknown response type: "%s". Possible: %s' % (self.value, SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes'])
-
-class SetAnonymousAppIDStatusResponse(BaseResponse):
-    #   key:                    [data type, required, default value, description]
-    _structure = {
-
-        # Root
-        'type':             [SetAnonymousAppIDStatusResponseType,   True,   None,   'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % SETANONYMOUSAPPIDSTATUSCOMMAND['responseTypes']],
-        'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
-        'version':          [VersionDataType,           True,   SETANONYMOUSAPPIDSTATUSCOMMAND['currentVersion'],   'Version of "%s" response' % SETANONYMOUSAPPIDSTATUSCOMMAND['keyword']],
-        }
-
-
-####################################################################################################################################
-
 
 class RootResponse(BaseResponse):
     '''\
