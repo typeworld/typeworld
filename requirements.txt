@@ -1,7 +1,6 @@
 deepdiff
 semver
 codecov
-coverage
 certifi
 keyring
 markdown
