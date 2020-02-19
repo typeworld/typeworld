@@ -134,10 +134,6 @@ Subscriptions are synchronized with the central server for registered users and 
 
 The main incentive for the user to de-authorize his/her older app instances that are not accessible any more is to free up font installations, because the font installations of the lost computer are still counted in the publisher's tracking of installed seats with regards to each font license. 
 
-The central server will inform the publisher’s API endpoint of a de-authorization under the `setAnonymousAppIDStatus` command. Additionally, an app’s status can be verified with the central Type.World server using its JSON API under the `verifyCredentials` command. Again, to speed up the responses and reduce strain on the central server, the publisher’s server should save the invalidated `anonymousAppID`, regardless of whether it had prior knowledge of this particular `anonymousAppID`.
-
-A publisher should then choose to reject access to its API endpoint for invalidated `anonymousAppID`s.
-
 Should the de-authorized app instance regain access to the internet (in case the computer is actually stolen rather than lost/broken), all fonts and subscriptions will be deleted from it instantly, and because all referenced publishers have already been informed of the de-authorization, new font installations thereafter will also be rejected (by the publishers directly). And in case the stolen computer does not regain access to the internet again, the already installed fonts will inevitably continue to live on it, but new installations will be rejected, and seats will be freed for the user anyway.
 
 
@@ -146,15 +142,13 @@ Should the de-authorized app instance regain access to the internet (in case the
 
 Because spreading subscription URLs by email (or other means) is potentially unsafe from eavesropping, the central Type.World server provides an invitation API using its JSON API under the `inviteTypeWorldUserToSubscription` command (or directly in the app’s GUI). Therefore, only users with a registered Type.World user account can be invited. Here, users will be identified by the email address of their Type.World user account (like Dropbox or Google Documents). There is no way to search the Type.World user database for users. Only valid registered email addresses will be accepted.
 
-When a subscription gets activated after an invitation, the central server will inform the publisher’s API endpoint of the successful invitation under the `setAnonymousAppIDStatus` command. The publisher’s server will then save the newly introduced `anonymousAppID` to be valid in combination with the `anonymousTypeWorldUserID` parameter.
-
 It is not possible to provide this invitation infrastructure to users without a Type.World user account, because otherwise a notification about the invitation needs to be sent out which can be intercepted and accessed before the legitimate user gets access. 
 
 Without a Type.World user account, this notification, however formed, would be the key to the subscription. With a Type.World user account, the account itself is the key, and any form of notification of the invitation, such as by email, is meaningless without the previously existing user account.
 
 ### Central server authorization
 
-API calls from the central Type.World server to the publisher’s API endpoint for the `setAnonymousAppIDStatus` command will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
+API calls from the central Type.World server to the publisher’s API endpoint will be authorized through a secret API key to be obtained via the user account on the Type.World web site. 
 
 Likewise, the access to the `verifyCredentials` command on the central Type.World server will be restricted to holders of that same secret API key.
 
@@ -341,8 +335,7 @@ Will output the following JSON code:
   "supportedCommands": [
     "installableFonts",
     "installFont",
-    "uninstallFont",
-    "setAnonymousAppIDStatus"
+    "uninstallFont"
   ]
 }
 ```

@@ -306,7 +306,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			r2.supportedCommands = ['unsupportedCommand']
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown API command: "unsupportedCommand". Possible: [\'installableFonts\', \'installFont\', \'uninstallFont\', \'setAnonymousAppIDStatus\']')
+			self.assertEqual(str(e), 'Unknown API command: "unsupportedCommand". Possible: [\'installableFonts\', \'installFont\', \'uninstallFont\']')
 
 		# backgroundColor
 		r2 = copy.deepcopy(root)
