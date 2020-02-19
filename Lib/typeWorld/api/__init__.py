@@ -533,9 +533,6 @@ class FoundryListProxy(ListProxy):
 #  Base Response
 
 class BaseResponse(DictBasedObject):
-    #   key:                    [data type, required, default value, description]
-    _base_structure = {
-    }
 
     def __repr__(self):
         return '<%s>' % self.__class__.__name__
