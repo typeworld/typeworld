@@ -1414,7 +1414,7 @@ class TestStringMethods(unittest.TestCase):
 		# self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
 		# Name
-		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher')
+		self.assertEqual(user0.client.publishers()[0].name()[0], 'Test Publisher (Don’t Touch)')
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].name(), 'Free Fonts')
 
 		# Reload client
