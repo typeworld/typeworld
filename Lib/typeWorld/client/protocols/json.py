@@ -145,7 +145,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			self.subscription._updatingProblem = api.errorMessage
 			return False, self.subscription._updatingProblem, False
 
-		if api.type in ('temporarilyUnavailable', 'insufficientPermission'):
+		if api.type in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
 			if self.url in self.subscription.parent._updatingSubscriptions:
 				self.subscription.parent._updatingSubscriptions.remove(self.url)
 			self.subscription._updatingProblem = '#(response.%s)' % api.type
