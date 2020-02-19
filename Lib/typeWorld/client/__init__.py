@@ -479,6 +479,16 @@ class APIClient(PubSubClient):
 
 		return _list
 
+	def unsecretSubscriptionURLs(self):
+
+		_list = []
+
+		for publisher in self.publishers():
+			for subscription in publisher.subscriptions():
+				_list.append(subscription.protocol.unsecretURL())
+
+		return _list
+
 	def timezone(self):
 		return strftime("%z", gmtime())
 
