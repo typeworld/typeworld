@@ -540,7 +540,7 @@ class BaseResponse(DictBasedObject):
     def customValidation(self):
         information, warnings, critical = [], [], []
 
-        if self.type == ERROR and self.errorMessage.isEmpty():
+        if hasattr(self, 'type') and self.type == ERROR and self.errorMessage.isEmpty():
             critical.append('%s.type is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         return information, warnings, critical
