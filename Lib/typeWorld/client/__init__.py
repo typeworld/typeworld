@@ -1534,6 +1534,17 @@ class APIClient(PubSubClient):
 		else:
 			return False, message, None, None
 
+		# Change secret key
+		if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
+			protocol.setSecretKey(protocol.secretKey)
+			print('Changed secret key')
+			publisher = self.publisher(rootCommand.canonicalURL)
+			subscription = publisher.subscription(protocol.saveURL(), protocol)
+
+			# TODO: Upload subscriptions to central server
+
+			return True, None, publisher, subscription
+
 		# Initial Health Check
 		success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 		if not success:
