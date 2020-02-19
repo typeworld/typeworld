@@ -13,14 +13,7 @@ jobs:
         # revokeAppInstance
         - secure: "GpJtFFiklIEPNmiSKOzFbyhpIouzdFZqHqGgBDGw3JywAyY8gXln11o84Tukpb0EoHMG//fzwB3Ce+uIj42W6sE5y8Iq62yxZB7p78ciGHw7TotVkMi0qc6b+x6mvLNwB7efCAkc+1rdOatWqgx+DWWFhVv9E5wMKzjpG60fAbJa7eK/lDvt63HfKvzUXMXUYvszBRcygaGoqf/5LLLlLZ0Lmi1FYaO+NLV77LojKOw9YYH0KeSZJTWrsn0rYueqRCaQCqN4TRZJafFIC/E85LjfsTfIxUhs/LxY6pWvA9UJAJxJ2Jnm1KswxF3W+LmjFmb0InYbYNHDvf2t05vEiRViqoA820xLzLKNYS2Y2n4k/fVl1KqFoxFuKImRcRzQ4Qh5Gg3Lx9AlmZ5ttOF7jp9t00LZmzf6eR7jK7Y3S5eCWNXIrrw7oJDYRBeSy1+TaolnD0XtKc/TlBc3ehm0ImO4Ue6TSrk/EkOOprP6gxahnLQpRAuBqak5fvo2OGJwUoJX+7Ky8IUhtmq6sln8sqDyZqg5sWenxDr7f6ePJErtbvHH1Zk1L0nJRpTb/etdWhYnUcbKbLhTwfrMHSYIGMkJBfUjdFmziTvtwzpSII1jABAbgwoNtYZoDqWG/CJf8o4SoUTYM0XsBSIxfPR0oIk5kkyZ7s4oVulFkQndzdA="
       install:
-        - pip install deepdiff
-        - pip install semver
-        - pip install codecov
-        - pip install certifi
-        - pip install keyring
-        - pip install markdown
-        - pip install google-cloud-ndb
-        - pip install google-cloud-pubsub
+        - pip install -r requirements.txt
 
     - stage: mac
       os: osx
@@ -48,15 +41,8 @@ jobs:
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
       install:
-        - pip install deepdiff
-        - pip install semver
-        - pip install codecov
-        - pip install certifi
+        - pip install -r requirements.txt
         - pip install pyobjc
-        - pip install keyring
-        - pip install markdown
-        - pip install google-cloud-ndb
-        - pip install google-cloud-pubsub
 
     - stage: windows
       os: windows           # Windows 10.0.17134 N/A Build 17134
@@ -73,14 +59,7 @@ jobs:
         - secure: "GpJtFFiklIEPNmiSKOzFbyhpIouzdFZqHqGgBDGw3JywAyY8gXln11o84Tukpb0EoHMG//fzwB3Ce+uIj42W6sE5y8Iq62yxZB7p78ciGHw7TotVkMi0qc6b+x6mvLNwB7efCAkc+1rdOatWqgx+DWWFhVv9E5wMKzjpG60fAbJa7eK/lDvt63HfKvzUXMXUYvszBRcygaGoqf/5LLLlLZ0Lmi1FYaO+NLV77LojKOw9YYH0KeSZJTWrsn0rYueqRCaQCqN4TRZJafFIC/E85LjfsTfIxUhs/LxY6pWvA9UJAJxJ2Jnm1KswxF3W+LmjFmb0InYbYNHDvf2t05vEiRViqoA820xLzLKNYS2Y2n4k/fVl1KqFoxFuKImRcRzQ4Qh5Gg3Lx9AlmZ5ttOF7jp9t00LZmzf6eR7jK7Y3S5eCWNXIrrw7oJDYRBeSy1+TaolnD0XtKc/TlBc3ehm0ImO4Ue6TSrk/EkOOprP6gxahnLQpRAuBqak5fvo2OGJwUoJX+7Ky8IUhtmq6sln8sqDyZqg5sWenxDr7f6ePJErtbvHH1Zk1L0nJRpTb/etdWhYnUcbKbLhTwfrMHSYIGMkJBfUjdFmziTvtwzpSII1jABAbgwoNtYZoDqWG/CJf8o4SoUTYM0XsBSIxfPR0oIk5kkyZ7s4oVulFkQndzdA="
       python: &latest_py3 3.7
       install:
-        - pip3 install deepdiff
-        - pip3 install semver
-        - pip3 install codecov
-        - pip3 install certifi
-        - pip3 install keyring
-        - pip3 install markdown
-        - pip install google-cloud-ndb
-        - pip install google-cloud-pubsub
+        - pip install -r requirements.txt
 
 
 

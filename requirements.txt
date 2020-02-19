@@ -1,0 +1,10 @@
+deepdiff
+semver
+codecov
+coverage
+certifi
+pyobjc
+keyring
+markdown
+google-cloud-ndb
+google-cloud-pubsub
