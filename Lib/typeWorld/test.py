@@ -1460,18 +1460,18 @@ class TestStringMethods(unittest.TestCase):
 
 		success, protocol = typeWorld.client.getProtocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
-		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':bN0QnnNsaE4LfHlOMGkm@', ':secretKey@'))
+		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
 
 
 		# saveURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		# completeURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), protectedSubscription)
 
 		# Reload client
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
 		user1.loadClient()
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), protectedSubscription)
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
