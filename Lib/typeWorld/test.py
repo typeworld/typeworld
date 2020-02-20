@@ -23,17 +23,31 @@ testUser2 = ('test2@type.world', '01234567')
 testUser3 = ('test3@type.world', '23456789')
 
 
-MOTHERSHIP = 'https://typeworld2.appspot.com/api'
-#MOTHERSHIP = 'http://127.0.0.1:8080/api'
+# Travis CI
 if 'TRAVIS' in os.environ:
 	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+
+# Local testing
+else:
+	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+
+	# Testing specific version
+	if len(sys.argv) >= 2:
+		MOTHERSHIP = sys.argv[1]#.replace('-dot-', '.')
+		del sys.argv[1:]
+		
+		if not MOTHERSHIP.endswith('/api'):
+			MOTHERSHIP += '/api'
+
+
+print('Testing on %s' % MOTHERSHIP)
 
 global errors, failures
 errors = []
 failures = []
 
+print('setting up objects started...')
 
-#MOTHERSHIP = 'https://typeworld.appspot.com/api'
 
 ### RootResponse
 root = RootResponse()
@@ -211,7 +225,6 @@ installableFonts.foundries.append(foundry)
 
 
 
-
 class User(object):
 	def __init__(self, login = None):
 		self.login = login
@@ -269,6 +282,9 @@ class User(object):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP, pubSubSubscriptions = True)
 
 
+print('setting up objects finished...')
+
+
 class TestStringMethods(unittest.TestCase):
 
 
@@ -278,7 +294,7 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_RootResponse(self):
 
-		print('test_RootResponse()')
+		print('test_RootResponse() started...')
 
 		print(root)
 		# Dump and reload
@@ -370,15 +386,21 @@ class TestStringMethods(unittest.TestCase):
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
 
+		print('test_RootResponse() finished...')
+
+
 	def test_copy(self):
 
-		print('test_copy()')
+		print('test_copy() started...')
 
 		i2 = copy.copy(installableFonts)
 		self.assertTrue(installableFonts.sameContent(i2))
 
 		i3 = copy.deepcopy(installableFonts)
 		self.assertTrue(installableFonts.sameContent(i3))
+
+		print('test_copy() finished...')
+
 
 	def test_InstallableFontsResponse(self):
 
@@ -1349,7 +1371,7 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_normalSubscription(self):
 
-		print('test_normalSubscription()')
+		print('test_normalSubscription() started...')
 
 		# Announce subscription update
 		url = MOTHERSHIP
@@ -1616,7 +1638,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Revoke app instance
-		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password(MOTHERSHIP, 'revokeAppInstance')
+		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password('https://typeworld2.appspot.com/api', 'revokeAppInstance')
 		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
 		parameters = {
 			'command': 'revokeAppInstance',
@@ -2134,10 +2156,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
 
 
+		print('test_normalSubscription() finished...')
+
 
 	def test_UserAccounts(self):
 
 
+		print('test_UserAccounts() started...')
 
 		# Create user account
 
@@ -2211,6 +2236,8 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user0.client.unlinkUser()
 		self.assertEqual(success, True)
 
+		print('test_UserAccounts() finished...')
+
 	def run(self, result=None):
 		self.currentResult = result # remember result for use in tearDown
 		unittest.TestCase.run(self, result) # call superclass run method
@@ -2225,6 +2252,8 @@ class TestStringMethods(unittest.TestCase):
 
 def setUp():
 
+	print('setUp() started...')
+
 	global user0, user1, user2, user3, tempFolder
 	tempFolder = tempfile.mkdtemp()
 	user0 = User()
@@ -2232,9 +2261,11 @@ def setUp():
 	user2 = User(testUser2)
 	user3 = User(testUser3)
 
-	print('setUp()')
+	print('setUp() finished...')
 
 def tearDown():
+
+	print('tearDown() started...')
 
 	global user0, user1, user2, user3, tempFolder
 	user0.takeDown()
@@ -2242,10 +2273,10 @@ def tearDown():
 	user2.takeDown()
 	user3.takeDown()
 
-	print('tearDown()')
-
 	 # Local
 	if not 'TRAVIS' in os.environ: os.rmdir(tempFolder)
+
+	print('tearDown() finished...')
 
 
 if __name__ == '__main__':
