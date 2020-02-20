@@ -90,6 +90,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 			# Read response
 			data = {
+				'subscriptionID': self.subscriptionID, 
 				'appVersion': typeWorld.api.VERSION,
 			}
 			if testScenario:
