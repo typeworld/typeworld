@@ -35,7 +35,7 @@ else:
 	if len(sys.argv) >= 2:
 		MOTHERSHIP = sys.argv[1]#.replace('-dot-', '.')
 		del sys.argv[1:]
-		
+
 		if not MOTHERSHIP.endswith('/api'):
 			MOTHERSHIP += '/api'
 
@@ -439,7 +439,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\']')
 
 		# userEmail
 		i2 = copy.deepcopy(installableFonts)
@@ -1316,11 +1316,6 @@ class TestStringMethods(unittest.TestCase):
 
 		user0.takeDown()
 
-		user0.client.testScenario = 'simulateLoginRequired'
-		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
-		self.assertEqual(success, False)
-		self.assertEqual(message, ['#(response.loginRequired)', '#(response.loginRequired.headline)'])
-
 
 		user0.client.testScenario = 'simulateEndpointDoesntSupportInstallFontCommand'
 		success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
@@ -1626,6 +1621,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
 		self.assertEqual(success, False)
 
+		user1.client.testScenario = 'simulateLoginRequired'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		self.assertEqual(success, False)
 
 		# Supposed to pass
 		user1.client.testScenario = None
