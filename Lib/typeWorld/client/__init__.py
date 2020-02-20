@@ -1515,6 +1515,8 @@ class APIClient(PubSubClient):
 		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
 		'''
 
+		self._updatingProblem = None
+
 		# Check for URL validity
 		success, response = urlIsValid(url)
 		if not success:
@@ -1549,6 +1551,8 @@ class APIClient(PubSubClient):
 					message = response
 				else:
 					message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
+					if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
+						self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
 				return False, message, None, None
 
 			publisher = self.publisher(rootCommand.canonicalURL)
