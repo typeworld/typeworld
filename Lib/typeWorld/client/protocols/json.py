@@ -124,6 +124,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'anonymousAppID': self.client.anonymousAppID(), 
 			'anonymousTypeWorldUserID': self.client.user(),
 			'appVersion': typeWorld.api.VERSION,
+			'mothership': self.client.mothership,
 		}
 		if self.client.testScenario:
 			data['testScenario'] = self.client.testScenario
@@ -212,6 +213,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 								'secretKey': self.getSecretKey(),
 								'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 								'appVersion': typeWorld.api.VERSION,
+								'mothership': self.client.mothership,
 							}
 							if self.client.testScenario:
 								data['testScenario'] = self.client.testScenario
@@ -258,6 +260,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							'secretKey': self.getSecretKey(),
 							'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 							'appVersion': typeWorld.api.VERSION,
+							'mothership': self.client.mothership,
 						}
 						if self.client.testScenario:
 							data['testScenario'] = self.client.testScenario
@@ -301,6 +304,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
 			'command': 'installableFonts',
 			'appVersion': typeWorld.api.VERSION,
+			'mothership': self.client.mothership,
 		}
 		if testScenario:
 			data['testScenario'] = testScenario
