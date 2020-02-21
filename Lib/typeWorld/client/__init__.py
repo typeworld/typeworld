@@ -2217,7 +2217,7 @@ class APISubscription(PubSubClient):
 	# 					return installedVersion and installedVersion != font.getVersions()[-1].number
 
 
-	def removeFont(self, fontID, folder = None):
+	def removeFont(self, fontID, folder = None, dryRun = False):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
@@ -2231,25 +2231,26 @@ class APISubscription(PubSubClient):
 							path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
 							break
 
-		if not path:
+		if not path and not dryRun:
 			return False, 'Font path couldn’t be determined'
 
 		self.parent.parent.delegate.fontWillUninstall(font)
 
-		# Test for permissions here
-		try:
-			if self.parent.parent.testScenario == 'simulatePermissionError':
-				raise PermissionError
-			else:
-				f = open(path + '.test', 'w')
-				f.write('test')
-				f.close()
-				os.remove(path + '.test')
-		except PermissionError:
-			self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
-			return False, "Insufficient permission to install font."
+		if not dryRun:
+			# Test for permissions here
+			try:
+				if self.parent.parent.testScenario == 'simulatePermissionError':
+					raise PermissionError
+				else:
+					f = open(path + '.test', 'w')
+					f.write('test')
+					f.close()
+					os.remove(path + '.test')
+			except PermissionError:
+				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
+				return False, "Insufficient permission to install font."
 
-		assert os.path.exists(path + '.test') == False
+			assert os.path.exists(path + '.test') == False
 
 		# if not os.path.exists(path) or self.parent.parent.testScenario == 'simulateMissingFont':
 		# 	self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
@@ -2260,7 +2261,8 @@ class APISubscription(PubSubClient):
 
 		if success:
 
-			os.remove(path)
+			if not dryRun:
+				os.remove(path)
 
 			self.parent.parent.delegate.fontHasUninstalled(True, None, font)
 			return True, None
