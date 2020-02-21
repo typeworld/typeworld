@@ -2157,6 +2157,27 @@ class TestStringMethods(unittest.TestCase):
 		print('test_normalSubscription() finished...')
 
 
+	def test_APIValidator(self):
+
+		print('test_APIValidator() started...')
+
+		# Announce subscription update
+		url = MOTHERSHIP
+		parameters = {"command": "validateAPIEndpoint",
+					"subscriptionURL": protectedSubscription,
+					}
+		data = urllib.parse.urlencode(parameters).encode('ascii')
+		response = urllib.request.urlopen(url, data, context=sslcontext)
+		response = json.loads(response.read().decode())
+
+		print(response)
+
+		self.assertEqual(response['response'], 'success')
+
+
+		print('test_APIValidator() finished...')
+
+
 	def test_UserAccounts(self):
 
 
