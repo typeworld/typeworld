@@ -1,4 +1,4 @@
-import platform
+import platform, os
 
 def ReadFromFile(path):
 	"""\
@@ -84,7 +84,11 @@ def MachineName():
 				if k.strip() == 'model name' and not k in itemsUsed:
 					cpu += v.strip()
 					itemsUsed.append(k)
-		humanReadableName = '%s %s' % (Execute('cat /sys/devices/virtual/dmi/id/sys_vendor').decode(), Execute('cat /sys/devices/virtual/dmi/id/product_name').decode())
+
+		if os.path.exists('/sys/devices/virtual/dmi/id/sys_vendor') and os.path.exists('/sys/devices/virtual/dmi/id/product_name'):
+			humanReadableName = '%s %s' % (Execute('cat /sys/devices/virtual/dmi/id/sys_vendor').decode(), Execute('cat /sys/devices/virtual/dmi/id/product_name').decode())
+		else:
+			humanReadableName = 'Google App Engine'
 		specsDescription = cpu
 
 
@@ -137,7 +141,7 @@ def OSName():
 			"ProductName") + ', ' + str(platform.version())
 
 	elif platform.system() == 'Linux':
-		return ' '.join(platform.linux_distribution())
+		return ' '.join(platform.platform())
 
 
 def addAttributeToURL(url, attributes):
