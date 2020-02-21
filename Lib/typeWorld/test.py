@@ -1009,7 +1009,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			installFont.type = 'abc'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'duplicateInstallation\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
 
 		installFont = InstallFontResponse()
 		installFont.type = 'success'
