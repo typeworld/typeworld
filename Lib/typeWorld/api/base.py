@@ -23,6 +23,20 @@ LOGINREQUIRED = 'loginRequired'
 
 PROTOCOLS = ['typeworld']
 
+RESPONSES = {
+    SUCCESS: 'The request has been processed successfully.',
+    ERROR: 'There request produced an error. You may add a custom error message in the `errorMessage` field.',
+    UNKNOWNFONT: 'No font could be identified for the given `fontID`.',
+    INSUFFICIENTPERMISSION: 'The Type.World user account credentials couldn’t be confirmed by the publisher (which are checked with the central server) and therefore access to the subscription is denied.',
+    SEATALLOWANCEREACHED: 'The user has exhausted their seat allowances for this font. The app may take them to the publisher’s website as defined in ::LicenseUsage.upgradeURL:: to upgrade their font license.',
+    UNKNOWNINSTALLATION: 'This font installation (combination of app instance and user credentials) is unknown. The response with this error message is crucial to remote de-authorization of app instances. When a user de-authorizes an entire app instance’s worth of font installations, such as when a computer got bricked and re-installed or is lost, the success of the remote de-authorization process is judged by either `success` responses (app actually had this font installed and its deletion has been recorded) or `unknownInstallation` responses (app didn’t have this font installed). All other reponses count as errors in the remote de-authorization process.',
+    NOFONTSAVAILABLE: 'This subscription exists but carries no fonts at the moment.',
+    TEMPORARILYUNAVAILABLE: 'The service is temporarily unavailable but should work again later on.',
+    VALIDTYPEWORLDUSERACCOUNTREQUIRED: 'The access to this subscription requires a valid Type.World user account connected to an app.',
+    REVEALEDUSERIDENTITYREQUIRED: 'The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).',
+    LOGINREQUIRED: 'The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at ::RootResponse.loginURL::. After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.',
+}
+
 # Commands
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
@@ -127,6 +141,16 @@ def makeSemVer(version):
 
     return version
 
+
+def ResponsesDocu(responses):
+
+    text = '\n\n'
+
+    for response in responses:
+
+        text += f'`{response}`: {RESPONSES[response]}\n\n'
+
+    return text
 
 
 class DataType(object):

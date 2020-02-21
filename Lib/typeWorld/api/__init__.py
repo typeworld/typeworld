@@ -579,7 +579,7 @@ class InstallableFontsResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [InstallableFontsResponseType,  True,   None,   'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallableFontsResponse.errorMessage::.' % INSTALLABLEFONTSCOMMAND['responseTypes']],
+        'type':             [InstallableFontsResponseType,  True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLABLEFONTSCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,        False,  None,   'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
         'version':          [VersionDataType,               True,   INSTALLABLEFONTSCOMMAND['currentVersion'],  'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
 
@@ -684,7 +684,7 @@ class InstallFontResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [InstallFontResponseType,   True,   None,   'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::InstallFontResponse.errorMessage::.' % INSTALLFONTCOMMAND['responseTypes']],
+        'type':             [InstallFontResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
         'version':          [VersionDataType,           True,   INSTALLFONTCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 
@@ -746,7 +746,7 @@ class UninstallFontResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [UninstallFontResponseType, True,   None,   'Type of response. This can be any of %s. In case of "error", you may specify an additional message to be presented to the user under ::UninstallFontResponse.errorMessage::.' % UNINSTALLFONTCOMMAND['responseTypes']],
+        'type':             [UninstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
         'version':          [VersionDataType,           True,   UNINSTALLFONTCOMMAND['currentVersion'],     'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 
