@@ -2148,7 +2148,7 @@ class TestStringMethods(unittest.TestCase):
 		print('test_normalSubscription() finished...')
 
 
-	def _test_APIValidator(self):
+	def test_APIValidator(self):
 
 		print('test_APIValidator() started...')
 
