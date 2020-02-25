@@ -12,7 +12,7 @@ sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
 import unittest
-from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults
+from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults, performRequest
 import tempfile, os, traceback
 from typeWorld.api import *
 
@@ -1369,14 +1369,13 @@ class TestStringMethods(unittest.TestCase):
 		print('test_normalSubscription() started...')
 
 		# Announce subscription update
-		url = MOTHERSHIP
 		parameters = {"command": "subscriptionHasChanged",
 					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
 					"APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
 					}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		response = urllib.request.urlopen(url, data, context=sslcontext)
 
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
 
 		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
 
@@ -1389,10 +1388,9 @@ class TestStringMethods(unittest.TestCase):
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 		}
 
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
 
-		response = urllib.request.urlopen(url, data, context=sslcontext)
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
 
@@ -1414,15 +1412,6 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		self.assertFalse(subscription.hasProtectedFonts())
-
-		# Announce subscription update
-		url = MOTHERSHIP
-		parameters = {"command": "subscriptionHasChanged",
-					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
-					}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		response = urllib.request.urlopen(url, data, context=sslcontext)
 
 		# # Logo
 		# user0.client.testScenario = 'simulateProgrammingError'
@@ -1645,9 +1634,10 @@ class TestStringMethods(unittest.TestCase):
 			'anonymousUserID': user1.client.user(),
 			'secretKey': user1.client.secretKey(),
 		}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
-		response = urllib.request.urlopen(url, data, context=sslcontext)
+
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
 
@@ -1670,9 +1660,10 @@ class TestStringMethods(unittest.TestCase):
 			'anonymousUserID': user1.client.user(),
 			'secretKey': user1.client.secretKey(),
 		}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = MOTHERSHIP
-		response = urllib.request.urlopen(url, data, context=sslcontext)
+
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
 
@@ -2166,10 +2157,11 @@ class TestStringMethods(unittest.TestCase):
 		parameters = {"command": "validateAPIEndpoint",
 					"subscriptionURL": protectedSubscription,
 					}
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		response = urllib.request.urlopen(url, data, context=sslcontext)
-		response = json.loads(response.read().decode())
 
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+
+		response = json.loads(response.read().decode())
 		print(response)
 
 		self.assertEqual(response['response'], 'success')

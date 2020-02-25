@@ -97,6 +97,23 @@ def getProtocol(url):
 	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
 
+def performRequest(url, parameters, sslcontext):
+	'''Perform request in a loop 10 times, because the central server’s instance might shut down unexpectedly during a request, especially longer running ones.'''
+
+	success = False
+	message = None
+	data = urllib.parse.urlencode(parameters).encode('ascii')
+
+	for i in range(10):
+		try:
+			response = urllib.request.urlopen(url, data, context=sslcontext)
+			return True, response
+		except:
+			message = f'Response from {url} with parameters {parameters} after {i+1} tries: ' + traceback.format_exc().splitlines()[-1]
+
+	return success, message
+
+
 def splitJSONURL(url):
 
 	customProtocol = 'typeworld://'
@@ -402,8 +419,9 @@ class APIClient(PubSubClient):
 		self.mothership = mothership
 		self.mode = mode # gui or headless
 		self.pubSubSubscriptions = pubSubSubscriptions
+		self._isSetOnline = online
 
-		if online:
+		if self._isSetOnline:
 			import certifi, ssl
 			self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -441,6 +459,15 @@ class APIClient(PubSubClient):
 	# 	commands['uploadSubscriptions'] = []
 	# 	self.preferences.set('pendingOnlineCommands', commands)
 
+	def performRequest(self, url, parameters):
+		if self._isSetOnline:
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://type.worlddd/jsonAPI/'
+			return performRequest(url, parameters, self.sslcontext)
+		else:
+			return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
 
 	def pendingInvitations(self):
 		_list = []
@@ -711,18 +738,10 @@ class APIClient(PubSubClient):
 				'secretKey': self.secretKey(),
 				'clientVersion': typeWorld.api.VERSION,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -760,23 +779,14 @@ class APIClient(PubSubClient):
 				'clientVersion': typeWorld.api.VERSION,
 			}
 
-			if self.testScenario:
-				if self.testScenario == 'simulateFaultyClientVersion':
-					parameters['clientVersion'] = 'abc'
-				elif self.testScenario == 'simulateNoClientVersion':
-					del parameters['clientVersion']
-				else:
-					parameters['testScenario'] = self.testScenario
+			if self.testScenario == 'simulateFaultyClientVersion':
+				parameters['clientVersion'] = 'abc'
+			elif self.testScenario == 'simulateNoClientVersion':
+				del parameters['clientVersion']
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, 'Response from %s: %s' % (url, traceback.format_exc().splitlines()[-1])
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -869,18 +879,10 @@ class APIClient(PubSubClient):
 				'secretKey': self.secretKey(),
 				'clientVersion': typeWorld.api.VERSION,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -917,18 +919,10 @@ class APIClient(PubSubClient):
 				'secretKey': self.secretKey(),
 				'clientVersion': typeWorld.api.VERSION,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -965,18 +959,10 @@ class APIClient(PubSubClient):
 				'secretKey': self.secretKey(),
 				'clientVersion': typeWorld.api.VERSION,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -1176,21 +1162,12 @@ class APIClient(PubSubClient):
 			'secretKey': self.secretKey(userID),
 			'clientVersion': typeWorld.api.VERSION,
 		}
-		if self.testScenario:
-			parameters['testScenario'] = self.testScenario
 
 		parameters = self.addMachineIDToParameters(parameters)
 
-
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = self.mothership
-		if self.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
-
-		try:
-			response = urllib.request.urlopen(url, data, context=self.sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
 
 		response = json.loads(response.read().decode())
 
@@ -1250,18 +1227,10 @@ class APIClient(PubSubClient):
 			'secretKey': self.secretKey(),
 			'clientVersion': typeWorld.api.VERSION,
 		}
-		if self.testScenario:
-			parameters['testScenario'] = self.testScenario
 
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = self.mothership
-		if self.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
-
-		try:
-			response = urllib.request.urlopen(url, data, context=self.sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
 
 		response = json.loads(response.read().decode())
 

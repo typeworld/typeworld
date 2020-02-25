@@ -9,8 +9,11 @@ url = MOTHERSHIP
 parameters = {"command": "validateAPIEndpoint",
 			"subscriptionURL": protectedSubscription,
 			}
-data = urllib.parse.urlencode(parameters).encode('ascii')
-response = urllib.request.urlopen(url, data, context=sslcontext)
-response = json.loads(response.read().decode())
 
-print(response)
+from client import performRequest
+success, response = performRequest(url, parameters, sslcontext)
+
+if success:
+	print(json.loads(response.read().decode()))
+else:
+	print(response)
