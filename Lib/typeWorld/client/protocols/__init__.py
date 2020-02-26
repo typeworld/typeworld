@@ -5,13 +5,11 @@ from typeWorld.client import *
 
 class TypeWorldProtocolBase(object):
 	def __init__(self, url):
-		self.url = url
+		self.url = URL(url)
 
 		# References to objects this is attached to
 		self.client = None
 		self.subscription = None
-
-		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.restDomain = splitJSONURL(url)
 
 		self.initialize()
 
@@ -92,51 +90,30 @@ class TypeWorldProtocolBase(object):
 		self.subscription.set('data', data)
 
 	def keychainKey(self):
-		return '%s, App:%s' % (self.saveURL(), self.client.anonymousAppID())
+		return '%s, App:%s' % (self.unsecretURL(), self.client.anonymousAppID())
 
 	def getSecretKey(self):
 		if self.client:
 			keyring = self.client.keyring()
-			return keyring.get_password(self.keychainKey(), self.subscriptionID)
+			return keyring.get_password(self.keychainKey(), self.url.subscriptionID)
 
 	def setSecretKey(self, secretKey):
 		keyring = self.client.keyring()
-		keyring.set_password(self.keychainKey(), self.subscriptionID, secretKey)
+		keyring.set_password(self.keychainKey(), self.url.subscriptionID, secretKey)
 
 	def deleteSecretKey(self):
 		keyring = self.client.keyring()
-		keyring.delete_password(self.keychainKey(), self.subscriptionID)
-
-	def saveURL(self):
-
-		# Both subscriptionID as well as secretKey defined
-		if self.subscriptionID and self.secretKey:
-			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + ':' + 'secretKey' + '@' + self.restDomain
-		elif self.subscriptionID and not self.secretKey: url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.subscriptionID + '@' + self.restDomain
-		else:
-			url = self.customProtocol + self.protocol + '+' + self.transportProtocol + self.restDomain 
-
-		saveURL = url.replace('https://', 'https//').replace('http://', 'http//')
-
-		return saveURL
+		keyring.delete_password(self.keychainKey(), self.url.subscriptionID)
 
 	def connectURL(self):
-		return self.transportProtocol + self.restDomain
-
-	def completeURL(self):
-
-		url = self.url
-
-		if ':secretKey@' in url:
-			secretKey = self.getSecretKey()
-			if secretKey:
-				url = url.replace(':secretKey@', ':%s@' % secretKey)
-#			else: raise Exception('No secret key found for %s' % url)				
-
-		return url		
+		return self.url.transportProtocol + self.url.restDomain
 
 	def unsecretURL(self):
-		return self.saveURL()
+		return self.url.unsecretURL()
 
 	def secretURL(self):
-		return self.url
+
+		url = self.url.secretURL()
+		if ':secretKey@' in url:
+			url = url.replace(':secretKey@', ':' + self.getSecretKey() + '@')
+		return url

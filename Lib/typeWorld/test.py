@@ -1262,12 +1262,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(typeWorld.client.urlIsValid('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
 
 		# splitJSONURL()
-		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm:accessToken@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'https://',
 			's9lWvayTEOaB9eIIMA67',
 			'bN0QnnNsaE4LfHlOMGkm',
+			'accessToken',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
 		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
@@ -1275,6 +1276,7 @@ class TestStringMethods(unittest.TestCase):
 			'json',
 			'https://',
 			's9lWvayTEOaB9eIIMA67',
+			'',
 			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
@@ -1284,12 +1286,14 @@ class TestStringMethods(unittest.TestCase):
 			'https://',
 			'',
 			'',
+			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
 		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'http://',
+			'',
 			'',
 			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
@@ -1474,14 +1478,14 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# saveURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.saveURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.unsecretURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		# completeURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), protectedSubscription)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscription)
 
 		# Reload client
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
 		user1.loadClient()
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.completeURL(), protectedSubscription)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscription)
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -2148,7 +2152,7 @@ class TestStringMethods(unittest.TestCase):
 		print('test_normalSubscription() finished...')
 
 
-	def test_APIValidator(self):
+	def _test_APIValidator(self):
 
 		print('test_APIValidator() started...')
 

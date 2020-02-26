@@ -74,14 +74,18 @@ def urlIsValid(url):
 
 class URL(object):
 	def __init__(self, url):
-		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.restDomain = splitJSONURL(url)
+		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.accessToken, self.restDomain = splitJSONURL(url)
+
 	def unsecretURL(self):
 		return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + 'secretKey' + '@' + str(self.restDomain)
 
+	def secretURL(self):
+		return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + str(self.secretKey) + '@' + str(self.restDomain)
+
 def getProtocol(url):
 
+	protocol = URL(url).protocol
 
-	customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
 	for ext in ('.py', '.pyc'):
 		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
 
@@ -138,28 +142,28 @@ def splitJSONURL(url):
 
 	subscriptionID = ''
 	secretKey = ''
+	accessToken = ''
+
+	# With credentials
 	if '@' in urlRest:
 
 		credentials, domain = urlRest.split('@')
+		credentialParts = credentials.split(':')
 
-		# Both subscriptionID as well as secretKey defined
-		if ':' in credentials:
-			subscriptionID, secretKey = credentials.split(':')
-			keyURL = transportProtocol + subscriptionID + ':' + 'secretKey' + '@' + domain
-		else:
-			subscriptionID = credentials
-			secretKey = ''
-			keyURL = transportProtocol + subscriptionID + '@' + domain
+		if len(credentialParts) == 3:
+			subscriptionID, secretKey, accessToken = credentialParts
 
-		actualURL = transportProtocol + domain
+		elif len(credentialParts) == 2:
+			subscriptionID, secretKey = credentialParts
+
+		elif len(credentialParts) == 1:
+			subscriptionID = credentialParts[0]
 
 	# No credentials given
 	else:
-		keyURL = url
-		actualURL = url
 		domain = urlRest
 
-	return customProtocol, protocol, transportProtocol, subscriptionID, secretKey, domain
+	return customProtocol, protocol, transportProtocol, subscriptionID, secretKey, accessToken, domain
 
 
 class Preferences(object):
@@ -502,7 +506,7 @@ class APIClient(PubSubClient):
 
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
-				_list.append(subscription.protocol.completeURL())
+				_list.append(subscription.protocol.secretURL())
 
 		return _list
 
@@ -844,7 +848,7 @@ class APIClient(PubSubClient):
 		# Delete subscriptions
 		for publisher in self.publishers():
 			for subscription in publisher.subscriptions():
-				if not subscription.protocol.completeURL() in response['subscriptions']:
+				if not subscription.protocol.secretURL() in response['subscriptions']:
 					subscription.delete(updateSubscriptionsOnServer = False)
 
 		# Success
@@ -1508,9 +1512,9 @@ class APIClient(PubSubClient):
 
 		# Change secret key
 		if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
-			protocol.setSecretKey(protocol.secretKey)
+			protocol.setSecretKey(protocol.url.secretKey)
 			publisher = self.publisher(rootCommand.canonicalURL)
-			subscription = publisher.subscription(protocol.saveURL(), protocol)
+			subscription = publisher.subscription(protocol.unsecretURL(), protocol)
 
 		else:
 			# Initial Health Check
@@ -1525,7 +1529,7 @@ class APIClient(PubSubClient):
 				return False, message, None, None
 
 			publisher = self.publisher(rootCommand.canonicalURL)
-			subscription = publisher.subscription(protocol.saveURL(), protocol)
+			subscription = publisher.subscription(protocol.unsecretURL(), protocol)
 
 			# Success
 			subscription.save()
@@ -1885,7 +1889,7 @@ class APISubscription(PubSubClient):
 		self.protocol = protocol
 		self.protocol.subscription = self
 		self.protocol.client = self.parent.parent
-		self.url = self.protocol.saveURL()
+		self.url = self.protocol.unsecretURL()
 
 		self.stillAliveTouched = None
 		self._updatingProblem = None
@@ -1927,7 +1931,7 @@ class APISubscription(PubSubClient):
 
 			parameters = {
 				'command': 'registerAPIEndpoint',
-				'url': 'typeworld://%s+%s' % (self.protocol.protocol, self.parent.canonicalURL.replace('://', '//')),
+				'url': 'typeworld://%s+%s' % (self.protocol.url.protocol, self.parent.canonicalURL.replace('://', '//')),
 			}
 			if self.parent.parent.testScenario:
 				parameters['testScenario'] = self.parent.parent.testScenario
@@ -1974,7 +1978,7 @@ class APISubscription(PubSubClient):
 				'command': 'inviteUserToSubscription',
 				'targetUserEmail': targetEmail,
 				'sourceUserEmail': self.parent.parent.userEmail(),
-				'subscriptionURL': self.protocol.completeURL(),
+				'subscriptionURL': self.protocol.secretURL(),
 				'clientVersion': typeWorld.api.VERSION,
 			}
 			if self.parent.parent.testScenario:
@@ -2003,7 +2007,7 @@ class APISubscription(PubSubClient):
 
 
 		# if response['response'] == 'invalidSubscriptionURL':
-		# 	return False, 'The subscription URL %s is invalid.' % subscription.protocol.completeURL()
+		# 	return False, 'The subscription URL %s is invalid.' % subscription.protocol.secretURL()
 
 		# elif response['response'] == 'unknownTargetEmail':
 		# 	return False, 'The invited user doesn’t have a valid Type.World user account as %s.' % email
@@ -2023,7 +2027,7 @@ class APISubscription(PubSubClient):
 				'command': 'revokeSubscriptionInvitation',
 				'targetUserEmail': targetEmail,
 				'sourceUserEmail': self.parent.parent.userEmail(),
-				'subscriptionURL': self.protocol.completeURL(),
+				'subscriptionURL': self.protocol.secretURL(),
 			}
 			if self.parent.parent.testScenario:
 				parameters['testScenario'] = self.parent.parent.testScenario
@@ -2360,7 +2364,7 @@ class APISubscription(PubSubClient):
 		self.parent._updatingSubscriptions.append(self.url)
 
 
-		if self.parent.parent.online(self.protocol.restDomain.split('/')[0]):
+		if self.parent.parent.online(self.protocol.url.restDomain.split('/')[0]):
 
 			self.stillAlive()
 
@@ -2400,7 +2404,7 @@ class APISubscription(PubSubClient):
 		return self._updatingProblem
 
 	def get(self, key):
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.saveURL()) or {})
+		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
 		if key in preferences:
 
 			o = preferences[key]
@@ -2415,14 +2419,14 @@ class APISubscription(PubSubClient):
 
 	def set(self, key, value):
 
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.saveURL()) or {})
+		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
 		preferences[key] = value
-		self.parent.parent.preferences.set('subscription(%s)' % self.protocol.saveURL(), preferences)
+		self.parent.parent.preferences.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
 
 	def save(self):
 		subscriptions = self.parent.get('subscriptions') or []
-		if not self.protocol.saveURL() in subscriptions:
-			subscriptions.append(self.protocol.saveURL())
+		if not self.protocol.unsecretURL() in subscriptions:
+			subscriptions.append(self.protocol.unsecretURL())
 		self.parent.set('subscriptions', subscriptions)
 
 		self.protocol.save()
@@ -2458,17 +2462,17 @@ class APISubscription(PubSubClient):
 
 
 		# New
-		self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.saveURL())
+		self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.unsecretURL())
 
 		# Subscriptions
 		subscriptions = self.parent.get('subscriptions')
-		subscriptions.remove(self.protocol.saveURL())
+		subscriptions.remove(self.protocol.unsecretURL())
 		self.parent.set('subscriptions', subscriptions)
 		self.parent._subscriptions = {}
 
 
 		# # currentSubscription
-		# if self.parent.get('currentSubscription') == self.protocol.saveURL():
+		# if self.parent.get('currentSubscription') == self.protocol.unsecretURL():
 		# 	if len(subscriptions) >= 1:
 		# 		self.parent.set('currentSubscription', subscriptions[0])
 

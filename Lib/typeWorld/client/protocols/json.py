@@ -7,11 +7,6 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 	d['warnings'] = []
 	d['information'] = []
 
-	# Take URL apart here
-	customProtocol, protocol, transportProtocol, subscriptionID, secretKey, restDomain = splitJSONURL(url)
-	url = transportProtocol + restDomain
-
-
 	request = urllib.request.Request(url)
 
 	if not 'source' in data:
@@ -90,12 +85,12 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 			# Read response
 			data = {
-				'subscriptionID': self.subscriptionID, 
+				'subscriptionID': self.url.subscriptionID, 
 				'appVersion': typeWorld.api.VERSION,
 			}
 			if testScenario:
 				data['testScenario'] = testScenario
-			api, responses = readJSONResponse(self.url, typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			api, responses = readJSONResponse(self.connectURL(), typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 			
 			# Errors
 			if responses['errors']:
@@ -113,13 +108,12 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 	def protocolName(self):
 		return 'Type.World JSON Protocol'
 
-
 	def update(self):
 
 		self.updateRootCommand()
 
 		data = {
-			'subscriptionID': self.subscriptionID, 
+			'subscriptionID': self.url.subscriptionID, 
 			'command': 'installableFonts', 
 			'anonymousAppID': self.client.anonymousAppID(), 
 			'anonymousTypeWorldUserID': self.client.user(),
@@ -136,20 +130,20 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		if responses['errors']:
 			
-			if self.url in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
 			self.subscription._updatingProblem = '\n'.join(responses['errors'])
 			return False, self.subscription._updatingProblem, False
 
 		if api.type == 'error':
-			if self.url in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
 			self.subscription._updatingProblem = api.errorMessage
 			return False, self.subscription._updatingProblem, False
 
 		if api.type in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
-			if self.url in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url)
+			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
 			self.subscription._updatingProblem = '#(response.%s)' % api.type
 			return False, self.subscription._updatingProblem, False
 
@@ -209,7 +203,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 								'fontID': urllib.parse.quote_plus(fontID),
 								'anonymousAppID': self.client.anonymousAppID(),
 								'anonymousTypeWorldUserID': self.client.user(),
-								'subscriptionID': self.subscriptionID,
+								'subscriptionID': self.url.subscriptionID,
 								'secretKey': self.getSecretKey(),
 								'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 								'appVersion': typeWorld.api.VERSION,
@@ -256,7 +250,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							'fontVersion': str(version),
 							'anonymousAppID': self.client.anonymousAppID(),
 							'anonymousTypeWorldUserID': self.client.user(),
-							'subscriptionID': self.subscriptionID,
+							'subscriptionID': self.url.subscriptionID,
 							'secretKey': self.getSecretKey(),
 							'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
 							'appVersion': typeWorld.api.VERSION,
@@ -297,8 +291,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		# Read response
 		data = {
-			'subscriptionID': self.subscriptionID, 
-			'secretKey': self.secretKey, 
+			'subscriptionID': self.url.subscriptionID, 
+			'secretKey': self.url.secretKey, 
 			'anonymousAppID': anonymousAppID, 
 			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
@@ -309,7 +303,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		if testScenario:
 			data['testScenario'] = testScenario
 
-		api, responses = readJSONResponse(self.url, typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		
 		# Errors
 		if responses['errors']:
@@ -336,8 +330,8 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 		self._installableFontsCommand = api
 
-		if self.secretKey:
-			self.setSecretKey(self.secretKey)
+		if self.url.secretKey:
+			self.setSecretKey(self.url.secretKey)
 		return True, None
 
 	def save(self):
