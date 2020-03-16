@@ -1640,7 +1640,10 @@ class TestStringMethods(unittest.TestCase):
 		}
 
 		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		if success == False:
+			print(response)
 		self.assertEqual(success, True)
+
 
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')

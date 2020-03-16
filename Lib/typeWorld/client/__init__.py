@@ -1510,6 +1510,12 @@ class APIClient(PubSubClient):
 		else:
 			return False, message, None, None
 
+		if not updateSubscriptionsOnServer and protocol.url.accessToken:
+			return False, 'Accessing a subscription with an access token requires the subscription to be synched to the server afterwards, but `updateSubscriptionsOnServer` is set to False.', None, None
+
+		if not self.user() and protocol.url.accessToken:
+			return False, 'Accessing a subscription with an access token requires the app to be linked to a Type.World user account.', None, None
+
 		# Change secret key
 		if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
 			protocol.setSecretKey(protocol.url.secretKey)
@@ -1518,7 +1524,7 @@ class APIClient(PubSubClient):
 
 		else:
 			# Initial Health Check
-			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
+			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 			if not success:
 				if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 					message = response

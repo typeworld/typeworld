@@ -284,7 +284,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 
 
 
-	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey, testScenario):
+	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, accessToken, secretTypeWorldAPIKey, testScenario):
 		'''Overwrite this.
 		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
 		Return False, 'message' in case of errors.'''
@@ -295,6 +295,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			'secretKey': self.url.secretKey, 
 			'anonymousAppID': anonymousAppID, 
 			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
+			'accessToken': accessToken, 
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
 			'command': 'installableFonts',
 			'appVersion': typeWorld.api.VERSION,
