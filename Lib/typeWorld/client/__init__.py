@@ -1915,6 +1915,37 @@ class APISubscription(PubSubClient):
 			self.set('lastPubSubMessage', int(time.time()))
 
 
+	def announceChange(self):
+
+		userID = self.user()
+
+		if userID:
+
+			self.preferences.set('lastServerSync', int(time.time()))
+
+			self.log('Uploading subscriptions: %s' % oldURLs)
+
+			parameters = {
+				'command': 'updateSubscription',
+				'anonymousAppID': self.anonymousAppID(),
+				'anonymousUserID': userID,
+				'subscriptionURLs': ','.join(oldURLs),
+				'secretKey': self.secretKey(),
+				'clientVersion': typeWorld.api.VERSION,
+			}
+
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
+
+			response = json.loads(response.read().decode())
+
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+		# Success
+		return True, None
+
 	def hasProtectedFonts(self):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
