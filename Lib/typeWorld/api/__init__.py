@@ -214,7 +214,7 @@ class Font(DictBasedObject):
                 critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
 
         # Checking uniqueID for file name contradictions:
-        forbidden = '/?<>\\:*|^'
+        forbidden = '/?<>\\:*|^,'
         for char in forbidden:
             if self.uniqueID.count(char) > 0:
                 critical.append("uniqueID must not contain the character %s because it will be used for the font's file name on disk." % char)
