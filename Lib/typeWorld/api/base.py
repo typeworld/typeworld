@@ -148,7 +148,7 @@ def ResponsesDocu(responses):
 
     for response in responses:
 
-        text += f'`{response}`: {RESPONSES[response]}\n\n'
+        text += '`%s`: %s\n\n' % (response, RESPONSES[response])
 
     return text
 
