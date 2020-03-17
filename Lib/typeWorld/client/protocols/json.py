@@ -135,21 +135,21 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 			self.subscription._updatingProblem = '\n'.join(responses['errors'])
 			return False, self.subscription._updatingProblem, False
 
-		if api.type == 'error':
+		if api.response == 'error':
 			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
 				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
 			self.subscription._updatingProblem = api.errorMessage
 			return False, self.subscription._updatingProblem, False
 
-		if api.type in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
+		if api.response in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
 			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
 				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
-			self.subscription._updatingProblem = '#(response.%s)' % api.type
+			self.subscription._updatingProblem = '#(response.%s)' % api.response
 			return False, self.subscription._updatingProblem, False
 
 
 		# Detect installed fonts now not available in subscription anymore and delete them
-		if api.type == typeWorld.api.NOFONTSAVAILABLE:
+		if api.response == typeWorld.api.NOFONTSAVAILABLE:
 			for foundry in self._installableFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
@@ -186,7 +186,7 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		return True, None, not identical
 
 
-	def removeFont(self, fontID):
+	def removeFont(self, fontIDs):
 
 		success, installableFontsCommand = self.installableFontsCommand()
 
@@ -194,13 +194,13 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		for foundry in installableFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
-					if font.uniqueID == fontID:
+					if font.uniqueID == fontIDs:
 
 						if font.protected:
 						
 							data = {
-								'command': 'uninstallFont',
-								'fontID': urllib.parse.quote_plus(fontID),
+								'command': 'uninstallFonts',
+								'fontIDs': urllib.parse.quote_plus(fontIDs),
 								'anonymousAppID': self.client.anonymousAppID(),
 								'anonymousTypeWorldUserID': self.client.user(),
 								'subscriptionID': self.url.subscriptionID,
@@ -212,76 +212,57 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 							if self.client.testScenario:
 								data['testScenario'] = self.client.testScenario
 
-							api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontResponse(), UNINSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
+							api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontsResponse(), UNINSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
 
 							proceed = ['unknownInstallation'] # 
 
 							if messages['errors']:
 								return False, '\n\n'.join(messages['errors'])
 
-							elif api.type == 'error':
+							elif api.response == 'error':
 								return False, api.errorMessage
 
 							# Predefined response messages
-							elif api.type != 'error' and api.type != 'success':
+							elif api.response != 'error' and api.response != 'success':
 								
-								if not api.type in proceed:
-									return False, '#(response.%s)' % api.type
+								if not api.response in proceed:
+									return False, '#(response.%s)' % api.response
 
 						return True, None
 
 
 
-	def installFont(self, fontID, version):
+	def installFonts(self, fonts):
 
-		success, installableFontsCommand = self.installableFontsCommand()
+		# Build URL
 
-		# Get font
-		for foundry in installableFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == fontID:
-						
-						# Build URL
+		data = {
+			'command': 'installFonts',
+			'fonts': ','.join([f'{x[0]}/{x[1]}' for x in fonts]),
+			'anonymousAppID': self.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': self.client.user(),
+			'subscriptionID': self.url.subscriptionID,
+			'secretKey': self.getSecretKey(),
+			'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
+			'appVersion': typeWorld.api.VERSION,
+			'mothership': self.client.mothership,
+		}
+		if self.client.testScenario:
+			data['testScenario'] = self.client.testScenario
 
-						data = {
-							'command': 'installFont',
-							'fontID': urllib.parse.quote_plus(fontID),
-							'fontVersion': str(version),
-							'anonymousAppID': self.client.anonymousAppID(),
-							'anonymousTypeWorldUserID': self.client.user(),
-							'subscriptionID': self.url.subscriptionID,
-							'secretKey': self.getSecretKey(),
-							'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
-							'appVersion': typeWorld.api.VERSION,
-							'mothership': self.client.mothership,
-						}
-						if self.client.testScenario:
-							data['testScenario'] = self.client.testScenario
+		if self.subscription.get('revealIdentity') and self.client.userName():
+			data['userName'] = self.client.userName()
+		if self.subscription.get('revealIdentity') and self.client.userEmail():
+			data['userEmail'] = self.client.userEmail()
 
-						if self.subscription.get('revealIdentity') and self.client.userName():
-							data['userName'] = self.client.userName()
-						if self.subscription.get('revealIdentity') and self.client.userEmail():
-							data['userEmail'] = self.client.userEmail()
+		# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 
-						# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
+		api, messages = readJSONResponse(self.connectURL(), typeWorld.api.InstallFontsResponse(), INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
 
-						api, messages = readJSONResponse(self.connectURL(), typeWorld.api.InstallFontResponse(), INSTALLFONTCOMMAND['acceptableMimeTypes'], data = data)
+		if messages['errors']:
+			return False, '\n\n'.join(messages['errors'])
 
-						if messages['errors']:
-							return False, '\n\n'.join(messages['errors'])
-
-						if api.type == 'error':
-							return False, api.errorMessage
-
-						# Predefined response messages
-						elif api.type != 'error' and api.type != 'success':
-							return False, ['#(response.%s)' % api.type, '#(response.%s.headline)' % api.type]
-
-						elif api.type == 'success':
-							return True, api
-
-
+		return True, api
 
 
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, accessToken, secretTypeWorldAPIKey, testScenario):
@@ -317,15 +298,15 @@ class TypeWorldProtocol(TypeWorldProtocolBase):
 		else:
 			return False, 'Error when getting rootCommand: %s' % message
 
-		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFont' in rootCommand.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" or "installFont" commands.' % rootCommand.canonicalURL
+		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFonts' in rootCommand.supportedCommands:
+			return False, 'API endpoint %s does not support the "installableFonts" or "installFonts" commands.' % rootCommand.canonicalURL
 
-		if api.type == 'error':
+		if api.response == 'error':
 			return False, api.errorMessage
 
 		# Predefined response messages
-		if api.type != 'error' and api.type != 'success':
-			return False, ['#(response.%s)' % api.type, '#(response.%s.headline)' % api.type]
+		if api.response != 'error' and api.response != 'success':
+			return False, ['#(response.%s)' % api.response, '#(response.%s.headline)' % api.response]
 
 		# Success
 

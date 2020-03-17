@@ -44,25 +44,31 @@ INSTALLABLEFONTSCOMMAND = {
     'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
+INSTALLFONTSCOMMAND ={
+    'keyword': 'installFonts',
+    'currentVersion': VERSION,
+    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED, REVEALEDUSERIDENTITYREQUIRED, LOGINREQUIRED],
+    'acceptableMimeTypes': ['application/json'],
+    }
 INSTALLFONTCOMMAND ={
     'keyword': 'installFont',
     'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED, REVEALEDUSERIDENTITYREQUIRED, LOGINREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
-UNINSTALLFONTCOMMAND =  {
-    'keyword': 'uninstallFont',
+UNINSTALLFONTSCOMMAND =  {
+    'keyword': 'uninstallFonts',
     'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, UNKNOWNINSTALLATION, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
 
-COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTCOMMAND, UNINSTALLFONTCOMMAND]
+COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND]
 
 
 FONTPURPOSES = {
     'desktop': {
-        'acceptableMimeTypes': ['font/collection', 'font/otf', 'font/sfnt', 'font/ttf', 'application/zip'],
+        'acceptableMimeTypes': ['font/collection', 'font/otf', 'font/sfnt', 'font/ttf'],
     },
     'web': {
         'acceptableMimeTypes': ['application/zip'],
@@ -1125,6 +1131,7 @@ class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
     
     def valid(self):
         if not self.value: return True
+
         if self.value in OPENSOURCELICENSES:
             return True
         else:
@@ -1137,6 +1144,7 @@ class SupportedAPICommandsDataType(UnicodeDataType):
 
     def valid(self):
         if not self.value: return True
+
         if self.value in self.commands:
             return True
         else:
@@ -1150,12 +1158,19 @@ class FontPurposeDataType(UnicodeDataType):
     def valid(self):
         if not self.value: return True
 
-        if not self.value: return True
-
         if self.value in list(FONTPURPOSES.keys()):
             return True
         else:
             return 'Unknown font type: "%s". Possible: %s' % (self.value, list(FONTPURPOSES.keys()))
+
+class FontMimeType(UnicodeDataType):
+    def valid(self):
+        if not self.value: return True
+
+        if self.value in list(FONTPURPOSES['desktop']['acceptableMimeTypes']):
+            return True
+        else:
+            return 'Unknown font MIME Type: "%s". Possible: %s' % (self.value, list(FONTPURPOSES['desktop']['acceptableMimeTypes']))
 
 
 class FontStatusDataType(UnicodeDataType):

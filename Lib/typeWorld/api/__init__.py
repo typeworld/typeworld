@@ -47,7 +47,7 @@ class LicenseUsage(DictBasedObject):
 
         'keyword':                      [UnicodeDataType,       True,   None,   'Keyword reference of font’s license. This license must be specified in ::Foundry.licenses::'],
         'seatsAllowed':                 [IntegerDataType,       False,  None,   'In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.'],
-        'seatsInstalled':               [IntegerDataType,       False,  None,   'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.' % (INSTALLFONTCOMMAND['keyword'], UNINSTALLFONTCOMMAND['keyword'], INSTALLFONTCOMMAND['keyword'])],
+        'seatsInstalled':               [IntegerDataType,       False,  None,   'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.' % (INSTALLFONTSCOMMAND['keyword'], UNINSTALLFONTSCOMMAND['keyword'], INSTALLFONTSCOMMAND['keyword'])],
         'allowanceDescription':         [MultiLanguageTextProxy,False,  None,   'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
         'upgradeURL':                   [WebURLDataType,        False,  None,   'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.'],
         'dateAddedForUser':             [DateDataType,          False,  None,   'Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
@@ -156,7 +156,7 @@ class Font(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
         'name':             [MultiLanguageTextProxy,        True,   None,   'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \\ : * | ^'],
+        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \\ : * | ^'],
         'postScriptName':   [UnicodeDataType,       True,   None,   'Complete PostScript name of font'],
         'setName':          [MultiLanguageTextProxy,False,  None,   'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
         'versions':         [VersionListProxy,      False,  None,   'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
@@ -214,7 +214,7 @@ class Font(DictBasedObject):
                 critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
 
         # Checking uniqueID for file name contradictions:
-        forbidden = '/?<>\\:*|^,'
+        forbidden = '/?<>\\:*|^,;'
         for char in forbidden:
             if self.uniqueID.count(char) > 0:
                 critical.append("uniqueID must not contain the character %s because it will be used for the font's file name on disk." % char)
@@ -540,8 +540,8 @@ class BaseResponse(DictBasedObject):
     def customValidation(self):
         information, warnings, critical = [], [], []
 
-        if hasattr(self, 'type') and self.type == ERROR and self.errorMessage.isEmpty():
-            critical.append('%s.type is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
+        if hasattr(self, 'type') and self.response == ERROR and self.errorMessage.isEmpty():
+            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         return information, warnings, critical
 
@@ -579,9 +579,8 @@ class InstallableFontsResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [InstallableFontsResponseType,  True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLABLEFONTSCOMMAND['responseTypes']))],
-        'errorMessage':     [MultiLanguageTextProxy,        False,  None,   'Description of error in case of ::InstallableFontsResponse.type:: being "custom".'],
-        'version':          [VersionDataType,               True,   INSTALLABLEFONTSCOMMAND['currentVersion'],  'Version of "%s" response' % INSTALLABLEFONTSCOMMAND['keyword']],
+        'response':             [InstallableFontsResponseType,  True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLABLEFONTSCOMMAND['responseTypes']))],
+        'errorMessage':     [MultiLanguageTextProxy,        False,  None,   'Description of error in case of ::InstallableFontsResponse.response:: being "custom".'],
 
         # Response-specific
         'designers':        [DesignersListProxy,            False,  None,   'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
@@ -605,7 +604,7 @@ class InstallableFontsResponse(BaseResponse):
 
     def discardThisKey(self, key):
         
-        if key in ['foundries', 'designers', 'licenseIdentifier'] and self.type != 'success':
+        if key in ['foundries', 'designers', 'licenseIdentifier'] and self.response != 'success':
             return True
 
         return False
@@ -613,7 +612,7 @@ class InstallableFontsResponse(BaseResponse):
     def customValidation(self):
         information, warnings, critical = [], [], []
 
-        if self.type == 'success' and not self.name.getText():
+        if self.response == 'success' and not self.name.getText():
             warnings.append('The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.')
 
 
@@ -652,24 +651,25 @@ class InstallableFontsResponse(BaseResponse):
 
 ####################################################################################################################################
 
-#  InstallFont
+#  InstallFonts
+
 
 class InstallFontResponseType(ResponseCommandDataType):
     def valid(self):
         if not self.value: return True
 
-        if self.value in INSTALLFONTCOMMAND['responseTypes']:
+        if self.value in INSTALLFONTSCOMMAND['responseTypes']:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTCOMMAND['responseTypes'])
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTSCOMMAND['responseTypes'])
 
-class InstallFontResponse(BaseResponse):
+class InstallFontAsset(BaseResponse):
     '''\
     This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
 
     ```python
     # Create root object
-    installFonts = InstallFontResponse()
+    installFonts = InstallFontsResponse()
 
     # Add data to the command here
     # ...
@@ -684,13 +684,13 @@ class InstallFontResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [InstallFontResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTCOMMAND['responseTypes']))],
+        'response':             [InstallFontResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTSCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
-        'version':          [VersionDataType,           True,   INSTALLFONTCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
 
-        'font':             [FontDataType,              False,  None,   'Binary font data encoded to a string using ::InstallFontResponse.encoding::'],
+        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
+        'mimeType':         [FontMimeType,              True,  None,   'MIME Type of data. For desktop fonts, these are %s.' % FONTPURPOSES['desktop']['acceptableMimeTypes']],
+        'data':             [FontDataType,              False,  None,   'Binary data encoded to a string using ::InstallFontResponse.encoding::'],
         'encoding':         [FontEncodingDataType,      False,  None,   'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
-        'fileName':         [UnicodeDataType,           False,  None,   'Suggested file name of font. This may be ignored by the app in favour of a unique file name.'],
 
         }
 
@@ -698,10 +698,10 @@ class InstallFontResponse(BaseResponse):
 
         information, warnings, critical = [], [], []
 
-        if self.type == 'success' and not self.font:
-            critical.append('%s.type is set to success, but %s.font is missing' % (self, self))
+        if self.response == 'success' and not self.data:
+            critical.append('%s.response is set to success, but %s.font is missing' % (self, self))
 
-        if self.font and not self.encoding:
+        if self.data and not self.encoding:
             critical.append('%s.font is set, but %s.encoding is missing' % (self, self))
 
         newInformation, newWarnings, newCritical = super().customValidation()
@@ -712,26 +712,58 @@ class InstallFontResponse(BaseResponse):
         return information, warnings, critical
 
 
+
+class InstallFontAssetProxy(Proxy):
+    dataType = InstallFontAsset
+
+class InstallFontAssetListProxy(ListProxy):
+    dataType = InstallFontAssetProxy
+
+class InstallFontsResponse(BaseResponse):
+    '''\
+    This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
+
+    ```python
+    # Create root object
+    installFonts = InstallFontsResponse()
+
+    # Add data to the command here
+    # ...
+
+    # Return the call’s JSON content to the HTTP request
+    return installFonts.dumpJSON()
+    ```
+
+    '''
+
+    #   key:                    [data type, required, default value, description]
+    _structure = {
+
+        # Root
+        'assets':    [InstallFontAssetListProxy,   True,   None,   'List of ::InstallFontResponse:: objects.'],
+        }
+
+
 ####################################################################################################################################
 
 #  Uninstall Fonts
 
-class UninstallFontResponseType(ResponseCommandDataType):
+class UninstallFontsResponseType(ResponseCommandDataType):
     def valid(self):
         if not self.value: return True
 
-        if self.value in UNINSTALLFONTCOMMAND['responseTypes']:
+        if self.value in UNINSTALLFONTSCOMMAND['responseTypes']:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTCOMMAND['responseTypes'])
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTSCOMMAND['responseTypes'])
 
-class UninstallFontResponse(BaseResponse):
+class UninstallFontsResponse(BaseResponse):
     '''\
     This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
 
     ```python
     # Create root object
-    uninstallFonts = UninstallFontResponse()
+    uninstallFonts = UninstallFontsResponse()
 
     # Add data to the command here
     # ...
@@ -746,9 +778,8 @@ class UninstallFontResponse(BaseResponse):
     _structure = {
 
         # Root
-        'type':             [UninstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTCOMMAND['responseTypes']))],
+        'response':             [UninstallFontsResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
-        'version':          [VersionDataType,           True,   UNINSTALLFONTCOMMAND['currentVersion'],     'Version of "%s" response' % UNINSTALLFONTCOMMAND['keyword']],
 
         # Response-specific
         }
@@ -790,7 +821,7 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
         'website':              [WebURLDataType,            False,  None,   'URL of human-visitable website of API endpoint, for publication'],
         'privacyPolicy':        [WebURLDataType,            True,   'https://type.world/legal/default/PrivacyPolicy.html',  'URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
         'termsOfServiceAgreement': [WebURLDataType,         True,   'https://type.world/legal/default/TermsOfService.html',     'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
-        'version':          [VersionDataType,           True,   INSTALLFONTCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTCOMMAND['keyword']],
+        'version':          [VersionDataType,           True,   INSTALLFONTSCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTSCOMMAND['keyword']],
         'loginURL':          [WebURLDataType,           False,   None,   'URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.'],
     }
 

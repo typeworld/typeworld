@@ -51,7 +51,7 @@ class TypeWorldProtocolBase(object):
 	# 	'''Overwrite this'''
 	# 	return True, False, changes
 
-	# def installFont(self, fontID, version):
+	# def installFonts(self, fontID, version):
 	# 	'''Overwrite this'''
 	# 	pass
 

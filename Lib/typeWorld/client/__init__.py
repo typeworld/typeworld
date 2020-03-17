@@ -2284,8 +2284,7 @@ class APISubscription(PubSubClient):
 
 
 
-	def installFont(self, fontID, version, folder = None):
-
+	def installFonts(self, fonts):
 
 		# Terms of Service
 		if self.get('acceptedTermsOfService') != True:
@@ -2293,56 +2292,87 @@ class APISubscription(PubSubClient):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
+		installTheseFontIDs = []
+
 		folder = self.parent.folder()
-		path = None
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == fontID:
-						path = os.path.join(folder, font.filename(version))
-						break
 
-		assert path
+		fontIDs = []
 
-		self.parent.parent.delegate.fontWillInstall(font)
+		for fontID, version in fonts:
 
-		# Test for permissions here
-		try:
-			if self.parent.parent.testScenario == 'simulatePermissionError':
-				raise PermissionError
-			else:
-				if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-				f = open(path + '.test', 'w')
-				f.write('test')
-				f.close()
-				os.remove(path + '.test')
-		except PermissionError:
-			self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
-			return False, "Insufficient permission to install font."
+			fontIDs.append(fontID)
 
-		assert os.path.exists(path + '.test') == False
+			path = None
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if font.uniqueID == fontID:
+							path = os.path.join(folder, font.filename(version))
+							break
+			assert path
+
+			self.parent.parent.delegate.fontWillInstall(font)
+
+			# Test for permissions here
+			try:
+				if self.parent.parent.testScenario == 'simulatePermissionError':
+					raise PermissionError
+				else:
+					if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+					f = open(path + '.test', 'w')
+					f.write('test')
+					f.close()
+					os.remove(path + '.test')
+			except PermissionError:
+				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
+				return False, "Insufficient permission to install font."
+
+			assert os.path.exists(path + '.test') == False
+
+			installTheseFontIDs.append(fontID)
 
 		# Server access
-		success, payload = self.protocol.installFont(fontID, version)		
+		success, payload = self.protocol.installFonts(fonts)		
 
 		if success:
 
-			command = payload
+			# Security check
+			if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+				return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
-			if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-			f = open(path, 'wb')
-			f.write(base64.b64decode(command.font))
-			f.close()
+			# Process fonts
+			for incomingFont in payload.assets:
 
+				if incomingFont.response == 'error':
+					return False, incomingFont.errorMessage
+
+				# Predefined response messages
+				elif incomingFont.response != 'error' and incomingFont.response != 'success':
+					return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+
+				if incomingFont.response == 'success':
+
+					path = None
+					for foundry in installabeFontsCommand.foundries:
+						for family in foundry.families:
+							for font in family.fonts:
+								if font.uniqueID == incomingFont.uniqueID:
+									path = os.path.join(folder, font.filename(version))
+									break
+					assert path
+
+					if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+					f = open(path, 'wb')
+					f.write(base64.b64decode(incomingFont.data))
+					f.close()
+
+					self.parent.parent.delegate.fontHasInstalled(True, None, font)
 
 			# Ping
 			self.stillAlive()
 
-			self.parent.parent.delegate.fontHasInstalled(True, None, font)
 			return True, None
-			# else:
-			# 	self.parent.parent.delegate.fontHasInstalled(False, 'Font file could not be written: %s' % path, font)
-			# 	return False, 'Font file could not be written: %s' % path
+
 
 		else:
 			self.parent.parent.delegate.fontHasInstalled(False, payload, font)
