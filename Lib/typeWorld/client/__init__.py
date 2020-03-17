@@ -77,10 +77,27 @@ class URL(object):
 		self.customProtocol, self.protocol, self.transportProtocol, self.subscriptionID, self.secretKey, self.accessToken, self.restDomain = splitJSONURL(url)
 
 	def unsecretURL(self):
-		return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + 'secretKey' + '@' + str(self.restDomain)
+
+		if self.subscriptionID and self.secretKey:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + 'secretKey' + '@' + str(self.restDomain)
+
+		elif self.subscriptionID:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + '@' + str(self.restDomain)
+
+		else:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.restDomain)
+
 
 	def secretURL(self):
-		return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + str(self.secretKey) + '@' + str(self.restDomain)
+
+		if self.subscriptionID and self.secretKey:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + ':' + str(self.secretKey) + '@' + str(self.restDomain)
+
+		elif self.subscriptionID:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.subscriptionID) + '@' + str(self.restDomain)
+
+		else:
+			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.restDomain)
 
 def getProtocol(url):
 
