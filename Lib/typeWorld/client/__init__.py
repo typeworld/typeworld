@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, re, traceback, json, time, base64, socket, subprocess, threading
+import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading
 from time import gmtime, strftime
 
 import typeWorld.api, typeWorld.api.base
-from typeWorld.api import *
-from typeWorld.api.base import *
+from typeWorld.api.base import VERSION
 
-from typeWorld.client.helpers import *
+from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName
 
-import platform
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
@@ -26,8 +23,7 @@ else:
 	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
 
 if MAC:
-	import objc
-	from AppKit import NSDictionary, NSUserDefaults
+	from AppKit import NSUserDefaults
 
 class DummyKeyring(object):
 	def __init__(self):
@@ -402,7 +398,7 @@ class PubSubClient(object):
 		if client.pubSubSubscriptions:
 			if self.executeCondition():
 
-				if client.mode == 'gui': stillAliveThread = threading.Thread(target=self.pubSubDelete_worker).start()
+				if client.mode == 'gui': threading.Thread(target=self.pubSubDelete_worker).start()
 				elif client.mode == 'headless': self.pubSubDelete_worker()
 
 	def pubSubDelete_worker(self):
@@ -587,6 +583,7 @@ class APIClient(PubSubClient):
 			if MAC or LINUX:
 				out = subprocess.Popen('ping %s -c 1' % server, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, shell=True)
 				output, result = out.communicate()[0].decode(), out.returncode
+				assert output
 			if WIN:
 				CREATE_NO_WINDOW = 0x08000000
 				result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
@@ -757,7 +754,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -797,7 +794,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'userTimezone': self.timezone(),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			if self.testScenario == 'simulateFaultyClientVersion':
@@ -886,7 +883,7 @@ class APIClient(PubSubClient):
 	def performAcceptInvitation(self, IDs):
 
 		userID = self.user()
-		oldURLs = self.secretSubscriptionURLs()
+#		oldURLs = self.secretSubscriptionURLs()
 
 		if userID:
 
@@ -898,7 +895,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -926,7 +923,7 @@ class APIClient(PubSubClient):
 	def performDeclineInvitation(self, IDs):
 
 		userID = self.user()
-		oldURLs = self.secretSubscriptionURLs()
+#		oldURLs = self.secretSubscriptionURLs()
 
 		if userID:
 
@@ -938,7 +935,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -978,7 +975,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -1181,7 +1178,7 @@ class APIClient(PubSubClient):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'secretKey': self.secretKey(userID),
-			'clientVersion': typeWorld.api.VERSION,
+			'clientVersion': VERSION,
 		}
 
 		parameters = self.addMachineIDToParameters(parameters)
@@ -1232,7 +1229,7 @@ class APIClient(PubSubClient):
 					for family in foundry.families:
 						for font in family.fonts:
 							if font.protected:
-								subscription.removeFont(font.uniqueID)
+								subscription.removeFonts([font.uniqueID])
 
 
 	def performUnlinkUser(self):
@@ -1246,7 +1243,7 @@ class APIClient(PubSubClient):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'secretKey': self.secretKey(),
-			'clientVersion': typeWorld.api.VERSION,
+			'clientVersion': VERSION,
 		}
 
 		success, response = self.performRequest(self.mothership, parameters)
@@ -1328,7 +1325,7 @@ class APIClient(PubSubClient):
 		if MAC:
 
 			import keyring
-			from keyring.backends.OS_X import Keyring
+#			from keyring.backends.OS_X import Keyring
 			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
 			return keyring
 
@@ -1339,20 +1336,18 @@ class APIClient(PubSubClient):
 				return keyring
 
 			import keyring
-			from keyring.backends.Windows import WinVaultKeyring
+#			from keyring.backends.Windows import WinVaultKeyring
 			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
 			return keyring
 
 		elif LINUX:
 
 			try:
-				usingRealKeyring = True
 				import keyring
-				from keyring.backends.kwallet import DBusKeyring
+#				from keyring.backends.kwallet import DBusKeyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 			except:
 				keyring = dummyKeyRing
-				usingRealKeyring = False
 
 #			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
 			return keyring
@@ -1940,15 +1935,13 @@ class APISubscription(PubSubClient):
 
 			self.preferences.set('lastServerSync', int(time.time()))
 
-			self.log('Uploading subscriptions: %s' % oldURLs)
-
 			parameters = {
 				'command': 'updateSubscription',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
-				'subscriptionURLs': ','.join(oldURLs),
+				'subscriptionURL': self.protocol.url.secretURL(),
 				'secretKey': self.secretKey(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -2033,7 +2026,7 @@ class APISubscription(PubSubClient):
 				'targetUserEmail': targetEmail,
 				'sourceUserEmail': self.parent.parent.userEmail(),
 				'subscriptionURL': self.protocol.secretURL(),
-				'clientVersion': typeWorld.api.VERSION,
+				'clientVersion': VERSION,
 			}
 			if self.parent.parent.testScenario:
 				parameters['testScenario'] = self.parent.parent.testScenario
@@ -2244,60 +2237,137 @@ class APISubscription(PubSubClient):
 	# 					return installedVersion and installedVersion != font.getVersions()[-1].number
 
 
-	def removeFont(self, fontID, folder = None, dryRun = False):
+
+	def removeFonts(self, fonts, dryRun = False):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
+		uninstallTheseProtectedFontIDs = []
+		uninstallTheseUnprotectedFontIDs = []
+
 		folder = self.parent.folder()
-		path = None
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == fontID:
-						if self.installedFontVersion(font.uniqueID):
-							path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
-							break
 
-		if not path and not dryRun:
-			return False, 'Font path couldn’t be determined'
+		fontIDs = []
 
-		self.parent.parent.delegate.fontWillUninstall(font)
+		for fontID in fonts:
 
-		if not dryRun:
-			# Test for permissions here
-			try:
-				if self.parent.parent.testScenario == 'simulatePermissionError':
-					raise PermissionError
-				else:
-					f = open(path + '.test', 'w')
-					f.write('test')
-					f.close()
-					os.remove(path + '.test')
-			except PermissionError:
-				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
-				return False, "Insufficient permission to install font."
+			fontIDs.append(fontID)
 
-			assert os.path.exists(path + '.test') == False
+			path = None
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if font.uniqueID == fontID:
+							if self.installedFontVersion(font.uniqueID):
+								path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+								break
 
-		# if not os.path.exists(path) or self.parent.parent.testScenario == 'simulateMissingFont':
-		# 	self.parent.parent.delegate.fontHasUninstalled(False, 'Font doesn’t exist.', font)
-		# 	return False, 'Font doesn’t exist.'
+			if not path and not dryRun:
+				return False, 'Font path couldn’t be determined'
+
+			if font.protected:
+
+				self.parent.parent.delegate.fontWillUninstall(font)
+
+				# Test for permissions here
+				if not dryRun:
+					try:
+						if self.parent.parent.testScenario == 'simulatePermissionError':
+							raise PermissionError
+						else:
+							if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+							f = open(path + '.test', 'w')
+							f.write('test')
+							f.close()
+							os.remove(path + '.test')
+					except PermissionError:
+						self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to uninstall font.", font)
+						return False, "Insufficient permission to uninstall font."
+
+					assert os.path.exists(path + '.test') == False
+
+				uninstallTheseProtectedFontIDs.append(fontID)
+
+			else:
+				uninstallTheseUnprotectedFontIDs.append(fontID)
+
+
+
 
 		# Server access
-		success, payload = self.protocol.removeFont(fontID)
+		# Protected fonts
+		if uninstallTheseProtectedFontIDs:
+			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs)
 
-		if success:
+			if success:
 
-			if not dryRun:
-				os.remove(path)
+				# Security check
+				if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+					return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
-			self.parent.parent.delegate.fontHasUninstalled(True, None, font)
-			return True, None
+				# Process fonts
+				for incomingFont in payload.assets:
+
+					proceed = ['unknownInstallation'] # 
+
+					if incomingFont.response in proceed:
+						pass
+
+					elif incomingFont.response == 'error':
+						return False, incomingFont.errorMessage
+
+					# Predefined response messages
+					elif incomingFont.response != 'error' and incomingFont.response != 'success':
+						return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+
+					if incomingFont.response == 'success':
+
+						path = None
+						for foundry in installabeFontsCommand.foundries:
+							for family in foundry.families:
+								for font in family.fonts:
+									if font.uniqueID == incomingFont.uniqueID:
+										if self.installedFontVersion(font.uniqueID):
+											path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+											break
+
+						if not path and not dryRun:
+							return False, 'Font path couldn’t be determined'
+
+						if not dryRun:
+							os.remove(path)
+
+						self.parent.parent.delegate.fontHasUninstalled(True, None, font)
 
 
-		else:
-			self.parent.parent.delegate.fontHasUninstalled(False, payload, font)
-			return False, payload
+			else:
+				self.parent.parent.delegate.fontHasUninstalled(False, payload, font)
+				return False, payload
+
+		# Unprotected fonts
+		if uninstallTheseUnprotectedFontIDs:
+
+			for fontID in uninstallTheseUnprotectedFontIDs:
+
+				path = None
+				for foundry in installabeFontsCommand.foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.uniqueID == fontID:
+								if self.installedFontVersion(font.uniqueID):
+									path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+									break
+
+				if not path and not dryRun:
+					return False, 'Font path couldn’t be determined'
+
+				if not dryRun:
+					os.remove(path)
+
+				self.parent.parent.delegate.fontHasUninstalled(True, None, font)
+
+		return True, None
+
 
 
 
@@ -2526,7 +2596,7 @@ class APISubscription(PubSubClient):
 		for foundry in installabeFontsCommand.foundries:
 			for family in foundry.families:
 				for font in family.fonts:
-					self.removeFont(font.uniqueID)
+					self.removeFonts([font.uniqueID])
 
 		# Key
 		try:

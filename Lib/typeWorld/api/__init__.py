@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from typeWorld.api.base import *
-import functools, os
+# Data Types
+from typeWorld.api.base import HexColorDataType, SupportedAPICommandsListProxy, OpenSourceLicenseIdentifierDataType, FontEncodingDataType, FontDataType, FontMimeType, ResponseCommandDataType, EmailDataType, DictionaryDataType, LanguageSupportDataType, OpenTypeFeatureListProxy, TimestampDataType, WebResourceURLDataType, FontExtensionDataType, FontPurposeDataType, FontStatusDataType, BooleanDataType, UnicodeDataType, MultiLanguageTextProxy, WebURLDataType, IntegerDataType, DateDataType, MultiLanguageLongTextProxy, VersionDataType, StringDataType
 
+# Classes
+from typeWorld.api.base import DictBasedObject, Proxy, ListProxy, MultiLanguageText
+
+# Constants
+from typeWorld.api.base import FONTSTATUSES, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND, INSTALLABLEFONTSCOMMAND, ERROR, FONTPURPOSES, FONTENCODINGS, COMMANDS, FILEEXTENSIONS
+
+# Methods
+from typeWorld.api.base import makeSemVer, ResponsesDocu
+
+
+import functools, semver
 import platform
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
+
 
 
 ####################################################################################################################################
@@ -688,7 +700,7 @@ class InstallFontAsset(BaseResponse):
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
 
         'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
-        'mimeType':         [FontMimeType,              True,  None,   'MIME Type of data. For desktop fonts, these are %s.' % FONTPURPOSES['desktop']['acceptableMimeTypes']],
+        'mimeType':         [FontMimeType,              False,  None,   'MIME Type of data. For desktop fonts, these are %s.' % FONTPURPOSES['desktop']['acceptableMimeTypes']],
         'data':             [FontDataType,              False,  None,   'Binary data encoded to a string using ::InstallFontResponse.encoding::'],
         'encoding':         [FontEncodingDataType,      False,  None,   'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
 
@@ -699,10 +711,16 @@ class InstallFontAsset(BaseResponse):
         information, warnings, critical = [], [], []
 
         if self.response == 'success' and not self.data:
-            critical.append('%s.response is set to success, but %s.font is missing' % (self, self))
+            critical.append('%s.response is set to success, but %s.data is missing' % (self, self))
 
         if self.data and not self.encoding:
-            critical.append('%s.font is set, but %s.encoding is missing' % (self, self))
+            critical.append('%s.data is set, but %s.encoding is missing' % (self, self))
+
+        if self.data and not self.mimeType:
+            critical.append('%s.data is set, but %s.mimeType is missing' % (self, self))
+
+        if self.response == ERROR and self.errorMessage.isEmpty():
+            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         newInformation, newWarnings, newCritical = super().customValidation()
         if newInformation: information.extend(newInformation)
@@ -740,7 +758,7 @@ class InstallFontsResponse(BaseResponse):
     _structure = {
 
         # Root
-        'assets':    [InstallFontAssetListProxy,   True,   None,   'List of ::InstallFontResponse:: objects.'],
+        'assets':    [InstallFontAssetListProxy,   True,   None,   'List of ::InstallFontAsset:: objects.'],
         }
 
 
@@ -748,7 +766,7 @@ class InstallFontsResponse(BaseResponse):
 
 #  Uninstall Fonts
 
-class UninstallFontsResponseType(ResponseCommandDataType):
+class UninstallFontResponseType(ResponseCommandDataType):
     def valid(self):
         if not self.value: return True
 
@@ -757,7 +775,8 @@ class UninstallFontsResponseType(ResponseCommandDataType):
         else:
             return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTSCOMMAND['responseTypes'])
 
-class UninstallFontsResponse(BaseResponse):
+
+class UninstallFontAsset(BaseResponse):
     '''\
     This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
 
@@ -778,10 +797,41 @@ class UninstallFontsResponse(BaseResponse):
     _structure = {
 
         # Root
-        'response':             [UninstallFontsResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
+        'response':         [UninstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
+        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
 
         # Response-specific
+        }
+
+
+class UninstallFontAssetProxy(Proxy):
+    dataType = UninstallFontAsset
+
+class UninstallFontAssetListProxy(ListProxy):
+    dataType = UninstallFontAssetProxy
+
+class UninstallFontsResponse(BaseResponse):
+    '''\
+    This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
+
+    ```python
+    # Create root object
+    installFonts = InstallFontsResponse()
+
+    # Add data to the command here
+    # ...
+
+    # Return the call’s JSON content to the HTTP request
+    return installFonts.dumpJSON()
+    ```
+
+    '''
+
+    #   key:                    [data type, required, default value, description]
+    _structure = {
+        # Root
+        'assets':    [UninstallFontAssetListProxy,   True,   None,   'List of ::UninstallFontAsset:: objects.'],
         }
 
 

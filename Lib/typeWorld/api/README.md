@@ -1,16 +1,24 @@
-# typeWorld.api Reference
+# Type.World JSON Protocol
 
 
 ## Preamble
 
 The Type.World protocol and software is in **alpha** stage. Changes to the protocol may still occur at any time.
-The protocol and app are expected to stabilize by the end of 2018.
 
+This document covers the syntax of the JSON Protocol only. The general Type.World developer documentation is located at [type.world/developer](https://type.world/developer).
+
+## The typeWorld.client Python module
+
+This page is simultaneously the documentation of the `typeWorld.client` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. 
+
+While you can assemble your JSON responses in the server side programming language of your choice, the `typeWorld.client` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
+
+This module is very strict about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a field that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
+
+Any such mistakes will not pass. If you use your own routines to assemble your JSON reponses, please make sure to check your web facing API endpoint using the online validator at [type.world/developer/validate](https://type.world/developer/validate).
 
 ## Contents
 
-1. [Introduction](#user-content-introduction)
-1. [Server Interaction](#user-content-serverinteraction)
 1. [Security Design](#user-content-securitydesign)
 1. [Response Flow Chart](#user-content-responseflowchart)
 1. [Protocol Changes](#user-content-protocolchanges)
@@ -20,81 +28,6 @@ The protocol and app are expected to stabilize by the end of 2018.
 1. [Use of Languages/Scripts](#user-content-languages)
 1. [Example Code](#user-content-example)
 1. [Class Reference](#user-content-classreference)
-
-
-
-
-
-<div id="introduction"></div>
-
-## Introduction
-
-The Type.World API is designed to be installed on web servers and allow a font installer app, such as the upcoming GUI app under the same name, to load and install fonts on people’s computers through a one-click process involving a custom URI such as typeworld://
-
-This code is very anal about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a fields that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
-
-Any such mistakes will not pass. That’s because I don’t want to be dealing with badly formatted data in the GUI app and have to push out an update every time I discover that someone supplies badly formatted data. Obviously, you don’t need to use this library to create your JSON responses and can still format your data badly using your own routines. In this case the data will be checked in the app using the very same code and then rejected. Therefore, please use the API Validator at https://type.world/validator/ to check your own data for your web-facing API endpoint.
-
-
-<div id="serverinteraction"></div>
-
-## Server Interaction
-
-### The subscription URL
-
-By clicking the *Install in Type.World App* button on your SSL-encrypted website, a URL of the following scheme gets handed off to the app through a custom protocol handler:
-
-`typeworld://json+https//[subscriptionID[:secretKey]@]awesomefonts.com/api/`
-
-*Note: Even though this notation suggests the use of HTTP authentication, we will not make use of it. See [Serving JSON responses](#user-content-servingjsonresponses) below for more information.*
-
-Example for a protected subscription:
-`typeworld://json+https//subscriptionID:secretKey@awesomefonts.com/api/`
-
-Example for a publicly accessible subscription without `secretKey`, but `subscriptionID` still used to identify a particular subscription: `typeworld://json+https//subscriptionID@awesomefonts.com/api/`
-
-Example for a publicly accessible subscription without `secretKey` or `subscriptionID`. This API endpoint has exactly one subscription to serve: `typeworld://json+https//awesomefonts.com/api/`
-
-The URL parts in detail:
-
-* `typeworld://` This is the protocol handler used by the Type.World app. The app advertises the handler to the operating system, and upon clicking such a link, the operating system calls the app and hands over the link.
-* `json` The protocol to be used within the Type.World app. Currently, only the Type.World JSON Protocol is available to use.
-* `https//` The transport protocol to be used, in this case SSL-encrypted HTTPS. *Note:* because valid URLs are only allowed to contain one `://` sequence which is already in use to denote the custom protocol handler `typeworld://`, the colon `:` will be stripped off of the URL in the browser, even if you define it there a second time. The Type.World app will internally convert `https//` back to `https://`.
-* `subscriptionID` uniquely identifies a subscription. In case of per-user subscriptions, you would probably use it to identify a user and then decide which fonts to serve him/her. The `subscriptionID` should be an anonymous string and must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts).
-* `secretKey` matches with the `subscriptionID` and is used to authenticate the request. This secret key is saved in the OS’s keychain. The `secretKey ` must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts). The secret key is actually not necessary to authenticate the request against the server. Instead it’s necessary to store a secret key in the user’s OS keychain so that complete URLs are not openly visible.
-* `awesomefonts.com/api/` is where your API endpoint sits and waits to serve fonts to your customers.
-
-
-<div id="servingjsonresponses"></div>
-
-### Serving JSON responses
-
-#### `POST` requests
-
-To avoid the subscription URL complete with the `subscriptionID` and `secretKey` showing up in server logs, your server should serve protected font (meta) data only when replying to `POST` requests, as request attributes will then be transmitted in the HTTP headers and will be invisible in server logs.
-
-The app will ask for the JSON responses at your API endpoint `https://awesomefonts.com/api/` and will hand over some or all of the following parameters through HTTP headers:
-
-* `command` The command to reply to, such as `installableFonts`.
-* `subscriptionID` The aforementioned ID to uniquely identify the fonts you serve.
-* `secretKey` The aforementioned secret key to authenticate the requester.
-* `anonymousAppID` is a key that uniquely identifies the Type.World app installation. You should use this to track how often fonts have been installed through the app for a certain user and reject requests once the limit has been reached.
-* `fontID` identifying the font to install or uninstall. This will be taken from the [Font.uniqueID](#user-content-class-font-attribute-uniqueid) attribute.
-* `fontVersion` identifying the font’s version to install
-* `userEmail` and `userName` in case the user has a Type.World user account and has explicitly agreed to reveal his/her identity on a per-subscription basis. This only makes sense in a trusted custom type development environment where the type designers may want to get in touch personally with the font’s users in a small work group, for instance in a branding agency. This tremendously streamlines everyone’s workflow. If necessary, a publisher in a trusted custom type development environment could reject the serving of subscriptions to requesters who are unidentified.
-
-#### `GET` requests
-
-For simplicity’s sake, you should reject incoming `GET` requests altogether to force the requester into using `POST` requests. This is for your own protection, as `GET` requests complete with the `subscriptionID` and `secretKey` might show up in server logs and therefore pose an attack vector to your protected fonts and meta data.
-
-I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` requests.
-
-#### WARNING:
-
-Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
-
-
-<div id="securitydesign"></div>
 
 ## Security Design
 
@@ -203,8 +136,10 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 - [Version](#user-content-class-version)<br />
 - [Font](#user-content-class-font)<br />
 - [LicenseUsage](#user-content-class-licenseusage)<br />
-- [InstallFontResponse](#user-content-class-installfontresponse)<br />
-- [UninstallFontResponse](#user-content-class-uninstallfontresponse)<br />
+- [InstallFontsResponse](#user-content-class-installfontsresponse)<br />
+- [InstallFontAsset](#user-content-class-installfontasset)<br />
+- [UninstallFontsResponse](#user-content-class-uninstallfontsresponse)<br />
+- [UninstallFontAsset](#user-content-class-uninstallfontasset)<br />
 
 
 
@@ -632,7 +567,7 @@ __Default value:__ False
 
 ### supportedCommands
 
-List of commands this API endpoint supports: ['installableFonts', 'installFont', 'uninstallFont']
+List of commands this API endpoint supports: ['installableFonts', 'installFonts', 'uninstallFonts']
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
@@ -652,7 +587,7 @@ __Default value:__ https://type.world/legal/default/TermsOfService.html
 
 ### version
 
-Version of "installFont" response
+Version of "installFonts" response
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -768,7 +703,7 @@ return installableFonts.dumpJSON()
 
 ### Attributes
 
-[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[type](#class-installablefontsresponse-attribute-type)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />[version](#class-installablefontsresponse-attribute-version)<br />
+[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
 
 ### Methods
 
@@ -788,7 +723,7 @@ __Type:__ List of [Designer](#user-content-class-designer) objects<br />
 
 ### errorMessage
 
-Description of error in case of [InstallableFontsResponse.type](#user-content-class-installablefontsresponse-attribute-type) being "custom".
+Description of error in case of [InstallableFontsResponse.response](#user-content-class-installablefontsresponse-attribute-response) being "custom".
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
@@ -820,9 +755,9 @@ __Required:__ True<br />
 __Type:__ Bool<br />
 __Default value:__ False
 
-<div id="class-installablefontsresponse-attribute-type"></div>
+<div id="class-installablefontsresponse-attribute-response"></div>
 
-### type
+### response
 
 Type of response: 
 
@@ -860,17 +795,6 @@ The name of the user who these fonts are licensed to.
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
-<div id="class-installablefontsresponse-attribute-version"></div>
-
-### version
-
-Version of "installableFonts" response
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.7-alpha
-
 
 
 ## Methods
@@ -1541,7 +1465,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'otf', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'ttc', 'woff2', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1628,7 +1552,7 @@ __Default value:__ stable
 
 ### uniqueID
 
-A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFont` and `uninstallFont` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \ : * | ^
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \ : * | ^
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1751,7 +1675,7 @@ __Type:__ Int<br />
 
 ### seatsInstalled
 
-In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFont" and "uninstallFont" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFont" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
+In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFonts" and "uninstallFonts" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFonts" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
 
 __Required:__ False<br />
 __Type:__ Int<br />
@@ -1786,15 +1710,15 @@ Requires deepdiff module.
 
 
 
-<div id="class-installfontresponse"></div>
+<div id="class-installfontsresponse"></div>
 
-# _class_ InstallFontResponse()
+# _class_ InstallFontsResponse()
 
 This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
 
 ```python
 # Create root object
-installFonts = InstallFontResponse()
+installFonts = InstallFontsResponse()
 
 # Add data to the command here
 # ...
@@ -1805,15 +1729,74 @@ return installFonts.dumpJSON()
 
 ### Attributes
 
-[encoding](#class-installfontresponse-attribute-encoding)<br />[errorMessage](#class-installfontresponse-attribute-errormessage)<br />[fileName](#class-installfontresponse-attribute-filename)<br />[font](#class-installfontresponse-attribute-font)<br />[type](#class-installfontresponse-attribute-type)<br />[version](#class-installfontresponse-attribute-version)<br />
+[assets](#class-installfontsresponse-attribute-assets)<br />
 
 ### Methods
 
-[sameContent()](#class-installfontresponse-method-samecontent)<br />
+[sameContent()](#class-installfontsresponse-method-samecontent)<br />
 
 ## Attributes
 
-<div id="class-installfontresponse-attribute-encoding"></div>
+<div id="class-installfontsresponse-attribute-assets"></div>
+
+### assets
+
+List of [InstallFontAsset](#user-content-class-installfontasset) objects.
+
+__Required:__ True<br />
+__Type:__ List of [InstallFontAsset](#user-content-class-installfontasset) objects<br />
+
+
+## Methods
+
+<div id="class-installfontsresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
+
+
+<div id="class-installfontasset"></div>
+
+# _class_ InstallFontAsset()
+
+This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
+
+```python
+# Create root object
+installFonts = InstallFontsResponse()
+
+# Add data to the command here
+# ...
+
+# Return the call’s JSON content to the HTTP request
+return installFonts.dumpJSON()
+```
+
+### Attributes
+
+[data](#class-installfontasset-attribute-data)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />
+
+### Methods
+
+[sameContent()](#class-installfontasset-method-samecontent)<br />
+
+## Attributes
+
+<div id="class-installfontasset-attribute-data"></div>
+
+### data
+
+Binary data encoded to a string using [InstallFontResponse.encoding](#user-content-class-installfontresponse-attribute-encoding)
+
+__Required:__ False<br />
+__Type:__ Str<br />
+<div id="class-installfontasset-attribute-encoding"></div>
 
 ### encoding
 
@@ -1821,7 +1804,7 @@ Encoding type for binary font data. Currently supported: ['base64']
 
 __Required:__ False<br />
 __Type:__ Str<br />
-<div id="class-installfontresponse-attribute-errorMessage"></div>
+<div id="class-installfontasset-attribute-errorMessage"></div>
 
 ### errorMessage
 
@@ -1830,25 +1813,17 @@ Description of error in case of custom response type
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
-<div id="class-installfontresponse-attribute-fileName"></div>
+<div id="class-installfontasset-attribute-mimeType"></div>
 
-### fileName
+### mimeType
 
-Suggested file name of font. This may be ignored by the app in favour of a unique file name.
-
-__Required:__ False<br />
-__Type:__ Str<br />
-<div id="class-installfontresponse-attribute-font"></div>
-
-### font
-
-Binary font data encoded to a string using [InstallFontResponse.encoding](#user-content-class-installfontresponse-attribute-encoding)
+MIME Type of data. For desktop fonts, these are ['font/collection', 'font/otf', 'font/sfnt', 'font/ttf'].
 
 __Required:__ False<br />
 __Type:__ Str<br />
-<div id="class-installfontresponse-attribute-type"></div>
+<div id="class-installfontasset-attribute-response"></div>
 
-### type
+### response
 
 Type of response: 
 
@@ -1875,22 +1850,19 @@ Type of response:
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
-<div id="class-installfontresponse-attribute-version"></div>
+<div id="class-installfontasset-attribute-uniqueID"></div>
 
-### version
+### uniqueID
 
-Version of "installFont" response
+A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.
 
 __Required:__ True<br />
 __Type:__ Str<br />
-__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.7-alpha
-
 
 
 ## Methods
 
-<div id="class-installfontresponse-method-samecontent"></div>
+<div id="class-installfontasset-method-samecontent"></div>
 
 #### sameContent()
 
@@ -1902,15 +1874,66 @@ Requires deepdiff module.
 
 
 
-<div id="class-uninstallfontresponse"></div>
+<div id="class-uninstallfontsresponse"></div>
 
-# _class_ UninstallFontResponse()
+# _class_ UninstallFontsResponse()
+
+This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
+
+```python
+# Create root object
+installFonts = InstallFontsResponse()
+
+# Add data to the command here
+# ...
+
+# Return the call’s JSON content to the HTTP request
+return installFonts.dumpJSON()
+```
+
+### Attributes
+
+[assets](#class-uninstallfontsresponse-attribute-assets)<br />
+
+### Methods
+
+[sameContent()](#class-uninstallfontsresponse-method-samecontent)<br />
+
+## Attributes
+
+<div id="class-uninstallfontsresponse-attribute-assets"></div>
+
+### assets
+
+List of [UninstallFontAsset](#user-content-class-uninstallfontasset) objects.
+
+__Required:__ True<br />
+__Type:__ List of [UninstallFontAsset](#user-content-class-uninstallfontasset) objects<br />
+
+
+## Methods
+
+<div id="class-uninstallfontsresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
+
+
+<div id="class-uninstallfontasset"></div>
+
+# _class_ UninstallFontAsset()
 
 This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
 
 ```python
 # Create root object
-uninstallFonts = UninstallFontResponse()
+uninstallFonts = UninstallFontsResponse()
 
 # Add data to the command here
 # ...
@@ -1921,15 +1944,15 @@ return uninstallFonts.dumpJSON()
 
 ### Attributes
 
-[errorMessage](#class-uninstallfontresponse-attribute-errormessage)<br />[type](#class-uninstallfontresponse-attribute-type)<br />[version](#class-uninstallfontresponse-attribute-version)<br />
+[errorMessage](#class-uninstallfontasset-attribute-errormessage)<br />[response](#class-uninstallfontasset-attribute-response)<br />[uniqueID](#class-uninstallfontasset-attribute-uniqueid)<br />
 
 ### Methods
 
-[sameContent()](#class-uninstallfontresponse-method-samecontent)<br />
+[sameContent()](#class-uninstallfontasset-method-samecontent)<br />
 
 ## Attributes
 
-<div id="class-uninstallfontresponse-attribute-errorMessage"></div>
+<div id="class-uninstallfontasset-attribute-errorMessage"></div>
 
 ### errorMessage
 
@@ -1938,9 +1961,9 @@ Description of error in case of custom response type
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
-<div id="class-uninstallfontresponse-attribute-type"></div>
+<div id="class-uninstallfontasset-attribute-response"></div>
 
-### type
+### response
 
 Type of response: 
 
@@ -1965,22 +1988,19 @@ Type of response:
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
-<div id="class-uninstallfontresponse-attribute-version"></div>
+<div id="class-uninstallfontasset-attribute-uniqueID"></div>
 
-### version
+### uniqueID
 
-Version of "uninstallFont" response
+A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.
 
 __Required:__ True<br />
 __Type:__ Str<br />
-__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.7-alpha
-
 
 
 ## Methods
 
-<div id="class-uninstallfontresponse-method-samecontent"></div>
+<div id="class-uninstallfontasset-method-samecontent"></div>
 
 #### sameContent()
 

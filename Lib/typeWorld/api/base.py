@@ -3,7 +3,6 @@
 import json, copy, types, inspect, re, traceback, datetime, markdown, semver
 
 import typeWorld.api
-import typeWorld.api.base
 
 VERSION = '0.1.7-alpha'
 
@@ -46,12 +45,6 @@ INSTALLABLEFONTSCOMMAND = {
     }
 INSTALLFONTSCOMMAND ={
     'keyword': 'installFonts',
-    'currentVersion': VERSION,
-    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED, REVEALEDUSERIDENTITYREQUIRED, LOGINREQUIRED],
-    'acceptableMimeTypes': ['application/json'],
-    }
-INSTALLFONTCOMMAND ={
-    'keyword': 'installFont',
     'currentVersion': VERSION,
     'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED, REVEALEDUSERIDENTITYREQUIRED, LOGINREQUIRED],
     'acceptableMimeTypes': ['application/json'],
@@ -266,7 +259,7 @@ class VersionDataType(StringDataType):
         # Append .0 for semver comparison
         value = makeSemVer(self.value)
         try:
-            a = semver.parse(value)
+            semver.parse(value)
         except ValueError as e:
             return str(e)
         return True
@@ -285,7 +278,7 @@ class DateDataType(StringDataType):
         if not self.value: return True
 
         try:
-            date_obj = datetime.datetime.strptime(self.value, '%Y-%m-%d')
+            datetime.datetime.strptime(self.value, '%Y-%m-%d')
             return True
 
         except ValueError:
@@ -873,7 +866,10 @@ class DictBasedObject(object):
  #                      print 'Proxy', self._structure[key][0].dataType
 
 #                       exec('self.%s = d[key]' % (key))
-                        exec('self.%s = typeWorld.api.%s()' % (key, self._structure[key][0].dataType.__name__))
+                        try:
+                            exec('self.%s = typeWorld.api.%s()' % (key, self._structure[key][0].dataType.__name__))
+                        except:
+                            exec('self.%s = typeWorld.api.base.%s()' % (key, self._structure[key][0].dataType.__name__))
                         exec('self.%s.loadDict(d[key])' % (key))
                     elif issubclass(self._structure[key][0], (ListProxy)):
 #                       print 'ListProxy', self._structure[key][0].dataType

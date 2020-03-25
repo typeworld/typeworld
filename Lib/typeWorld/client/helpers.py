@@ -25,19 +25,7 @@ def Execute(command):
 	Execute system command, return output.
 	"""
 
-	import sys, os, platform
-
-	# if sys.version.startswith("2.3") or platform.system() == "Windows":
-
-	# 	p = os.popen(command, "r")
-	# 	response = p.read()
-	# 	p.close()
-	# 	return response
-
-
-	# else:
-
-	import subprocess
+	import os, subprocess
 
 	process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, close_fds=True)
 	os.waitpid(process.pid, 0)
@@ -98,12 +86,8 @@ def MachineName():
 
 
 		# Approach 1
-		import sys
 		import plistlib
-		import subprocess
-		from Cocoa import NSBundle
 		data = plistlib.loads(Execute('system_profiler -xml SPHardwareDataType'))
-		model = subprocess.check_output(["/usr/sbin/sysctl", "-n", "hw.model"]).strip()
 
 		# Approach 2
 		if not name:

@@ -1,5 +1,5 @@
 
-from typeWorld.client import *
+from typeWorld.client import URL
 
 
 

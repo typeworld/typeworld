@@ -1,20 +1,34 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, copy, time
+import sys, os, copy
 
 print('Started...')
 
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import ssl, certifi, urllib
+import ssl, certifi, json
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
 import unittest
 from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults, performRequest
-import tempfile, os, traceback
-from typeWorld.api import *
+import typeWorld.client
+import tempfile, os
+
+# Data Types
+from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
+from typeWorld.api.base import MultiLanguageText, MultiLanguageLongText, FloatDataType
+
+# Classes
+from typeWorld.api import InstallFontAsset, FontListProxy, RootResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse
+
+# Constants
+from typeWorld.api import COMMANDS, MAC
+
+# Methods
+from typeWorld.api import makeSemVer
+
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
@@ -216,7 +230,7 @@ installableFonts.designers.extend([designer2])
 installableFonts.name.en = 'Commercial Fonts'
 installableFonts.name.de = 'Kommerzielle Schriften'
 installableFonts.prefersRevealedUserIdentity = True
-installableFonts.type = 'success'
+installableFonts.response = 'success'
 installableFonts.userEmail = 'post@yanone.de'
 installableFonts.userName.en = 'Yanone'
 installableFonts.version = '0.1.7-alpha'
@@ -327,7 +341,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			r2.supportedCommands = ['unsupportedCommand']
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown API command: "unsupportedCommand". Possible: [\'installableFonts\', \'installFont\', \'uninstallFont\']')
+			self.assertEqual(str(e), 'Unknown API command: "unsupportedCommand". Possible: [\'installableFonts\', \'installFonts\', \'uninstallFonts\']')
 
 		# backgroundColor
 		r2 = copy.deepcopy(root)
@@ -437,7 +451,7 @@ class TestStringMethods(unittest.TestCase):
 		# type
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.type = 'abc'
+			i2.response = 'abc'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'noFontsAvailable\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\']')
 
@@ -995,55 +1009,69 @@ class TestStringMethods(unittest.TestCase):
 			'de': 'Hallo Welt'
 		}
 		j = json.dumps(d)
-		d1 = typeWorld.api.MultiLanguageText(json=j).dumpDict()
-		d2 = typeWorld.api.MultiLanguageText(dict=d).dumpDict()
+		d1 = typeWorld.api.base.MultiLanguageText(json=j).dumpDict()
+		d2 = typeWorld.api.base.MultiLanguageText(dict=d).dumpDict()
 		from deepdiff import DeepDiff
 		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		
 
-	def test_InstallFontResponse(self):
+	def test_InstallFontsResponse(self):
 
-		print('test_InstallFontResponse()')
+		print('test_InstallFontsResponse()')
 
-		installFont = InstallFontResponse()
+		installFonts = InstallFontsResponse()
 		try:
-			installFont.type = 'abc'
+			installFonts.response = 'abc'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
 
-		installFont = InstallFontResponse()
-		installFont.type = 'success'
-		installFont.font = b'ABC'
-		#installFont.encoding = 'base64'
-		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.font is set, but <InstallFontResponse>.encoding is missing'])
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.response = 'success'
+		asset.mimeType = 'font/otf'
+		asset.data = b'ABC'
+		validate = asset.validate()
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.data is set, but <InstallFontAsset>.encoding is missing'])
 
-		installFont = InstallFontResponse()
-		installFont.type = 'success'
-		#installFont.font = b'ABC'
-		installFont.encoding = 'base64'
-		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.type is set to success, but <InstallFontResponse>.font is missing'])
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.response = 'success'
+		asset.mimeType = 'font/otf'
+		asset.encoding = 'base64'
+		validate = asset.validate()
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.response is set to success, but <InstallFontAsset>.data is missing'])
 
-		installFont = InstallFontResponse()
-		installFont.type = 'error'
-		validate = installFont.validate()
-		self.assertEqual(validate[2], ['<InstallFontResponse> --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.'])
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.mimeType = 'font/otf'
+		asset.response = 'error'
+		validate = asset.validate()
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.response is "error", but <InstallFontAsset>.errorMessage is missing.'])
 
-		installFont = InstallFontResponse()
-		installFont.type = 'error'
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		asset.uniqueID = 'abc'
+		asset.mimeType = 'font/otf'
+		installFonts.assets.append(asset)
+		asset.response = 'error'
 		try:
-			d = installFont.dumpDict()
+			asset.dumpDict()
 		except ValueError as e:
-			self.assertEqual(str(e), '<InstallFontResponse> --> <InstallFontResponse>.type is "error", but <InstallFontResponse>.errorMessage is missing.')
+			self.assertEqual(str(e), '<InstallFontAsset> --> <InstallFontAsset>.response is "error", but <InstallFontAsset>.errorMessage is missing.')
 
-	def test_UninstallFontResponse(self):
+	def test_UninstallFontsResponse(self):
 
-		print('test_UninstallFontResponse()')
+		print('test_UninstallFontsResponse()')
 
-		uninstallFont = UninstallFontResponse()
+		uninstallFont = UninstallFontsResponse()
 		try:
-			uninstallFont.type = 'abc'
+			uninstallFont.response = 'abc'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
 
@@ -1051,59 +1079,12 @@ class TestStringMethods(unittest.TestCase):
 
 	def test_InstallableFontsResponse_Old(self):
 
-		print('test_InstallableFontsResponse_Old()')
-
-
-		# InstallFont
-
-		responseCommand = InstallFontResponse()
-		responseCommand.type = 'success'
-		print(responseCommand)
-
-		responseCommand.font = b'ABC'
-		responseCommand.encoding = 'base64'
-
-		# Output API response as JSON, includes validation
-		json = responseCommand.dumpJSON()
-
-
-		responseCommandInput = InstallFontResponse()
-		responseCommandInput.loadJSON(json)
-
-		# Let’s see if they are identical
-		assert responseCommandInput.sameContent(responseCommand) == True
-
-		responseCommandInput.validate()
-
-
-
-
-
-		# UninstallFont
-
-		responseCommand = UninstallFontResponse()
-		responseCommand.type = 'success'
-		print(responseCommand)
-
-		# Output API response as JSON, includes validation
-		json = responseCommand.dumpJSON()
-
-		responseCommandInput = UninstallFontResponse()
-		responseCommandInput.loadJSON(json)
-
-		# Let’s see if they are identical
-		assert responseCommandInput.sameContent(responseCommand) == True
-
-		responseCommandInput.validate()
-
-
-
 
 		## DOCU
-		docu = RootResponse().docu()
-		docu = InstallableFontsResponse().docu()
-		docu = InstallFontResponse().docu()
-		docu = UninstallFontResponse().docu()
+		RootResponse().docu()
+		InstallableFontsResponse().docu()
+		InstallFontsResponse().docu()
+		UninstallFontsResponse().docu()
 
 
 		# Data types
@@ -1219,34 +1200,34 @@ class TestStringMethods(unittest.TestCase):
 		font.name = MultiLanguageText()
 		font.name.en = None
 		print(font.name.parent)
-		try:
-			print(api.validate())
-		except:
-			pass
+		# try:
+		print(installableFonts.validate())
+		# except:
+		# 	pass
 
 
 		usedLicense = LicenseUsage()
 		usedLicense.keyword = 'awesomeFontsEULAAAAA'
 		font.usedLicenses.append(usedLicense)
-		try:
-			print(api.validate())
-		except:
-			pass
+		# try:
+		print(installableFonts.validate())
+		# except:
+		# 	pass
 
 
 		font.versions = []
 		font.parent.versions = []
-		try:
-			print(api.validate())
-		except:
-			pass
+		# try:
+		print(installableFonts.validate())
+		# except:
+		# 	pass
 
 
 		font.designers.append('maxx')
-		try:
-			print(api.validate())
-		except:
-			pass
+		# try:
+		print(installableFonts.validate())
+		# except:
+		# 	pass
 
 
 
@@ -1254,6 +1235,10 @@ class TestStringMethods(unittest.TestCase):
 	def test_helpers(self):
 
 		print('test_helpers()')
+
+		# makeSemVer(a.number)
+		self.assertEqual(makeSemVer(2.1), '2.1.0')
+
 
 
 		# urlIsValid()
@@ -1368,7 +1353,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(message, "URL is malformed.")
 
 
-	def test_normalSubscription(self):
+	def _test_normalSubscription(self):
 
 		print('test_normalSubscription() started...')
 
@@ -1550,15 +1535,15 @@ class TestStringMethods(unittest.TestCase):
 
 		# Install Font
 		# First it's meant to fail because the user hasn't accepted the Terms & Conditions
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]), (False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		# Then it's supposed to fail because the server requires the revealted user identity for this subscription
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].prefersRevealedUserIdentity, True)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]), (False, ['#(response.revealedUserIdentityRequired)', '#(response.revealedUserIdentityRequired.headline)']))
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 
 		# Finally supposed to pass
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
@@ -1586,6 +1571,45 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
+		# Uninstall font here
+		user1.client.testScenario = None
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
+		if success == False:
+			print('Uninstall font:', message)
+		self.assertEqual(success, True)
+
+		# Repeat font installation
+		user1.client.testScenario = 'simulateProgrammingError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulatePermissionError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateCustomError'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, False)
+		self.assertEqual(message.getText(), 'simulateCustomError')
+
+		user1.client.testScenario = 'simulateInsufficientPermissions'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, False)
+
+		user1.client.testScenario = 'simulateLoginRequired'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, False)
+
+		# Supposed to pass
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
+			(True, None)
+		)
+		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
+
+
 		# Simulate unexpected empty subscription
 		user1.client.testScenario = 'simulateNoFontsAvailable'
 		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
@@ -1596,32 +1620,10 @@ class TestStringMethods(unittest.TestCase):
 		user1.client.testScenario = None
 		success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
 
-		# Repeat font installation
-		user1.client.testScenario = 'simulateProgrammingError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulatePermissionError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateCustomError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-		self.assertEqual(message.getText(), 'simulateCustomError')
-
-		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		user1.client.testScenario = 'simulateLoginRequired'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
-		self.assertEqual(success, False)
-
-		# Supposed to pass
+		# Install font again
 		user1.client.testScenario = None
 		self.assertEqual(
-			user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number),
+			user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
 			(True, None)
 		)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
@@ -1653,7 +1655,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# Reinstall font, fails because no permissions
 		user1.client.testScenario = None
-		response = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		response = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
 		success, message = response
 		print(response)
 		self.assertEqual(success, False)
@@ -1678,7 +1680,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# Reinstall font
 		user1.client.testScenario = None
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
 		self.assertEqual(success, True)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
@@ -1769,7 +1771,7 @@ class TestStringMethods(unittest.TestCase):
 		# Install again
 		user1.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		user1.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFont(user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 
 		# Sync subscription
@@ -1842,62 +1844,62 @@ class TestStringMethods(unittest.TestCase):
 		print(success, message)
 
 		# Two versions available
-		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions())), 2)
+		self.assertEqual(len(user2.client.publishers()[0].subscriptions()[-1].installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()]])), 2)
 
 		# Supposed to reject because seats are limited to 1
 		user2.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		user2.client.publishers()[0].subscriptions()[-1].set('revealIdentity', True)
 		self.assertEqual(
-			user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), 
+			user2.client.publishers()[0].subscriptions()[-1].installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]), 
 			(False, ['#(response.seatAllowanceReached)', '#(response.seatAllowanceReached.headline)'])
 			)
 
 		# Uninstall font for user1
 		user1.client.testScenario = 'simulatePermissionError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
 		# user1.client.testScenario = 'simulateMissingFont'
-		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID)
 		# self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateCustomError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 		print(message)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
 		user1.client.testScenario = 'simulateProgrammingError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateUnknownFontError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
 		user1.client.testScenario = None
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFont(user1.testFont().uniqueID)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, True)
 
 		# Uninstall font for user2, must fail because deleting same font file (doesn't make sense in normal setup)
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
 		print(result)
 		self.assertEqual(result, (False, 'Font path couldn’t be determined'))
 
 		# Try again for user2
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number), (True, None))
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]), (True, None))
 
 		# Uninstall font on for user2
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
 		print(result)
 		self.assertEqual(result, (True, None))
 
 		# Install older version on second client
-		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFont(user2.testFont().uniqueID, user2.testFont().getVersions()[0].number), (True, None))
+		self.assertEqual(user2.client.publishers()[0].subscriptions()[-1].installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[0].number]]), (True, None))
 
 		# Check amount
 		self.assertEqual(user2.client.publishers()[0].amountInstalledFonts(), 1)
@@ -1908,7 +1910,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1)
 
 		# Uninstall font for user2
-		result = user2.client.publishers()[0].subscriptions()[-1].removeFont(user2.testFont().uniqueID)
+		result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
 		print(result)
 		self.assertEqual(result, (True, None))
 
@@ -1930,7 +1932,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.addSubscription(freeSubscription)
 		user0.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		font = user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[-1]
-		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].installFont(font.uniqueID, font.getVersions()[-1].number), (True, None))
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].installFonts([[font.uniqueID, font.getVersions()[-1].number]]), (True, None))
 		self.assertTrue(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), font.filename(font.getVersions()[-1].number))))
 		user0.client.testScenario = 'simulateFontNoLongerIncluded'
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].update(), (True, None, True))
@@ -2160,7 +2162,6 @@ class TestStringMethods(unittest.TestCase):
 		print('test_APIValidator() started...')
 
 		# Announce subscription update
-		url = MOTHERSHIP
 		parameters = {"command": "validateAPIEndpoint",
 					"subscriptionURL": protectedSubscription,
 					}
