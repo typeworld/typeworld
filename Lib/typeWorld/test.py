@@ -1353,7 +1353,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(message, "URL is malformed.")
 
 
-	def _test_normalSubscription(self):
+	def test_normalSubscription(self):
 
 		print('test_normalSubscription() started...')
 
