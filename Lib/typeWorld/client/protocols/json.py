@@ -3,16 +3,22 @@ import typeWorld.client.protocols
 import typeWorld.api
 from typeWorld.api import VERSION, NOFONTSAVAILABLE
 
-def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
+def readJSONResponse(url, responses, acceptableMimeTypes, data = {}):
 	d = {}
 	d['errors'] = []
 	d['warnings'] = []
 	d['information'] = []
 
+	root = typeWorld.api.RootResponse()
+
 	request = urllib.request.Request(url)
 
 	if not 'source' in data:
 		data['source'] = 'typeWorldApp'
+
+	# gather commands
+	commands = [response._command['keyword'] for response in responses]
+	data['commands'] = ','.join(commands)
 
 	data = urllib.parse.urlencode(data)
 	data = data.encode('ascii')
@@ -32,8 +38,8 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 		if response.getcode() == 200:
 			# Catching ValueErrors
 			try:
-				api.loadJSON(response.read().decode())
-				information, warnings, errors = api.validate()
+				root.loadJSON(response.read().decode())
+				information, warnings, errors = root.validate()
 
 				if information: d['information'].extend(information)
 				if warnings: d['warnings'].extend(warnings)
@@ -45,7 +51,7 @@ def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 	except urllib.request.HTTPError as e:
 		d['errors'].append('Error retrieving %s: %s' % (url, e))
 
-	return api, d
+	return root, d
 
 
 
@@ -67,7 +73,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			self._installableFontsCommand = api
 
 		if self.get('rootCommand'):
-			api = typeWorld.api.RootResponse()
+			api = typeWorld.api.EndpointResponse()
 			api.parent = self
 			api.loadJSON(self.get('rootCommand'))
 			self._rootCommand = api
@@ -92,7 +98,8 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			}
 			if testScenario:
 				data['testScenario'] = testScenario
-			api, responses = readJSONResponse(self.connectURL(), typeWorld.api.RootResponse(), typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.EndpointResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			api = root.endpoint
 			
 			# Errors
 			if responses['errors']:
@@ -116,7 +123,6 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 
 		data = {
 			'subscriptionID': self.url.subscriptionID, 
-			'command': 'installableFonts', 
 			'anonymousAppID': self.client.anonymousAppID(), 
 			'anonymousTypeWorldUserID': self.client.user(),
 			'appVersion': VERSION,
@@ -128,7 +134,8 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if secretKey:
 			data['secretKey'] = secretKey
 
-		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api = root.installableFonts
 
 		if responses['errors']:
 			
@@ -187,11 +194,14 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 
 		return True, None, not identical
 
+	def setInstallableFontsCommand(self, command):
+		self._installableFontsCommand = command
+#		self.client.delegate.subscriptionWasUpdated(self.subscription.parent, self.subscription)
 
-	def removeFonts(self, fonts):
+
+	def removeFonts(self, fonts, updateSubscription = False):
 
 		data = {
-			'command': 'uninstallFonts',
 			'fonts': ','.join(fonts),
 			'anonymousAppID': self.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': self.client.user(),
@@ -204,21 +214,28 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if self.client.testScenario:
 			data['testScenario'] = self.client.testScenario
 
+		commands = [typeWorld.api.UninstallFontsResponse()]
+		if updateSubscription:
+			commands.append(typeWorld.api.InstallableFontsResponse())
 
-		api, messages = readJSONResponse(self.connectURL(), typeWorld.api.UninstallFontsResponse(), typeWorld.api.UNINSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		root, messages = readJSONResponse(self.connectURL(), commands, typeWorld.api.UNINSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api = root.uninstallFonts
+
 
 		if messages['errors']:
 			return False, '\n\n'.join(messages['errors'])
 
+		if root.installableFonts:
+			self.setInstallableFontsCommand(root.installableFonts)
+
 		return True, api
 
 
-	def installFonts(self, fonts):
+	def installFonts(self, fonts, updateSubscription = False):
 
 		# Build URL
 
 		data = {
-			'command': 'installFonts',
 			'fonts': ','.join([f'{x[0]}/{x[1]}' for x in fonts]),
 			'anonymousAppID': self.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': self.client.user(),
@@ -238,10 +255,18 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 
 		# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 
-		api, messages = readJSONResponse(self.connectURL(), typeWorld.api.InstallFontsResponse(), typeWorld.api.INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		commands = [typeWorld.api.InstallFontsResponse()]
+		if updateSubscription:
+			commands.append(typeWorld.api.InstallableFontsResponse())
+
+		root, messages = readJSONResponse(self.connectURL(), commands, typeWorld.api.INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api = root.installFonts
 
 		if messages['errors']:
 			return False, '\n\n'.join(messages['errors'])
+
+		if root.installableFonts:
+			self.setInstallableFontsCommand(root.installableFonts)
 
 		return True, api
 
@@ -259,14 +284,14 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
 			'accessToken': accessToken, 
 			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
-			'command': 'installableFonts',
 			'appVersion': VERSION,
 			'mothership': self.client.mothership,
 		}
 		if testScenario:
 			data['testScenario'] = testScenario
 
-		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api = root.installableFonts
 		
 		# Errors
 		if responses['errors']:

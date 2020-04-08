@@ -126,6 +126,7 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 ## List of Classes
 
 - [RootResponse](#user-content-class-rootresponse)<br />
+- [EndpointResponse](#user-content-class-endpointresponse)<br />
 - [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 - [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
 - [Designer](#user-content-class-designer)<br />
@@ -453,136 +454,52 @@ True
 
 # _class_ RootResponse()
 
-This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+This is the root object for each response, and contains one or more individual response objects as requested in the `commands` parameter of API endpoint calls.
 
-Any API response is expected to carry this minimum information, even when invoked without a particular command.
-
-In case the API endpoint has been invoked with a particular command, the response data is attached to the [APIRoot.response](#user-content-class-apiroot-attribute-response) attribute.
-
-
-```python
-response = RootResponse()
-response.name.en = u'Font Publisher'
-response.canonicalURL = 'https://fontpublisher.com/api/'
-response.adminEmail = 'admin@fontpublisher.com'
-response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
-```
-
-    
+This exists to speed up processes by reducing server calls. For instance, installing a protected fonts and afterwards asking for a refreshed installableFonts command requires two separate calls to the publisher’s API endpoint, which in turns needs to verify the requester’s identy with the central type.world server. By requesting `installFonts,installableFonts` commands in one go, a lot of time is saved.
 
 ### Attributes
 
-[adminEmail](#class-rootresponse-attribute-adminemail)<br />[backgroundColor](#class-rootresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-rootresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-rootresponse-attribute-licenseidentifier)<br />[loginURL](#class-rootresponse-attribute-loginurl)<br />[logo](#class-rootresponse-attribute-logo)<br />[name](#class-rootresponse-attribute-name)<br />[privacyPolicy](#class-rootresponse-attribute-privacypolicy)<br />[public](#class-rootresponse-attribute-public)<br />[supportedCommands](#class-rootresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-rootresponse-attribute-termsofserviceagreement)<br />[version](#class-rootresponse-attribute-version)<br />[website](#class-rootresponse-attribute-website)<br />
+[endpoint](#class-rootresponse-attribute-endpoint)<br />[installFonts](#class-rootresponse-attribute-installfonts)<br />[installableFonts](#class-rootresponse-attribute-installablefonts)<br />[uninstallFonts](#class-rootresponse-attribute-uninstallfonts)<br />[version](#class-rootresponse-attribute-version)<br />
 
 ### Methods
 
-[customValidation()](#class-rootresponse-method-customvalidation)<br />[sameContent()](#class-rootresponse-method-samecontent)<br />
+[sameContent()](#class-rootresponse-method-samecontent)<br />
 
 ## Attributes
 
-<div id="class-rootresponse-attribute-adminEmail"></div>
+<div id="class-rootresponse-attribute-endpoint"></div>
 
-### adminEmail
+### endpoint
 
-API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-<div id="class-rootresponse-attribute-backgroundColor"></div>
-
-### backgroundColor
-
-Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class-apiroot-attribute-logo)
+[EndpointResponse](#user-content-class-endpointresponse) object.
 
 __Required:__ False<br />
-__Type:__ Str<br />
-__Format:__ Hex RRGGBB (without leading #)<br />
-<div id="class-rootresponse-attribute-canonicalURL"></div>
+__Type:__ [EndpointResponse](#user-content-class-endpointresponse)<br />
+<div id="class-rootresponse-attribute-installFonts"></div>
 
-### canonicalURL
+### installFonts
 
-Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-<div id="class-rootresponse-attribute-licenseIdentifier"></div>
-
-### licenseIdentifier
-
-Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Default value:__ CC-BY-NC-ND-4.0
-
-<div id="class-rootresponse-attribute-loginURL"></div>
-
-### loginURL
-
-URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.
+[InstallFontsResponse](#user-content-class-installfontsresponse) object.
 
 __Required:__ False<br />
-__Type:__ Str<br />
-<div id="class-rootresponse-attribute-logo"></div>
+__Type:__ [InstallFontsResponse](#user-content-class-installfontsresponse)<br />
+<div id="class-rootresponse-attribute-installableFonts"></div>
 
-### logo
+### installableFonts
 
-URL of logo of API endpoint, for publication. Specifications to follow.
+[InstallableFontsResponse](#user-content-class-installablefontsresponse) object.
 
 __Required:__ False<br />
-__Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
-<div id="class-rootresponse-attribute-name"></div>
+__Type:__ [InstallableFontsResponse](#user-content-class-installablefontsresponse)<br />
+<div id="class-rootresponse-attribute-uninstallFonts"></div>
 
-### name
+### uninstallFonts
 
-Human-readable name of API endpoint
+[UninstallFontsResponse](#user-content-class-uninstallfontsresponse) object.
 
-__Required:__ True<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-__Format:__ Maximum allowed characters: 100.<br />
-<div id="class-rootresponse-attribute-privacyPolicy"></div>
-
-### privacyPolicy
-
-URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
-
-The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Default value:__ https://type.world/legal/default/PrivacyPolicy.html
-
-<div id="class-rootresponse-attribute-public"></div>
-
-### public
-
-API endpoint is meant to be publicly visible and its existence may be publicized within the project
-
-__Required:__ True<br />
-__Type:__ Bool<br />
-__Default value:__ False
-
-<div id="class-rootresponse-attribute-supportedCommands"></div>
-
-### supportedCommands
-
-List of commands this API endpoint supports: ['installableFonts', 'installFonts', 'uninstallFonts']
-
-__Required:__ True<br />
-__Type:__ List of Str objects<br />
-<div id="class-rootresponse-attribute-termsOfServiceAgreement"></div>
-
-### termsOfServiceAgreement
-
-URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
-
-The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
-
-__Required:__ True<br />
-__Type:__ Str<br />
-__Default value:__ https://type.world/legal/default/TermsOfService.html
-
+__Required:__ False<br />
+__Type:__ [UninstallFontsResponse](#user-content-class-uninstallfontsresponse)<br />
 <div id="class-rootresponse-attribute-version"></div>
 
 ### version
@@ -594,7 +511,157 @@ __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 __Default value:__ 0.1.7-alpha
 
-<div id="class-rootresponse-attribute-website"></div>
+
+
+## Methods
+
+<div id="class-rootresponse-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
+
+
+<div id="class-endpointresponse"></div>
+
+# _class_ EndpointResponse()
+
+This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+
+Any API response is expected to carry this minimum information, even when invoked without a particular command.
+
+In case the API endpoint has been invoked with a particular command, the response data is attached to the [APIRoot.response](#user-content-class-apiroot-attribute-response) attribute.
+
+
+```python
+response = EndpointResponse()
+response.name.en = u'Font Publisher'
+response.canonicalURL = 'https://fontpublisher.com/api/'
+response.adminEmail = 'admin@fontpublisher.com'
+response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
+```
+
+    
+
+### Attributes
+
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logo](#class-endpointresponse-attribute-logo)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicy](#class-endpointresponse-attribute-privacypolicy)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-endpointresponse-attribute-termsofserviceagreement)<br />[website](#class-endpointresponse-attribute-website)<br />
+
+### Methods
+
+[customValidation()](#class-endpointresponse-method-customvalidation)<br />[sameContent()](#class-endpointresponse-method-samecontent)<br />
+
+## Attributes
+
+<div id="class-endpointresponse-attribute-adminEmail"></div>
+
+### adminEmail
+
+API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+<div id="class-endpointresponse-attribute-backgroundColor"></div>
+
+### backgroundColor
+
+Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class-apiroot-attribute-logo)
+
+__Required:__ False<br />
+__Type:__ Str<br />
+__Format:__ Hex RRGGBB (without leading #)<br />
+<div id="class-endpointresponse-attribute-canonicalURL"></div>
+
+### canonicalURL
+
+Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+<div id="class-endpointresponse-attribute-licenseIdentifier"></div>
+
+### licenseIdentifier
+
+Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Default value:__ CC-BY-NC-ND-4.0
+
+<div id="class-endpointresponse-attribute-loginURL"></div>
+
+### loginURL
+
+URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.
+
+__Required:__ False<br />
+__Type:__ Str<br />
+<div id="class-endpointresponse-attribute-logo"></div>
+
+### logo
+
+URL of logo of API endpoint, for publication. Specifications to follow.
+
+__Required:__ False<br />
+__Type:__ Str<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+<div id="class-endpointresponse-attribute-name"></div>
+
+### name
+
+Human-readable name of API endpoint
+
+__Required:__ True<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
+<div id="class-endpointresponse-attribute-privacyPolicy"></div>
+
+### privacyPolicy
+
+URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
+
+The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Default value:__ https://type.world/legal/default/PrivacyPolicy.html
+
+<div id="class-endpointresponse-attribute-public"></div>
+
+### public
+
+API endpoint is meant to be publicly visible and its existence may be publicized within the project
+
+__Required:__ True<br />
+__Type:__ Bool<br />
+__Default value:__ False
+
+<div id="class-endpointresponse-attribute-supportedCommands"></div>
+
+### supportedCommands
+
+List of commands this API endpoint supports: ['endpoint', 'installableFonts', 'installFonts', 'uninstallFonts']
+
+__Required:__ True<br />
+__Type:__ List of Str objects<br />
+<div id="class-endpointresponse-attribute-termsOfServiceAgreement"></div>
+
+### termsOfServiceAgreement
+
+URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
+
+The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Default value:__ https://type.world/legal/default/TermsOfService.html
+
+<div id="class-endpointresponse-attribute-website"></div>
 
 ### website
 
@@ -606,7 +673,7 @@ __Type:__ Str<br />
 
 ## Methods
 
-<div id="class-rootresponse-method-customvalidation"></div>
+<div id="class-endpointresponse-method-customvalidation"></div>
 
 #### customValidation()
 
@@ -614,7 +681,7 @@ Return three lists with informations, warnings, and errors.
 
 An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
 
-<div id="class-rootresponse-method-samecontent"></div>
+<div id="class-endpointresponse-method-samecontent"></div>
 
 #### sameContent()
 
@@ -1465,7 +1532,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'ttc', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'otf', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1843,7 +1910,7 @@ Type of response:
 
 `revealedUserIdentityRequired`: The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [RootResponse.loginURL](#user-content-class-rootresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
 
 
 
@@ -1981,7 +2048,7 @@ Type of response:
 
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [RootResponse.loginURL](#user-content-class-rootresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
 
 
 

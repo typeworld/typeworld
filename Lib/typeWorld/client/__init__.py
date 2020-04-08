@@ -308,6 +308,9 @@ class TypeWorldClientDelegate(object):
 	def subscriptionWasAdded(self, publisher, subscription):
 		pass
 
+	def subscriptionWasUpdated(self, publisher, subscription):
+		pass
+
 class APIInvitation(object):
 	keywords = ()
 
@@ -2297,7 +2300,7 @@ class APISubscription(PubSubClient):
 		# Server access
 		# Protected fonts
 		if uninstallTheseProtectedFontIDs:
-			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs)
+			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = True)
 
 			if success:
 
@@ -2380,6 +2383,7 @@ class APISubscription(PubSubClient):
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
 		installTheseFontIDs = []
+		protectedFonts = False
 
 		folder = self.parent.folder()
 
@@ -2393,6 +2397,8 @@ class APISubscription(PubSubClient):
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
+						if font.protected:
+							protectedFonts = True
 						if font.uniqueID == fontID:
 							path = os.path.join(folder, font.filename(version))
 							break
@@ -2419,7 +2425,7 @@ class APISubscription(PubSubClient):
 			installTheseFontIDs.append(fontID)
 
 		# Server access
-		success, payload = self.protocol.installFonts(fonts)		
+		success, payload = self.protocol.installFonts(fonts, updateSubscription = protectedFonts)		
 
 		if success:
 

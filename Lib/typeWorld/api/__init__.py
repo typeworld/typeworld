@@ -49,10 +49,16 @@ RESPONSES = {
     TEMPORARILYUNAVAILABLE: 'The service is temporarily unavailable but should work again later on.',
     VALIDTYPEWORLDUSERACCOUNTREQUIRED: 'The access to this subscription requires a valid Type.World user account connected to an app.',
     REVEALEDUSERIDENTITYREQUIRED: 'The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).',
-    LOGINREQUIRED: 'The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at ::RootResponse.loginURL::. After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.',
+    LOGINREQUIRED: 'The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at ::EndpointResponse.loginURL::. After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.',
 }
 
 # Commands
+ENDPOINTCOMMAND = {
+    'keyword': 'endpoint',
+    'currentVersion': VERSION,
+    'responseTypes': [SUCCESS, ERROR],
+    'acceptableMimeTypes': ['application/json'],
+    }
 INSTALLABLEFONTSCOMMAND = {
     'keyword': 'installableFonts',
     'currentVersion': VERSION,
@@ -72,7 +78,7 @@ UNINSTALLFONTSCOMMAND =  {
     'acceptableMimeTypes': ['application/json'],
     }
 
-COMMANDS = [INSTALLABLEFONTSCOMMAND, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND]
+COMMANDS = [ENDPOINTCOMMAND, INSTALLABLEFONTSCOMMAND, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND]
 
 
 FONTPURPOSES = {
@@ -1772,6 +1778,9 @@ class FoundryProxy(Proxy):
 class FoundryListProxy(ListProxy):
     dataType = FoundryProxy
 
+
+
+
 ####################################################################################################################################
 
 #  Base Response
@@ -1788,6 +1797,7 @@ class BaseResponse(DictBasedObject):
             critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         return information, warnings, critical
+
 
 
 ####################################################################################################################################
@@ -1819,6 +1829,9 @@ class InstallableFontsResponse(BaseResponse):
     ```
 
     '''
+
+    _command = INSTALLABLEFONTSCOMMAND
+
     #   key:                    [data type, required, default value, description]
     _structure = {
 
@@ -1986,6 +1999,8 @@ class InstallFontsResponse(BaseResponse):
 
     '''
 
+    _command = INSTALLFONTSCOMMAND
+
     #   key:                    [data type, required, default value, description]
     _structure = {
 
@@ -2060,6 +2075,8 @@ class UninstallFontsResponse(BaseResponse):
 
     '''
 
+    _command = UNINSTALLFONTSCOMMAND
+
     #   key:                    [data type, required, default value, description]
     _structure = {
         # Root
@@ -2070,7 +2087,7 @@ class UninstallFontsResponse(BaseResponse):
 ####################################################################################################################################
 
 
-class RootResponse(BaseResponse):
+class EndpointResponse(BaseResponse):
     '''\
 This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
 
@@ -2080,7 +2097,7 @@ In case the API endpoint has been invoked with a particular command, the respons
 
 
 ```python
-response = RootResponse()
+response = EndpointResponse()
 response.name.en = u'Font Publisher'
 response.canonicalURL = 'https://fontpublisher.com/api/'
 response.adminEmail = 'admin@fontpublisher.com'
@@ -2089,6 +2106,7 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
 
     '''
 
+    _command = ENDPOINTCOMMAND
 
     #   key:                    [data type, required, default value, description]
     _structure = {
@@ -2103,7 +2121,6 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
         'website':              [WebURLDataType,            False,  None,   'URL of human-visitable website of API endpoint, for publication'],
         'privacyPolicy':        [WebURLDataType,            True,   'https://type.world/legal/default/PrivacyPolicy.html',  'URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
         'termsOfServiceAgreement': [WebURLDataType,         True,   'https://type.world/legal/default/TermsOfService.html',     'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
-        'version':          [VersionDataType,           True,   INSTALLFONTSCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTSCOMMAND['keyword']],
         'loginURL':          [WebURLDataType,           False,   None,   'URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.'],
     }
 
@@ -2122,3 +2139,38 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
         return information, warnings, critical
 
 
+
+####################################################################################################################################
+
+#  Root Response
+
+
+class EndpointResponseProxy(Proxy):
+    dataType = EndpointResponse
+
+class InstallableFontsResponseProxy(Proxy):
+    dataType = InstallableFontsResponse
+
+class InstallFontsResponseProxy(Proxy):
+    dataType = InstallFontsResponse
+
+class UninstallFontsResponseProxy(Proxy):
+    dataType = UninstallFontsResponse
+
+class RootResponse(BaseResponse):
+    '''\
+    This is the root object for each response, and contains one or more individual response objects as requested in the `commands` parameter of API endpoint calls.
+
+    This exists to speed up processes by reducing server calls. For instance, installing a protected fonts and afterwards asking for a refreshed installableFonts command requires two separate calls to the publisher’s API endpoint, which in turns needs to verify the requester’s identy with the central type.world server. By requesting `installFonts,installableFonts` commands in one go, a lot of time is saved.
+    '''
+    #   key:                    [data type, required, default value, description]
+    _structure = {
+
+        # Root
+        'endpoint':         [EndpointResponseProxy,         False,   None,  '::EndpointResponse:: object.'],
+        'installableFonts': [InstallableFontsResponseProxy, False,   None,  '::InstallableFontsResponse:: object.'],
+        'installFonts':     [InstallFontsResponseProxy,     False,   None,  '::InstallFontsResponse:: object.'],
+        'uninstallFonts':   [UninstallFontsResponseProxy,   False,   None,  '::UninstallFontsResponse:: object.'],
+
+        'version':          [VersionDataType,           True,   INSTALLFONTSCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTSCOMMAND['keyword']],
+    }

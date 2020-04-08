@@ -7,6 +7,7 @@ from ynlib.files import WriteToFile, ReadFromFile
 docstrings = []
 
 docstrings.extend(typeWorld.api.RootResponse().docu())
+docstrings.extend(typeWorld.api.EndpointResponse().docu())
 docstrings.extend(typeWorld.api.InstallableFontsResponse().docu())
 docstrings.extend(typeWorld.api.InstallFontsResponse().docu())
 docstrings.extend(typeWorld.api.UninstallFontsResponse().docu())

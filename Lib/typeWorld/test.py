@@ -21,7 +21,7 @@ from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType,
 from typeWorld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeWorld.api import InstallFontAsset, FontListProxy, RootResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse
+from typeWorld.api import InstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse
 
 # Constants
 from typeWorld.api import COMMANDS, MAC
@@ -63,8 +63,8 @@ failures = []
 print('setting up objects started...')
 
 
-### RootResponse
-root = RootResponse()
+### EndpointResponse
+root = EndpointResponse()
 root.name.en = 'Font Publisher'
 root.canonicalURL = 'http://fontpublisher.com/api/'
 root.adminEmail = 'admin@fontpublisher.com'
@@ -306,21 +306,21 @@ class TestStringMethods(unittest.TestCase):
 	maxDiff = None
 
 
-	def test_RootResponse(self):
+	def test_EndpointResponse(self):
 
-		print('test_RootResponse() started...')
+		print('test_EndpointResponse() started...')
 
 		print(root)
 		# Dump and reload
 		json = root.dumpJSON()
-		root2 = RootResponse()
+		root2 = EndpointResponse()
 		root2.loadJSON(json)
 		self.assertTrue(root.sameContent(root2))
 
 		# name
 		r2 = copy.deepcopy(root)
 		r2.name.en = ''
-		self.assertEqual(r2.validate()[2], ['<RootResponse>.name is a required attribute, but empty'])
+		self.assertEqual(r2.validate()[2], ['<EndpointResponse>.name is a required attribute, but empty'])
 
 		# canonicalURL
 		r2 = copy.deepcopy(root)
@@ -400,7 +400,7 @@ class TestStringMethods(unittest.TestCase):
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
 
-		print('test_RootResponse() finished...')
+		print('test_EndpointResponse() finished...')
 
 
 	def test_copy(self):
@@ -1081,7 +1081,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 		## DOCU
-		RootResponse().docu()
+		EndpointResponse().docu()
 		InstallableFontsResponse().docu()
 		InstallFontsResponse().docu()
 		UninstallFontsResponse().docu()
