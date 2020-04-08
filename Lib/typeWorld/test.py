@@ -18,7 +18,7 @@ import tempfile, os
 
 # Data Types
 from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
-from typeWorld.api.base import MultiLanguageText, MultiLanguageLongText, FloatDataType
+from typeWorld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
 from typeWorld.api import InstallFontAsset, FontListProxy, RootResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse
@@ -1009,8 +1009,8 @@ class TestStringMethods(unittest.TestCase):
 			'de': 'Hallo Welt'
 		}
 		j = json.dumps(d)
-		d1 = typeWorld.api.base.MultiLanguageText(json=j).dumpDict()
-		d2 = typeWorld.api.base.MultiLanguageText(dict=d).dumpDict()
+		d1 = typeWorld.api.MultiLanguageText(json=j).dumpDict()
+		d2 = typeWorld.api.MultiLanguageText(dict=d).dumpDict()
 		from deepdiff import DeepDiff
 		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		

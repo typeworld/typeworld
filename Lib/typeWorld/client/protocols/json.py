@@ -1,7 +1,7 @@
 import urllib
 import typeWorld.client.protocols
 import typeWorld.api
-from typeWorld.api.base import VERSION, NOFONTSAVAILABLE
+from typeWorld.api import VERSION, NOFONTSAVAILABLE
 
 def readJSONResponse(url, api, acceptableMimeTypes, data = {}):
 	d = {}
@@ -92,7 +92,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			}
 			if testScenario:
 				data['testScenario'] = testScenario
-			api, responses = readJSONResponse(self.connectURL(), typeWorld.api.RootResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			api, responses = readJSONResponse(self.connectURL(), typeWorld.api.RootResponse(), typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 			
 			# Errors
 			if responses['errors']:
@@ -266,7 +266,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if testScenario:
 			data['testScenario'] = testScenario
 
-		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), typeWorld.api.base.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		api, responses = readJSONResponse(self.connectURL(), typeWorld.api.InstallableFontsResponse(), typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		
 		# Errors
 		if responses['errors']:

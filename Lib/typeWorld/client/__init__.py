@@ -3,8 +3,8 @@
 import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading
 from time import gmtime, strftime
 
-import typeWorld.api, typeWorld.api.base
-from typeWorld.api.base import VERSION
+import typeWorld.api
+from typeWorld.api import VERSION
 
 from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName
 
@@ -54,12 +54,12 @@ def urlIsValid(url):
 		return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
 
 	found = False
-	for protocol in typeWorld.api.base.PROTOCOLS:
+	for protocol in typeWorld.api.PROTOCOLS:
 		if url.startswith(protocol + '://'):
 			found = True
 			break
 	if not found:
-		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.base.PROTOCOLS)
+		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.PROTOCOLS)
 
 	if url.count('://') > 1:
 		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
@@ -1538,7 +1538,7 @@ class APIClient(PubSubClient):
 			# Initial Health Check
 			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 			if not success:
-				if type(response) == typeWorld.api.base.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+				if type(response) == typeWorld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 					message = response
 				else:
 					message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
