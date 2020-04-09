@@ -480,6 +480,13 @@ class APIClient(PubSubClient):
 	# 	self.preferences.set('pendingOnlineCommands', commands)
 
 	def performRequest(self, url, parameters):
+
+		parameters['clientVersion'] = VERSION
+		if self.testScenario == 'simulateFaultyClientVersion':
+			parameters['clientVersion'] = 'abc'
+		elif self.testScenario == 'simulateNoClientVersion':
+			del parameters['clientVersion']
+
 		if self._isSetOnline:
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
@@ -757,7 +764,6 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -797,13 +803,7 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'userTimezone': self.timezone(),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
-
-			if self.testScenario == 'simulateFaultyClientVersion':
-				parameters['clientVersion'] = 'abc'
-			elif self.testScenario == 'simulateNoClientVersion':
-				del parameters['clientVersion']
 
 			success, response = self.performRequest(self.mothership, parameters)
 			if not success:
@@ -898,7 +898,6 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -938,7 +937,6 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionIDs': ','.join([str(x) for x in IDs]),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -978,7 +976,6 @@ class APIClient(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionURLs': ','.join(oldURLs),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -1181,7 +1178,6 @@ class APIClient(PubSubClient):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'secretKey': self.secretKey(userID),
-			'clientVersion': VERSION,
 		}
 
 		parameters = self.addMachineIDToParameters(parameters)
@@ -1246,7 +1242,6 @@ class APIClient(PubSubClient):
 			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': userID,
 			'secretKey': self.secretKey(),
-			'clientVersion': VERSION,
 		}
 
 		success, response = self.performRequest(self.mothership, parameters)
@@ -1944,7 +1939,6 @@ class APISubscription(PubSubClient):
 				'anonymousUserID': userID,
 				'subscriptionURL': self.protocol.url.secretURL(),
 				'secretKey': self.secretKey(),
-				'clientVersion': VERSION,
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
@@ -2029,7 +2023,6 @@ class APISubscription(PubSubClient):
 				'targetUserEmail': targetEmail,
 				'sourceUserEmail': self.parent.parent.userEmail(),
 				'subscriptionURL': self.protocol.secretURL(),
-				'clientVersion': VERSION,
 			}
 			if self.parent.parent.testScenario:
 				parameters['testScenario'] = self.parent.parent.testScenario
