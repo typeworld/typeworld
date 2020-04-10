@@ -1235,12 +1235,29 @@ class APIClient(PubSubClient):
 			for subscription in publisher.subscriptions():
 
 				success, installabeFontsCommand = subscription.protocol.installableFontsCommand()
+				if not success:
+					return False, 'No installabeFontsCommand'
+
+				fontIDs = []
 
 				for foundry in installabeFontsCommand.foundries:
 					for family in foundry.families:
 						for font in family.fonts:
-							if font.protected:
-								subscription.removeFonts([font.uniqueID])
+
+							# Dry run from central server: add all fonts to list
+							if dryRun and font.protected:
+								fontIDs.append(font.uniqueID)
+
+							# Run from local client, add only actually installed fonts
+							elif not dryRun and font.protected and subscription.installedFontVersion(font.uniqueID):
+								fontIDs.append(font.uniqueID)
+				
+				if fontIDs:
+					success, message = subscription.removeFonts(fontIDs, dryRun = dryRun)
+					if not success:
+						return False, message
+
+		return True, None
 
 
 	def performUnlinkUser(self):
