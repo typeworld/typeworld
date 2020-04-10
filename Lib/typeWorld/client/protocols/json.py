@@ -157,14 +157,19 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			return False, self.subscription._updatingProblem, False
 
 
-		# Detect installed fonts now not available in subscription anymore and delete them
-		if api.response == NOFONTSAVAILABLE:
-			for foundry in self._installableFontsCommand.foundries:
-				for family in foundry.families:
-					for font in family.fonts:
-						success, message = self.subscription.removeFonts([font.uniqueID])
-						# if success == False:
-						# 	return False, message, False
+		# # Detect installed fonts now not available in subscription anymore and delete them
+		# hasFonts = False
+		# removeFonts = []
+		# if api.response == NOFONTSAVAILABLE:
+		# 	for foundry in self._installableFontsCommand.foundries:
+		# 		for family in foundry.families:
+		# 			for font in family.fonts:
+		# 				hasFonts = True
+		# 				removeFonts.append(font.uniqueID)
+		# 	if removeFonts:
+		# 		success, message = self.subscription.removeFonts(removeFonts)
+		# 		if not success:
+		# 			return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
 
 		# Previously available fonts
 		oldIDs = []
