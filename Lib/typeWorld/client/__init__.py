@@ -1228,7 +1228,7 @@ class APIClient(PubSubClient):
 		return self.performCommands()
 
 
-	def uninstallAllProtectedFonts(self):
+	def uninstallAllProtectedFonts(self, dryRun = False):
 
 		# Uninstall all protected fonts
 		for publisher in self.publishers():
