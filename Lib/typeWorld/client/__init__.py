@@ -2265,7 +2265,7 @@ class APISubscription(PubSubClient):
 
 
 
-	def removeFonts(self, fonts, dryRun = False):
+	def removeFonts(self, fonts, dryRun = False, updateSubscription = True):
 
 		success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
@@ -2290,7 +2290,7 @@ class APISubscription(PubSubClient):
 								break
 
 			if not path and not dryRun:
-				return False, 'Font path couldn’t be determined'
+				return False, 'Font path couldn’t be determined (preflight)'
 
 			if font.protected:
 
@@ -2324,7 +2324,7 @@ class APISubscription(PubSubClient):
 		# Server access
 		# Protected fonts
 		if uninstallTheseProtectedFontIDs:
-			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = True)
+			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = False)
 
 			if success:
 
@@ -2359,10 +2359,11 @@ class APISubscription(PubSubClient):
 											break
 
 						if not path and not dryRun:
-							return False, 'Font path couldn’t be determined'
+							return False, 'Font path couldn’t be determined (deleting protected fonts)'
 
 						if not dryRun:
 							os.remove(path)
+							# print('Actually deleted font %s' % path)
 
 						self.parent.parent.delegate.fontHasUninstalled(True, None, font)
 
@@ -2386,7 +2387,7 @@ class APISubscription(PubSubClient):
 									break
 
 				if not path and not dryRun:
-					return False, 'Font path couldn’t be determined'
+					return False, 'Font path couldn’t be determined (deleting unprotected fonts)'
 
 				if not dryRun:
 					os.remove(path)
@@ -2418,15 +2419,19 @@ class APISubscription(PubSubClient):
 			fontIDs.append(fontID)
 
 			path = None
+			font = None
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						if font.protected:
-							protectedFonts = True
 						if font.uniqueID == fontID:
 							path = os.path.join(folder, font.filename(version))
+							if font.protected:
+								protectedFonts = True
 							break
 			assert path
+			# print('path', path)
+			assert font
+			# print('font', font)
 
 			self.parent.parent.delegate.fontWillInstall(font)
 
@@ -2482,6 +2487,7 @@ class APISubscription(PubSubClient):
 					f = open(path, 'wb')
 					f.write(base64.b64decode(incomingFont.data))
 					f.close()
+					# print('Actually wrote font %s to disk' % path)
 
 					self.parent.parent.delegate.fontHasInstalled(True, None, font)
 
