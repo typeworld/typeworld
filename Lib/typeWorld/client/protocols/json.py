@@ -230,7 +230,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if messages['errors']:
 			return False, '\n\n'.join(messages['errors'])
 
-		if root.installableFonts:
+		if updateSubscription and root.installableFonts:
 			self.setInstallableFontsCommand(root.installableFonts)
 
 		return True, api
