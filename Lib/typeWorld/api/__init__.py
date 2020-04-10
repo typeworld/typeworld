@@ -305,7 +305,11 @@ class VersionDataType(StringDataType):
         if not self.value: return True
         
         # Append .0 for semver comparison
-        value = makeSemVer(self.value)
+        try:
+            value = makeSemVer(self.value)
+        except:
+            return False
+
         try:
             semver.parse(value)
         except ValueError as e:
