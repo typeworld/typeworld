@@ -846,7 +846,9 @@ class APIClient(PubSubClient):
 
 		# Uninstall all protected fonts when app instance is reported as revoked
 		if response['appInstanceIsRevoked']:
-			self.uninstallAllProtectedFonts()
+			success, message = self.uninstallAllProtectedFonts()
+			if not success:
+				return False, message
 
 		# Add new subscriptions
 		for url in response['subscriptions']:
