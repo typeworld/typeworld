@@ -177,6 +177,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			for family in foundry.families:
 				for font in family.fonts:
 					oldIDs.append(font.uniqueID)
+
 		# Newly available fonts
 		newIDs = []
 		for foundry in api.foundries:
@@ -184,14 +185,24 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 				for font in family.fonts:
 					newIDs.append(font.uniqueID)
 
-		# Deleted
+		# These fonts are no longer available, so delete them.
+		# Shrink the list of deletable fonts to the ones actually installed.
 		deletedFonts = list( set(oldIDs) - set(newIDs) )
+		deleteTheseFonts = []
 		if deletedFonts:
 			for fontID in deletedFonts:
-				success, message = self.subscription.removeFonts([fontID])
-				# if success == False:
-				# 	return False, message, False
+				for foundry in self._installableFontsCommand.foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.uniqueID == fontID:
+								if self.subscription.installedFontVersion(font.uniqueID):
+									deleteTheseFonts.append(fontID)
 
+			success, message = self.subscription.removeFonts(deleteTheseFonts, updateSubscription = False)
+			if not success:
+				return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
+
+		# Compare
 		identical = self._installableFontsCommand.sameContent(api)
 		self._installableFontsCommand = api
 
