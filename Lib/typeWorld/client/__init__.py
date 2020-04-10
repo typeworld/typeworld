@@ -1264,7 +1264,9 @@ class APIClient(PubSubClient):
 
 		userID = self.user()
 
-		self.uninstallAllProtectedFonts()
+		success, response = self.uninstallAllProtectedFonts()
+		if not success:
+			return False, response
 
 		parameters = {
 			'command': 'unlinkTypeWorldUserAccount',
