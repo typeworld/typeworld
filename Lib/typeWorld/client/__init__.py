@@ -581,29 +581,39 @@ class APIClient(PubSubClient):
 		if 'GAE_DEPLOYMENT_ID' in os.environ:
 			return True
 
+
 		if not server:
 			server = 'type.world'
 
-		if server in self._online and self._online[server]['result'] == 0:
+		import urllib.request
+		try:
+			host='http://' + server
+			urllib.request.urlopen(host) #Python 3.x
 			return True
+		except:
+			return False		
 
-		else:
 
-			result = 0
-			if MAC or LINUX:
-				out = subprocess.Popen('ping %s -c 1' % server, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, shell=True)
-				output, result = out.communicate()[0].decode(), out.returncode
-				assert output
-			if WIN:
-				CREATE_NO_WINDOW = 0x08000000
-				result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
+		# if server in self._online and self._online[server]['result'] == 0:
+		# 	return True
 
-			self._online[server] = {
-				'time': time.time(),
-				'result': result
-			}
+		# else:
 
-			return result == 0
+		# 	result = 0
+		# 	if MAC or LINUX:
+		# 		out = subprocess.Popen('ping %s -c 1' % server, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, shell=True)
+		# 		output, result = out.communicate()[0].decode(), out.returncode
+		# 		assert output
+		# 	if WIN:
+		# 		CREATE_NO_WINDOW = 0x08000000
+		# 		result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
+
+		# 	self._online[server] = {
+		# 		'time': time.time(),
+		# 		'result': result
+		# 	}
+
+		# 	return result == 0
 
 
 
