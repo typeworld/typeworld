@@ -1684,23 +1684,10 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Revoke app instance
-		if not 'TRAVIS' in os.environ: authKey = user1.client.keyring().get_password('https://typeworld2.appspot.com/api', 'revokeAppInstance')
-		else: authKey = os.environ['REVOKEAPPINSTANCEAUTHKEY']
-		parameters = {
-			'command': 'revokeAppInstance',
-			'anonymousAppID': user1.client.anonymousAppID(),
-			'authorizationKey': authKey,
-			'anonymousUserID': user1.client.user(),
-			'secretKey': user1.client.secretKey(),
-		}
-
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
-		if success == False:
+		success, response = user1.client.revokeAppInstance(user1.client.anonymousAppID())
+		if not success:
 			print(response)
 		self.assertEqual(success, True)
-
-		response = json.loads(response.read().decode())
-		self.assertEqual(response['response'], 'success')
 
 		# Save test font's uniqueID and version for later
 		testFontID = user1.testFont().uniqueID
@@ -1725,19 +1712,10 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
 
 		# Reactivate app instance
-		parameters = {
-			'command': 'reactivateAppInstance',
-			'anonymousAppID': user1.client.anonymousAppID(),
-			'authorizationKey': authKey,
-			'anonymousUserID': user1.client.user(),
-			'secretKey': user1.client.secretKey(),
-		}
-
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = user1.client.reactivateAppInstance(user1.client.anonymousAppID())
+		if not success:
+			print(response)
 		self.assertEqual(success, True)
-
-		response = json.loads(response.read().decode())
-		self.assertEqual(response['response'], 'success')
 
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
 

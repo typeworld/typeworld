@@ -1051,22 +1051,12 @@ class APIClient(PubSubClient):
 				'email': email,
 				'password': password1,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
-
-			# print('createUserAccount():', response)
 
 			if response['response'] != 'success':
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
@@ -1098,24 +1088,10 @@ class APIClient(PubSubClient):
 				'email': email,
 				'password': password,
 			}
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
 
-			# Add user’s secret key
-			# keyring = self.keyring()
-			# if keyring:
-			# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
-
-			# parameters = self.addMachineIDToParameters(parameters)
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.mothership
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -1139,28 +1115,12 @@ class APIClient(PubSubClient):
 			'email': email,
 			'password': password,
 		}
-		if self.testScenario:
-			parameters['testScenario'] = self.testScenario
 
-		# Add user’s secret key
-		# keyring = self.keyring()
-		# if keyring:
-		# 	parameters['secretKey'] = keyring.get_password('https://type.world', userID)
-
-		# parameters = self.addMachineIDToParameters(parameters)
-		data = urllib.parse.urlencode(parameters).encode('ascii')
-		url = self.mothership
-		if self.testScenario == 'simulateCentralServerNotReachable':
-			url = 'https://type.worlddd/jsonAPI/'
-
-		try:
-			response = urllib.request.urlopen(url, data, context=self.sslcontext)
-		except:
-			return False, traceback.format_exc().splitlines()[-1]
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
 
 		response = json.loads(response.read().decode())
-
-		# print(response)
 
 		if response['response'] != 'success':
 			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
@@ -1218,6 +1178,96 @@ class APIClient(PubSubClient):
 				keyring.set_password(self.userKeychainKey(userID), 'userEmail', response['userEmail'])
 			if 'userName' in response:
 				keyring.set_password(self.userKeychainKey(userID), 'userName', response['userName'])
+
+		return True, None
+
+
+
+	def linkedAppInstances(self):
+
+		if not self.user():
+			return False, 'No user'
+
+		parameters = {
+			'command': 'userAppInstances',
+			'anonymousUserID': self.user(),
+			'secretKey': self.secretKey(),
+		}
+
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
+
+		response = json.loads(response.read().decode())
+
+		if response['response'] != 'success':
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+
+		class AppInstance(object):
+			pass
+
+
+		# Success
+		instances = []
+
+		for serverInstance in response['appInstances']:
+
+			instance = AppInstance()
+
+			for key in serverInstance:
+				setattr(instance, key, serverInstance[key])
+
+			instances.append(instance)
+
+		return True, instances
+
+
+
+	def revokeAppInstance(self, anonymousAppID):
+
+		if not self.user():
+			return False, 'No user'
+
+		parameters = {
+			'command': 'revokeAppInstance',
+			'anonymousAppID': anonymousAppID,
+			'anonymousUserID': self.user(),
+			'secretKey': self.secretKey(),
+		}
+
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
+
+		response = json.loads(response.read().decode())
+
+		if response['response'] != 'success':
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+		return True, None
+
+
+	def reactivateAppInstance(self, anonymousAppID):
+
+		if not self.user():
+			return False, 'No user'
+
+		parameters = {
+			'command': 'reactivateAppInstance',
+			'anonymousAppID': anonymousAppID,
+			'anonymousUserID': self.user(),
+			'secretKey': self.secretKey(),
+		}
+
+		success, response = self.performRequest(self.mothership, parameters)
+		if not success:
+			return False, response
+
+		response = json.loads(response.read().decode())
+
+		if response['response'] != 'success':
+			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 		return True, None
 
