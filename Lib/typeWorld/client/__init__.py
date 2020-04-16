@@ -2057,28 +2057,12 @@ class APISubscription(PubSubClient):
 				'command': 'registerAPIEndpoint',
 				'url': 'typeworld://%s+%s' % (self.protocol.url.protocol, self.parent.canonicalURL.replace('://', '//')),
 			}
-			if self.parent.parent.testScenario:
-				parameters['testScenario'] = self.parent.parent.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-
-			url = self.parent.parent.mothership
-			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
-			except:
-				self.parent.parent.log('stillAliveWorker(): ' + traceback.format_exc())
-				return
-
+			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
-
-			# if response['response'] == 'success':
-			# 	self.parent.parent.log('API endpoint alive success.')
-			# else:
-			# 	self.parent.parent.log('API endpoint alive error: %s' % response['response'])
 
 
 		# Touch only once
@@ -2104,18 +2088,10 @@ class APISubscription(PubSubClient):
 				'sourceUserEmail': self.parent.parent.userEmail(),
 				'subscriptionURL': self.protocol.secretURL(),
 			}
-			if self.parent.parent.testScenario:
-				parameters['testScenario'] = self.parent.parent.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.parent.parent.mothership
-			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -2152,18 +2128,10 @@ class APISubscription(PubSubClient):
 				'sourceUserEmail': self.parent.parent.userEmail(),
 				'subscriptionURL': self.protocol.secretURL(),
 			}
-			if self.parent.parent.testScenario:
-				parameters['testScenario'] = self.parent.parent.testScenario
 
-			data = urllib.parse.urlencode(parameters).encode('ascii')
-			url = self.parent.parent.mothership
-			if self.parent.parent.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
-
-			try:
-				response = urllib.request.urlopen(url, data, context=self.parent.parent.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1]
+			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+			if not success:
+				return False, response
 
 			response = json.loads(response.read().decode())
 
