@@ -1748,7 +1748,7 @@ class APIPublisher(object):
 			rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
 			title = rootCommand.name.getText()
 
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App', '%s (%s)' % (title, self.subscriptions()[0].protocol.protocolName()))
+			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App')
 
 			return folder
 
