@@ -1410,7 +1410,7 @@ class Font(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
         'name':             [MultiLanguageTextProxy,        True,   None,   'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
-        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \\ : * | ^'],
+        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \\ : * | ^'],
         'postScriptName':   [UnicodeDataType,       True,   None,   'Complete PostScript name of font'],
         'setName':          [MultiLanguageTextProxy,False,  None,   'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
         'versions':         [VersionListProxy,      False,  None,   'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
@@ -1437,7 +1437,7 @@ class Font(DictBasedObject):
         '''\
         Returns the recommended font file name to be used to store the font on disk.
 
-        It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 255 characters.
+        It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 220 characters.
         '''
 
         if not type(version) in (str, int, float):
@@ -1475,8 +1475,8 @@ class Font(DictBasedObject):
 
         for version in self.getVersions():
             filename = self.filename(version.number)
-            if len(filename) > 255:
-                critical.append("The suggested file name is longer than 255 characters: %s" % filename)
+            if len(filename) > 220:
+                critical.append("The suggested file name is longer than 220 characters: %s" % filename)
 
         return information, warnings, critical
 

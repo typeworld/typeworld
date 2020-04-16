@@ -1532,7 +1532,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'otf', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1619,7 +1619,7 @@ __Default value:__ stable
 
 ### uniqueID
 
-A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 255 characters and must not contain the following characters: / ? < > \ : * | ^
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \ : * | ^
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1659,7 +1659,7 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 
 Returns the recommended font file name to be used to store the font on disk.
 
-It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 255 characters.
+It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 220 characters.
 
 <div id="class-font-method-getdesigners"></div>
 
