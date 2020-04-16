@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading
+import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl
 from time import gmtime, strftime
 
 import typeWorld.api
@@ -113,8 +113,12 @@ def getProtocol(url):
 	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
 
-def performRequest(url, parameters, sslcontext):
+def performRequest(url, parameters, sslcontext = None):
 	'''Perform request in a loop 10 times, because the central server’s instance might shut down unexpectedly during a request, especially longer running ones.'''
+
+
+	if not sslcontext:
+		sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 	success = False
 	message = None
