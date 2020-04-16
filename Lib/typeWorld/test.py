@@ -42,19 +42,19 @@ from inspect import currentframe, getframeinfo
 
 # Travis CI
 if 'TRAVIS' in os.environ:
-	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+	MOTHERSHIP = 'https://api.type.world/v1'
 
 # Local testing
 else:
-	MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+	MOTHERSHIP = 'https://api.type.world/v1'
 
 	# Testing specific version
 	if len(sys.argv) >= 2:
 		MOTHERSHIP = sys.argv[1]#.replace('-dot-', '.')
 		del sys.argv[1:]
 
-		if not MOTHERSHIP.endswith('/api'):
-			MOTHERSHIP += '/api'
+		if not MOTHERSHIP.endswith('/v1'):
+			MOTHERSHIP += '/v1'
 
 
 print('Testing on %s' % MOTHERSHIP)
@@ -2143,6 +2143,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
+		if not success:
+			print(message)
 		self.assertEqual(success, True)
 
 		print('STATUS: -6')

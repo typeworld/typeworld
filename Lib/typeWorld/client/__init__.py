@@ -12,8 +12,7 @@ WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
-#MOTHERSHIP = 'http://127.0.0.1:8080/api'
-MOTHERSHIP = 'https://typeworld2.appspot.com/api'
+MOTHERSHIP = 'https://api.type.world/v1'
 
 # Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
@@ -491,7 +490,7 @@ class APIClient(PubSubClient):
 			if self.testScenario:
 				parameters['testScenario'] = self.testScenario
 			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://type.worlddd/jsonAPI/'
+				url = 'https://api.type.worlddd/api'
 			return performRequest(url, parameters, self.sslcontext)
 		else:
 			return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
