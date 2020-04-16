@@ -6,7 +6,7 @@ from time import gmtime, strftime
 import typeWorld.api
 from typeWorld.api import VERSION
 
-from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName
+from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
 
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
@@ -1730,6 +1730,7 @@ class APIPublisher(object):
 
 		self._updatingSubscriptions = []
 
+
 	def folder(self):
 
 		if WIN:
@@ -1998,6 +1999,16 @@ class APISubscription(PubSubClient):
 			self.pubSubSetup()
 
 
+	def uniqueID(self):
+		uniqueID = self.get('uniqueID')
+
+		if uniqueID == None or uniqueID == {}:
+			import uuid
+			uniqueID = Garbage(10)
+			self.set('uniqueID', uniqueID)
+
+		return uniqueID
+
 	def pubSubCallback(self, message):
 		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
 		if message:
@@ -2259,12 +2270,12 @@ class APISubscription(PubSubClient):
 					for font in family.fonts:
 						if font.uniqueID == fontID:
 							for version in font.getVersions():
-								path = os.path.join(folder, font.filename(version.number))
+								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
 								if os.path.exists(path):
 									return version.number
 		else:
 			for version in font.getVersions():
-				path = os.path.join(folder, font.filename(version.number))
+				path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
 				if os.path.exists(path):
 					return version.number
 
@@ -2303,7 +2314,7 @@ class APISubscription(PubSubClient):
 					for font in family.fonts:
 						if font.uniqueID == fontID:
 							if self.installedFontVersion(font.uniqueID):
-								path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 								break
 
 			if not path and not dryRun:
@@ -2372,7 +2383,7 @@ class APISubscription(PubSubClient):
 								for font in family.fonts:
 									if font.uniqueID == incomingFont.uniqueID:
 										if self.installedFontVersion(font.uniqueID):
-											path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+											path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 											break
 
 						if not path and not dryRun:
@@ -2400,7 +2411,7 @@ class APISubscription(PubSubClient):
 						for font in family.fonts:
 							if font.uniqueID == fontID:
 								if self.installedFontVersion(font.uniqueID):
-									path = os.path.join(folder, font.filename(self.installedFontVersion(font.uniqueID)))
+									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 									break
 
 				if not path and not dryRun:
@@ -2441,7 +2452,7 @@ class APISubscription(PubSubClient):
 				for family in foundry.families:
 					for font in family.fonts:
 						if font.uniqueID == fontID:
-							path = os.path.join(folder, font.filename(version))
+							path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
 							if font.protected:
 								protectedFonts = True
 							break
@@ -2496,7 +2507,7 @@ class APISubscription(PubSubClient):
 						for family in foundry.families:
 							for font in family.fonts:
 								if font.uniqueID == incomingFont.uniqueID:
-									path = os.path.join(folder, font.filename(version))
+									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
 									break
 					assert path
 

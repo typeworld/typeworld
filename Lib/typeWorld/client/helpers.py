@@ -34,6 +34,38 @@ def Execute(command):
 	process.wait()
 	return response
 
+def Garbage(length, uppercase = True, lowercase = True, numbers = True, punctuation = False):
+	"""\
+	Return string containing garbage.
+	"""
+	
+	import random
+	
+	uppercaseparts = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	lowercaseparts = 'abcdefghijklmnopqrstuvwxyz'
+	numberparts = '0123456789'
+	punctuationparts = '.-_'
+	
+	pool = ''
+	if uppercase:
+		pool += uppercaseparts
+	if lowercase:
+		pool += lowercaseparts
+	if numbers:
+		pool += numberparts
+	if punctuation:
+		pool += punctuationparts
+	
+	if not pool:
+		pool = lowercaseparts
+	
+	garbage = ''
+	
+	while len(garbage) < length:
+		garbage += random.choice(pool)
+	
+	return garbage
+
 
 def get_registry_value(key, subkey, value):
 	import winreg

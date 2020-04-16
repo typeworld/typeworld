@@ -1974,7 +1974,7 @@ class TestStringMethods(unittest.TestCase):
 		user0.client.publishers()[0].subscriptions()[-1].set('acceptedTermsOfService', True)
 		font = user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].families[0].fonts[-1]
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].installFonts([[font.uniqueID, font.getVersions()[-1].number]]), (True, None))
-		self.assertTrue(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), font.filename(font.getVersions()[-1].number))))
+		self.assertTrue(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), user0.client.publishers()[0].subscriptions()[-1].uniqueID() + '-' + font.filename(font.getVersions()[-1].number))))
 		user0.client.testScenario = 'simulateFontNoLongerIncluded'
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].update(), (True, None, True))
 		self.assertFalse(os.path.exists(os.path.join(user0.client.publishers()[0].folder(), font.filename(font.getVersions()[-1].number))))
