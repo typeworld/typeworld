@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl
+import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl, certifi
 from time import gmtime, strftime
 
 import typeWorld.api
@@ -445,7 +445,6 @@ class APIClient(PubSubClient):
 		self._isSetOnline = online
 
 		if self._isSetOnline:
-			import certifi, ssl
 			self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 		# For Unit Testing
