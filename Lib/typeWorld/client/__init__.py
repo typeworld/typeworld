@@ -1302,7 +1302,7 @@ class APIClient(PubSubClient):
 								fontIDs.append(font.uniqueID)
 				
 				if fontIDs:
-					success, message = subscription.removeFonts(fontIDs, dryRun = dryRun)
+					success, message = subscription.removeFonts(fontIDs, dryRun = dryRun, updateSubscription = False)
 					if not success:
 						return False, message
 
@@ -2352,7 +2352,7 @@ class APISubscription(PubSubClient):
 		# Server access
 		# Protected fonts
 		if uninstallTheseProtectedFontIDs:
-			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = False)
+			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
 
 			if success:
 
