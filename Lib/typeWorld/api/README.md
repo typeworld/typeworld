@@ -134,6 +134,7 @@ A high-resolution version of this flow chart can be viewed as a PDF [here](https
 - [Foundry](#user-content-class-foundry)<br />
 - [LicenseDefinition](#user-content-class-licensedefinition)<br />
 - [Family](#user-content-class-family)<br />
+- [FontPackage](#user-content-class-fontpackage)<br />
 - [Version](#user-content-class-version)<br />
 - [Font](#user-content-class-font)<br />
 - [LicenseUsage](#user-content-class-licenseusage)<br />
@@ -770,7 +771,7 @@ return installableFonts.dumpJSON()
 
 ### Attributes
 
-[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
+[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[packages](#class-installablefontsresponse-attribute-packages)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
 
 ### Methods
 
@@ -812,6 +813,14 @@ A name of this response and its contents. This is needed to manage subscriptions
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
+<div id="class-installablefontsresponse-attribute-packages"></div>
+
+### packages
+
+Publisher-wide list of [FontPackage](#user-content-class-fontpackage) objects. These will be referenced by their keyword in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords)
+
+__Required:__ False<br />
+__Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
 <div id="class-installablefontsresponse-attribute-prefersRevealedUserIdentity"></div>
 
 ### prefersRevealedUserIdentity
@@ -1010,7 +1019,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
 
 ### Methods
 
@@ -1076,6 +1085,14 @@ Name of foundry
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
+<div id="class-foundry-attribute-packages"></div>
+
+### packages
+
+Foundry-wide list of [FontPackage](#user-content-class-fontpackage) objects. These will be referenced by their keyword in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords)
+
+__Required:__ False<br />
+__Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
 <div id="class-foundry-attribute-skype"></div>
 
 ### skype
@@ -1272,7 +1289,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designers](#class-family-attribute-designers)<br />[fonts](#class-family-attribute-fonts)<br />[inUseURL](#class-family-attribute-inuseurl)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
+[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designerKeywords](#class-family-attribute-designerkeywords)<br />[fonts](#class-family-attribute-fonts)<br />[inUseURL](#class-family-attribute-inuseurl)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[packages](#class-family-attribute-packages)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
 
 ### Methods
 
@@ -1306,9 +1323,9 @@ Description of font family
 __Required:__ False<br />
 __Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
 __Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
-<div id="class-family-attribute-designers"></div>
+<div id="class-family-attribute-designerKeywords"></div>
 
-### designers
+### designerKeywords
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-installablefontsresponse-attribute-designers). In case designers differ between fonts within the same family, they can also be defined at the font level at [Font.designers](#user-content-class-font-attribute-designers). The font-level references take precedence over the family-level references.
 
@@ -1347,6 +1364,14 @@ Human-readable name of font family. This may include any additions that you find
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
+<div id="class-family-attribute-packages"></div>
+
+### packages
+
+Family-wide list of [FontPackage](#user-content-class-fontpackage) objects. These will be referenced by their keyword in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords)
+
+__Required:__ False<br />
+__Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
 <div id="class-family-attribute-pdf"></div>
 
 ### pdf
@@ -1394,6 +1419,76 @@ Returns a list of [Designer](#user-content-class-designer) objects that represen
         
 
 <div id="class-family-method-samecontent"></div>
+
+#### sameContent()
+
+Compares the data structure of this object to the other object.
+
+Requires deepdiff module.
+
+
+
+
+
+<div id="class-fontpackage"></div>
+
+# _class_ FontPackage()
+
+`FontPackages` are groups of fonts that serve a certain purpose to the user.
+They can be defined at [InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages), [Foundry.packages](#user-content-class-foundry-attribute-packages), [Family.packages](#user-content-class-family-attribute-packages)
+and are referenced by their keywords in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords).
+
+On a font family level, defined at [Family.packages](#user-content-class-family-attribute-packages), a typical example for defining a `FontPackage` would be the so called **Office Fonts**.
+While they are technically identical to other OpenType fonts, they normally have a sightly different set of glyphs and OpenType features.
+Linking them to a `FontPackage` allows the UI to display them clearly as a separate set of fonts that serve a different purpuse than the 
+regular fonts.
+
+On a subscription-wide level, defined at [InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages), a `FontPackage` could represent a curated collection of
+fonts of various foundries and families, for example **Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
+
+Each font may be part of several `FontPackages`.
+
+### Attributes
+
+[description](#class-fontpackage-attribute-description)<br />[keyword](#class-fontpackage-attribute-keyword)<br />[name](#class-fontpackage-attribute-name)<br />
+
+### Methods
+
+[sameContent()](#class-fontpackage-method-samecontent)<br />
+
+## Attributes
+
+<div id="class-fontpackage-attribute-description"></div>
+
+### description
+
+Description
+
+__Required:__ True<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
+<div id="class-fontpackage-attribute-keyword"></div>
+
+### keyword
+
+Keyword of font packages. This keyword must be referenced in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords) and must be unique to this subscription.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+<div id="class-fontpackage-attribute-name"></div>
+
+### name
+
+Name of package
+
+__Required:__ True<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
+
+
+## Methods
+
+<div id="class-fontpackage-method-samecontent"></div>
 
 #### sameContent()
 
@@ -1479,7 +1574,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designers](#class-font-attribute-designers)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[setName](#class-font-attribute-setname)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1496,9 +1591,9 @@ Human readable date of the initial release of the font. May also be defined fami
 __Required:__ False<br />
 __Type:__ Str<br />
 __Format:__ YYYY-MM-DD<br />
-<div id="class-font-attribute-designers"></div>
+<div id="class-font-attribute-designerKeywords"></div>
 
-### designers
+### designerKeywords
 
 List of keywords referencing designers. These are defined at [InstallableFontsResponse.designers](#user-content-class-installablefontsresponse-attribute-designers). This attribute overrides the designer definitions at the family level at [Family.designers](#user-content-class-family-attribute-designers).
 
@@ -1532,7 +1627,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'otf', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1561,6 +1656,14 @@ Human-readable name of font. This may include any additions that you find useful
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
+<div id="class-font-attribute-packageKeywords"></div>
+
+### packageKeywords
+
+List of references to [FontPackage](#user-content-class-fontpackage) objects by their keyword
+
+__Required:__ False<br />
+__Type:__ List of Str objects<br />
 <div id="class-font-attribute-pdf"></div>
 
 ### pdf
@@ -1596,15 +1699,6 @@ Technical purpose of font. This influences how the app handles the font. For ins
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-font-attribute-setName"></div>
-
-### setName
-
-Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".
-
-__Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-__Format:__ Maximum allowed characters: 100.<br />
 <div id="class-font-attribute-status"></div>
 
 ### status

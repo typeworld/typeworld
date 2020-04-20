@@ -1414,7 +1414,7 @@ class Font(DictBasedObject):
         'postScriptName':   [UnicodeDataType,       True,   None,   'Complete PostScript name of font'],
         'setName':          [MultiLanguageTextProxy,False,  None,   'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
         'versions':         [VersionListProxy,      False,  None,   'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
-        'designers':        [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
+        'designerKeywords':        [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
         'free':             [BooleanDataType,       False,  None,   'Font is freeware. For UI signaling'],
         'status':           [FontStatusDataType,    True,   'stable','Font status. For UI signaling. Possible values are: %s' % FONTSTATUSES],
         'variableFont':     [BooleanDataType,       False,  None,   'Font is an OpenType Variable Font. For UI signaling'],
@@ -1553,7 +1553,8 @@ class Family(DictBasedObject):
         'name':                     [MultiLanguageTextProxy,True,   None,   'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
         'description':              [MultiLanguageLongTextProxy,False,  None,   'Description of font family'],
         'billboards':               [BillboardListProxy,    False,  None,   'List of URLs pointing at images to show for this typeface, specifications to follow'],
-        'designers':                [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
+        'designerKeywords':         [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
+        'packages':                 [FontPackageListProxy,           False,   None,   'Family-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::'],
 
         'sourceURL':                [WebURLDataType,        False,  None,   'URL pointing to the source of a font project, such as a GitHub repository'],
         'issueTrackerURL':          [WebURLDataType,        False,  None,   'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
