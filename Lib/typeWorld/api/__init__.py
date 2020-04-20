@@ -6,7 +6,6 @@ import json, copy, types, inspect, re, traceback, datetime, markdown, semver, fu
 
 
 
-
 ####################################################################################################################################
 ####################################################################################################################################
 ####################################################################################################################################
@@ -145,7 +144,7 @@ FONTSTATUSES = ['prerelease', 'trial', 'stable']
 
 PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ['active', 'deleted', 'revoked']
 
-
+DEFAULT = '__default__'
 
 
 
@@ -1293,6 +1292,67 @@ class LicenseDefinitionListProxy(ListProxy):
 
 ####################################################################################################################################
 
+#  FontPackage
+
+class FontPackage(DictBasedObject):
+    '''\
+    `FontPackages` are groups of fonts that serve a certain purpose to the user.
+    They can be defined at ::InstallableFontsReponse.packages::, ::Foundry.packages::, ::Family.packages::
+    and are referenced by their keywords in ::Font.packageKeywords::.
+
+    On a font family level, defined at ::Family.packages::, a typical example for defining a `FontPackage` would be the so called **Office Fonts**.
+    While they are technically identical to other OpenType fonts, they normally have a sightly different set of glyphs and OpenType features.
+    Linking them to a `FontPackage` allows the UI to display them clearly as a separate set of fonts that serve a different purpuse than the 
+    regular fonts.
+
+    On a subscription-wide level, defined at ::InstallableFontsReponse.packages::, a `FontPackage` could represent a curated collection of
+    fonts of various foundries and families, for example **Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
+
+    Each font may be part of several `FontPackages`.
+
+    For the time being, only family-level FontPackages are supported in the UI.
+    '''
+
+    #   key:                    [data type, required, default value, description]
+    _structure = {
+
+        'keyword':                     [UnicodeDataType,       True,   None,   'Keyword of font packages. This keyword must be referenced in ::Font.packageKeywords:: and must be unique to this subscription.'],
+        'name':                        [MultiLanguageTextProxy, True,  None,   'Name of package'],
+        'description':                 [MultiLanguageTextProxy, False,  None,   'Description'],
+    }
+
+    def __repr__(self):
+        return '<FontPackage "%s">' % self.keyword or 'undefined'
+
+    # def customValidation(self):
+    #     information, warnings, critical = [], [], []
+
+    #     # Checking for existing license
+    #     if self.keyword and not self.getLicense():
+    #         critical.append('%s has license "%s", but %s has no matching license.' % (self, self.keyword, self.parent.parent.parent))
+
+    #     return information, warnings, critical
+
+    def getFormats(self):
+        formats = []
+        if hasattr(self, 'fonts'):
+            for font in self.fonts:
+                if not font.format in formats:
+                    formats.append(font.format)
+
+        return formats
+
+class FontPackageProxy(Proxy):
+    dataType = FontPackage
+
+class FontPackageListProxy(ListProxy):
+    dataType = FontPackageProxy
+
+class FontPackageReferencesListProxy(ListProxy):
+    dataType = UnicodeDataType
+
+####################################################################################################################################
+
 #  LicenseUsage
 
 class LicenseUsage(DictBasedObject):
@@ -1412,9 +1472,9 @@ class Font(DictBasedObject):
         'name':             [MultiLanguageTextProxy,        True,   None,   'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
         'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \\ : * | ^'],
         'postScriptName':   [UnicodeDataType,       True,   None,   'Complete PostScript name of font'],
-        'setName':          [MultiLanguageTextProxy,False,  None,   'Optional set name of font. This is used to group fonts in the UI. Think of fonts here that are of identical technical formats but serve different purposes, such as "Office Fonts" vs. "Desktop Fonts".'],
+        'packageKeywords':  [FontPackageReferencesListProxy,False,  None,   'List of references to ::FontPackage:: objects by their keyword'],
         'versions':         [VersionListProxy,      False,  None,   'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
-        'designerKeywords':        [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
+        'designerKeywords': [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
         'free':             [BooleanDataType,       False,  None,   'Font is freeware. For UI signaling'],
         'status':           [FontStatusDataType,    True,   'stable','Font status. For UI signaling. Possible values are: %s' % FONTSTATUSES],
         'variableFont':     [BooleanDataType,       False,  None,   'Font is an OpenType Variable Font. For UI signaling'],
@@ -1463,7 +1523,7 @@ class Font(DictBasedObject):
             critical.append('%s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
 
         # Checking for designers
-        for designerKeyword in self.designers:
+        for designerKeyword in self.designerKeywords:
             if not self.parent.parent.parent.getDesignerByKeyword(designerKeyword):
                 critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
 
@@ -1516,17 +1576,22 @@ class Font(DictBasedObject):
             self._designers = []
 
             # Family level designers
-            if self.parent.designers:
-                for designerKeyword in self.parent.designers:
+            if self.parent.designerKeywords:
+                for designerKeyword in self.parent.designerKeywords:
                     self._designers.append(self.parent.parent.parent.getDesignerByKeyword(designerKeyword))
 
             # Font level designers
-            if self.designers:
-                for designerKeyword in self.designers:
+            if self.designerKeywords:
+                for designerKeyword in self.designerKeywords:
                     self._designers.append(self.parent.parent.parent.getDesignerByKeyword(designerKeyword))
 
         return self._designers
 
+    def getPackageKeywords(self):
+        if self.packageKeywords:
+            return list(set(self.packageKeywords))
+        else:
+            return [DEFAULT]
 
 def Font_Parent(self):
     if hasattr(self, '_parent') and hasattr(self._parent, '_parent') and hasattr(self._parent._parent, '_parent'):
@@ -1572,7 +1637,7 @@ class Family(DictBasedObject):
         information, warnings, critical = [], [], []
 
         # Checking for designers
-        for designerKeyword in self.designers:
+        for designerKeyword in self.designerKeywords:
             if not self.parent.parent.getDesignerByKeyword(designerKeyword):
                 critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent))
 
@@ -1581,7 +1646,7 @@ class Family(DictBasedObject):
     def getDesigners(self):
         if not hasattr(self, '_designers'):
             self._designers = []
-            for designerKeyword in self.designers:
+            for designerKeyword in self.designerKeywords:
                 self._designers.append(self.parent.parent.getDesignerByKeyword(designerKeyword))
         return self._designers
 
@@ -1592,31 +1657,52 @@ class Family(DictBasedObject):
         if not hasattr(self, '_allDesigners'):
             self._allDesigners = []
             self._allDesignersKeywords = []
-            for designerKeyword in self.designers:
+            for designerKeyword in self.designerKeywords:
                 self._allDesigners.append(self.parent.parent.getDesignerByKeyword(designerKeyword))
                 self._allDesignersKeywords.append(designerKeyword)
             for font in self.fonts:
-                for designerKeyword in font.designers:
+                for designerKeyword in font.designerKeywords:
                     if not designerKeyword in self._allDesignersKeywords:
                         self._allDesigners.append(self.parent.parent.getDesignerByKeyword(designerKeyword))
                         self._allDesignersKeywords.append(designerKeyword)
         return self._allDesigners
 
-    def setNames(self, locale):
-        setNames = []
-        for font in self.fonts:
-            name = font.setName.getText(locale)
-            if not name in setNames:
-                setNames.append(name)
-        return setNames
+    def getPackages(self):
 
-    def formatsForSetName(self, setName, locale):
-        formats = []
+        packageKeywords = []
+        packages = []
+        packageByKeyword = {}
+
+        # Collect list of unique package keyword references in family's fonts
         for font in self.fonts:
-            if font.setName.getText(locale) == setName:
-                if not font.format in formats:
-                    formats.append(font.format)
-        return formats
+            for keyword in font.getPackageKeywords():
+                if not keyword in packageKeywords:
+                    packageKeywords.append(keyword)
+
+        # Prepend a DEFAULT package
+        if DEFAULT in packageKeywords:
+            defaultPackage = FontPackage()
+            defaultPackage.keyword = DEFAULT
+            defaultPackage.name.en = DEFAULT
+            packages.append(defaultPackage)
+            packageByKeyword[DEFAULT] = defaultPackage
+
+        # Build list of FontPackage objects
+        for package in self.packages:
+            if package.keyword in packageKeywords:
+                packages.append(package)
+                packageByKeyword[package.keyword] = package
+
+        # Attach fonts attribute to each package
+        for package in packages:
+            package.fonts = []
+
+        # Attach fonts to packages
+        for font in self.fonts:
+            for keyword in font.getPackageKeywords():
+                packageByKeyword[keyword].fonts.append(font)
+
+        return packages
 
 
 def Family_Parent(self):
@@ -1710,6 +1796,7 @@ class Foundry(DictBasedObject):
         # data
         'licenses':                 [LicenseDefinitionListProxy,True,   None,   'List of ::LicenseDefinition:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.'],
         'families':                 [FamiliesListProxy,     True,   None,   'List of ::Family:: objects.'],
+        'packages':                 [FontPackageListProxy,           False,   None,   'Foundry-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::'],
     }
 
     _stylingColorAttributes = (
@@ -1847,6 +1934,7 @@ class InstallableFontsResponse(BaseResponse):
         # Response-specific
         'designers':        [DesignersListProxy,            False,  None,   'List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.'],
         'foundries':        [FoundryListProxy,              True,   None,   'List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.'],
+        'packages':         [FontPackageListProxy,           False,   None,   'Publisher-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::'],
 
         'name':             [MultiLanguageTextProxy,        False,  None,   'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.'],
         'userName':         [MultiLanguageTextProxy,        False,  None,   'The name of the user who these fonts are licensed to.'],

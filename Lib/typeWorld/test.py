@@ -21,13 +21,16 @@ from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType,
 from typeWorld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeWorld.api import InstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse
+from typeWorld.api import InstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
 
 # Constants
 from typeWorld.api import COMMANDS, MAC
 
 # Methods
 from typeWorld.api import makeSemVer
+
+# Inspection/Interactive shell
+# import code; code.interact(local=locals())
 
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
@@ -107,6 +110,12 @@ fontVersion.description.de = 'Erstveröffentlichung'
 fontVersion.number = 1.0
 fontVersion.releaseDate = '2004-10-10'
 
+# FontPackage
+desktopFontsPackage = FontPackage()
+desktopFontsPackage.keyword = 'desktop'
+desktopFontsPackage.name.en = 'Desktop Fonts'
+desktopFontsPackage.name.de = 'Desktop-Schriften'
+
 # LicenseUsage
 usedLicense = LicenseUsage()
 usedLicense.allowanceDescription.en = 'N/A'
@@ -119,9 +128,9 @@ usedLicense.upgradeURL = 'https://yanone.de/buy/kaffeesatz/upgrade?customerID=12
 # Font
 font = Font()
 font.dateFirstPublished = '2004-10-10'
-font.designers.append('yanone')
-font.designers = ['yanone', 'yanone2']
-assert len(font.designers) == 2
+font.designerKeywords.append('yanone')
+font.designerKeywords = ['yanone', 'yanone2']
+assert len(font.designerKeywords) == 2
 font.format = 'otf'
 font.free = True
 font.name.en = 'Regular'
@@ -130,8 +139,7 @@ font.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
 font.postScriptName = 'YanoneKaffeesatz-Regular'
 font.protected = False
 font.purpose = 'desktop'
-font.setName.en = 'Desktop Fonts'
-font.setName.de = 'Desktop-Schriften'
+font.packageKeywords.append('desktop')
 font.status = 'stable'
 font.uniqueID = 'yanone-kaffeesatz-regular'
 font.usedLicenses.append(usedLicense)
@@ -145,9 +153,9 @@ assert len(font.versions) == 1
 # Font 2
 font2 = Font()
 font2.dateFirstPublished = '2004-10-10'
-font2.designers.append('yanone')
-font2.designers = ['yanone']
-assert len(font2.designers) == 1
+font2.designerKeywords.append('yanone')
+font2.designerKeywords = ['yanone']
+assert len(font2.designerKeywords) == 1
 font2.format = 'otf'
 font2.free = True
 font2.name.en = 'Bold'
@@ -156,8 +164,7 @@ font2.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
 font2.postScriptName = 'YanoneKaffeesatz-Bold'
 font2.protected = False
 font2.purpose = 'desktop'
-font2.setName.en = 'Desktop Fonts'
-font2.setName.de = 'Desktop-Schriften'
+font.packageKeywords.append('desktop')
 font2.status = 'stable'
 font2.uniqueID = 'yanone-kaffeesatz-bold'
 font2.usedLicenses.append(usedLicense)
@@ -181,9 +188,9 @@ family.billboards = ['https://typeworldserver.com/?page=outputDataBaseFile&class
 family.billboards.append('https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image')
 family.dateFirstPublished = '2019-10-01'
 family.description.en = 'Kaffeesatz is a free font classic'
-family.designers.append('yanone')
-family.designers = ['yanone'] # same as above
-assert len(family.designers) == 1
+family.designerKeywords.append('yanone')
+family.designerKeywords = ['yanone'] # same as above
+assert len(family.designerKeywords) == 1
 family.inUseURL = 'https://fontsinuse.com/kaffeesatz'
 family.issueTrackerURL = 'https://github.com/yanone/kaffeesatzfont/issues'
 family.name.en = 'Yanone Kaffeesatz'
@@ -200,6 +207,8 @@ family.fonts.append(font2)
 assert len(family.fonts) == 2
 family.fonts = [font, font2]
 assert len(family.fonts) == 2
+family.packages.append(desktopFontsPackage)
+assert len(family.packages) == 1
 
 # Foundry
 foundry = Foundry()
@@ -662,7 +671,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# designers
 		i2 = copy.deepcopy(installableFonts)
-		i2.foundries[0].families[0].fonts[0].designers = ['gfknlergerg']
+		i2.foundries[0].families[0].fonts[0].designerKeywords = ['gfknlergerg']
 		validate = i2.validate()
 		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> has designer "gfknlergerg", but <InstallableFontsResponse>.designers has no matching designer.'])
 
@@ -714,13 +723,6 @@ class TestStringMethods(unittest.TestCase):
 			i2.foundries[0].families[0].fonts[0].purpose = 'anything'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Unknown font type: "anything". Possible: [\'desktop\', \'web\', \'app\']')
-
-		# setName
-		# allowed to be emtpy
-		i2 = copy.deepcopy(installableFonts)
-		i2.foundries[0].families[0].fonts[0].setName.en = ''
-		validate = i2.validate()
-		self.assertEqual(validate[2], [])
 
 		#status
 		i2 = copy.deepcopy(installableFonts)
@@ -815,10 +817,10 @@ class TestStringMethods(unittest.TestCase):
 		# designers
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].families[0].designers = 'yanone'
+			i2.foundries[0].families[0].designerKeywords = 'yanone'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'list\'>.')
-		i2.foundries[0].families[0].designers = ['awieberg']
+		i2.foundries[0].families[0].designerKeywords = ['awieberg']
 		validate = i2.validate()
 		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> has designer "awieberg", but <InstallableFontsResponse>.designers has no matching designer.'])
 
@@ -867,12 +869,15 @@ class TestStringMethods(unittest.TestCase):
 		assert type(i2.foundries[0].families[0].getDesigners()) == list
 		assert type(i2.foundries[0].families[0].getAllDesigners()) == list
 
-		# Set Names
+		# Package Names
 		i2 = copy.deepcopy(installableFonts)
-		self.assertEqual(i2.foundries[0].families[0].setNames('de'), ['Desktop-Schriften'])
-		self.assertEqual(i2.foundries[0].families[0].setNames('en'), ['Desktop Fonts'])
-		self.assertEqual(i2.foundries[0].families[0].formatsForSetName('Desktop-Schriften', 'de'), ['otf'])
-		self.assertEqual(i2.foundries[0].families[0].formatsForSetName('Desktop Fonts', 'en'), ['otf'])
+
+		self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].name.de, 'Desktop-Schriften')
+		self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].name.en, 'Desktop Fonts')
+		self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].getFormats(), ['otf'])
+
+		self.assertEqual(i2.foundries[0].families[0].fonts[0].getPackageKeywords(), ['desktop'])
+		self.assertEqual(i2.foundries[0].families[0].fonts[1].getPackageKeywords(), [typeWorld.api.DEFAULT])
 
 
 	def test_Foundry(self):
@@ -1226,7 +1231,7 @@ class TestStringMethods(unittest.TestCase):
 		# 	pass
 
 
-		font.designers.append('maxx')
+		font.designerKeywords.append('maxx')
 		# try:
 		print(installableFonts.validate())
 		# except:

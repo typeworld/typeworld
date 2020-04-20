@@ -1448,6 +1448,8 @@ fonts of various foundries and families, for example **Script Fonts** or **Brush
 
 Each font may be part of several `FontPackages`.
 
+For the time being, only family-level FontPackages are supported in the UI.
+
 ### Attributes
 
 [description](#class-fontpackage-attribute-description)<br />[keyword](#class-fontpackage-attribute-keyword)<br />[name](#class-fontpackage-attribute-name)<br />
@@ -1464,7 +1466,7 @@ Each font may be part of several `FontPackages`.
 
 Description
 
-__Required:__ True<br />
+__Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
 <div id="class-fontpackage-attribute-keyword"></div>
@@ -1627,7 +1629,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'woff2', 'woff', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
