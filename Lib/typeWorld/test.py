@@ -215,13 +215,13 @@ foundry = Foundry()
 foundry.backgroundColor = 'AABBCC'
 foundry.description.en = 'Yanone is a foundry lead by German type designer Yanone.'
 foundry.email = 'font@yanone.de'
-foundry.facebook = 'https://facebook.com/pages/YanoneYanone'
-foundry.instagram = 'instagram'
 foundry.licenses.append(license)
 #foundry.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
 foundry.name.en = 'Awesome Fonts'
 foundry.name.de = 'Tolle Schriften'
-foundry.skype = 'yanone'
+
+foundry.socialWebURLs.append('https://facebook.com/pages/YanoneYanone')
+
 foundry.supportEmail = 'support@yanone.de'
 foundry.supportTelephone = '+49123456789'
 foundry.supportWebsite = 'https://yanone.de/support/'
@@ -249,7 +249,7 @@ installableFonts.version = '0.1.7-alpha'
 installableFonts.foundries.append(foundry)
 #print(installableFonts.designers)
 
-
+print(installableFonts.dumpJSON())
 
 class User(object):
 	def __init__(self, login = None):

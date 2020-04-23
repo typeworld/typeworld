@@ -215,6 +215,7 @@ class DataType(object):
 
     def valid(self):
         if not self.value: return True
+
         if type(self.value) == self.dataType:
             return True
         else:
@@ -224,7 +225,6 @@ class DataType(object):
         return self.value
 
     def put(self, value):
-
 
         self.value = self.shapeValue(value)
 
@@ -1644,6 +1644,7 @@ class Family(DictBasedObject):
 
         'sourceURL':                [WebURLDataType,        False,  None,   'URL pointing to the source of a font project, such as a GitHub repository'],
         'issueTrackerURL':          [WebURLDataType,        False,  None,   'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
+
         'inUseURL':                 [WebURLDataType,        False,  None,   'URL pointing to a web site that shows real world examples of the fonts in use.'],
         'versions':                 [VersionListProxy,      False,  None,   'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
         'fonts':                    [FontListProxy,         True,   None,   'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
@@ -1740,6 +1741,14 @@ class FamiliesListProxy(ListProxy):
 
 ####################################################################################################################################
 
+#  Web Links
+
+class WebURLListProxy(ListProxy):
+    dataType = WebURLDataType
+
+
+####################################################################################################################################
+
 #  Font Foundry
 
 
@@ -1806,11 +1815,10 @@ class Foundry(DictBasedObject):
 
         'email':                    [EmailDataType,         False,  None,   'General email address for this foundry.'],
         'website':                  [WebURLDataType,        False,  None,   'Website for this foundry'],
-        'twitter':                  [UnicodeDataType,       False,  None,   'Twitter handle for this foundry, without the @'],
-        'facebook':                 [WebURLDataType,        False,  None,   'Facebook page URL handle for this foundry. The URL '],
-        'instagram':                [UnicodeDataType,       False,  None,   'Instagram handle for this foundry, without the @'],
-        'skype':                    [UnicodeDataType,       False,  None,   'Skype handle for this foundry'],
         'telephone':                [TelephoneDataType,       False,  None,   'Telephone number for this foundry'],
+
+        'socialWebURLs':           [WebURLListProxy,       False,  None,   'List of web URLs pointing to social media channels'],
+
         'supportEmail':             [EmailDataType,         False,  None,   'Support email address for this foundry.'],
         'supportWebsite':           [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
         'supportTelephone':         [TelephoneDataType,       False,  None,   'Support telephone number for this foundry.'],
