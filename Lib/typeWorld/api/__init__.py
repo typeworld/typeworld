@@ -349,6 +349,27 @@ class WebURLDataType(UnicodeDataType):
         else:
             return True
 
+class TelephoneDataType(UnicodeDataType):
+
+    def valid(self):
+        if not self.value: return True
+
+        text = 'Needs to start with + and contain only numbers 0-9'
+
+        match = re.match(r'(\+[0-9]+)', self.value)
+        if match:
+            match = self.value.replace(match.group(), '')
+            if match:
+                return text
+        else:
+            return text
+
+        return True
+
+    def formatHint(self):
+        return '+1234567890'
+
+
 class WebResourceURLDataType(WebURLDataType):
 
     def formatHint(self):
@@ -1787,11 +1808,11 @@ class Foundry(DictBasedObject):
         'facebook':                 [WebURLDataType,        False,  None,   'Facebook page URL handle for this foundry. The URL '],
         'instagram':                [UnicodeDataType,       False,  None,   'Instagram handle for this foundry, without the @'],
         'skype':                    [UnicodeDataType,       False,  None,   'Skype handle for this foundry'],
-        'telephone':                [UnicodeDataType,       False,  None,   'Telephone number for this foundry'],
+        'telephone':                [TelephoneDataType,       False,  None,   'Telephone number for this foundry'],
         'supportEmail':             [EmailDataType,         False,  None,   'Support email address for this foundry.'],
         'supportWebsite':           [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
-        'supportTelephone':         [UnicodeDataType,       False,  None,   'Support telephone number for this foundry.'],
         'styling':                  [StylingDataType,    False,  {'light': {}, 'dark': {}},   'Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.'],
+        'supportTelephone':         [TelephoneDataType,       False,  None,   'Support telephone number for this foundry.'],
 
         # data
         'licenses':                 [LicenseDefinitionListProxy,True,   None,   'List of ::LicenseDefinition:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.'],
