@@ -1019,7 +1019,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[facebook](#class-foundry-attribute-facebook)<br />[families](#class-foundry-attribute-families)<br />[instagram](#class-foundry-attribute-instagram)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[skype](#class-foundry-attribute-skype)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[twitter](#class-foundry-attribute-twitter)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[families](#class-foundry-attribute-families)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[socialWebURLs](#class-foundry-attribute-socialweburls)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
 
 ### Methods
 
@@ -1044,14 +1044,6 @@ General email address for this foundry.
 
 __Required:__ False<br />
 __Type:__ Str<br />
-<div id="class-foundry-attribute-facebook"></div>
-
-### facebook
-
-Facebook page URL handle for this foundry. The URL 
-
-__Required:__ False<br />
-__Type:__ Str<br />
 <div id="class-foundry-attribute-families"></div>
 
 ### families
@@ -1060,14 +1052,6 @@ List of [Family](#user-content-class-family) objects.
 
 __Required:__ True<br />
 __Type:__ List of [Family](#user-content-class-family) objects<br />
-<div id="class-foundry-attribute-instagram"></div>
-
-### instagram
-
-Instagram handle for this foundry, without the @
-
-__Required:__ False<br />
-__Type:__ Str<br />
 <div id="class-foundry-attribute-licenses"></div>
 
 ### licenses
@@ -1093,14 +1077,14 @@ Foundry-wide list of [FontPackage](#user-content-class-fontpackage) objects. The
 
 __Required:__ False<br />
 __Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
-<div id="class-foundry-attribute-skype"></div>
+<div id="class-foundry-attribute-socialWebURLs"></div>
 
-### skype
+### socialWebURLs
 
-Skype handle for this foundry
+List of web URLs pointing to social media channels
 
 __Required:__ False<br />
-__Type:__ Str<br />
+__Type:__ List of Str objects<br />
 <div id="class-foundry-attribute-styling"></div>
 
 ### styling
@@ -1168,6 +1152,7 @@ Support telephone number for this foundry.
 
 __Required:__ False<br />
 __Type:__ Str<br />
+__Format:__ +1234567890<br />
 <div id="class-foundry-attribute-supportWebsite"></div>
 
 ### supportWebsite
@@ -1184,14 +1169,7 @@ Telephone number for this foundry
 
 __Required:__ False<br />
 __Type:__ Str<br />
-<div id="class-foundry-attribute-twitter"></div>
-
-### twitter
-
-Twitter handle for this foundry, without the @
-
-__Required:__ False<br />
-__Type:__ Str<br />
+__Format:__ +1234567890<br />
 <div id="class-foundry-attribute-uniqueID"></div>
 
 ### uniqueID
@@ -1629,7 +1607,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'woff2', 'woff', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
