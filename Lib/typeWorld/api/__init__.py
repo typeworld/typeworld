@@ -1802,6 +1802,8 @@ class Foundry(DictBasedObject):
         'uniqueID':                 [StringDataType,        True,   None,   'An string that uniquely identifies this foundry within the publisher.'],
         'name':                     [MultiLanguageTextProxy,True,   None,   'Name of foundry'],
         'description':              [MultiLanguageLongTextProxy,False,  None,   'Description of foundry'],
+        'styling':                  [StylingDataType,    False,  {'light': {}, 'dark': {}},   'Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.'],
+
         'email':                    [EmailDataType,         False,  None,   'General email address for this foundry.'],
         'website':                  [WebURLDataType,        False,  None,   'Website for this foundry'],
         'twitter':                  [UnicodeDataType,       False,  None,   'Twitter handle for this foundry, without the @'],
@@ -1811,7 +1813,6 @@ class Foundry(DictBasedObject):
         'telephone':                [TelephoneDataType,       False,  None,   'Telephone number for this foundry'],
         'supportEmail':             [EmailDataType,         False,  None,   'Support email address for this foundry.'],
         'supportWebsite':           [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
-        'styling':                  [StylingDataType,    False,  {'light': {}, 'dark': {}},   'Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.'],
         'supportTelephone':         [TelephoneDataType,       False,  None,   'Support telephone number for this foundry.'],
 
         # data
