@@ -1362,7 +1362,7 @@ class APIClient(PubSubClient):
 		if not self._systemLocale:
 			if MAC:
 				from AppKit import NSLocale
-				self._systemLocale = str(NSLocale.autoupdatingCurrentLocale().localeIdentifier().split('_')[0])
+				self._systemLocale = str(NSLocale.preferredLanguages()[0].split('_')[0].split('-')[0])
 			else:
 				import locale
 				self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
