@@ -1294,11 +1294,11 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Locale
-		self.assertEqual(user0.client.locale(), ['en'])
+		self.assertTrue('en' in user0.client.locale())
 		user0.client.preferences.set('localizationType', 'systemLocale')
-		self.assertEqual(user0.client.locale(), ['en'])
+		self.assertTrue('en' in user0.client.locale())
 		user0.client.preferences.set('localizationType', 'customLocale')
-		self.assertEqual(user0.client.locale(), ['en'])
+		self.assertTrue('en' in user0.client.locale())
 		user0.client.preferences.set('customLocaleChoice', 'de')
 		self.assertEqual(user0.client.locale(), ['de', 'en'])
 
