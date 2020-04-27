@@ -594,18 +594,19 @@ class APIClient(PubSubClient):
 
 	def get(self, key):
 		try:
-			return self._preferences.get(key)
+			return self._preferences.get('world.type.guiapp.' + key) or self._preferences.get(key)
 		except:
 			self.parent.parent.handleTraceback()
 
 	def set(self, key, value):
 		try:
-			self._preferences.set(key, value)
+			self._preferences.set('world.type.guiapp.' + key, value)
 		except:
 			self.parent.parent.handleTraceback()
 
 	def remove(self, key):
 		try:
+			self._preferences.remove('world.type.guiapp.' + key)
 			self._preferences.remove(key)
 		except:
 			self.parent.parent.handleTraceback()
