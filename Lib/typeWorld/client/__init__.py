@@ -283,6 +283,9 @@ class AppKitNSUserDefaults(Preferences):
 
 
 class TypeWorldClientDelegate(object):
+
+	def __init__(self):
+		self.client = None
 	def fontWillInstall(self, font):
 		assert type(font) == typeWorld.api.Font
 
@@ -439,6 +442,7 @@ class APIClient(PubSubClient):
 		self._syncProblems = []
 		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
 		self.delegate = delegate or TypeWorldClientDelegate()
+		self.delegate.client = self
 		self.mothership = mothership
 		self.mode = mode # gui or headless
 		self.pubSubSubscriptions = pubSubSubscriptions
