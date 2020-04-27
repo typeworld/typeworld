@@ -273,7 +273,8 @@ class AppKitNSUserDefaults(Preferences):
 		if key in self.values:
 			del self.values[key]
 
-		self.defaults.removeObjectForKey_(key)
+		if self.defaults.objectForKey_(key):
+			self.defaults.removeObjectForKey_(key)
 
 	def convertItem(self, item):
 
