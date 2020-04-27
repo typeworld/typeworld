@@ -603,6 +603,12 @@ class APIClient(PubSubClient):
 		except:
 			self.parent.parent.handleTraceback()
 
+	def remove(self, key):
+		try:
+			self._preferences.remove(key)
+		except:
+			self.parent.parent.handleTraceback()
+
 
 	def performRequest(self, url, parameters):
 
