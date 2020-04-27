@@ -286,34 +286,92 @@ class TypeWorldClientDelegate(object):
 
 	def __init__(self):
 		self.client = None
+
+	def _fontWillInstall(self, font):
+		try:
+			self.fontWillInstall(font)
+		except:
+			self.client.log(traceback.format_exc())
 	def fontWillInstall(self, font):
 		assert type(font) == typeWorld.api.Font
 
+
+	def _fontHasInstalled(self, success, message, font):
+		try:
+			self.fontHasInstalled(success, message, font)
+		except:
+			self.client.log(traceback.format_exc())
 	def fontHasInstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
+
+	def _fontWillUninstall(self, font):
+		try:
+			self.fontWillUninstall(font)
+		except:
+			self.client.log(traceback.format_exc())
 	def fontWillUninstall(self, font):
 		assert type(font) == typeWorld.api.Font
 
+
+	def _fontHasUninstalled(self, success, message, font):
+		try:
+			self.fontHasUninstalled(success, message, font)
+		except:
+			self.client.log(traceback.format_exc())
 	def fontHasUninstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
+
+	def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
+		try:
+			self.subscriptionUpdateNotificationHasBeenReceived(subscription)
+		except:
+			self.client.log(traceback.format_exc())
 	def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
 		assert type(subscription) == typeWorld.client.APISubscription
 		subscription.update()
 
+
+	def _userAccountUpdateNotificationHasBeenReceived(self):
+		try:
+			self.userAccountUpdateNotificationHasBeenReceived()
+		except:
+			self.client.log(traceback.format_exc())
 	def userAccountUpdateNotificationHasBeenReceived(self):
 		pass
 
+
+	def _subscriptionWasDeleted(self, subscription):
+		try:
+			self.subscriptionWasDeleted(subscription)
+		except:
+			self.client.log(traceback.format_exc())
 	def subscriptionWasDeleted(self, subscription):
 		pass
 
+
+	def _publisherWasDeleted(self, publisher):
+		try:
+			self.publisherWasDeleted(publisher)
+		except:
+			self.client.log(traceback.format_exc())
 	def publisherWasDeleted(self, publisher):
 		pass
 
+	def _subscriptionWasAdded(self, publisher, subscription):
+		try:
+			self.subscriptionWasAdded(publisher, subscription)
+		except:
+			self.client.log(traceback.format_exc())
 	def subscriptionWasAdded(self, publisher, subscription):
 		pass
 
+	def _subscriptionWasUpdated(self, publisher, subscription):
+		try:
+			self.subscriptionWasUpdated(publisher, subscription)
+		except:
+			self.client.log(traceback.format_exc())
 	def subscriptionWasUpdated(self, publisher, subscription):
 		pass
 
@@ -467,7 +525,7 @@ class APIClient(PubSubClient):
 			self.pubSubSetup()
 
 	def pubSubCallback(self, message):
-		self.delegate.userAccountUpdateNotificationHasBeenReceived()
+		self.delegate._userAccountUpdateNotificationHasBeenReceived()
 
 		if message:
 			message.ack()
@@ -861,7 +919,7 @@ class APIClient(PubSubClient):
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-				if success: self.delegate.subscriptionWasAdded(publisher, subscription)
+				if success: self.delegate._subscriptionWasAdded(publisher, subscription)
 
 				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
 
@@ -1980,7 +2038,7 @@ class APIPublisher(object):
 		self.parent.preferences.set('publishers', publishers)
 		# self.parent.preferences.set('currentPublisher', '')
 		
-		self.parent.delegate.publisherWasDeleted(self)
+		self.parent.delegate._publisherWasDeleted(self)
 
 		self.parent._publishers = {}
 
@@ -2022,7 +2080,7 @@ class APISubscription(PubSubClient):
 		return uniqueID
 
 	def pubSubCallback(self, message):
-		self.parent.parent.delegate.subscriptionUpdateNotificationHasBeenReceived(self)
+		self.parent.parent.delegate._subscriptionUpdateNotificationHasBeenReceived(self)
 		if message:
 			message.ack()
 			self.set('lastPubSubMessage', int(time.time()))
@@ -2334,7 +2392,7 @@ class APISubscription(PubSubClient):
 
 			if font.protected:
 
-				self.parent.parent.delegate.fontWillUninstall(font)
+				self.parent.parent.delegate._fontWillUninstall(font)
 
 				# Test for permissions here
 				if not dryRun:
@@ -2348,7 +2406,7 @@ class APISubscription(PubSubClient):
 							f.close()
 							os.remove(path + '.test')
 					except PermissionError:
-						self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to uninstall font.", font)
+						self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to uninstall font.", font)
 						return False, "Insufficient permission to uninstall font."
 
 					assert os.path.exists(path + '.test') == False
@@ -2405,11 +2463,11 @@ class APISubscription(PubSubClient):
 							os.remove(path)
 							# print('Actually deleted font %s' % path)
 
-						self.parent.parent.delegate.fontHasUninstalled(True, None, font)
+						self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
 
 			else:
-				self.parent.parent.delegate.fontHasUninstalled(False, payload, font)
+				self.parent.parent.delegate._fontHasUninstalled(False, payload, font)
 				return False, payload
 
 		# Unprotected fonts
@@ -2432,7 +2490,7 @@ class APISubscription(PubSubClient):
 				if not dryRun:
 					os.remove(path)
 
-				self.parent.parent.delegate.fontHasUninstalled(True, None, font)
+				self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
 		return True, None
 
@@ -2473,7 +2531,7 @@ class APISubscription(PubSubClient):
 			assert font
 			# print('font', font)
 
-			self.parent.parent.delegate.fontWillInstall(font)
+			self.parent.parent.delegate._fontWillInstall(font)
 
 			# Test for permissions here
 			try:
@@ -2486,7 +2544,7 @@ class APISubscription(PubSubClient):
 					f.close()
 					os.remove(path + '.test')
 			except PermissionError:
-				self.parent.parent.delegate.fontHasInstalled(False, "Insufficient permission to install font.", font)
+				self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to install font.", font)
 				return False, "Insufficient permission to install font."
 
 			assert os.path.exists(path + '.test') == False
@@ -2529,7 +2587,7 @@ class APISubscription(PubSubClient):
 					f.close()
 					# print('Actually wrote font %s to disk' % path)
 
-					self.parent.parent.delegate.fontHasInstalled(True, None, font)
+					self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
 			# Ping
 			self.stillAlive()
@@ -2538,7 +2596,7 @@ class APISubscription(PubSubClient):
 
 
 		else:
-			self.parent.parent.delegate.fontHasInstalled(False, payload, font)
+			self.parent.parent.delegate._fontHasInstalled(False, payload, font)
 			return False, payload
 
 
@@ -2711,7 +2769,7 @@ class APISubscription(PubSubClient):
 		if len(subscriptions) == 0 and calledFromParent == False:
 			self.parent.delete()
 
-		self.parent.parent.delegate.subscriptionWasDeleted(self)
+		self.parent.parent.delegate._subscriptionWasDeleted(self)
 
 		if updateSubscriptionsOnServer:
 			self.parent.parent.uploadSubscriptions()
