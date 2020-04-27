@@ -532,7 +532,7 @@ class APIClient(PubSubClient):
 	def __init__(self, preferences = None, secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False, online = True):
 
 		try:
-			self.preferences = preferences or Preferences()
+			self._preferences = preferences or Preferences()
 			# if self.preferences:
 			# 	self.clearPendingOnlineCommands()
 			self._publishers = {}
@@ -590,6 +590,19 @@ class APIClient(PubSubClient):
 	# 	commands['unlinkUser'] = []
 	# 	commands['uploadSubscriptions'] = []
 	# 	self.preferences.set('pendingOnlineCommands', commands)
+
+	def get(self, key):
+		try:
+			return self._preferences.get(key)
+		except:
+			self.parent.parent.handleTraceback()
+
+	def set(self, key, value):
+		try:
+			self._preferences.set(key, value)
+		except:
+			self.parent.parent.handleTraceback()
+
 
 	def performRequest(self, url, parameters):
 
