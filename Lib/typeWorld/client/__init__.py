@@ -2009,14 +2009,14 @@ class APIPublisher(object):
 				import tempfile
 				return tempfile.gettempdir()
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 	def stillUpdating(self):
 		try:
 			return len(self._updatingSubscriptions) > 0
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 	def updatingProblem(self):
@@ -2031,7 +2031,7 @@ class APIPublisher(object):
 			if problems: return problems
 
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 	# def gitHubRateLimit(self):
@@ -2063,7 +2063,7 @@ class APIPublisher(object):
 			if rootCommand:
 				return rootCommand.name.getTextAndLocale(locale = locale)
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -2091,7 +2091,7 @@ class APIPublisher(object):
 		try:
 			return len(self.installedFonts())
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def installedFonts(self):
 		try:
@@ -2104,13 +2104,13 @@ class APIPublisher(object):
 
 			return l
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def amountOutdatedFonts(self):
 		try:
 			return len(self.outdatedFonts())
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def outdatedFonts(self):
 		try:
@@ -2123,7 +2123,7 @@ class APIPublisher(object):
 
 			return l
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	# def currentSubscription(self):
 	# 	if self.get('currentSubscription'):
@@ -2143,7 +2143,7 @@ class APIPublisher(object):
 
 				return o
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def set(self, key, value):
 		try:
@@ -2151,7 +2151,7 @@ class APIPublisher(object):
 			preferences[key] = value
 			self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 	# def addGitHubSubscription(self, url, commits):
@@ -2191,13 +2191,13 @@ class APIPublisher(object):
 
 			return self._subscriptions[url]
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def subscriptions(self):
 		try:
 			return [self.subscription(url) for url in self.get('subscriptions') or []]
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def update(self):
 		try:
@@ -2219,7 +2219,7 @@ class APIPublisher(object):
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)'], False
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def save(self):
 		try:
@@ -2228,7 +2228,7 @@ class APIPublisher(object):
 				publishers.append(self.canonicalURL)
 			self.parent.preferences.set('publishers', publishers)
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
@@ -2245,7 +2245,7 @@ class APIPublisher(object):
 
 			return response
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 	def delete(self):
@@ -2270,7 +2270,7 @@ class APIPublisher(object):
 
 			self.parent._publishers = {}
 		except:
-			self.handleTraceback()
+			self.parent.handleTraceback()
 
 
 
@@ -2300,7 +2300,7 @@ class APISubscription(PubSubClient):
 				self.pubSubSetup()
 
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def uniqueID(self):
@@ -2314,7 +2314,7 @@ class APISubscription(PubSubClient):
 
 			return uniqueID
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def pubSubCallback(self, message):
 		try:
@@ -2323,7 +2323,7 @@ class APISubscription(PubSubClient):
 				message.ack()
 				self.set('lastPubSubMessage', int(time.time()))
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def announceChange(self):
@@ -2354,7 +2354,7 @@ class APISubscription(PubSubClient):
 			# Success
 			return True, None
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def hasProtectedFonts(self):
 		try:
@@ -2368,7 +2368,7 @@ class APISubscription(PubSubClient):
 
 			return False
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def stillAlive(self):
@@ -2399,7 +2399,7 @@ class APISubscription(PubSubClient):
 
 					self.stillAliveTouched = time.time()			
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def inviteUser(self, targetEmail):
@@ -2431,7 +2431,7 @@ class APISubscription(PubSubClient):
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 
@@ -2474,7 +2474,7 @@ class APISubscription(PubSubClient):
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def invitationAccepted(self):
 		try:
@@ -2487,13 +2487,13 @@ class APISubscription(PubSubClient):
 							return True
 
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def stillUpdating(self):
 		try:
 			return self.url in self.parent._updatingSubscriptions
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def name(self, locale = ['en']):
@@ -2503,7 +2503,7 @@ class APISubscription(PubSubClient):
 
 			return installabeFontsCommand.name.getText(locale) or '#(Unnamed)'
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
@@ -2519,7 +2519,7 @@ class APISubscription(PubSubClient):
 
 			return response
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 
@@ -2532,7 +2532,7 @@ class APISubscription(PubSubClient):
 					if family.uniqueID == ID:
 						return family
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def fontByID(self, ID):
 		try:
@@ -2544,13 +2544,13 @@ class APISubscription(PubSubClient):
 						if font.uniqueID == ID:
 							return font
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def amountInstalledFonts(self):
 		try:
 			return len(self.installedFonts())
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def installedFonts(self):
 		try:
@@ -2567,7 +2567,7 @@ class APISubscription(PubSubClient):
 								l.append(font)
 			return l
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def expiringInstalledFonts(self):
 		try:
@@ -2584,13 +2584,13 @@ class APISubscription(PubSubClient):
 								l.append(font)
 			return l
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def amountOutdatedFonts(self):
 		try:
 			return len(self.outdatedFonts())
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def outdatedFonts(self):
 		try:
@@ -2608,7 +2608,7 @@ class APISubscription(PubSubClient):
 								l.append(font.uniqueID)
 			return l
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def installedFontVersion(self, fontID = None, font = None):
 		try:
@@ -2632,7 +2632,7 @@ class APISubscription(PubSubClient):
 					if os.path.exists(path):
 						return version.number
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	# def fontIsOutdated(self, fontID):
 
@@ -2779,7 +2779,7 @@ class APISubscription(PubSubClient):
 
 			return True, None
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 
@@ -2888,7 +2888,7 @@ class APISubscription(PubSubClient):
 				return False, payload
 
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 		# elif self.parent.get('type') == 'GitHub':
@@ -2972,7 +2972,7 @@ class APISubscription(PubSubClient):
 					self.save()
 
 				# Success
-				self.delegate._subscriptionWasUpdated(self)
+				self.parent.parent.delegate._subscriptionWasUpdated(self)
 
 				return True, None, changes
 
@@ -2983,13 +2983,13 @@ class APISubscription(PubSubClient):
 				return False, self._updatingProblem, False
 
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def updatingProblem(self):
 		try:
 			return self._updatingProblem
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def get(self, key):
 		try:
@@ -3006,7 +3006,7 @@ class APISubscription(PubSubClient):
 
 				return o
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def set(self, key, value):
 		try:
@@ -3015,7 +3015,7 @@ class APISubscription(PubSubClient):
 			preferences[key] = value
 			self.parent.parent.preferences.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 	def save(self):
 		try:
@@ -3026,7 +3026,7 @@ class APISubscription(PubSubClient):
 
 			self.protocol.save()
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
 
 
 	def delete(self, calledFromParent = False, updateSubscriptionsOnServer = True):
@@ -3084,4 +3084,4 @@ class APISubscription(PubSubClient):
 				self.parent.parent.uploadSubscriptions()
 
 		except:
-			self.handleTraceback()
+			self.parent.parent.handleTraceback()
