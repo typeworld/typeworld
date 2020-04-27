@@ -1192,6 +1192,7 @@ class APIClient(PubSubClient):
 
 		parameters = {
 			'command': 'userAppInstances',
+			'anonymousAppID': self.anonymousAppID(),
 			'anonymousUserID': self.user(),
 			'secretKey': self.secretKey(),
 		}

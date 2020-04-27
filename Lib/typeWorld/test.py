@@ -1702,6 +1702,11 @@ class TestStringMethods(unittest.TestCase):
 		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
 
 
+		# Can't access app instances information while revoked
+		success, response = user1.client.linkedAppInstances()
+		self.assertEqual(response, ['#(response.appInstanceRevoked)', '#(response.appInstanceRevoked.headline)'])
+
+		# Download subscriptions
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
 
