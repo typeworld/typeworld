@@ -565,8 +565,6 @@ class APIClient(PubSubClient):
 				self.pubSubExecuteConditionMethod = self.user
 				self.pubSubSetup()
 
-			wefg
-
 		except:
 			self.handleTraceback()
 
@@ -1633,13 +1631,10 @@ class APIClient(PubSubClient):
 
 	def handleTraceback(self):
 
-
 		payload = f'''\
 Version: {typeWorld.api.VERSION}
 {traceback.format_exc()}
 '''
-
-		self.log(payload)
 
 		supplementary = {
 			'os': OSName(),
@@ -1652,18 +1647,26 @@ Version: {typeWorld.api.VERSION}
 			'supplementary': json.dumps(supplementary),
 		}
 
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			self.log('handleTraceback() error on server, step 1: %s' % response)
+		def handleTracebackWorker(self):
 
-		response = json.loads(response.read().decode())
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				self.log('handleTraceback() error on server, step 1: %s' % response)
 
-		if response['response'] != 'success':
-			self.log('handleTraceback() error on server, step 2: %s' % response)
+			response = json.loads(response.read().decode())
+
+			if response['response'] != 'success':
+				self.log('handleTraceback() error on server, step 2: %s' % response)
+
+
+		handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self, ))
+		handleTracebackThread.start()
+
+
+
 
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
-		print(arg, string, type(string))
 		if MAC:
 			from AppKit import NSLog
 			NSLog(string)
