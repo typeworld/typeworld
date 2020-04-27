@@ -1629,15 +1629,27 @@ class APIClient(PubSubClient):
 		except:
 			self.handleTraceback()
 
-	def handleTraceback(self):
+	def handleTraceback(self, file = None):
 
 		payload = f'''\
 Version: {typeWorld.api.VERSION}
 {traceback.format_exc()}
 '''
 
+		# Remove path parts to make tracebacks identical (so they don't re-surface)
+
+		def removePathPrefix(snippet, file):
+			clientPathPrefix = file[:file.find(snippet)]
+			return payload.replace(clientPathPrefix, '')
+
+		if file:
+			payload = removePathPrefix('app.py', file)
+		else:
+			payload = removePathPrefix('client/typeWorld/', __file__)
+
 		supplementary = {
 			'os': OSName(),
+			'file': file or __file__,
 			'preferences': self.preferences.dictionary()
 		}
 
