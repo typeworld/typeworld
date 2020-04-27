@@ -359,20 +359,20 @@ class TypeWorldClientDelegate(object):
 	def publisherWasDeleted(self, publisher):
 		pass
 
-	def _subscriptionWasAdded(self, publisher, subscription):
+	def _subscriptionWasAdded(self, subscription):
 		try:
-			self.subscriptionWasAdded(publisher, subscription)
+			self.subscriptionWasAdded(subscription)
 		except:
 			self.client.log(traceback.format_exc())
-	def subscriptionWasAdded(self, publisher, subscription):
+	def subscriptionWasAdded(self, subscription):
 		pass
 
-	def _subscriptionWasUpdated(self, publisher, subscription):
+	def _subscriptionWasUpdated(self, subscription):
 		try:
-			self.subscriptionWasUpdated(publisher, subscription)
+			self.subscriptionWasUpdated(subscription)
 		except:
 			self.client.log(traceback.format_exc())
-	def subscriptionWasUpdated(self, publisher, subscription):
+	def subscriptionWasUpdated(self, subscription):
 		pass
 
 class APIInvitation(object):
@@ -919,7 +919,7 @@ class APIClient(PubSubClient):
 			if not url in oldURLs:
 				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-				if success: self.delegate._subscriptionWasAdded(publisher, subscription)
+				if success: self.delegate._subscriptionWasAdded(subscription)
 
 				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
 
@@ -2680,6 +2680,10 @@ class APISubscription(PubSubClient):
 
 			if changes:
 				self.save()
+
+			# Success
+			self.delegate._subscriptionWasUpdated(self)
+
 			return True, None, changes
 
 		else:
