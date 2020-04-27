@@ -181,7 +181,6 @@ def splitJSONURL(url):
 
 	return customProtocol, protocol, transportProtocol, subscriptionID, secretKey, accessToken, domain
 
-
 class Preferences(object):
 	def __init__(self):
 		self._dict = {}
@@ -200,8 +199,8 @@ class Preferences(object):
 
 	def save(self): pass
 
-	# def dictionary(self):
-	# 	return self._dict
+	def dictionary(self):
+		return self._dict
 
 class JSON(Preferences):
 	def __init__(self, path):
@@ -215,6 +214,9 @@ class JSON(Preferences):
 
 		if not os.path.exists(os.path.dirname(self.path)): os.makedirs(os.path.dirname(self.path))
 		WriteToFile(self.path, json.dumps(self._dict))
+
+	def dictionary(self):
+		return self._dict
 
 
 
@@ -273,12 +275,48 @@ class AppKitNSUserDefaults(Preferences):
 
 		self.defaults.removeObjectForKey_(key)
 
-	# def save(self):
-	# 	pass
+	def convertItem(self, item):
 
-	# def dictionary(self):
-	# 	return dict(self.defaults.dictionaryRepresentation())
+		if 'Array' in item.__class__.__name__ or type(item) in (list, tuple):
+			_list = list(item)
+			for i, _item in enumerate(_list):
+				_list[i] = self.convertItem(_item)
+			return _list
 
+		elif 'Dictionary' in item.__class__.__name__ or type(item) == dict:
+			d = dict(item)
+			for k, v in d.items():
+				d[k] = self.convertItem(v)
+
+			return d
+
+		elif 'unicode' in item.__class__.__name__:
+			return str(item)
+
+
+	def convertDict(self, d):
+
+		d = dict(d)
+
+		for k, v in d.items():        
+			if 'Array' in v.__class__.__name__:
+				_list = list(v)
+				for _item in _list:
+					d[k] = list(v)
+
+			elif 'Dictionary' in v.__class__.__name__:
+				d[k] = self.convertDict(v)
+
+			elif 'unicode' in v.__class__.__name__:
+				d[k] = str(v)
+
+		return d
+
+
+	def dictionary(self):
+
+		d = self.defaults.dictionaryRepresentation()
+		return self.convertItem(d)
 
 
 
@@ -408,6 +446,7 @@ class PubSubClient(object):
 
 	def pubSubSetup(self, direct = False):
 
+
 		from google.cloud import pubsub_v1
 
 		if self.__class__ == APIClient:
@@ -491,45 +530,56 @@ class APIClient(PubSubClient):
 	"""
 
 	def __init__(self, preferences = None, secretTypeWorldAPIKey = None, delegate = None, mothership = MOTHERSHIP, mode = 'headless', pubSubSubscriptions = False, online = True):
-		self.preferences = preferences or Preferences()
-		# if self.preferences:
-		# 	self.clearPendingOnlineCommands()
-		self._publishers = {}
-		self._subscriptionsUpdated = []
-		self.onlineCommandsQueue = []
-		self._syncProblems = []
-		self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
-		self.delegate = delegate or TypeWorldClientDelegate()
-		self.delegate.client = self
-		self.mothership = mothership
-		self.mode = mode # gui or headless
-		self.pubSubSubscriptions = pubSubSubscriptions
-		self._isSetOnline = online
 
-		if self._isSetOnline:
-			self.sslcontext = ssl.create_default_context(cafile=certifi.where())
+		try:
+			self.preferences = preferences or Preferences()
+			# if self.preferences:
+			# 	self.clearPendingOnlineCommands()
+			self._publishers = {}
+			self._subscriptionsUpdated = []
+			self.onlineCommandsQueue = []
+			self._syncProblems = []
+			self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
+			self.delegate = delegate or TypeWorldClientDelegate()
+			self.delegate.client = self
+			self.mothership = mothership
+			self.mode = mode # gui or headless
+			self.pubSubSubscriptions = pubSubSubscriptions
+			self._isSetOnline = online
 
-		# For Unit Testing
-		self.testScenario = None
+			if self._isSetOnline:
+				self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
-		self._systemLocale = None
-		self._online = {}
+			# For Unit Testing
+			self.testScenario = None
 
-		# Pub/Sub
-		if self.pubSubSubscriptions:
+			self._systemLocale = None
+			self._online = {}
 
-			# In App
-			self.pubsubSubscription = None
-			self.pubSubTopicID = 'user-%s' % self.user()
-			self.pubSubExecuteConditionMethod = self.user
-			self.pubSubSetup()
+			# Pub/Sub
+			if self.pubSubSubscriptions:
+
+				# In App
+				self.pubsubSubscription = None
+				self.pubSubTopicID = 'user-%s' % self.user()
+				self.pubSubExecuteConditionMethod = self.user
+				self.pubSubSetup()
+
+			wefg
+
+		except:
+			self.handleTraceback()
 
 	def pubSubCallback(self, message):
-		self.delegate._userAccountUpdateNotificationHasBeenReceived()
+		try:
+			self.delegate._userAccountUpdateNotificationHasBeenReceived()
 
-		if message:
-			message.ack()
-			self.preferences.set('lastPubSubMessage', int(time.time()))
+			if message:
+				message.ack()
+				self.preferences.set('lastPubSubMessage', int(time.time()))
+
+		except:
+			self.handleTraceback()
 
 
 	# def clearPendingOnlineCommands(self):
@@ -545,610 +595,688 @@ class APIClient(PubSubClient):
 
 	def performRequest(self, url, parameters):
 
-		parameters['clientVersion'] = VERSION
-		if self.testScenario == 'simulateFaultyClientVersion':
-			parameters['clientVersion'] = 'abc'
-		elif self.testScenario == 'simulateNoClientVersion':
-			del parameters['clientVersion']
+		try:
+			parameters['clientVersion'] = VERSION
+			if self.testScenario == 'simulateFaultyClientVersion':
+				parameters['clientVersion'] = 'abc'
+			elif self.testScenario == 'simulateNoClientVersion':
+				del parameters['clientVersion']
 
-		if self._isSetOnline:
-			if self.testScenario:
-				parameters['testScenario'] = self.testScenario
-			if self.testScenario == 'simulateCentralServerNotReachable':
-				url = 'https://api.type.worlddd/api'
-			return performRequest(url, parameters, self.sslcontext)
-		else:
-			return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
+			if self._isSetOnline:
+				if self.testScenario:
+					parameters['testScenario'] = self.testScenario
+				if self.testScenario == 'simulateCentralServerNotReachable':
+					url = 'https://api.type.worlddd/api'
+				return performRequest(url, parameters, self.sslcontext)
+			else:
+				return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
+
+		except:
+			self.handleTraceback()
 
 	def pendingInvitations(self):
-		_list = []
-		if self.preferences.get('pendingInvitations'):
-			for invitation in self.preferences.get('pendingInvitations'):
-				invitation = APIPendingInvitation(invitation)
-				invitation.parent = self
-				_list.append(invitation)
-		return _list
+		try:
+			_list = []
+			if self.preferences.get('pendingInvitations'):
+				for invitation in self.preferences.get('pendingInvitations'):
+					invitation = APIPendingInvitation(invitation)
+					invitation.parent = self
+					_list.append(invitation)
+			return _list
+		except:
+			self.handleTraceback()
 
 	def acceptedInvitations(self):
-		_list = []
-		if self.preferences.get('acceptedInvitations'):
-			for invitation in self.preferences.get('acceptedInvitations'):
-				invitation = APIAcceptedInvitation(invitation)
-				invitation.parent = self
-				_list.append(invitation)
-		return _list
+		try:
+			_list = []
+			if self.preferences.get('acceptedInvitations'):
+				for invitation in self.preferences.get('acceptedInvitations'):
+					invitation = APIAcceptedInvitation(invitation)
+					invitation.parent = self
+					_list.append(invitation)
+			return _list
+		except:
+			self.handleTraceback()
 
 	def sentInvitations(self):
-		_list = []
-		if self.preferences.get('sentInvitations'):
-			for invitation in self.preferences.get('sentInvitations'):
-				invitation = APISentInvitation(invitation)
-				invitation.parent = self
-				_list.append(invitation)
-		return _list
+		try:
+			_list = []
+			if self.preferences.get('sentInvitations'):
+				for invitation in self.preferences.get('sentInvitations'):
+					invitation = APISentInvitation(invitation)
+					invitation.parent = self
+					_list.append(invitation)
+			return _list
+		except:
+			self.handleTraceback()
 
 	def secretSubscriptionURLs(self):
+		try:
 
-		_list = []
+			_list = []
 
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-				_list.append(subscription.protocol.secretURL())
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+					_list.append(subscription.protocol.secretURL())
 
-		return _list
+			return _list
+
+		except:
+			self.handleTraceback()
 
 	def unsecretSubscriptionURLs(self):
+		try:
+			_list = []
 
-		_list = []
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+					_list.append(subscription.protocol.unsecretURL())
 
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-				_list.append(subscription.protocol.unsecretURL())
-
-		return _list
+			return _list
+		except:
+			self.handleTraceback()
 
 	def timezone(self):
-		return strftime("%z", gmtime())
+		try:
+			return strftime("%z", gmtime())
+		except:
+			self.handleTraceback()
 
 	def syncProblems(self):
 		return self._syncProblems
 
 	def addMachineIDToParameters(self, parameters):
+		try:
+			machineModelIdentifier, machineHumanReadableName, machineSpecsDescription = MachineName()
 
-		machineModelIdentifier, machineHumanReadableName, machineSpecsDescription = MachineName()
+			if machineModelIdentifier:
+				parameters['machineModelIdentifier'] = machineModelIdentifier
 
-		if machineModelIdentifier:
-			parameters['machineModelIdentifier'] = machineModelIdentifier
+			if machineHumanReadableName:
+				parameters['machineHumanReadableName'] = machineHumanReadableName
 
-		if machineHumanReadableName:
-			parameters['machineHumanReadableName'] = machineHumanReadableName
+			if machineSpecsDescription:
+				parameters['machineSpecsDescription'] = machineSpecsDescription
 
-		if machineSpecsDescription:
-			parameters['machineSpecsDescription'] = machineSpecsDescription
+			import platform
+			parameters['machineNodeName'] = platform.node()
 
-		import platform
-		parameters['machineNodeName'] = platform.node()
-
-		osName = OSName()
-		if osName:
-			parameters['machineOSVersion'] = osName
+			osName = OSName()
+			if osName:
+				parameters['machineOSVersion'] = osName
 
 
-		return parameters
+			return parameters
+
+		except:
+			self.handleTraceback()
 
 
 	def online(self, server = None):
-
-		if self.testScenario == 'simulateNotOnline':
-			return False
-
-		if 'GAE_DEPLOYMENT_ID' in os.environ:
-			return True
-
-
-		if not server:
-			server = 'type.world'
-
-		import urllib.request
 		try:
-			host='http://' + server
-			urllib.request.urlopen(host) #Python 3.x
-			return True
+
+			if self.testScenario == 'simulateNotOnline':
+				return False
+
+			if 'GAE_DEPLOYMENT_ID' in os.environ:
+				return True
+
+
+			if not server:
+				server = 'type.world'
+
+			import urllib.request
+			try:
+				host='http://' + server
+				urllib.request.urlopen(host) #Python 3.x
+				return True
+			except:
+				return False		
 		except:
-			return False		
-
-
-		# if server in self._online and self._online[server]['result'] == 0:
-		# 	return True
-
-		# else:
-
-		# 	result = 0
-		# 	if MAC or LINUX:
-		# 		out = subprocess.Popen('ping %s -c 1' % server, stderr=subprocess.STDOUT,stdout=subprocess.PIPE, shell=True)
-		# 		output, result = out.communicate()[0].decode(), out.returncode
-		# 		assert output
-		# 	if WIN:
-		# 		CREATE_NO_WINDOW = 0x08000000
-		# 		result = subprocess.call('ping -n 1 -w 3000 %s' % server, creationflags=CREATE_NO_WINDOW)
-
-		# 	self._online[server] = {
-		# 		'time': time.time(),
-		# 		'result': result
-		# 	}
-
-		# 	return result == 0
-
+			self.handleTraceback()
 
 
 
 	def appendCommands(self, commandName, commandsList = ['pending']):
+		try:
 
-		# Set up data structure
-		commands = self.preferences.get('pendingOnlineCommands')
-		if not self.preferences.get('pendingOnlineCommands'):
-			commands = {}
-		# Init empty
-		if not commandName in commands: 
-			commands[commandName] = []
-		if commandName in commands and len(commands[commandName]) == 0: # set anyway if empty because NSObject immutability
-			commands[commandName] = []
-		self.preferences.set('pendingOnlineCommands', commands)
+			# Set up data structure
+			commands = self.preferences.get('pendingOnlineCommands')
+			if not self.preferences.get('pendingOnlineCommands'):
+				commands = {}
+			# Init empty
+			if not commandName in commands: 
+				commands[commandName] = []
+			if commandName in commands and len(commands[commandName]) == 0: # set anyway if empty because NSObject immutability
+				commands[commandName] = []
+			self.preferences.set('pendingOnlineCommands', commands)
 
-		# Add commands to list
-		commands = self.preferences.get('pendingOnlineCommands')
-		if type(commandsList) in (str, int):
-			commandsList = [commandsList]
-		for commandListItem in commandsList:
-			if not commandListItem in commands[commandName]:
-				commands[commandName] = list(commands[commandName])
-				commands[commandName].append(commandListItem)
-		self.preferences.set('pendingOnlineCommands', commands)
+			# Add commands to list
+			commands = self.preferences.get('pendingOnlineCommands')
+			if type(commandsList) in (str, int):
+				commandsList = [commandsList]
+			for commandListItem in commandsList:
+				if not commandListItem in commands[commandName]:
+					commands[commandName] = list(commands[commandName])
+					commands[commandName].append(commandListItem)
+			self.preferences.set('pendingOnlineCommands', commands)
 
+		except:
+			self.handleTraceback()
 
 	def performCommands(self):
+		try:
 
-		success, message = True, None
-		self._syncProblems = []
+			success, message = True, None
+			self._syncProblems = []
 
-		if self.online():
+			if self.online():
 
-			commands = self.preferences.get('pendingOnlineCommands') or {}
+				commands = self.preferences.get('pendingOnlineCommands') or {}
 
-			if 'unlinkUser' in commands and commands['unlinkUser']:
-				success, message = self.performUnlinkUser()
+				if 'unlinkUser' in commands and commands['unlinkUser']:
+					success, message = self.performUnlinkUser()
 
-				if success:
-					commands['unlinkUser'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('unlinkUser finished successfully')
+					if success:
+						commands['unlinkUser'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('unlinkUser finished successfully')
 
+					else:
+						self.log('unlinkUser failure:', message)
+						self._syncProblems.append(message)
+
+
+				if 'linkUser' in commands and commands['linkUser']:
+					success, message = self.performLinkUser(commands['linkUser'][0])
+
+					if success:
+						commands['linkUser'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('linkUser finished successfully')
+
+					else:
+						self.log('linkUser failure:', message)
+						self._syncProblems.append(message)
+
+				if 'syncSubscriptions' in commands and commands['syncSubscriptions']:
+					success, message = self.performSyncSubscriptions(commands['syncSubscriptions'])
+
+					if success:
+						commands['syncSubscriptions'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('syncSubscriptions finished successfully')
+
+					else:
+						self.log('syncSubscriptions failure:', message)
+						self._syncProblems.append(message)
+
+
+				if 'uploadSubscriptions' in commands and commands['uploadSubscriptions']:
+					success, message = self.perfomUploadSubscriptions(commands['uploadSubscriptions'])
+
+					if success:
+						commands['uploadSubscriptions'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('uploadSubscriptions finished successfully')
+
+					else:
+						self.log('uploadSubscriptions failure:', message)
+						self._syncProblems.append(message)
+
+				if 'acceptInvitation' in commands and commands['acceptInvitation']:
+					success, message = self.performAcceptInvitation(commands['acceptInvitation'])
+
+					if success:
+						commands['acceptInvitation'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('acceptInvitation finished successfully')
+
+					else:
+						self.log('acceptInvitation failure:', message)
+						self._syncProblems.append(message)
+
+				if 'declineInvitation' in commands and commands['declineInvitation']:
+					success, message = self.performDeclineInvitation(commands['declineInvitation'])
+
+					if success:
+						commands['declineInvitation'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+						self.log('declineInvitation finished successfully')
+
+					else:
+						self.log('declineInvitation failure:', message)
+						self._syncProblems.append(message)
+
+				if 'downloadSubscriptions' in commands and commands['downloadSubscriptions']:
+					success, message = self.performDownloadSubscriptions()
+
+					if success:
+						commands['downloadSubscriptions'] = []
+						self.preferences.set('pendingOnlineCommands', commands)
+	#					self.log('downloadSubscriptions finished successfully')
+
+					else:
+						self.log('downloadSubscriptions failure:', message)
+						self._syncProblems.append(message)
+
+				if self._syncProblems:
+					return False, self._syncProblems[0]
 				else:
-					self.log('unlinkUser failure:', message)
-					self._syncProblems.append(message)
+					return True, None
 
-
-			if 'linkUser' in commands and commands['linkUser']:
-				success, message = self.performLinkUser(commands['linkUser'][0])
-
-				if success:
-					commands['linkUser'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('linkUser finished successfully')
-
-				else:
-					self.log('linkUser failure:', message)
-					self._syncProblems.append(message)
-
-			if 'syncSubscriptions' in commands and commands['syncSubscriptions']:
-				success, message = self.performSyncSubscriptions(commands['syncSubscriptions'])
-
-				if success:
-					commands['syncSubscriptions'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('syncSubscriptions finished successfully')
-
-				else:
-					self.log('syncSubscriptions failure:', message)
-					self._syncProblems.append(message)
-
-
-			if 'uploadSubscriptions' in commands and commands['uploadSubscriptions']:
-				success, message = self.perfomUploadSubscriptions(commands['uploadSubscriptions'])
-
-				if success:
-					commands['uploadSubscriptions'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('uploadSubscriptions finished successfully')
-
-				else:
-					self.log('uploadSubscriptions failure:', message)
-					self._syncProblems.append(message)
-
-			if 'acceptInvitation' in commands and commands['acceptInvitation']:
-				success, message = self.performAcceptInvitation(commands['acceptInvitation'])
-
-				if success:
-					commands['acceptInvitation'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('acceptInvitation finished successfully')
-
-				else:
-					self.log('acceptInvitation failure:', message)
-					self._syncProblems.append(message)
-
-			if 'declineInvitation' in commands and commands['declineInvitation']:
-				success, message = self.performDeclineInvitation(commands['declineInvitation'])
-
-				if success:
-					commands['declineInvitation'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-					self.log('declineInvitation finished successfully')
-
-				else:
-					self.log('declineInvitation failure:', message)
-					self._syncProblems.append(message)
-
-			if 'downloadSubscriptions' in commands and commands['downloadSubscriptions']:
-				success, message = self.performDownloadSubscriptions()
-
-				if success:
-					commands['downloadSubscriptions'] = []
-					self.preferences.set('pendingOnlineCommands', commands)
-#					self.log('downloadSubscriptions finished successfully')
-
-				else:
-					self.log('downloadSubscriptions failure:', message)
-					self._syncProblems.append(message)
-
-			if self._syncProblems:
-				return False, self._syncProblems[0]
 			else:
-				return True, None
 
-		else:
+				self._syncProblems.append('#(response.notOnline)')
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
-			self._syncProblems.append('#(response.notOnline)')
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-
+		except:
+			self.handleTraceback()
 
 	def uploadSubscriptions(self, performCommands = True):
+		try:
 
-		self.appendCommands('uploadSubscriptions', self.secretSubscriptionURLs() or ['empty'])
-		self.appendCommands('downloadSubscriptions')
+			self.appendCommands('uploadSubscriptions', self.secretSubscriptionURLs() or ['empty'])
+			self.appendCommands('downloadSubscriptions')
 
-		success, message = True, None
-		if performCommands:
-			success, message = self.performCommands()
-		return success, message
+			success, message = True, None
+			if performCommands:
+				success, message = self.performCommands()
+			return success, message
+
+		except:
+			self.handleTraceback()
 
 	def perfomUploadSubscriptions(self, oldURLs):
 
-		userID = self.user()
+		try:
 
-		if userID:
+			userID = self.user()
 
-			self.preferences.set('lastServerSync', int(time.time()))
+			if userID:
 
-			self.log('Uploading subscriptions: %s' % oldURLs)
+				self.preferences.set('lastServerSync', int(time.time()))
 
-			parameters = {
-				'command': 'uploadUserSubscriptions',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'subscriptionURLs': ','.join(oldURLs),
-				'secretKey': self.secretKey(),
-			}
+				self.log('Uploading subscriptions: %s' % oldURLs)
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+				parameters = {
+					'command': 'uploadUserSubscriptions',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'subscriptionURLs': ','.join(oldURLs),
+					'secretKey': self.secretKey(),
+				}
 
-			response = json.loads(response.read().decode())
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+				response = json.loads(response.read().decode())
 
-		# Success
-		return True, None
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+			# Success
+			return True, None
+		except:
+			self.handleTraceback()
 
 	def downloadSubscriptions(self, performCommands = True):
 
-		if self.user():
-			self.appendCommands('downloadSubscriptions')
+		try:
+			if self.user():
+				self.appendCommands('downloadSubscriptions')
 
-			if performCommands: return self.performCommands()
-			else: return True, None
-		else:
-			return True, None
+				if performCommands: return self.performCommands()
+				else: return True, None
+			else:
+				return True, None
 
+		except:
+			self.handleTraceback()
 
 	def performDownloadSubscriptions(self):
+		try:
+			userID = self.user()
 
-		userID = self.user()
+			if userID:
 
-		if userID:
+				self.preferences.set('lastServerSync', int(time.time()))
 
-			self.preferences.set('lastServerSync', int(time.time()))
+				parameters = {
+					'command': 'downloadUserSubscriptions',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'userTimezone': self.timezone(),
+					'secretKey': self.secretKey(),
+				}
 
-			parameters = {
-				'command': 'downloadUserSubscriptions',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'userTimezone': self.timezone(),
-				'secretKey': self.secretKey(),
-			}
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+				response = json.loads(response.read().decode())
 
-			response = json.loads(response.read().decode())
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+				return self.executeDownloadSubscriptions(response)
 
-			return self.executeDownloadSubscriptions(response)
+			return True, None
+		except:
+			self.handleTraceback()
 
-		return True, None
-
-
-	# def preloadLogos(self):
-
-	# 	for invitation in self.acceptedInvitations():
-	# 		if invitation.logoURL:
-	# 			success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
-	# 	for invitation in self.pendingInvitations():
-	# 		if invitation.logoURL:
-	# 			success, logo, mimeType = self.resourceByURL(invitation.logoURL, binary = True)
 
 	def executeDownloadSubscriptions(self, response):
+		try:
+			oldURLs = self.secretSubscriptionURLs()
 
-		oldURLs = self.secretSubscriptionURLs()
+			# print('executeDownloadSubscriptions():', response)
 
-		# print('executeDownloadSubscriptions():', response)
-
-		# Uninstall all protected fonts when app instance is reported as revoked
-		if response['appInstanceIsRevoked']:
-			success, message = self.uninstallAllProtectedFonts()
-			if not success:
-				return False, message
-
-		# Add new subscriptions
-		for url in response['subscriptions']:
-			if not url in oldURLs:
-				success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
-
-				if success: self.delegate._subscriptionWasAdded(subscription)
-
-				if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
-
-		def replace_item(obj, key, replace_value):
-			for k, v in obj.items():
-				if v == key:
-					obj[k] = replace_value
-			return obj
-
-		# Invitations
-		self.preferences.set('acceptedInvitations', [replace_item(x, None, '') for x in response['acceptedInvitations']])
-		self.preferences.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
-		self.preferences.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
-
-		# import threading
-		# preloadThread = threading.Thread(target=self.preloadLogos)
-		# preloadThread.start()
-
-		# Delete subscriptions
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-				if not subscription.protocol.secretURL() in response['subscriptions']:
-					subscription.delete(updateSubscriptionsOnServer = False)
-
-		# Success
-
-		self.pubSubSetup(direct = True)
-
-		return True, None
-
-	def acceptInvitation(self, ID):
-
-		userID = self.user()
-		if userID:
-			self.appendCommands('acceptInvitation', [ID])
-
-		return self.performCommands()
-
-
-	def performAcceptInvitation(self, IDs):
-
-		userID = self.user()
-#		oldURLs = self.secretSubscriptionURLs()
-
-		if userID:
-
-			self.preferences.set('lastServerSync', int(time.time()))
-
-			parameters = {
-				'command': 'acceptInvitations',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'subscriptionIDs': ','.join([str(x) for x in IDs]),
-				'secretKey': self.secretKey(),
-			}
-
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
-
-			response = json.loads(response.read().decode())
-
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-			# Success
-			return self.executeDownloadSubscriptions(response)
-
-
-	def declineInvitation(self, ID):
-
-		userID = self.user()
-		if userID:
-			self.appendCommands('declineInvitation', [ID])
-
-		return self.performCommands()
-
-
-	def performDeclineInvitation(self, IDs):
-
-		userID = self.user()
-#		oldURLs = self.secretSubscriptionURLs()
-
-		if userID:
-
-			self.preferences.set('lastServerSync', int(time.time()))
-
-			parameters = {
-				'command': 'declineInvitations',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'subscriptionIDs': ','.join([str(x) for x in IDs]),
-				'secretKey': self.secretKey(),
-			}
-
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
-
-			response = json.loads(response.read().decode())
-
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-			# Success
-			return self.executeDownloadSubscriptions(response)
-
-
-	def syncSubscriptions(self, performCommands = True):
-		self.appendCommands('syncSubscriptions', self.secretSubscriptionURLs() or ['empty'])
-
-		if performCommands:
-			return self.performCommands()
-		else:
-			return True, None
-
-	def performSyncSubscriptions(self, oldURLs):
-
-		userID = self.user()
-
-		# print('performSyncSubscriptions: %s' % userID)
-
-		if userID:
-
-			self.preferences.set('lastServerSync', int(time.time()))
-
-			parameters = {
-				'command': 'syncUserSubscriptions',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'subscriptionURLs': ','.join(oldURLs),
-				'secretKey': self.secretKey(),
-			}
-
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
-
-			response = json.loads(response.read().decode())
-
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			# Uninstall all protected fonts when app instance is reported as revoked
+			if response['appInstanceIsRevoked']:
+				success, message = self.uninstallAllProtectedFonts()
+				if not success:
+					return False, message
 
 			# Add new subscriptions
 			for url in response['subscriptions']:
 				if not url in oldURLs:
 					success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
 
-					if not success: return False, message
+					if success: self.delegate._subscriptionWasAdded(subscription)
+
+					if not success: return False, 'Received from self.addSubscription() for %s: %s' % (url, message)
+
+			def replace_item(obj, key, replace_value):
+				for k, v in obj.items():
+					if v == key:
+						obj[k] = replace_value
+				return obj
+
+			# Invitations
+			self.preferences.set('acceptedInvitations', [replace_item(x, None, '') for x in response['acceptedInvitations']])
+			self.preferences.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
+			self.preferences.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
+
+			# import threading
+			# preloadThread = threading.Thread(target=self.preloadLogos)
+			# preloadThread.start()
+
+			# Delete subscriptions
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+					if not subscription.protocol.secretURL() in response['subscriptions']:
+						subscription.delete(updateSubscriptionsOnServer = False)
 
 			# Success
-			return True, len(response['subscriptions']) - len(oldURLs)
 
-		return True, None
+			self.pubSubSetup(direct = True)
 
+			return True, None
+		except:
+			self.handleTraceback()
+
+	def acceptInvitation(self, ID):
+		try:
+			userID = self.user()
+			if userID:
+				self.appendCommands('acceptInvitation', [ID])
+
+			return self.performCommands()
+		except:
+			self.handleTraceback()
+
+
+	def performAcceptInvitation(self, IDs):
+		try:
+			userID = self.user()
+	#		oldURLs = self.secretSubscriptionURLs()
+
+			if userID:
+
+				self.preferences.set('lastServerSync', int(time.time()))
+
+				parameters = {
+					'command': 'acceptInvitations',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'subscriptionIDs': ','.join([str(x) for x in IDs]),
+					'secretKey': self.secretKey(),
+				}
+
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
+
+				response = json.loads(response.read().decode())
+
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+				# Success
+				return self.executeDownloadSubscriptions(response)
+		except:
+			self.handleTraceback()
+
+
+	def declineInvitation(self, ID):
+		try:
+
+			userID = self.user()
+			if userID:
+				self.appendCommands('declineInvitation', [ID])
+
+			return self.performCommands()
+
+		except:
+			self.handleTraceback()
+
+	def performDeclineInvitation(self, IDs):
+		try:
+			userID = self.user()
+	#		oldURLs = self.secretSubscriptionURLs()
+
+			if userID:
+
+				self.preferences.set('lastServerSync', int(time.time()))
+
+				parameters = {
+					'command': 'declineInvitations',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'subscriptionIDs': ','.join([str(x) for x in IDs]),
+					'secretKey': self.secretKey(),
+				}
+
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
+
+				response = json.loads(response.read().decode())
+
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+				# Success
+				return self.executeDownloadSubscriptions(response)
+		except:
+			self.handleTraceback()
+
+
+	def syncSubscriptions(self, performCommands = True):
+		try:
+			self.appendCommands('syncSubscriptions', self.secretSubscriptionURLs() or ['empty'])
+
+			if performCommands:
+				return self.performCommands()
+			else:
+				return True, None
+		except:
+			self.handleTraceback()
+
+	def performSyncSubscriptions(self, oldURLs):
+		try:
+			userID = self.user()
+
+			# print('performSyncSubscriptions: %s' % userID)
+
+			if userID:
+
+				self.preferences.set('lastServerSync', int(time.time()))
+
+				parameters = {
+					'command': 'syncUserSubscriptions',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'subscriptionURLs': ','.join(oldURLs),
+					'secretKey': self.secretKey(),
+				}
+
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
+
+				response = json.loads(response.read().decode())
+
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+				# Add new subscriptions
+				for url in response['subscriptions']:
+					if not url in oldURLs:
+						success, message, publisher, subscription = self.addSubscription(url, updateSubscriptionsOnServer = False)
+
+						if not success: return False, message
+
+				# Success
+				return True, len(response['subscriptions']) - len(oldURLs)
+
+			return True, None
+
+		except:
+			self.handleTraceback()
 
 
 	def user(self):
-		return self.preferences.get('typeWorldUserAccount') or ''
+		try:
+			return self.preferences.get('typeWorldUserAccount') or ''
+		except:
+			self.handleTraceback()
 
 	def userKeychainKey(self, ID):
-		return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
+		try:
+			return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
+		except:
+			self.handleTraceback()
 
 	def secretKey(self, userID = None):
-		keyring = self.keyring()
-		if keyring:
-			return keyring.get_password(self.userKeychainKey(userID or self.user()), 'secretKey')
+		try:
+			keyring = self.keyring()
+			if keyring:
+				return keyring.get_password(self.userKeychainKey(userID or self.user()), 'secretKey')
+		except:
+			self.handleTraceback()
 
 	def userName(self):
-		keyring = self.keyring()
-		if keyring:
-			return keyring.get_password(self.userKeychainKey(self.user()), 'userName')
+		try:
+			keyring = self.keyring()
+			if keyring:
+				return keyring.get_password(self.userKeychainKey(self.user()), 'userName')
+		except:
+			self.handleTraceback()
 
 	def userEmail(self):
-		keyring = self.keyring()
-		if keyring:
-			return keyring.get_password(self.userKeychainKey(self.user()), 'userEmail')
+		try:
+			keyring = self.keyring()
+			if keyring:
+				return keyring.get_password(self.userKeychainKey(self.user()), 'userEmail')
 
+		except:
+			self.handleTraceback()
 
 	def createUserAccount(self, name, email, password1, password2):
+		try:
+			if self.online():
 
-		if self.online():
+				if not name or not email or not password1 or not password2:
+					return False, '#(RequiredFieldEmpty)'
 
-			if not name or not email or not password1 or not password2:
-				return False, '#(RequiredFieldEmpty)'
+				if password1 != password2:
+					return False, '#(PasswordsDontMatch)'
 
-			if password1 != password2:
-				return False, '#(PasswordsDontMatch)'
+				parameters = {
+					'command': 'createUserAccount',
+					'name': name,
+					'email': email,
+					'password': password1,
+				}
 
-			parameters = {
-				'command': 'createUserAccount',
-				'name': name,
-				'email': email,
-				'password': password1,
-			}
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+				response = json.loads(response.read().decode())
 
-			response = json.loads(response.read().decode())
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+				# success
+				return self.linkUser(response['anonymousUserID'], response['secretKey'])
 
-			# success
-			return self.linkUser(response['anonymousUserID'], response['secretKey'])
+			else:
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
-		else:
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-
+		except:
+			self.handleTraceback()
 
 
 	def deleteUserAccount(self, email, password):
+		try:
 
-		if self.online():
+			if self.online():
 
-			# Required parameters
+				# Required parameters
+				if not email or not password:
+					return False, '#(RequiredFieldEmpty)'
+
+				# Unlink user first
+				if self.userEmail() == email:
+					success, message = self.performUnlinkUser()
+					if not success:
+						return False, message
+
+				parameters = {
+					'command': 'deleteUserAccount',
+					'email': email,
+					'password': password,
+				}
+
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
+
+				response = json.loads(response.read().decode())
+
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+				# success
+
+				return True, None
+
+			else:
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
+		except:
+			self.handleTraceback()
+
+	def logInUserAccount(self, email, password):
+		try:
 			if not email or not password:
 				return False, '#(RequiredFieldEmpty)'
 
-			# Unlink user first
-			if self.userEmail() == email:
-				success, message = self.performUnlinkUser()
-				if not success:
-					return False, message
-
 			parameters = {
-				'command': 'deleteUserAccount',
+				'command': 'logInUserAccount',
 				'email': email,
 				'password': password,
 			}
@@ -1163,342 +1291,379 @@ class APIClient(PubSubClient):
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# success
-
-			return True, None
-
-		else:
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-
-	def logInUserAccount(self, email, password):
-
-		if not email or not password:
-			return False, '#(RequiredFieldEmpty)'
-
-		parameters = {
-			'command': 'logInUserAccount',
-			'email': email,
-			'password': password,
-		}
-
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			return False, response
-
-		response = json.loads(response.read().decode())
-
-		if response['response'] != 'success':
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-		# success
-		return self.linkUser(response['anonymousUserID'], response['secretKey'])
+			return self.linkUser(response['anonymousUserID'], response['secretKey'])
+		except:
+			self.handleTraceback()
 
 	def linkUser(self, userID, secretKey):
+		try:
+			# Set secret key now, so it doesn't show up in preferences when offline
+			keyring = self.keyring()
+			if keyring:
+				keyring.set_password(self.userKeychainKey(userID), 'secretKey', secretKey)
+				assert self.secretKey(userID) == secretKey
 
-		# Set secret key now, so it doesn't show up in preferences when offline
-		keyring = self.keyring()
-		if keyring:
-			keyring.set_password(self.userKeychainKey(userID), 'secretKey', secretKey)
-			assert self.secretKey(userID) == secretKey
+			self.appendCommands('linkUser', userID)
+			self.syncSubscriptions(performCommands = False)
+			self.downloadSubscriptions(performCommands = False)
 
-		self.appendCommands('linkUser', userID)
-		self.syncSubscriptions(performCommands = False)
-		self.downloadSubscriptions(performCommands = False)
-
-		return self.performCommands()
+			return self.performCommands()
+		except:
+			self.handleTraceback()
 
 
 	def performLinkUser(self, userID):
+		try:
 
-		parameters = {
-			'command': 'linkTypeWorldUserAccount',
-			'anonymousAppID': self.anonymousAppID(),
-			'anonymousUserID': userID,
-			'secretKey': self.secretKey(userID),
-		}
+			parameters = {
+				'command': 'linkTypeWorldUserAccount',
+				'anonymousAppID': self.anonymousAppID(),
+				'anonymousUserID': userID,
+				'secretKey': self.secretKey(userID),
+			}
 
-		parameters = self.addMachineIDToParameters(parameters)
+			parameters = self.addMachineIDToParameters(parameters)
 
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			return False, response
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
-		response = json.loads(response.read().decode())
+			response = json.loads(response.read().decode())
 
 
-		if response['response'] != 'success':
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-		# Success
-		self.preferences.set('typeWorldUserAccount', userID)
-		assert userID == self.user()
+			# Success
+			self.preferences.set('typeWorldUserAccount', userID)
+			assert userID == self.user()
 
-		# Pub/Sub
-		self.pubSubTopicID = 'user-%s' % self.user()
-		self.pubSubSetup()
+			# Pub/Sub
+			self.pubSubTopicID = 'user-%s' % self.user()
+			self.pubSubSetup()
 
-		keyring = self.keyring()
-		if keyring:
-			if 'userEmail' in response:
-				keyring.set_password(self.userKeychainKey(userID), 'userEmail', response['userEmail'])
-			if 'userName' in response:
-				keyring.set_password(self.userKeychainKey(userID), 'userName', response['userName'])
+			keyring = self.keyring()
+			if keyring:
+				if 'userEmail' in response:
+					keyring.set_password(self.userKeychainKey(userID), 'userEmail', response['userEmail'])
+				if 'userName' in response:
+					keyring.set_password(self.userKeychainKey(userID), 'userName', response['userName'])
 
-		return True, None
+			return True, None
 
+		except:
+			self.handleTraceback()
 
 
 	def linkedAppInstances(self):
+		try:
+			if not self.user():
+				return False, 'No user'
 
-		if not self.user():
-			return False, 'No user'
+			parameters = {
+				'command': 'userAppInstances',
+				'anonymousAppID': self.anonymousAppID(),
+				'anonymousUserID': self.user(),
+				'secretKey': self.secretKey(),
+			}
 
-		parameters = {
-			'command': 'userAppInstances',
-			'anonymousAppID': self.anonymousAppID(),
-			'anonymousUserID': self.user(),
-			'secretKey': self.secretKey(),
-		}
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			return False, response
+			response = json.loads(response.read().decode())
 
-		response = json.loads(response.read().decode())
-
-		if response['response'] != 'success':
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-
-		class AppInstance(object):
-			pass
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 
-		# Success
-		instances = []
+			class AppInstance(object):
+				pass
 
-		for serverInstance in response['appInstances']:
 
-			instance = AppInstance()
+			# Success
+			instances = []
 
-			for key in serverInstance:
-				setattr(instance, key, serverInstance[key])
+			for serverInstance in response['appInstances']:
 
-			instances.append(instance)
+				instance = AppInstance()
 
-		return True, instances
+				for key in serverInstance:
+					setattr(instance, key, serverInstance[key])
 
+				instances.append(instance)
+
+			return True, instances
+		except:
+			self.handleTraceback()
 
 
 	def revokeAppInstance(self, anonymousAppID):
+		try:
+			if not self.user():
+				return False, 'No user'
 
-		if not self.user():
-			return False, 'No user'
+			parameters = {
+				'command': 'revokeAppInstance',
+				'anonymousAppID': anonymousAppID,
+				'anonymousUserID': self.user(),
+				'secretKey': self.secretKey(),
+			}
 
-		parameters = {
-			'command': 'revokeAppInstance',
-			'anonymousAppID': anonymousAppID,
-			'anonymousUserID': self.user(),
-			'secretKey': self.secretKey(),
-		}
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			return False, response
+			response = json.loads(response.read().decode())
 
-		response = json.loads(response.read().decode())
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-		if response['response'] != 'success':
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-		return True, None
+			return True, None
+		except:
+			self.handleTraceback()
 
 
 	def reactivateAppInstance(self, anonymousAppID):
+		try:
 
-		if not self.user():
-			return False, 'No user'
+			if not self.user():
+				return False, 'No user'
+
+			parameters = {
+				'command': 'reactivateAppInstance',
+				'anonymousAppID': anonymousAppID,
+				'anonymousUserID': self.user(),
+				'secretKey': self.secretKey(),
+			}
+
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
+
+			response = json.loads(response.read().decode())
+
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+			return True, None
+		except:
+			self.handleTraceback()
+
+
+	def unlinkUser(self):
+		try:
+			self.appendCommands('unlinkUser')
+			return self.performCommands()
+		except:
+			self.handleTraceback()
+
+
+	def uninstallAllProtectedFonts(self, dryRun = False):
+		try:
+			# Uninstall all protected fonts
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+
+					success, installabeFontsCommand = subscription.protocol.installableFontsCommand()
+					if not success:
+						return False, 'No installabeFontsCommand'
+
+					fontIDs = []
+
+					for foundry in installabeFontsCommand.foundries:
+						for family in foundry.families:
+							for font in family.fonts:
+
+								# Dry run from central server: add all fonts to list
+								if dryRun and font.protected:
+									fontIDs.append(font.uniqueID)
+
+								# Run from local client, add only actually installed fonts
+								elif not dryRun and font.protected and subscription.installedFontVersion(font.uniqueID):
+									fontIDs.append(font.uniqueID)
+					
+					if fontIDs:
+						success, message = subscription.removeFonts(fontIDs, dryRun = dryRun, updateSubscription = False)
+						if not success:
+							return False, message
+
+			return True, None
+		except:
+			self.handleTraceback()
+
+
+	def performUnlinkUser(self):
+		try:
+			userID = self.user()
+
+			success, response = self.uninstallAllProtectedFonts()
+			if not success:
+				return False, response
+
+			parameters = {
+				'command': 'unlinkTypeWorldUserAccount',
+				'anonymousAppID': self.anonymousAppID(),
+				'anonymousUserID': userID,
+				'secretKey': self.secretKey(),
+			}
+
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
+
+			response = json.loads(response.read().decode())
+
+			continueFor = ['userUnknown']
+			if response['response'] != 'success' and not response['response'] in continueFor:
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
+			self.preferences.set('typeWorldUserAccount', '')
+			self.preferences.remove('acceptedInvitations')
+			self.preferences.remove('pendingInvitations')
+			self.preferences.remove('sentInvitations')
+
+			# Success
+			self.pubSubTopicID = 'user-%s' % self.user()
+			self.pubSubDelete()
+
+			keyring = self.keyring()
+			keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
+			keyring.delete_password(self.userKeychainKey(userID), 'userEmail')
+			keyring.delete_password(self.userKeychainKey(userID), 'userName')
+
+
+			# Success
+			return True, None
+
+		except:
+			self.handleTraceback()
+
+
+	def systemLocale(self):
+		try:
+
+			if not self._systemLocale:
+				if MAC:
+					from AppKit import NSLocale
+					self._systemLocale = str(NSLocale.preferredLanguages()[0].split('_')[0].split('-')[0])
+				else:
+					import locale
+					self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
+
+			return self._systemLocale
+		except:
+			self.handleTraceback()
+
+	def locale(self):
+		try:
+
+			'''\
+			Reads user locale from OS
+			'''
+
+			if self.preferences.get('localizationType') == 'systemLocale':
+				_locale = [self.systemLocale()]
+			elif self.preferences.get('localizationType') == 'customLocale':
+				_locale = [self.preferences.get('customLocaleChoice') or 'en']
+			else:
+				_locale = [self.systemLocale()]
+
+			if not 'en' in _locale:
+				_locale.append('en')
+
+			return _locale
+		except:
+			self.handleTraceback()
+
+	def expiringInstalledFonts(self):
+		try:
+			fonts = []
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+					fonts.extend(subscription.expiringInstalledFonts())
+			return fonts
+		except:
+			self.handleTraceback()
+
+	def amountOutdatedFonts(self):
+		try:
+			amount = 0
+			for publisher in self.publishers():
+				amount += publisher.amountOutdatedFonts()
+			return amount
+		except:
+			self.handleTraceback()
+
+
+	def keyring(self):
+		try:
+
+			if MAC:
+
+				import keyring
+	#			from keyring.backends.OS_X import Keyring
+				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
+				return keyring
+
+			elif WIN:
+
+				if 'TRAVIS' in os.environ:
+					keyring = dummyKeyRing
+					return keyring
+
+				import keyring
+	#			from keyring.backends.Windows import WinVaultKeyring
+				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
+				return keyring
+
+			elif LINUX:
+
+				try:
+					import keyring
+	#				from keyring.backends.kwallet import DBusKeyring
+					keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
+				except:
+					keyring = dummyKeyRing
+
+	#			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
+				return keyring
+		except:
+			self.handleTraceback()
+
+	def handleTraceback(self):
+
+
+		payload = f'''\
+Version: {typeWorld.api.VERSION}
+{traceback.format_exc()}
+'''
+
+		self.log(payload)
+
+		supplementary = {
+			'os': OSName(),
+			'preferences': self.preferences.dictionary()
+		}
 
 		parameters = {
-			'command': 'reactivateAppInstance',
-			'anonymousAppID': anonymousAppID,
-			'anonymousUserID': self.user(),
-			'secretKey': self.secretKey(),
+			'command': 'handleTraceback',
+			'payload': payload,
+			'supplementary': json.dumps(supplementary),
 		}
 
 		success, response = self.performRequest(self.mothership, parameters)
 		if not success:
-			return False, response
+			self.log('handleTraceback() error on server, step 1: %s' % response)
 
 		response = json.loads(response.read().decode())
 
 		if response['response'] != 'success':
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			self.log('handleTraceback() error on server, step 2: %s' % response)
 
-		return True, None
-
-
-	def unlinkUser(self):
-
-		self.appendCommands('unlinkUser')
-		return self.performCommands()
-
-
-	def uninstallAllProtectedFonts(self, dryRun = False):
-
-		# Uninstall all protected fonts
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-
-				success, installabeFontsCommand = subscription.protocol.installableFontsCommand()
-				if not success:
-					return False, 'No installabeFontsCommand'
-
-				fontIDs = []
-
-				for foundry in installabeFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-
-							# Dry run from central server: add all fonts to list
-							if dryRun and font.protected:
-								fontIDs.append(font.uniqueID)
-
-							# Run from local client, add only actually installed fonts
-							elif not dryRun and font.protected and subscription.installedFontVersion(font.uniqueID):
-								fontIDs.append(font.uniqueID)
-				
-				if fontIDs:
-					success, message = subscription.removeFonts(fontIDs, dryRun = dryRun, updateSubscription = False)
-					if not success:
-						return False, message
-
-		return True, None
-
-
-	def performUnlinkUser(self):
-
-		userID = self.user()
-
-		success, response = self.uninstallAllProtectedFonts()
-		if not success:
-			return False, response
-
-		parameters = {
-			'command': 'unlinkTypeWorldUserAccount',
-			'anonymousAppID': self.anonymousAppID(),
-			'anonymousUserID': userID,
-			'secretKey': self.secretKey(),
-		}
-
-		success, response = self.performRequest(self.mothership, parameters)
-		if not success:
-			return False, response
-
-		response = json.loads(response.read().decode())
-
-		continueFor = ['userUnknown']
-		if response['response'] != 'success' and not response['response'] in continueFor:
-			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-		self.preferences.set('typeWorldUserAccount', '')
-		self.preferences.remove('acceptedInvitations')
-		self.preferences.remove('pendingInvitations')
-		self.preferences.remove('sentInvitations')
-
-		# Success
-		self.pubSubTopicID = 'user-%s' % self.user()
-		self.pubSubDelete()
-
-		keyring = self.keyring()
-		keyring.delete_password(self.userKeychainKey(userID), 'secretKey')
-		keyring.delete_password(self.userKeychainKey(userID), 'userEmail')
-		keyring.delete_password(self.userKeychainKey(userID), 'userName')
-
-
-		# Success
-		return True, None
-
-
-
-	def systemLocale(self):
-
-		if not self._systemLocale:
-			if MAC:
-				from AppKit import NSLocale
-				self._systemLocale = str(NSLocale.preferredLanguages()[0].split('_')[0].split('-')[0])
-			else:
-				import locale
-				self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
-
-		return self._systemLocale
-
-	def locale(self):
-		'''\
-		Reads user locale from OS
-		'''
-
-		if self.preferences.get('localizationType') == 'systemLocale':
-			_locale = [self.systemLocale()]
-		elif self.preferences.get('localizationType') == 'customLocale':
-			_locale = [self.preferences.get('customLocaleChoice') or 'en']
-		else:
-			_locale = [self.systemLocale()]
-
-		if not 'en' in _locale:
-			_locale.append('en')
-
-		return _locale
-
-	def expiringInstalledFonts(self):
-		fonts = []
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-				fonts.extend(subscription.expiringInstalledFonts())
-		return fonts
-
-	def amountOutdatedFonts(self):
-		amount = 0
-		for publisher in self.publishers():
-			amount += publisher.amountOutdatedFonts()
-		return amount
-
-
-	def keyring(self):
-
-
-		if MAC:
-
-			import keyring
-#			from keyring.backends.OS_X import Keyring
-			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
-			return keyring
-
-		elif WIN:
-
-			if 'TRAVIS' in os.environ:
-				keyring = dummyKeyRing
-				return keyring
-
-			import keyring
-#			from keyring.backends.Windows import WinVaultKeyring
-			keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
-			return keyring
-
-		elif LINUX:
-
-			try:
-				import keyring
-#				from keyring.backends.kwallet import DBusKeyring
-				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
-			except:
-				keyring = dummyKeyRing
-
-#			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
-			return keyring
-
-
-	def log(self, *argv):
-		string = 'Type.World: %s' % ' '.join(map(str, argv))
+	def log(self, *arg):
+		string = 'Type.World: %s' % ' '.join(map(str, arg))
+		print(arg, string, type(string))
 		if MAC:
 			from AppKit import NSLog
 			NSLog(string)
@@ -1507,57 +1672,61 @@ class APIClient(PubSubClient):
 
 
 	def prepareUpdate(self):
-
 		self._subscriptionsUpdated = []
 
 	def allSubscriptionsUpdated(self):
+		try:
 
-		for publisher in self.publishers():
-			for subscription in publisher.subscriptions():
-				if subscription.stillUpdating(): return False
+			for publisher in self.publishers():
+				for subscription in publisher.subscriptions():
+					if subscription.stillUpdating(): return False
 
-		return True
+			return True
+		except:
+			self.handleTraceback()
 
 
 	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
+		try:
+			resources = self.preferences.get('resources') or {}
 
-		resources = self.preferences.get('resources') or {}
+			if url not in resources or update:
 
-		if url not in resources or update:
+				if self.testScenario:
+					url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
 
-			if self.testScenario:
-				url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
+				request = urllib.request.Request(url)
+				# if username and password:
+				# 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
+				# 	request.add_header("Authorization", "Basic %s" % base64string)   
 
-			request = urllib.request.Request(url)
-			# if username and password:
-			# 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
-			# 	request.add_header("Authorization", "Basic %s" % base64string)   
-
-			try:
-				response = urllib.request.urlopen(request, context=self.sslcontext)
-			except:
-				return False, traceback.format_exc().splitlines()[-1], None
+				try:
+					response = urllib.request.urlopen(request, context=self.sslcontext)
+				except:
+					return False, traceback.format_exc().splitlines()[-1], None
 
 
-			content = response.read()
-			if binary:
-				content = base64.b64encode(content).decode()
+				content = response.read()
+				if binary:
+					content = base64.b64encode(content).decode()
+				else:
+					content = content.decode()
+
+				resources[url] = response.headers['content-type'] + ',' + content
+				self.preferences.set('resources', resources)
+
+				return True, content, response.headers['content-type']
+
 			else:
-				content = content.decode()
 
-			resources[url] = response.headers['content-type'] + ',' + content
-			self.preferences.set('resources', resources)
+				response = resources[url]
+				mimeType = response.split(',')[0]
+				content = response[len(mimeType)+1:]
 
-			return True, content, response.headers['content-type']
-
-		else:
-
-			response = resources[url]
-			mimeType = response.split(',')[0]
-			content = response[len(mimeType)+1:]
-
-			return True, content, mimeType
+				return True, content, mimeType
+		except:
+			self.handleTraceback()
 
 
 
@@ -1603,7 +1772,7 @@ class APIClient(PubSubClient):
 	# 		exc_type, exc_value, exc_traceback = sys.exc_info()
 	# 		for line in traceback.format_exception_only(exc_type, exc_value):
 	# 			d['errors'].append(line)
-	# 		self.log(traceback.format_exc())
+	# 		self.handleTraceback()
 
 	# 	return json, d
 
@@ -1620,98 +1789,106 @@ class APIClient(PubSubClient):
 	# 	return url
 
 	def anonymousAppID(self):
-		anonymousAppID = self.preferences.get('anonymousAppID')
+		try:
+			anonymousAppID = self.preferences.get('anonymousAppID')
 
-		if anonymousAppID == None or anonymousAppID == {}:
-			import uuid
-			anonymousAppID = str(uuid.uuid1())
-			self.preferences.set('anonymousAppID', anonymousAppID)
+			if anonymousAppID == None or anonymousAppID == {}:
+				import uuid
+				anonymousAppID = str(uuid.uuid1())
+				self.preferences.set('anonymousAppID', anonymousAppID)
 
 
-		return anonymousAppID
+			return anonymousAppID
+		except:
+			self.handleTraceback()
 
 
 	def rootCommand(self, url):
-		# Check for URL validity
-		success, response = urlIsValid(url)
-		if not success:
-			return False, response
+		try:
+			# Check for URL validity
+			success, response = urlIsValid(url)
+			if not success:
+				return False, response
 
-		# Get subscription
-		success, protocol = getProtocol(url)
-		# Get Root Command
-		return protocol.rootCommand(testScenario = self.testScenario)
+			# Get subscription
+			success, protocol = getProtocol(url)
+			# Get Root Command
+			return protocol.rootCommand(testScenario = self.testScenario)
+		except:
+			self.handleTraceback()
 
 
 	def addSubscription(self, url, username = None, password = None, updateSubscriptionsOnServer = True, JSON = None, secretTypeWorldAPIKey = None):
 		'''
 		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
 		'''
+		try:
+			self._updatingProblem = None
 
-		self._updatingProblem = None
-
-		# Check for URL validity
-		success, response = urlIsValid(url)
-		if not success:
-			return False, response, None, None
-
-		# Get subscription
-		success, message = getProtocol(url)
-		if success:
-			protocol = message
-			protocol.client = self
-		else:
-			return False, message, None, None
-
-		# Initial rootCommand
-		success, message = self.rootCommand(url)
-		if success:
-			rootCommand = message
-		else:
-			return False, message, None, None
-
-		if not updateSubscriptionsOnServer and protocol.url.accessToken:
-			return False, 'Accessing a subscription with an access token requires the subscription to be synched to the server afterwards, but `updateSubscriptionsOnServer` is set to False.', None, None
-
-		if not self.user() and protocol.url.accessToken:
-			return False, 'Accessing a subscription with an access token requires the app to be linked to a Type.World user account.', None, None
-
-		# Change secret key
-		if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
-			protocol.setSecretKey(protocol.url.secretKey)
-			publisher = self.publisher(rootCommand.canonicalURL)
-			subscription = publisher.subscription(protocol.unsecretURL(), protocol)
-
-		else:
-			# Initial Health Check
-			success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
+			# Check for URL validity
+			success, response = urlIsValid(url)
 			if not success:
-				if type(response) == typeWorld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
-					message = response
-				else:
-					message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
-					if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
-						self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
+				return False, response, None, None
+
+			# Get subscription
+			success, message = getProtocol(url)
+			if success:
+				protocol = message
+				protocol.client = self
+			else:
 				return False, message, None, None
 
-			publisher = self.publisher(rootCommand.canonicalURL)
-			subscription = publisher.subscription(protocol.unsecretURL(), protocol)
+			# Initial rootCommand
+			success, message = self.rootCommand(url)
+			if success:
+				rootCommand = message
+			else:
+				return False, message, None, None
 
-			# Success
-			subscription.save()
-			publisher.save()
-			subscription.stillAlive()
+			if not updateSubscriptionsOnServer and protocol.url.accessToken:
+				return False, 'Accessing a subscription with an access token requires the subscription to be synched to the server afterwards, but `updateSubscriptionsOnServer` is set to False.', None, None
 
-		if updateSubscriptionsOnServer:
-			success, message = self.uploadSubscriptions()
-			if not success:
-				return False, message, None, None # 'Response from client.uploadSubscriptions(): %s' % 
+			if not self.user() and protocol.url.accessToken:
+				return False, 'Accessing a subscription with an access token requires the app to be linked to a Type.World user account.', None, None
 
-		protocol.subscriptionAdded()
+			# Change secret key
+			if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
+				protocol.setSecretKey(protocol.url.secretKey)
+				publisher = self.publisher(rootCommand.canonicalURL)
+				subscription = publisher.subscription(protocol.unsecretURL(), protocol)
+
+			else:
+				# Initial Health Check
+				success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
+				if not success:
+					if type(response) == typeWorld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+						message = response
+					else:
+						message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
+						if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
+							self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
+					return False, message, None, None
+
+				publisher = self.publisher(rootCommand.canonicalURL)
+				subscription = publisher.subscription(protocol.unsecretURL(), protocol)
+
+				# Success
+				subscription.save()
+				publisher.save()
+				subscription.stillAlive()
+
+			if updateSubscriptionsOnServer:
+				success, message = self.uploadSubscriptions()
+				if not success:
+					return False, message, None, None # 'Response from client.uploadSubscriptions(): %s' % 
+
+			protocol.subscriptionAdded()
 
 
-		return True, None, self.publisher(rootCommand.canonicalURL), subscription
+			return True, None, self.publisher(rootCommand.canonicalURL), subscription
 
+		except:
+			self.handleTraceback()
 
 			# Outdated (for now)
 			# elif url.startswith('typeworldgithub://'):
@@ -1770,20 +1947,26 @@ class APIClient(PubSubClient):
 	# 		return publisher
 
 	def publisher(self, canonicalURL):
-		if canonicalURL not in self._publishers:
-			e = APIPublisher(self, canonicalURL)
-			self._publishers[canonicalURL] = e
+		try:
+			if canonicalURL not in self._publishers:
+				e = APIPublisher(self, canonicalURL)
+				self._publishers[canonicalURL] = e
 
-		if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
-			self._publishers[canonicalURL].exists = True
+			if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
+				self._publishers[canonicalURL].exists = True
 
-		return self._publishers[canonicalURL]
+			return self._publishers[canonicalURL]
+		except:
+			self.handleTraceback()
 
 	def publishers(self):
-		if self.preferences.get('publishers'):
-			return [self.publisher(canonicalURL) for canonicalURL in self.preferences.get('publishers')]
-		else:
-			return []
+		try:
+			if self.preferences.get('publishers'):
+				return [self.publisher(canonicalURL) for canonicalURL in self.preferences.get('publishers')]
+			else:
+				return []
+		except:
+			self.handleTraceback()
 
 
 class APIPublisher(object):
@@ -1802,42 +1985,50 @@ class APIPublisher(object):
 
 
 	def folder(self):
+		try:
+			if WIN:
+				return os.path.join(os.environ['WINDIR'], 'Fonts')
 
-		if WIN:
-			return os.path.join(os.environ['WINDIR'], 'Fonts')
+			elif MAC:
 
-		elif MAC:
-
-			from os.path import expanduser
-			home = expanduser("~")
+				from os.path import expanduser
+				home = expanduser("~")
 
 
-			rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
-			title = rootCommand.name.getText()
+				rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
+				title = rootCommand.name.getText()
 
-			folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App')
+				folder = os.path.join(home, 'Library', 'Fonts', 'Type.World App')
 
-			return folder
+				return folder
 
-		else:
-			import tempfile
-			return tempfile.gettempdir()
+			else:
+				import tempfile
+				return tempfile.gettempdir()
+		except:
+			self.handleTraceback()
 
 
 	def stillUpdating(self):
-		return len(self._updatingSubscriptions) > 0
+		try:
+			return len(self._updatingSubscriptions) > 0
+		except:
+			self.handleTraceback()
 
 
 	def updatingProblem(self):
+		try:
 
-		problems = []
+			problems = []
 
-		for subscription in self.subscriptions():
-			problem = subscription.updatingProblem()
-			if problem and not problem in problems: problems.append(problem)
+			for subscription in self.subscriptions():
+				problem = subscription.updatingProblem()
+				if problem and not problem in problems: problems.append(problem)
 
-		if problems: return problems
+			if problems: return problems
 
+		except:
+			self.handleTraceback()
 
 
 	# def gitHubRateLimit(self):
@@ -1864,10 +2055,12 @@ class APIPublisher(object):
 
 	def name(self, locale = ['en']):
 
-
-		rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
-		if rootCommand:
-			return rootCommand.name.getTextAndLocale(locale = locale)
+		try:
+			rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
+			if rootCommand:
+				return rootCommand.name.getTextAndLocale(locale = locale)
+		except:
+			self.handleTraceback()
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -1892,30 +2085,42 @@ class APIPublisher(object):
 	# 		return self.parent.resourceByURL(url, binary = binary, update = update)
 
 	def amountInstalledFonts(self):
-		return len(self.installedFonts())
+		try:
+			return len(self.installedFonts())
+		except:
+			self.handleTraceback()
 
 	def installedFonts(self):
-		l = []
+		try:
+			l = []
 
-		for subscription in self.subscriptions():
-			for font in subscription.installedFonts():
-				if not font in l:
-					l.append(font)
+			for subscription in self.subscriptions():
+				for font in subscription.installedFonts():
+					if not font in l:
+						l.append(font)
 
-		return l
+			return l
+		except:
+			self.handleTraceback()
 
 	def amountOutdatedFonts(self):
-		return len(self.outdatedFonts())
+		try:
+			return len(self.outdatedFonts())
+		except:
+			self.handleTraceback()
 
 	def outdatedFonts(self):
-		l = []
+		try:
+			l = []
 
-		for subscription in self.subscriptions():
-			for font in subscription.outdatedFonts():
-				if not font in l:
-					l.append(font)
+			for subscription in self.subscriptions():
+				for font in subscription.outdatedFonts():
+					if not font in l:
+						l.append(font)
 
-		return l
+			return l
+		except:
+			self.handleTraceback()
 
 	# def currentSubscription(self):
 	# 	if self.get('currentSubscription'):
@@ -1924,21 +2129,26 @@ class APIPublisher(object):
 	# 			return subscription
 
 	def get(self, key):
-		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
-		if key in preferences:
+		try:
+			preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
+			if key in preferences:
 
-			o = preferences[key]
+				o = preferences[key]
 
-			if 'Array' in o.__class__.__name__: o = list(o)
-			elif 'Dictionary' in o.__class__.__name__: o = dict(o)
+				if 'Array' in o.__class__.__name__: o = list(o)
+				elif 'Dictionary' in o.__class__.__name__: o = dict(o)
 
-			return o
+				return o
+		except:
+			self.handleTraceback()
 
 	def set(self, key, value):
-
-		preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
-		preferences[key] = value
-		self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
+		try:
+			preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
+			preferences[key] = value
+			self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
+		except:
+			self.handleTraceback()
 
 
 	# def addGitHubSubscription(self, url, commits):
@@ -1954,93 +2164,110 @@ class APIPublisher(object):
 
 
 	def subscription(self, url, protocol = None):
+		try:
 
-		if url not in self._subscriptions:
+			if url not in self._subscriptions:
 
-			# Load from DB
-			loadFromDB = False
+				# Load from DB
+				loadFromDB = False
 
-			if not protocol:
-				success, message = getProtocol(url)
-				if success:
-					protocol = message
-					loadFromDB = True
+				if not protocol:
+					success, message = getProtocol(url)
+					if success:
+						protocol = message
+						loadFromDB = True
 
-			e = APISubscription(self, protocol)
-			if loadFromDB:
-				protocol.loadFromDB()
+				e = APISubscription(self, protocol)
+				if loadFromDB:
+					protocol.loadFromDB()
 
-			self._subscriptions[url] = e
+				self._subscriptions[url] = e
 
-		if self.get('subscriptions') and url in self.get('subscriptions'):
-			self._subscriptions[url].exists = True
+			if self.get('subscriptions') and url in self.get('subscriptions'):
+				self._subscriptions[url].exists = True
 
-		return self._subscriptions[url]
+			return self._subscriptions[url]
+		except:
+			self.handleTraceback()
 
 	def subscriptions(self):
-		return [self.subscription(url) for url in self.get('subscriptions') or []]
+		try:
+			return [self.subscription(url) for url in self.get('subscriptions') or []]
+		except:
+			self.handleTraceback()
 
 	def update(self):
+		try:
 
-		self.parent.prepareUpdate()
+			self.parent.prepareUpdate()
 
-		changes = False
+			changes = False
 
-		if self.parent.online():
+			if self.parent.online():
 
-			for subscription in self.subscriptions():
-				success, message, change = subscription.update()
-				if change: changes = True
-				if not success:
-					return success, message, changes
+				for subscription in self.subscriptions():
+					success, message, change = subscription.update()
+					if change: changes = True
+					if not success:
+						return success, message, changes
 
-			return True, None, changes
+				return True, None, changes
 
-		else:
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)'], False
+			else:
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)'], False
+		except:
+			self.handleTraceback()
 
 	def save(self):
-		publishers = self.parent.preferences.get('publishers') or []
-		if not self.canonicalURL in publishers:
-			publishers.append(self.canonicalURL)
-		self.parent.preferences.set('publishers', publishers)
+		try:
+			publishers = self.parent.preferences.get('publishers') or []
+			if not self.canonicalURL in publishers:
+				publishers.append(self.canonicalURL)
+			self.parent.preferences.set('publishers', publishers)
+		except:
+			self.handleTraceback()
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
-		response = self.parent.resourceByURL(url, binary, update)
+		try:
+			response = self.parent.resourceByURL(url, binary, update)
 
-		# Save resource
-		if response[0] == True:
-			resourcesList = self.get('resources') or []
-			if not url in resourcesList:
-				resourcesList.append(url)
-				self.set('resources', resourcesList)
+			# Save resource
+			if response[0] == True:
+				resourcesList = self.get('resources') or []
+				if not url in resourcesList:
+					resourcesList.append(url)
+					self.set('resources', resourcesList)
 
-		return response
+			return response
+		except:
+			self.handleTraceback()
 
 
 	def delete(self):
+		try:
+			for subscription in self.subscriptions():
+				subscription.delete(calledFromParent = True)
 
-		for subscription in self.subscriptions():
-			subscription.delete(calledFromParent = True)
+			# Resources
+			resources = self.parent.preferences.get('resources') or {}
+			for url in self.get('resources') or []:
+				if url in resources:
+					del resources[url]
+			self.parent.preferences.set('resources', resources)
 
-		# Resources
-		resources = self.parent.preferences.get('resources') or {}
-		for url in self.get('resources') or []:
-			if url in resources:
-				del resources[url]
-		self.parent.preferences.set('resources', resources)
+			self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
+			publishers = self.parent.preferences.get('publishers')
+			publishers.remove(self.canonicalURL)
+			self.parent.preferences.set('publishers', publishers)
+			# self.parent.preferences.set('currentPublisher', '')
+			
+			self.parent.delegate._publisherWasDeleted(self)
 
-		self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
-		publishers = self.parent.preferences.get('publishers')
-		publishers.remove(self.canonicalURL)
-		self.parent.preferences.set('publishers', publishers)
-		# self.parent.preferences.set('currentPublisher', '')
-		
-		self.parent.delegate._publisherWasDeleted(self)
-
-		self.parent._publishers = {}
+			self.parent._publishers = {}
+		except:
+			self.handleTraceback()
 
 
 
@@ -2050,139 +2277,158 @@ class APISubscription(PubSubClient):
 	"""
 
 	def __init__(self, parent, protocol):
-		self.parent = parent
-		self.exists = False
-		self.secretKey = None
-		self.protocol = protocol
-		self.protocol.subscription = self
-		self.protocol.client = self.parent.parent
-		self.url = self.protocol.unsecretURL()
+		try:
+			self.parent = parent
+			self.exists = False
+			self.secretKey = None
+			self.protocol = protocol
+			self.protocol.subscription = self
+			self.protocol.client = self.parent.parent
+			self.url = self.protocol.unsecretURL()
 
-		self.stillAliveTouched = None
-		self._updatingProblem = None
+			self.stillAliveTouched = None
+			self._updatingProblem = None
 
-		# Pub/Sub
-		if self.parent.parent.pubSubSubscriptions:
-			self.pubsubSubscription = None
-			self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
-			self.pubSubExecuteConditionMethod = None
-			self.pubSubSetup()
+			# Pub/Sub
+			if self.parent.parent.pubSubSubscriptions:
+				self.pubsubSubscription = None
+				self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
+				self.pubSubExecuteConditionMethod = None
+				self.pubSubSetup()
+
+		except:
+			self.handleTraceback()
 
 
 	def uniqueID(self):
-		uniqueID = self.get('uniqueID')
+		try:
+			uniqueID = self.get('uniqueID')
 
-		if uniqueID == None or uniqueID == {}:
-			import uuid
-			uniqueID = Garbage(10)
-			self.set('uniqueID', uniqueID)
+			if uniqueID == None or uniqueID == {}:
+				import uuid
+				uniqueID = Garbage(10)
+				self.set('uniqueID', uniqueID)
 
-		return uniqueID
+			return uniqueID
+		except:
+			self.handleTraceback()
 
 	def pubSubCallback(self, message):
-		self.parent.parent.delegate._subscriptionUpdateNotificationHasBeenReceived(self)
-		if message:
-			message.ack()
-			self.set('lastPubSubMessage', int(time.time()))
+		try:
+			self.parent.parent.delegate._subscriptionUpdateNotificationHasBeenReceived(self)
+			if message:
+				message.ack()
+				self.set('lastPubSubMessage', int(time.time()))
+		except:
+			self.handleTraceback()
 
 
 	def announceChange(self):
+		try:
+			userID = self.user()
 
-		userID = self.user()
+			if userID:
 
-		if userID:
+				self.preferences.set('lastServerSync', int(time.time()))
 
-			self.preferences.set('lastServerSync', int(time.time()))
+				parameters = {
+					'command': 'updateSubscription',
+					'anonymousAppID': self.anonymousAppID(),
+					'anonymousUserID': userID,
+					'subscriptionURL': self.protocol.url.secretURL(),
+					'secretKey': self.secretKey(),
+				}
 
-			parameters = {
-				'command': 'updateSubscription',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': userID,
-				'subscriptionURL': self.protocol.url.secretURL(),
-				'secretKey': self.secretKey(),
-			}
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					return False, response
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+				response = json.loads(response.read().decode())
 
-			response = json.loads(response.read().decode())
+				if response['response'] != 'success':
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-		# Success
-		return True, None
+			# Success
+			return True, None
+		except:
+			self.handleTraceback()
 
 	def hasProtectedFonts(self):
+		try:
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if font.protected:
+							return True
 
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.protected:
-						return True
-
-		return False
+			return False
+		except:
+			self.handleTraceback()
 
 
 	def stillAlive(self):
 
+		try:
+			def stillAliveWorker(self):
 
-		def stillAliveWorker(self):
+				# Register endpoint
 
-			# Register endpoint
+				parameters = {
+					'command': 'registerAPIEndpoint',
+					'url': 'typeworld://%s+%s' % (self.protocol.url.protocol, self.parent.canonicalURL.replace('://', '//')),
+				}
 
-			parameters = {
-				'command': 'registerAPIEndpoint',
-				'url': 'typeworld://%s+%s' % (self.protocol.url.protocol, self.parent.canonicalURL.replace('://', '//')),
-			}
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				if not success:
+					return False, response
 
-			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
-			if not success:
-				return False, response
-
-			response = json.loads(response.read().decode())
+				response = json.loads(response.read().decode())
 
 
-		# Touch only once
-		if not self.parent.parent.user():
-			if not self.stillAliveTouched:
+			# Touch only once
+			if not self.parent.parent.user():
+				if not self.stillAliveTouched:
 
-				stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self, ))
-				stillAliveThread.start()
+					stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self, ))
+					stillAliveThread.start()
 
-				self.stillAliveTouched = time.time()			
+					self.stillAliveTouched = time.time()			
+		except:
+			self.handleTraceback()
 
 
 	def inviteUser(self, targetEmail):
+		try:
 
-		if self.parent.parent.online():
+			if self.parent.parent.online():
 
-			if not self.parent.parent.userEmail():
-				return False, 'No source user linked.'
+				if not self.parent.parent.userEmail():
+					return False, 'No source user linked.'
 
-			parameters = {
-				'command': 'inviteUserToSubscription',
-				'targetUserEmail': targetEmail,
-				'sourceUserEmail': self.parent.parent.userEmail(),
-				'subscriptionURL': self.protocol.secretURL(),
-			}
+				parameters = {
+					'command': 'inviteUserToSubscription',
+					'targetUserEmail': targetEmail,
+					'sourceUserEmail': self.parent.parent.userEmail(),
+					'subscriptionURL': self.protocol.secretURL(),
+				}
 
-			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
-			if not success:
-				return False, response
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				if not success:
+					return False, response
 
-			response = json.loads(response.read().decode())
+				response = json.loads(response.read().decode())
 
-			if response['response'] == 'success':
-				return True, None
+				if response['response'] == 'success':
+					return True, None
+				else:
+					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+
 			else:
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
-
-		else:
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
+		except:
+			self.handleTraceback()
 
 
 
@@ -2200,154 +2446,190 @@ class APISubscription(PubSubClient):
 
 
 	def revokeUser(self, targetEmail):
+		try:
 
-		if self.parent.parent.online():
+			if self.parent.parent.online():
 
-			parameters = {
-				'command': 'revokeSubscriptionInvitation',
-				'targetUserEmail': targetEmail,
-				'sourceUserEmail': self.parent.parent.userEmail(),
-				'subscriptionURL': self.protocol.secretURL(),
-			}
+				parameters = {
+					'command': 'revokeSubscriptionInvitation',
+					'targetUserEmail': targetEmail,
+					'sourceUserEmail': self.parent.parent.userEmail(),
+					'subscriptionURL': self.protocol.secretURL(),
+				}
 
-			success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
-			if not success:
-				return False, response
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				if not success:
+					return False, response
 
-			response = json.loads(response.read().decode())
+				response = json.loads(response.read().decode())
 
-			if response['response'] == 'success':
-				return True, None
+				if response['response'] == 'success':
+					return True, None
+				else:
+					return False, response['response']
+
 			else:
-				return False, response['response']
-
-		else:
-			return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
+				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
+		except:
+			self.handleTraceback()
 
 	def invitationAccepted(self):
+		try:
 
-		if self.parent.parent.user():
-			acceptedInvitations = self.parent.parent.acceptedInvitations()
-			if acceptedInvitations:
-				for invitation in acceptedInvitations:
-					if self.protocol.unsecretURL() == invitation.url:
-						return True
+			if self.parent.parent.user():
+				acceptedInvitations = self.parent.parent.acceptedInvitations()
+				if acceptedInvitations:
+					for invitation in acceptedInvitations:
+						if self.protocol.unsecretURL() == invitation.url:
+							return True
 
+		except:
+			self.handleTraceback()
 
 	def stillUpdating(self):
-		return self.url in self.parent._updatingSubscriptions
+		try:
+			return self.url in self.parent._updatingSubscriptions
+		except:
+			self.handleTraceback()
 
 
 	def name(self, locale = ['en']):
+		try:
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		return installabeFontsCommand.name.getText(locale) or '#(Unnamed)'
+			return installabeFontsCommand.name.getText(locale) or '#(Unnamed)'
+		except:
+			self.handleTraceback()
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
+		try:
+			response = self.parent.parent.resourceByURL(url, binary, update)
 
-		response = self.parent.parent.resourceByURL(url, binary, update)
+			# Save resource
+			if response[0] == True:
+				resourcesList = self.get('resources') or []
+				if not url in resourcesList:
+					resourcesList.append(url)
+					self.set('resources', resourcesList)
 
-		# Save resource
-		if response[0] == True:
-			resourcesList = self.get('resources') or []
-			if not url in resourcesList:
-				resourcesList.append(url)
-				self.set('resources', resourcesList)
-
-		return response
+			return response
+		except:
+			self.handleTraceback()
 
 
 
 	def familyByID(self, ID):
+		try:
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				if family.uniqueID == ID:
-					return family
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					if family.uniqueID == ID:
+						return family
+		except:
+			self.handleTraceback()
 
 	def fontByID(self, ID):
+		try:
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if font.uniqueID == ID:
-						return font
-
-	def amountInstalledFonts(self):
-		return len(self.installedFonts())
-
-	def installedFonts(self):
-		l = []
-		# Get font
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if self.installedFontVersion(font.uniqueID):
-						if not font in l:
-							l.append(font)
-		return l
-
-	def expiringInstalledFonts(self):
-		l = []
-		# Get font
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					if self.installedFontVersion(font.uniqueID) and font.expiry:
-						if not font in l:
-							l.append(font)
-		return l
-
-	def amountOutdatedFonts(self):
-		return len(self.outdatedFonts())
-
-	def outdatedFonts(self):
-		l = []
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		# Get font
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					installedFontVersion = self.installedFontVersion(font.uniqueID)
-					if installedFontVersion and installedFontVersion != font.getVersions()[-1].number:
-						if not font in l:
-							l.append(font.uniqueID)
-		return l
-
-	def installedFontVersion(self, fontID = None, font = None):
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		folder = self.parent.folder()
-
-		if not font:
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						if font.uniqueID == fontID:
-							for version in font.getVersions():
-								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
-								if os.path.exists(path):
-									return version.number
-		else:
-			for version in font.getVersions():
-				path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
-				if os.path.exists(path):
-					return version.number
+						if font.uniqueID == ID:
+							return font
+		except:
+			self.handleTraceback()
+
+	def amountInstalledFonts(self):
+		try:
+			return len(self.installedFonts())
+		except:
+			self.handleTraceback()
+
+	def installedFonts(self):
+		try:
+			l = []
+			# Get font
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if self.installedFontVersion(font.uniqueID):
+							if not font in l:
+								l.append(font)
+			return l
+		except:
+			self.handleTraceback()
+
+	def expiringInstalledFonts(self):
+		try:
+			l = []
+			# Get font
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						if self.installedFontVersion(font.uniqueID) and font.expiry:
+							if not font in l:
+								l.append(font)
+			return l
+		except:
+			self.handleTraceback()
+
+	def amountOutdatedFonts(self):
+		try:
+			return len(self.outdatedFonts())
+		except:
+			self.handleTraceback()
+
+	def outdatedFonts(self):
+		try:
+			l = []
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			# Get font
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						installedFontVersion = self.installedFontVersion(font.uniqueID)
+						if installedFontVersion and installedFontVersion != font.getVersions()[-1].number:
+							if not font in l:
+								l.append(font.uniqueID)
+			return l
+		except:
+			self.handleTraceback()
+
+	def installedFontVersion(self, fontID = None, font = None):
+		try:
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			folder = self.parent.folder()
+
+			if not font:
+				for foundry in installabeFontsCommand.foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.uniqueID == fontID:
+								for version in font.getVersions():
+									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
+									if os.path.exists(path):
+										return version.number
+			else:
+				for version in font.getVersions():
+					path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
+					if os.path.exists(path):
+						return version.number
+		except:
+			self.handleTraceback()
 
 	# def fontIsOutdated(self, fontID):
 
@@ -2364,65 +2646,198 @@ class APISubscription(PubSubClient):
 
 
 	def removeFonts(self, fonts, dryRun = False, updateSubscription = True):
+		try:
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
+			uninstallTheseProtectedFontIDs = []
+			uninstallTheseUnprotectedFontIDs = []
 
-		uninstallTheseProtectedFontIDs = []
-		uninstallTheseUnprotectedFontIDs = []
+			folder = self.parent.folder()
 
-		folder = self.parent.folder()
+			fontIDs = []
 
-		fontIDs = []
+			for fontID in fonts:
 
-		for fontID in fonts:
+				fontIDs.append(fontID)
 
-			fontIDs.append(fontID)
+				path = None
+				for foundry in installabeFontsCommand.foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.uniqueID == fontID:
+								if self.installedFontVersion(font.uniqueID):
+									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
+									break
 
-			path = None
-			for foundry in installabeFontsCommand.foundries:
-				for family in foundry.families:
-					for font in family.fonts:
-						if font.uniqueID == fontID:
-							if self.installedFontVersion(font.uniqueID):
-								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
+				if not path and not dryRun:
+					return False, 'Font path couldn’t be determined (preflight)'
+
+				if font.protected:
+
+					self.parent.parent.delegate._fontWillUninstall(font)
+
+					# Test for permissions here
+					if not dryRun:
+						try:
+							if self.parent.parent.testScenario == 'simulatePermissionError':
+								raise PermissionError
+							else:
+								if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+								f = open(path + '.test', 'w')
+								f.write('test')
+								f.close()
+								os.remove(path + '.test')
+						except PermissionError:
+							self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to uninstall font.", font)
+							return False, "Insufficient permission to uninstall font."
+
+						assert os.path.exists(path + '.test') == False
+
+					uninstallTheseProtectedFontIDs.append(fontID)
+
+				else:
+					uninstallTheseUnprotectedFontIDs.append(fontID)
+
+
+
+
+			# Server access
+			# Protected fonts
+			if uninstallTheseProtectedFontIDs:
+				success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
+
+				if success:
+
+					# Security check
+					if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+						return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
+
+					# Process fonts
+					for incomingFont in payload.assets:
+
+						proceed = ['unknownInstallation'] # 
+
+						if incomingFont.response in proceed:
+							pass
+
+						elif incomingFont.response == 'error':
+							return False, incomingFont.errorMessage
+
+						# Predefined response messages
+						elif incomingFont.response != 'error' and incomingFont.response != 'success':
+							return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+
+						if incomingFont.response == 'success':
+
+							path = None
+							for foundry in installabeFontsCommand.foundries:
+								for family in foundry.families:
+									for font in family.fonts:
+										if font.uniqueID == incomingFont.uniqueID:
+											if self.installedFontVersion(font.uniqueID):
+												path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
+												break
+
+							if not path and not dryRun:
+								return False, 'Font path couldn’t be determined (deleting protected fonts)'
+
+							if not dryRun:
+								os.remove(path)
+								# print('Actually deleted font %s' % path)
+
+							self.parent.parent.delegate._fontHasUninstalled(True, None, font)
+
+
+				else:
+					self.parent.parent.delegate._fontHasUninstalled(False, payload, font)
+					return False, payload
+
+			# Unprotected fonts
+			if uninstallTheseUnprotectedFontIDs:
+
+				for fontID in uninstallTheseUnprotectedFontIDs:
+
+					path = None
+					for foundry in installabeFontsCommand.foundries:
+						for family in foundry.families:
+							for font in family.fonts:
+								if font.uniqueID == fontID:
+									if self.installedFontVersion(font.uniqueID):
+										path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
+										break
+
+					if not path and not dryRun:
+						return False, 'Font path couldn’t be determined (deleting unprotected fonts)'
+
+					if not dryRun:
+						os.remove(path)
+
+					self.parent.parent.delegate._fontHasUninstalled(True, None, font)
+
+			return True, None
+		except:
+			self.handleTraceback()
+
+
+
+
+	def installFonts(self, fonts):
+		try:
+
+			# Terms of Service
+			if self.get('acceptedTermsOfService') != True:
+				return False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			installTheseFontIDs = []
+			protectedFonts = False
+
+			folder = self.parent.folder()
+
+			fontIDs = []
+
+			for fontID, version in fonts:
+
+				fontIDs.append(fontID)
+
+				path = None
+				font = None
+				for foundry in installabeFontsCommand.foundries:
+					for family in foundry.families:
+						for font in family.fonts:
+							if font.uniqueID == fontID:
+								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
+								if font.protected:
+									protectedFonts = True
 								break
+				assert path
+				# print('path', path)
+				assert font
+				# print('font', font)
 
-			if not path and not dryRun:
-				return False, 'Font path couldn’t be determined (preflight)'
-
-			if font.protected:
-
-				self.parent.parent.delegate._fontWillUninstall(font)
+				self.parent.parent.delegate._fontWillInstall(font)
 
 				# Test for permissions here
-				if not dryRun:
-					try:
-						if self.parent.parent.testScenario == 'simulatePermissionError':
-							raise PermissionError
-						else:
-							if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-							f = open(path + '.test', 'w')
-							f.write('test')
-							f.close()
-							os.remove(path + '.test')
-					except PermissionError:
-						self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to uninstall font.", font)
-						return False, "Insufficient permission to uninstall font."
+				try:
+					if self.parent.parent.testScenario == 'simulatePermissionError':
+						raise PermissionError
+					else:
+						if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+						f = open(path + '.test', 'w')
+						f.write('test')
+						f.close()
+						os.remove(path + '.test')
+				except PermissionError:
+					self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to install font.", font)
+					return False, "Insufficient permission to install font."
 
-					assert os.path.exists(path + '.test') == False
+				assert os.path.exists(path + '.test') == False
 
-				uninstallTheseProtectedFontIDs.append(fontID)
+				installTheseFontIDs.append(fontID)
 
-			else:
-				uninstallTheseUnprotectedFontIDs.append(fontID)
-
-
-
-
-		# Server access
-		# Protected fonts
-		if uninstallTheseProtectedFontIDs:
-			success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
+			# Server access
+			success, payload = self.protocol.installFonts(fonts, updateSubscription = protectedFonts)		
 
 			if success:
 
@@ -2433,12 +2848,7 @@ class APISubscription(PubSubClient):
 				# Process fonts
 				for incomingFont in payload.assets:
 
-					proceed = ['unknownInstallation'] # 
-
-					if incomingFont.response in proceed:
-						pass
-
-					elif incomingFont.response == 'error':
+					if incomingFont.response == 'error':
 						return False, incomingFont.errorMessage
 
 					# Predefined response messages
@@ -2452,153 +2862,30 @@ class APISubscription(PubSubClient):
 							for family in foundry.families:
 								for font in family.fonts:
 									if font.uniqueID == incomingFont.uniqueID:
-										if self.installedFontVersion(font.uniqueID):
-											path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-											break
+										path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
+										break
+						assert path
 
-						if not path and not dryRun:
-							return False, 'Font path couldn’t be determined (deleting protected fonts)'
+						if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+						f = open(path, 'wb')
+						f.write(base64.b64decode(incomingFont.data))
+						f.close()
+						# print('Actually wrote font %s to disk' % path)
 
-						if not dryRun:
-							os.remove(path)
-							# print('Actually deleted font %s' % path)
+						self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
-						self.parent.parent.delegate._fontHasUninstalled(True, None, font)
+				# Ping
+				self.stillAlive()
+
+				return True, None
 
 
 			else:
-				self.parent.parent.delegate._fontHasUninstalled(False, payload, font)
+				self.parent.parent.delegate._fontHasInstalled(False, payload, font)
 				return False, payload
 
-		# Unprotected fonts
-		if uninstallTheseUnprotectedFontIDs:
-
-			for fontID in uninstallTheseUnprotectedFontIDs:
-
-				path = None
-				for foundry in installabeFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-							if font.uniqueID == fontID:
-								if self.installedFontVersion(font.uniqueID):
-									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-									break
-
-				if not path and not dryRun:
-					return False, 'Font path couldn’t be determined (deleting unprotected fonts)'
-
-				if not dryRun:
-					os.remove(path)
-
-				self.parent.parent.delegate._fontHasUninstalled(True, None, font)
-
-		return True, None
-
-
-
-
-	def installFonts(self, fonts):
-
-		# Terms of Service
-		if self.get('acceptedTermsOfService') != True:
-			return False, ['#(response.termsOfServiceNotAccepted)', '#(response.termsOfServiceNotAccepted.headline)']
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		installTheseFontIDs = []
-		protectedFonts = False
-
-		folder = self.parent.folder()
-
-		fontIDs = []
-
-		for fontID, version in fonts:
-
-			fontIDs.append(fontID)
-
-			path = None
-			font = None
-			for foundry in installabeFontsCommand.foundries:
-				for family in foundry.families:
-					for font in family.fonts:
-						if font.uniqueID == fontID:
-							path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-							if font.protected:
-								protectedFonts = True
-							break
-			assert path
-			# print('path', path)
-			assert font
-			# print('font', font)
-
-			self.parent.parent.delegate._fontWillInstall(font)
-
-			# Test for permissions here
-			try:
-				if self.parent.parent.testScenario == 'simulatePermissionError':
-					raise PermissionError
-				else:
-					if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-					f = open(path + '.test', 'w')
-					f.write('test')
-					f.close()
-					os.remove(path + '.test')
-			except PermissionError:
-				self.parent.parent.delegate._fontHasInstalled(False, "Insufficient permission to install font.", font)
-				return False, "Insufficient permission to install font."
-
-			assert os.path.exists(path + '.test') == False
-
-			installTheseFontIDs.append(fontID)
-
-		# Server access
-		success, payload = self.protocol.installFonts(fonts, updateSubscription = protectedFonts)		
-
-		if success:
-
-			# Security check
-			if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-				return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
-
-			# Process fonts
-			for incomingFont in payload.assets:
-
-				if incomingFont.response == 'error':
-					return False, incomingFont.errorMessage
-
-				# Predefined response messages
-				elif incomingFont.response != 'error' and incomingFont.response != 'success':
-					return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
-
-				if incomingFont.response == 'success':
-
-					path = None
-					for foundry in installabeFontsCommand.foundries:
-						for family in foundry.families:
-							for font in family.fonts:
-								if font.uniqueID == incomingFont.uniqueID:
-									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-									break
-					assert path
-
-					if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-					f = open(path, 'wb')
-					f.write(base64.b64decode(incomingFont.data))
-					f.close()
-					# print('Actually wrote font %s to disk' % path)
-
-					self.parent.parent.delegate._fontHasInstalled(True, None, font)
-
-			# Ping
-			self.stillAlive()
-
-			return True, None
-
-
-		else:
-			self.parent.parent.delegate._fontHasInstalled(False, payload, font)
-			return False, payload
-
+		except:
+			self.handleTraceback()
 
 
 		# elif self.parent.get('type') == 'GitHub':
@@ -2648,132 +2935,150 @@ class APISubscription(PubSubClient):
 
 
 	def update(self):
+		try:
+			self.parent._updatingSubscriptions.append(self.url)
 
-		self.parent._updatingSubscriptions.append(self.url)
 
+			if self.parent.parent.online(self.protocol.url.restDomain.split('/')[0]):
 
-		if self.parent.parent.online(self.protocol.url.restDomain.split('/')[0]):
+				self.stillAlive()
 
-			self.stillAlive()
+				success, message, changes = self.protocol.update()
 
-			success, message, changes = self.protocol.update()
+				# elif self.parent.get('type') == 'GitHub':
 
-			# elif self.parent.get('type') == 'GitHub':
+				# 	owner = self.url.split('/')[3]
+				# 	repo = self.url.split('/')[4]
+				# 	path = '/'.join(self.url.split('/')[7:])
 
-			# 	owner = self.url.split('/')[3]
-			# 	repo = self.url.split('/')[4]
-			# 	path = '/'.join(self.url.split('/')[7:])
+				# 	commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s/fonts' % (owner, repo, path)
 
-			# 	commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s/fonts' % (owner, repo, path)
+				# 	# Read response
+				# 	commits, responses = self.parent.readGitHubResponse(commitsURL)
+				# 	self.set('commits', commits)
 
-			# 	# Read response
-			# 	commits, responses = self.parent.readGitHubResponse(commitsURL)
-			# 	self.set('commits', commits)
+				if not success:
+					return success, message, changes
 
-			if not success:
-				return success, message, changes
+				if self.url in self.parent._updatingSubscriptions:
+					self.parent._updatingSubscriptions.remove(self.url)
+				self._updatingProblem = None
+				self.parent.parent._subscriptionsUpdated.append(self.url)
 
-			if self.url in self.parent._updatingSubscriptions:
+				if changes:
+					self.save()
+
+				# Success
+				self.delegate._subscriptionWasUpdated(self)
+
+				return True, None, changes
+
+			else:
 				self.parent._updatingSubscriptions.remove(self.url)
-			self._updatingProblem = None
-			self.parent.parent._subscriptionsUpdated.append(self.url)
+				self.parent.parent._subscriptionsUpdated.append(self.url)
+				self._updatingProblem = ['#(response.serverNotReachable)', '#(response.serverNotReachable.headline)']
+				return False, self._updatingProblem, False
 
-			if changes:
-				self.save()
-
-			# Success
-			self.delegate._subscriptionWasUpdated(self)
-
-			return True, None, changes
-
-		else:
-			self.parent._updatingSubscriptions.remove(self.url)
-			self.parent.parent._subscriptionsUpdated.append(self.url)
-			self._updatingProblem = ['#(response.serverNotReachable)', '#(response.serverNotReachable.headline)']
-			return False, self._updatingProblem, False
+		except:
+			self.handleTraceback()
 
 	def updatingProblem(self):
-		return self._updatingProblem
+		try:
+			return self._updatingProblem
+		except:
+			self.handleTraceback()
 
 	def get(self, key):
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
-		if key in preferences:
+		try:
+			preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
+			if key in preferences:
 
-			o = preferences[key]
+				o = preferences[key]
 
-			if 'Array' in o.__class__.__name__:
-				o = list(o)
+				if 'Array' in o.__class__.__name__:
+					o = list(o)
 
-			elif 'Dictionary' in o.__class__.__name__:
-				o = dict(o)
+				elif 'Dictionary' in o.__class__.__name__:
+					o = dict(o)
 
-			return o
+				return o
+		except:
+			self.handleTraceback()
 
 	def set(self, key, value):
+		try:
 
-		preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
-		preferences[key] = value
-		self.parent.parent.preferences.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
+			preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
+			preferences[key] = value
+			self.parent.parent.preferences.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
+		except:
+			self.handleTraceback()
 
 	def save(self):
-		subscriptions = self.parent.get('subscriptions') or []
-		if not self.protocol.unsecretURL() in subscriptions:
-			subscriptions.append(self.protocol.unsecretURL())
-		self.parent.set('subscriptions', subscriptions)
+		try:
+			subscriptions = self.parent.get('subscriptions') or []
+			if not self.protocol.unsecretURL() in subscriptions:
+				subscriptions.append(self.protocol.unsecretURL())
+			self.parent.set('subscriptions', subscriptions)
 
-		self.protocol.save()
+			self.protocol.save()
+		except:
+			self.handleTraceback()
 
 
 	def delete(self, calledFromParent = False, updateSubscriptionsOnServer = True):
-
-		self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
-
-		success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
-		# Delete all fonts
-		for foundry in installabeFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					self.removeFonts([font.uniqueID])
-
-		# Key
 		try:
-			self.protocol.deleteSecretKey()
+			self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
+
+			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
+			# Delete all fonts
+			for foundry in installabeFontsCommand.foundries:
+				for family in foundry.families:
+					for font in family.fonts:
+						self.removeFonts([font.uniqueID])
+
+			# Key
+			try:
+				self.protocol.deleteSecretKey()
+			except:
+				pass
+
+
+			self.pubSubDelete()
+
+			# Resources
+			resources = self.parent.parent.preferences.get('resources') or {}
+			for url in self.get('resources') or []:
+				if url in resources:
+					resources.pop(url)
+			self.parent.parent.preferences.set('resources', resources)
+
+
+			# New
+			self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.unsecretURL())
+
+			# Subscriptions
+			subscriptions = self.parent.get('subscriptions')
+			subscriptions.remove(self.protocol.unsecretURL())
+			self.parent.set('subscriptions', subscriptions)
+			self.parent._subscriptions = {}
+
+
+			# # currentSubscription
+			# if self.parent.get('currentSubscription') == self.protocol.unsecretURL():
+			# 	if len(subscriptions) >= 1:
+			# 		self.parent.set('currentSubscription', subscriptions[0])
+
+			self.parent._subscriptions = {}
+
+			if len(subscriptions) == 0 and calledFromParent == False:
+				self.parent.delete()
+
+			self.parent.parent.delegate._subscriptionWasDeleted(self)
+
+			if updateSubscriptionsOnServer:
+				self.parent.parent.uploadSubscriptions()
+
 		except:
-			pass
-
-
-		self.pubSubDelete()
-
-		# Resources
-		resources = self.parent.parent.preferences.get('resources') or {}
-		for url in self.get('resources') or []:
-			if url in resources:
-				resources.pop(url)
-		self.parent.parent.preferences.set('resources', resources)
-
-
-		# New
-		self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.unsecretURL())
-
-		# Subscriptions
-		subscriptions = self.parent.get('subscriptions')
-		subscriptions.remove(self.protocol.unsecretURL())
-		self.parent.set('subscriptions', subscriptions)
-		self.parent._subscriptions = {}
-
-
-		# # currentSubscription
-		# if self.parent.get('currentSubscription') == self.protocol.unsecretURL():
-		# 	if len(subscriptions) >= 1:
-		# 		self.parent.set('currentSubscription', subscriptions[0])
-
-		self.parent._subscriptions = {}
-
-		if len(subscriptions) == 0 and calledFromParent == False:
-			self.parent.delete()
-
-		self.parent.parent.delegate._subscriptionWasDeleted(self)
-
-		if updateSubscriptionsOnServer:
-			self.parent.parent.uploadSubscriptions()
+			self.handleTraceback()
