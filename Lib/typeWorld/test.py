@@ -1295,11 +1295,11 @@ class TestStringMethods(unittest.TestCase):
 
 		# Locale
 		self.assertTrue('en' in user0.client.locale())
-		user0.client.preferences.set('localizationType', 'systemLocale')
+		user0.client.set('localizationType', 'systemLocale')
 		self.assertTrue('en' in user0.client.locale())
-		user0.client.preferences.set('localizationType', 'customLocale')
+		user0.client.set('localizationType', 'customLocale')
 		self.assertTrue('en' in user0.client.locale())
-		user0.client.preferences.set('customLocaleChoice', 'de')
+		user0.client.set('customLocaleChoice', 'de')
 		self.assertEqual(user0.client.locale(), ['de', 'en'])
 
 		from typeWorld.client.helpers import addAttributeToURL

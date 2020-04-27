@@ -534,7 +534,7 @@ class APIClient(PubSubClient):
 
 		try:
 			self._preferences = preferences or Preferences()
-			# if self.preferences:
+			# if self:
 			# 	self.clearPendingOnlineCommands()
 			self._publishers = {}
 			self._subscriptionsUpdated = []
@@ -575,14 +575,14 @@ class APIClient(PubSubClient):
 
 			if message:
 				message.ack()
-				self.preferences.set('lastPubSubMessage', int(time.time()))
+				self.set('lastPubSubMessage', int(time.time()))
 
 		except:
 			self.handleTraceback()
 
 
 	# def clearPendingOnlineCommands(self):
-	# 	commands = self.preferences.get('pendingOnlineCommands') or {}
+	# 	commands = self.get('pendingOnlineCommands') or {}
 	# 	commands['acceptInvitation'] = []
 	# 	commands['declineInvitation'] = []
 	# 	commands['downloadSubscriptions'] = []
@@ -590,7 +590,7 @@ class APIClient(PubSubClient):
 	# 	commands['syncSubscriptions'] = []
 	# 	commands['unlinkUser'] = []
 	# 	commands['uploadSubscriptions'] = []
-	# 	self.preferences.set('pendingOnlineCommands', commands)
+	# 	self.set('pendingOnlineCommands', commands)
 
 	def get(self, key):
 		try:
@@ -635,8 +635,8 @@ class APIClient(PubSubClient):
 	def pendingInvitations(self):
 		try:
 			_list = []
-			if self.preferences.get('pendingInvitations'):
-				for invitation in self.preferences.get('pendingInvitations'):
+			if self.get('pendingInvitations'):
+				for invitation in self.get('pendingInvitations'):
 					invitation = APIPendingInvitation(invitation)
 					invitation.parent = self
 					_list.append(invitation)
@@ -647,8 +647,8 @@ class APIClient(PubSubClient):
 	def acceptedInvitations(self):
 		try:
 			_list = []
-			if self.preferences.get('acceptedInvitations'):
-				for invitation in self.preferences.get('acceptedInvitations'):
+			if self.get('acceptedInvitations'):
+				for invitation in self.get('acceptedInvitations'):
 					invitation = APIAcceptedInvitation(invitation)
 					invitation.parent = self
 					_list.append(invitation)
@@ -659,8 +659,8 @@ class APIClient(PubSubClient):
 	def sentInvitations(self):
 		try:
 			_list = []
-			if self.preferences.get('sentInvitations'):
-				for invitation in self.preferences.get('sentInvitations'):
+			if self.get('sentInvitations'):
+				for invitation in self.get('sentInvitations'):
 					invitation = APISentInvitation(invitation)
 					invitation.parent = self
 					_list.append(invitation)
@@ -759,25 +759,25 @@ class APIClient(PubSubClient):
 		try:
 
 			# Set up data structure
-			commands = self.preferences.get('pendingOnlineCommands')
-			if not self.preferences.get('pendingOnlineCommands'):
+			commands = self.get('pendingOnlineCommands')
+			if not self.get('pendingOnlineCommands'):
 				commands = {}
 			# Init empty
 			if not commandName in commands: 
 				commands[commandName] = []
 			if commandName in commands and len(commands[commandName]) == 0: # set anyway if empty because NSObject immutability
 				commands[commandName] = []
-			self.preferences.set('pendingOnlineCommands', commands)
+			self.set('pendingOnlineCommands', commands)
 
 			# Add commands to list
-			commands = self.preferences.get('pendingOnlineCommands')
+			commands = self.get('pendingOnlineCommands')
 			if type(commandsList) in (str, int):
 				commandsList = [commandsList]
 			for commandListItem in commandsList:
 				if not commandListItem in commands[commandName]:
 					commands[commandName] = list(commands[commandName])
 					commands[commandName].append(commandListItem)
-			self.preferences.set('pendingOnlineCommands', commands)
+			self.set('pendingOnlineCommands', commands)
 
 		except:
 			self.handleTraceback()
@@ -790,14 +790,14 @@ class APIClient(PubSubClient):
 
 			if self.online():
 
-				commands = self.preferences.get('pendingOnlineCommands') or {}
+				commands = self.get('pendingOnlineCommands') or {}
 
 				if 'unlinkUser' in commands and commands['unlinkUser']:
 					success, message = self.performUnlinkUser()
 
 					if success:
 						commands['unlinkUser'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('unlinkUser finished successfully')
 
 					else:
@@ -810,7 +810,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['linkUser'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('linkUser finished successfully')
 
 					else:
@@ -822,7 +822,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['syncSubscriptions'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('syncSubscriptions finished successfully')
 
 					else:
@@ -835,7 +835,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['uploadSubscriptions'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('uploadSubscriptions finished successfully')
 
 					else:
@@ -847,7 +847,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['acceptInvitation'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('acceptInvitation finished successfully')
 
 					else:
@@ -859,7 +859,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['declineInvitation'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 						self.log('declineInvitation finished successfully')
 
 					else:
@@ -871,7 +871,7 @@ class APIClient(PubSubClient):
 
 					if success:
 						commands['downloadSubscriptions'] = []
-						self.preferences.set('pendingOnlineCommands', commands)
+						self.set('pendingOnlineCommands', commands)
 	#					self.log('downloadSubscriptions finished successfully')
 
 					else:
@@ -913,7 +913,7 @@ class APIClient(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				self.log('Uploading subscriptions: %s' % oldURLs)
 
@@ -959,7 +959,7 @@ class APIClient(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
 					'command': 'downloadUserSubscriptions',
@@ -1013,9 +1013,9 @@ class APIClient(PubSubClient):
 				return obj
 
 			# Invitations
-			self.preferences.set('acceptedInvitations', [replace_item(x, None, '') for x in response['acceptedInvitations']])
-			self.preferences.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
-			self.preferences.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
+			self.set('acceptedInvitations', [replace_item(x, None, '') for x in response['acceptedInvitations']])
+			self.set('pendingInvitations', [replace_item(x, None, '') for x in response['pendingInvitations']])
+			self.set('sentInvitations', [replace_item(x, None, '') for x in response['sentInvitations']])
 
 			# import threading
 			# preloadThread = threading.Thread(target=self.preloadLogos)
@@ -1053,7 +1053,7 @@ class APIClient(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
 					'command': 'acceptInvitations',
@@ -1097,7 +1097,7 @@ class APIClient(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
 					'command': 'declineInvitations',
@@ -1141,7 +1141,7 @@ class APIClient(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
 					'command': 'syncUserSubscriptions',
@@ -1178,7 +1178,7 @@ class APIClient(PubSubClient):
 
 	def user(self):
 		try:
-			return self.preferences.get('typeWorldUserAccount') or ''
+			return self.get('typeWorldUserAccount') or ''
 		except:
 			self.handleTraceback()
 
@@ -1353,7 +1353,7 @@ class APIClient(PubSubClient):
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Success
-			self.preferences.set('typeWorldUserAccount', userID)
+			self.set('typeWorldUserAccount', userID)
 			assert userID == self.user()
 
 			# Pub/Sub
@@ -1536,10 +1536,10 @@ class APIClient(PubSubClient):
 			if response['response'] != 'success' and not response['response'] in continueFor:
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			self.preferences.set('typeWorldUserAccount', '')
-			self.preferences.remove('acceptedInvitations')
-			self.preferences.remove('pendingInvitations')
-			self.preferences.remove('sentInvitations')
+			self.set('typeWorldUserAccount', '')
+			self.remove('acceptedInvitations')
+			self.remove('pendingInvitations')
+			self.remove('sentInvitations')
 
 			# Success
 			self.pubSubTopicID = 'user-%s' % self.user()
@@ -1580,10 +1580,10 @@ class APIClient(PubSubClient):
 			Reads user locale from OS
 			'''
 
-			if self.preferences.get('localizationType') == 'systemLocale':
+			if self.get('localizationType') == 'systemLocale':
 				_locale = [self.systemLocale()]
-			elif self.preferences.get('localizationType') == 'customLocale':
-				_locale = [self.preferences.get('customLocaleChoice') or 'en']
+			elif self.get('localizationType') == 'customLocale':
+				_locale = [self.get('customLocaleChoice') or 'en']
 			else:
 				_locale = [self.systemLocale()]
 
@@ -1670,7 +1670,7 @@ Version: {typeWorld.api.VERSION}
 		supplementary = {
 			'os': OSName(),
 			'file': file or __file__,
-			'preferences': self.preferences.dictionary()
+			'preferences': self._preferences.dictionary()
 		}
 
 		parameters = {
@@ -1724,7 +1724,7 @@ Version: {typeWorld.api.VERSION}
 	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 		try:
-			resources = self.preferences.get('resources') or {}
+			resources = self.get('resources') or {}
 
 			if url not in resources or update:
 
@@ -1749,7 +1749,7 @@ Version: {typeWorld.api.VERSION}
 					content = content.decode()
 
 				resources[url] = response.headers['content-type'] + ',' + content
-				self.preferences.set('resources', resources)
+				self.set('resources', resources)
 
 				return True, content, response.headers['content-type']
 
@@ -1825,12 +1825,12 @@ Version: {typeWorld.api.VERSION}
 
 	def anonymousAppID(self):
 		try:
-			anonymousAppID = self.preferences.get('anonymousAppID')
+			anonymousAppID = self.get('anonymousAppID')
 
 			if anonymousAppID == None or anonymousAppID == {}:
 				import uuid
 				anonymousAppID = str(uuid.uuid1())
-				self.preferences.set('anonymousAppID', anonymousAppID)
+				self.set('anonymousAppID', anonymousAppID)
 
 
 			return anonymousAppID
@@ -1977,8 +1977,8 @@ Version: {typeWorld.api.VERSION}
 
 
 	# def currentPublisher(self):
-	# 	if self.preferences.get('currentPublisher') and self.preferences.get('currentPublisher') != 'None' and self.preferences.get('currentPublisher') != 'pendingInvitations':
-	# 		publisher = self.publisher(self.preferences.get('currentPublisher'))
+	# 	if self.get('currentPublisher') and self.get('currentPublisher') != 'None' and self.get('currentPublisher') != 'pendingInvitations':
+	# 		publisher = self.publisher(self.get('currentPublisher'))
 	# 		return publisher
 
 	def publisher(self, canonicalURL):
@@ -1987,7 +1987,7 @@ Version: {typeWorld.api.VERSION}
 				e = APIPublisher(self, canonicalURL)
 				self._publishers[canonicalURL] = e
 
-			if self.preferences.get('publishers') and canonicalURL in self.preferences.get('publishers'):
+			if self.get('publishers') and canonicalURL in self.get('publishers'):
 				self._publishers[canonicalURL].exists = True
 
 			return self._publishers[canonicalURL]
@@ -1996,8 +1996,8 @@ Version: {typeWorld.api.VERSION}
 
 	def publishers(self):
 		try:
-			if self.preferences.get('publishers'):
-				return [self.publisher(canonicalURL) for canonicalURL in self.preferences.get('publishers')]
+			if self.get('publishers'):
+				return [self.publisher(canonicalURL) for canonicalURL in self.get('publishers')]
 			else:
 				return []
 		except:
@@ -2165,7 +2165,7 @@ class APIPublisher(object):
 
 	def get(self, key):
 		try:
-			preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
+			preferences = dict(self.parent.get(self.canonicalURL) or self.parent.get('publisher(%s)' % self.canonicalURL) or {})
 			if key in preferences:
 
 				o = preferences[key]
@@ -2179,9 +2179,9 @@ class APIPublisher(object):
 
 	def set(self, key, value):
 		try:
-			preferences = dict(self.parent.preferences.get(self.canonicalURL) or self.parent.preferences.get('publisher(%s)' % self.canonicalURL) or {})
+			preferences = dict(self.parent.get(self.canonicalURL) or self.parent.get('publisher(%s)' % self.canonicalURL) or {})
 			preferences[key] = value
-			self.parent.preferences.set('publisher(%s)' % self.canonicalURL, preferences)
+			self.parent.set('publisher(%s)' % self.canonicalURL, preferences)
 		except:
 			self.parent.handleTraceback()
 
@@ -2255,10 +2255,10 @@ class APIPublisher(object):
 
 	def save(self):
 		try:
-			publishers = self.parent.preferences.get('publishers') or []
+			publishers = self.parent.get('publishers') or []
 			if not self.canonicalURL in publishers:
 				publishers.append(self.canonicalURL)
-			self.parent.preferences.set('publishers', publishers)
+			self.parent.set('publishers', publishers)
 		except:
 			self.parent.handleTraceback()
 
@@ -2286,17 +2286,17 @@ class APIPublisher(object):
 				subscription.delete(calledFromParent = True)
 
 			# Resources
-			resources = self.parent.preferences.get('resources') or {}
+			resources = self.parent.get('resources') or {}
 			for url in self.get('resources') or []:
 				if url in resources:
 					del resources[url]
-			self.parent.preferences.set('resources', resources)
+			self.parent.set('resources', resources)
 
-			self.parent.preferences.remove('publisher(%s)' % self.canonicalURL)
-			publishers = self.parent.preferences.get('publishers')
+			self.parent.remove('publisher(%s)' % self.canonicalURL)
+			publishers = self.parent.get('publishers')
 			publishers.remove(self.canonicalURL)
-			self.parent.preferences.set('publishers', publishers)
-			# self.parent.preferences.set('currentPublisher', '')
+			self.parent.set('publishers', publishers)
+			# self.parent.set('currentPublisher', '')
 			
 			self.parent.delegate._publisherWasDeleted(self)
 
@@ -2364,7 +2364,7 @@ class APISubscription(PubSubClient):
 
 			if userID:
 
-				self.preferences.set('lastServerSync', int(time.time()))
+				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
 					'command': 'updateSubscription',
@@ -3025,7 +3025,7 @@ class APISubscription(PubSubClient):
 
 	def get(self, key):
 		try:
-			preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
+			preferences = dict(self.parent.parent.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
 			if key in preferences:
 
 				o = preferences[key]
@@ -3043,9 +3043,9 @@ class APISubscription(PubSubClient):
 	def set(self, key, value):
 		try:
 
-			preferences = dict(self.parent.parent.preferences.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
+			preferences = dict(self.parent.parent.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
 			preferences[key] = value
-			self.parent.parent.preferences.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
+			self.parent.parent.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
 		except:
 			self.parent.parent.handleTraceback()
 
@@ -3083,15 +3083,15 @@ class APISubscription(PubSubClient):
 			self.pubSubDelete()
 
 			# Resources
-			resources = self.parent.parent.preferences.get('resources') or {}
+			resources = self.parent.parent.get('resources') or {}
 			for url in self.get('resources') or []:
 				if url in resources:
 					resources.pop(url)
-			self.parent.parent.preferences.set('resources', resources)
+			self.parent.parent.set('resources', resources)
 
 
 			# New
-			self.parent.parent.preferences.remove('subscription(%s)' % self.protocol.unsecretURL())
+			self.parent.parent.remove('subscription(%s)' % self.protocol.unsecretURL())
 
 			# Subscriptions
 			subscriptions = self.parent.get('subscriptions')
