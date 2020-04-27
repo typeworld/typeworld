@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl, certifi
+import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl, certifi, logging
 from time import gmtime, strftime
 
 import typeWorld.api
@@ -1436,9 +1436,13 @@ class APIClient(PubSubClient):
 
 
 	def log(self, *argv):
+		string = 'Type.World: %s' % ' '.join(map(str, argv))
 		if MAC:
 			from AppKit import NSLog
-			NSLog('Type.World Client: %s' % ' '.join(map(str, argv)))
+			NSLog(string)
+		else:
+			logging.debug(string)
+
 
 	def prepareUpdate(self):
 
