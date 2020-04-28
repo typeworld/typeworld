@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, subprocess, threading, ssl, certifi, logging
+import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect
 from time import gmtime, strftime
 
 import typeWorld.api
 from typeWorld.api import VERSION
 
-from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
+from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage, nslog
 
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
@@ -566,8 +566,11 @@ class APIClient(PubSubClient):
 				self.pubSubExecuteConditionMethod = self.user
 				self.pubSubSetup()
 
+			erg
+
 		except:
-			self.handleTraceback()
+			self.handleTraceback(submit = False, sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+
 
 	def pubSubCallback(self, message):
 		try:
@@ -1650,7 +1653,7 @@ class APIClient(PubSubClient):
 		except:
 			self.handleTraceback()
 
-	def handleTraceback(self, file = None):
+	def handleTraceback(self, file = None, submit = True, sourceMethod = None):
 
 		payload = f'''\
 Version: {typeWorld.api.VERSION}
@@ -1661,18 +1664,22 @@ Version: {typeWorld.api.VERSION}
 
 		def removePathPrefix(snippet, file):
 			clientPathPrefix = file[:file.find(snippet)]
+			print(snippet, file, clientPathPrefix)
 			return payload.replace(clientPathPrefix, '')
 
 		if file:
 			payload = removePathPrefix('app.py', file)
 		else:
-			payload = removePathPrefix('client/typeWorld/', __file__)
+			payload = removePathPrefix('typeWorld/client/', __file__)
+
 
 		supplementary = {
 			'os': OSName(),
 			'file': file or __file__,
 			'preferences': self._preferences.dictionary()
 		}
+		if sourceMethod:
+			supplementary['sourceMethodSignature'] = str(sourceMethod) + str(inspect.signature(sourceMethod))
 
 		parameters = {
 			'command': 'handleTraceback',
@@ -1680,23 +1687,29 @@ Version: {typeWorld.api.VERSION}
 			'supplementary': json.dumps(supplementary),
 		}
 
-		def handleTracebackWorker(self):
+		# Submit to central server
+		if submit:
+			def handleTracebackWorker(self):
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				self.log('handleTraceback() error on server, step 1: %s' % response)
+				success, response = self.performRequest(self.mothership, parameters)
+				if not success:
+					self.log('handleTraceback() error on server, step 1: %s' % response)
 
-			response = json.loads(response.read().decode())
+				response = json.loads(response.read().decode())
 
-			if response['response'] != 'success':
-				self.log('handleTraceback() error on server, step 2: %s' % response)
-
-
-		handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self, ))
-		handleTracebackThread.start()
+				if response['response'] != 'success':
+					self.log('handleTraceback() error on server, step 2: %s' % response)
 
 
+			handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self, ))
+			handleTracebackThread.start()
 
+
+		# Log
+		if sourceMethod:
+			self.log(payload + '\nMethod signature:\n' + supplementary['sourceMethodSignature'])
+		else:
+			self.log(payload)
 
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
