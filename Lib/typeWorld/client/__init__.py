@@ -546,6 +546,13 @@ class APIClient(PubSubClient):
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 
+	def tracebackTest(self):
+		try:
+			assert abc
+
+		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+
+
 	def pubSubCallback(self, message):
 		try:
 			self.delegate._userAccountUpdateNotificationHasBeenReceived()

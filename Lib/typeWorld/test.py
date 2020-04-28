@@ -2199,12 +2199,19 @@ class TestStringMethods(unittest.TestCase):
 
 		print('STATUS: -1')
 
+
+		# Traceback Test
+		user1.client.tracebackTest()
+
+
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].delete()
 		user2.client.downloadSubscriptions()
 		user3.client.downloadSubscriptions()
 		self.assertEqual(len(user2.client.pendingInvitations()), 0)
 		self.assertEqual(len(user3.client.pendingInvitations()), 0)
+
+
 
 
 		print('test_normalSubscription() finished...')
