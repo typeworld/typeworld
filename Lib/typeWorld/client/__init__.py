@@ -1682,6 +1682,16 @@ Version: {typeWorld.api.VERSION}
 		if sourceMethod:
 			supplementary['sourceMethodSignature'] = str(sourceMethod) + str(inspect.signature(sourceMethod))
 
+		supplementary['stack'] = []
+		for s in inspect.stack():
+			supplementary['stack'].append({
+				'frame': str(s.frame),
+				'filename': str(s.filename),
+				'lineno': str(s.lineno),
+				'function': str(s.function),
+				'code_context': str(s.code_context),
+				})
+
 		parameters = {
 			'command': 'handleTraceback',
 			'payload': payload,
@@ -1711,6 +1721,7 @@ Version: {typeWorld.api.VERSION}
 			self.log(payload + '\nMethod signature:\n' + supplementary['sourceMethodSignature'])
 		else:
 			self.log(payload)
+
 
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
