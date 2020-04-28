@@ -1701,8 +1701,7 @@ Version: {typeWorld.api.VERSION}
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
 		if MAC:
-			from AppKit import NSLog
-			NSLog(string)
+			nslog(string)
 		else:
 			logging.debug(string)
 
