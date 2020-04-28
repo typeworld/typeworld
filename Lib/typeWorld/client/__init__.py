@@ -1654,7 +1654,7 @@ class APIClient(PubSubClient):
 		except:
 			self.handleTraceback()
 
-	def handleTraceback(self, file = None, submit = True, sourceMethod = None):
+	def handleTraceback(self, file = None, sourceMethod = None):
 
 		payload = f'''\
 Version: {typeWorld.api.VERSION}
@@ -1663,34 +1663,59 @@ Version: {typeWorld.api.VERSION}
 
 		# Remove path parts to make tracebacks identical (so they don't re-surface)
 
-		def removePathPrefix(snippet, file):
-			clientPathPrefix = file[:file.find(snippet)]
-			print(snippet, file, clientPathPrefix)
-			return payload.replace(clientPathPrefix, '')
+		def removePathPrefix(_payload, _snippet, _file):
+			m = re.search(r'File "(.+?)"', _payload, re.MULTILINE)
+			if m:
+				_file = m.group(1)
+				index = _file.find(_snippet)
+				if index != -1:
+					clientPathPrefix = _file[:index]
+					return _payload.replace(clientPathPrefix, '')
+				else:
+					return _payload
+			else:
+				return _payload
 
-		if file:
-			payload = removePathPrefix('app.py', file)
-		else:
-			payload = removePathPrefix('typeWorld/client/', __file__)
+		# Normalize file paths
+		if WIN:
+			payload = removePathPrefix(payload, 'TypeWorld.exe', __file__).replace('\\', '/').replace('TypeWorld.exe', 'app.py')
+		payload = removePathPrefix(payload, 'typeWorld/client/', __file__).replace('\\', '/')
+		payload = removePathPrefix(payload, 'app.py', file).replace('\\', '/')
 
-
+		# Create supplementary information
 		supplementary = {
 			'os': OSName(),
 			'file': file or __file__,
 			'preferences': self._preferences.dictionary()
 		}
+
 		if sourceMethod:
-			supplementary['sourceMethodSignature'] = str(sourceMethod) + str(inspect.signature(sourceMethod))
+			if getattr(sourceMethod, '__self__') and sourceMethod.__self__:
+				supplementary['sourceMethodSignature'] = str(sourceMethod.__self__.__class__.__name__) + '.' + str(sourceMethod.__name__) + str(inspect.signature(sourceMethod))
+			else:
+				supplementary['sourceMethodSignature'] = str(sourceMethod.__name__) + str(inspect.signature(sourceMethod))
 
 		supplementary['stack'] = []
+		supplementary['trace'] = []
 		for s in inspect.stack():
 			supplementary['stack'].append({
-				'frame': str(s.frame),
 				'filename': str(s.filename),
 				'lineno': str(s.lineno),
 				'function': str(s.function),
-				'code_context': str(s.code_context),
+				'code_context': str(s.code_context[0].replace('\t', ' ').rstrip()) if s.code_context else None,
 				})
+		for s in inspect.trace():
+			supplementary['trace'].append({
+				'filename': str(s.filename),
+				'lineno': str(s.lineno),
+				'function': str(s.function),
+				'code_context': str(s.code_context[0].replace('\t', ' ').rstrip()) if s.code_context else None,
+				})
+
+		# replace faulty line of code (some Python versions include the faulty code line in the traceback output, some not)
+		if supplementary['trace'] and supplementary['trace'][0]['code_context']:
+			payload = payload.replace(supplementary['trace'][0]['code_context'], '')
+			payload = payload.replace('\n \n', '\n')
 
 		parameters = {
 			'command': 'handleTraceback',
@@ -1699,7 +1724,7 @@ Version: {typeWorld.api.VERSION}
 		}
 
 		# Submit to central server
-		if submit:
+		if True:
 			def handleTracebackWorker(self):
 
 				success, response = self.performRequest(self.mothership, parameters)
