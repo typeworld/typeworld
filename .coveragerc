@@ -1,7 +1,3 @@
 [report]
 exclude_lines =
-    except: self.parent.parent.handleTraceback(.*)
-    except: self.parent.handleTraceback(.*)
-    except: self.handleTraceback(.*)
-    except: client.handleTraceback(.*)
-    except: self.client.handleTraceback(.*)
+    except: (.*)handleTraceback(.*)
