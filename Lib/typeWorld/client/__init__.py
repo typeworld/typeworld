@@ -328,90 +328,70 @@ class TypeWorldClientDelegate(object):
 		self.client = None
 
 	def _fontWillInstall(self, font):
-		try:
-			self.fontWillInstall(font)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.fontWillInstall(font)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillInstall(self, font):
 		assert type(font) == typeWorld.api.Font
 
 
 	def _fontHasInstalled(self, success, message, font):
-		try:
-			self.fontHasInstalled(success, message, font)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.fontHasInstalled(success, message, font)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasInstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
 
 	def _fontWillUninstall(self, font):
-		try:
-			self.fontWillUninstall(font)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.fontWillUninstall(font)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillUninstall(self, font):
 		assert type(font) == typeWorld.api.Font
 
 
 	def _fontHasUninstalled(self, success, message, font):
-		try:
-			self.fontHasUninstalled(success, message, font)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.fontHasUninstalled(success, message, font)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasUninstalled(self, success, message, font):
 		assert type(font) == typeWorld.api.Font
 
 
 	def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
-		try:
-			self.subscriptionUpdateNotificationHasBeenReceived(subscription)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.subscriptionUpdateNotificationHasBeenReceived(subscription)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
 		assert type(subscription) == typeWorld.client.APISubscription
 		subscription.update()
 
 
 	def _userAccountUpdateNotificationHasBeenReceived(self):
-		try:
-			self.userAccountUpdateNotificationHasBeenReceived()
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.userAccountUpdateNotificationHasBeenReceived()
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def userAccountUpdateNotificationHasBeenReceived(self):
 		pass
 
 
 	def _subscriptionWasDeleted(self, subscription):
-		try:
-			self.subscriptionWasDeleted(subscription)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.subscriptionWasDeleted(subscription)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def subscriptionWasDeleted(self, subscription):
 		pass
 
 
 	def _publisherWasDeleted(self, publisher):
-		try:
-			self.publisherWasDeleted(publisher)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.publisherWasDeleted(publisher)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def publisherWasDeleted(self, publisher):
 		pass
 
 	def _subscriptionWasAdded(self, subscription):
-		try:
-			self.subscriptionWasAdded(subscription)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.subscriptionWasAdded(subscription)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def subscriptionWasAdded(self, subscription):
 		pass
 
 	def _subscriptionWasUpdated(self, subscription):
-		try:
-			self.subscriptionWasUpdated(subscription)
-		except:
-			self.client.log(traceback.format_exc())
+		try: self.subscriptionWasUpdated(subscription)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def subscriptionWasUpdated(self, subscription):
 		pass
 
