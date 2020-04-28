@@ -6,7 +6,7 @@ from time import gmtime, strftime
 import typeWorld.api
 from typeWorld.api import VERSION
 
-from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage, nslog
+from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
 
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
@@ -23,6 +23,7 @@ else:
 
 if MAC:
 	from AppKit import NSUserDefaults
+	from typeWorld.client.helpers import nslog
 
 class DummyKeyring(object):
 	def __init__(self):
