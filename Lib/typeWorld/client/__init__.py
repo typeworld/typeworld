@@ -702,20 +702,18 @@ class APIClient(PubSubClient):
 			if self.testScenario == 'simulateNotOnline':
 				return False
 
-			if 'GAE_DEPLOYMENT_ID' in os.environ:
-				return True
+			if 'GAE_DEPLOYMENT_ID' in os.environ: return True # nocoverage
 
 
 			if not server:
 				server = 'type.world'
 
 			import urllib.request
-			try:
-				host='http://' + server
-				urllib.request.urlopen(host) #Python 3.x
-				return True
-			except:
-				return False		
+			host='http://' + server
+			urllib.request.urlopen(host) #Python 3.x
+
+			return True
+
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 
@@ -907,7 +905,6 @@ class APIClient(PubSubClient):
 				self.appendCommands('downloadSubscriptions')
 
 				if performCommands: return self.performCommands()
-				else: return True, None
 			else:
 				return True, None
 
