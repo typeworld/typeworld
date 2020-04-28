@@ -567,8 +567,6 @@ class APIClient(PubSubClient):
 				self.pubSubExecuteConditionMethod = self.user
 				self.pubSubSetup()
 
-			erg
-
 		except:
 			self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
