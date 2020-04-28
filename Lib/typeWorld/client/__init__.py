@@ -114,12 +114,8 @@ def getProtocol(url):
 	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
 
-def performRequest(url, parameters, sslcontext = None):
+def performRequest(url, parameters, sslcontext):
 	'''Perform request in a loop 10 times, because the central server’s instance might shut down unexpectedly during a request, especially longer running ones.'''
-
-
-	if not sslcontext:
-		sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 	success = False
 	message = None
