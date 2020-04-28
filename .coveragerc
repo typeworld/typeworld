@@ -4,3 +4,4 @@ exclude_lines =
     except: self.parent.handleTraceback(.*)
     except: self.handleTraceback(.*)
     except: client.handleTraceback(.*)
+    except: self.client.handleTraceback(.*)
