@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect
+import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect, re
 from time import gmtime, strftime
 
 import typeWorld.api
