@@ -253,11 +253,13 @@ installableFonts.foundries.append(foundry)
 print(installableFonts.dumpJSON())
 
 class User(object):
-	def __init__(self, login = None):
+	def __init__(self, login = None, online = True):
 		self.login = login
 		self.prefFile = os.path.join(tempFolder, str(id(self)) + '.json')
-		self.loadClient()
+		self.online = online
 		self.credentials = ()
+
+		self.loadClient()
 
 		if self.login:
 			# print('Login for %s: %s/%s' % (self.login[0], self.login[0], self.login[1]))
@@ -306,7 +308,7 @@ class User(object):
 				self.client.unlinkUser()
 
 	def loadClient(self):
-		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP, pubSubSubscriptions = True)
+		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP, pubSubSubscriptions = True, online = self.online)
 
 
 print('setting up objects finished...')
@@ -1397,6 +1399,14 @@ class TestStringMethods(unittest.TestCase):
 
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
+
+		# # Load subscription with offline client
+		# userOffline = User(online = False)
+		# result = userOffline.client.addSubscription(freeSubscription)
+		# print(result)
+		# success, message, publisher, subscription = result
+		# self.assertEqual(success, True)
+
 
 
 		# General stuff

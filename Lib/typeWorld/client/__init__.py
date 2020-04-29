@@ -586,14 +586,14 @@ class APIClient(PubSubClient):
 			elif self.testScenario == 'simulateNoClientVersion':
 				del parameters['clientVersion']
 
-			if self._isSetOnline:
-				if self.testScenario:
-					parameters['testScenario'] = self.testScenario
-				if self.testScenario == 'simulateCentralServerNotReachable':
-					url = 'https://api.type.worlddd/api'
-				return performRequest(url, parameters, self.sslcontext)
-			else:
-				return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
+			# if self._isSetOnline:
+			if self.testScenario:
+				parameters['testScenario'] = self.testScenario
+			if self.testScenario == 'simulateCentralServerNotReachable':
+				url = 'https://api.type.worlddd/api'
+			return performRequest(url, parameters, self.sslcontext)
+			# else:
+			# 	return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
 
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
