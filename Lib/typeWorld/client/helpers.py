@@ -195,6 +195,8 @@ MAC = platform.system() == 'Darwin'
 LINUX = platform.system() == 'Linux'
 
 
+# from https://gist.github.com/dgelessus/018681c297dfae22a06a3bc315d9e6e3:
+
 """Allows logging Python :class:`str`s to the system log using Foundation's ``NSLog`` function.
 This module is meant to help with debugging the loading process of Rubicon on systems like iOS, where sometimes only
 NSLog output (but not stdout/stderr) is available to the developer.
@@ -262,13 +264,13 @@ if MAC:
 		Foundation.NSLog(FORMAT, cfstring)
 		CoreFoundation.CFRelease(cfstring)
 
-	class NSLogWriter(io.TextIOBase):
-		"""An output-only text stream that writes to the system log."""
+	# class NSLogWriter(io.TextIOBase):
+	# 	"""An output-only text stream that writes to the system log."""
 
-		def write(self, s):
-			nslog(s[:-1] if s.endswith('\n') else s)
-			return len(s)
+	# 	def write(self, s):
+	# 		nslog(s[:-1] if s.endswith('\n') else s)
+	# 		return len(s)
 
-		@property
-		def encoding(self):
-			return UTF16_NATIVE
+	# 	@property
+	# 	def encoding(self):
+	# 		return UTF16_NATIVE

@@ -17,7 +17,7 @@ MOTHERSHIP = 'https://api.type.world/v1'
 # Google App Engine stuff
 GOOGLE_PROJECT_ID = 'typeworld2'
 if '/Contents/Resources' in __file__:
-	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'typeworld2-cfd080814f09.json'))
+	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'typeworld2-cfd080814f09.json')) # nocoverage (This line is executed only on compiled Mac app)
 else:
 	GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'typeworld2-cfd080814f09.json'))
 
@@ -180,7 +180,7 @@ def splitJSONURL(url):
 
 class Preferences(object):
 	def __init__(self):
-		self._dict = {}
+		self._dict = {} #nocoverage (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults, not the plain class here)
 
 	def get(self, key):
 		if key in self._dict:
@@ -197,7 +197,7 @@ class Preferences(object):
 	def save(self): pass
 
 	def dictionary(self):
-		return self._dict
+		return self._dict #nocoverage (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults, not the plain class here)
 
 class JSON(Preferences):
 	def __init__(self, path):
@@ -404,7 +404,7 @@ class PubSubClient(object):
 		return self.pubSubExecuteConditionMethod == None or callable(self.pubSubExecuteConditionMethod) and self.pubSubExecuteConditionMethod()
 
 	def pubSubSetup(self, direct = False):
-
+		# direct=True is called from executeDownloadSubscriptions, not sure why atm
 
 		from google.cloud import pubsub_v1
 
@@ -451,7 +451,6 @@ class PubSubClient(object):
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 
 			if self.pubsubSubscription:
-#				print('Pub/Sub subscription SUCCESSFUL for %s' % self)
 				pass
 
 	def pubSubDelete(self):
@@ -470,18 +469,10 @@ class PubSubClient(object):
 	def pubSubDelete_worker(self):
 
 		import google.api_core
-
-		# if not self.pubSubSubscriber:
-		# 	self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH)
-
 		try:
 			self.pubSubSubscriber.delete_subscription(self.subscriptionPath)
-		except google.api_core.exceptions.NotFound:
-			pass
-
-	# def pubSubCallback(self, message):
-	# 	'''Overwrite this one'''
-	# 	raise NotImplementedError
+		except google.api_core.exceptions.NotFound: #nocoverage (don't want to construct this error right now)
+			pass #nocoverage (don't want to construct this error right now)
 
 
 class APIClient(PubSubClient):
@@ -943,8 +934,7 @@ class APIClient(PubSubClient):
 			# Uninstall all protected fonts when app instance is reported as revoked
 			if response['appInstanceIsRevoked']:
 				success, message = self.uninstallAllProtectedFonts()
-				if not success:
-					return False, message
+				if not success: return False, message
 
 			# Add new subscriptions
 			for url in response['subscriptions']:
@@ -1307,8 +1297,7 @@ class APIClient(PubSubClient):
 
 	def linkedAppInstances(self):
 		try:
-			if not self.user():
-				return False, 'No user'
+			if not self.user(): return False, 'No user'
 
 			parameters = {
 				'command': 'userAppInstances',
@@ -1318,8 +1307,7 @@ class APIClient(PubSubClient):
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+			if not success: return False, response
 
 			response = json.loads(response.read().decode())
 
@@ -1349,8 +1337,7 @@ class APIClient(PubSubClient):
 
 	def revokeAppInstance(self, anonymousAppID):
 		try:
-			if not self.user():
-				return False, 'No user'
+			if not self.user(): return False, 'No user'
 
 			parameters = {
 				'command': 'revokeAppInstance',
@@ -1375,8 +1362,7 @@ class APIClient(PubSubClient):
 	def reactivateAppInstance(self, anonymousAppID):
 		try:
 
-			if not self.user():
-				return False, 'No user'
+			if not self.user(): return False, 'No user'
 
 			parameters = {
 				'command': 'reactivateAppInstance',
@@ -1412,8 +1398,7 @@ class APIClient(PubSubClient):
 				for subscription in publisher.subscriptions():
 
 					success, installabeFontsCommand = subscription.protocol.installableFontsCommand()
-					if not success:
-						return False, 'No installabeFontsCommand'
+					assert success
 
 					fontIDs = []
 
@@ -1423,7 +1408,7 @@ class APIClient(PubSubClient):
 
 								# Dry run from central server: add all fonts to list
 								if dryRun and font.protected:
-									fontIDs.append(font.uniqueID)
+									fontIDs.append(font.uniqueID) #nocoverage (This is executed only when the central server uninstalls *all* fonts)
 
 								# Run from local client, add only actually installed fonts
 								elif not dryRun and font.protected and subscription.installedFontVersion(font.uniqueID):
@@ -1431,8 +1416,7 @@ class APIClient(PubSubClient):
 					
 					if fontIDs:
 						success, message = subscription.removeFonts(fontIDs, dryRun = dryRun, updateSubscription = False)
-						if not success:
-							return False, message
+						if not success: return False, message
 
 			return True, None
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
@@ -1443,8 +1427,7 @@ class APIClient(PubSubClient):
 			userID = self.user()
 
 			success, response = self.uninstallAllProtectedFonts()
-			if not success:
-				return False, response
+			if not success: return False, response
 
 			parameters = {
 				'command': 'unlinkTypeWorldUserAccount',
@@ -1542,7 +1525,6 @@ class APIClient(PubSubClient):
 			if MAC:
 
 				import keyring
-	#			from keyring.backends.OS_X import Keyring
 				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.OS_X.Keyring'))
 				return keyring
 
@@ -1552,21 +1534,18 @@ class APIClient(PubSubClient):
 					keyring = dummyKeyRing
 					return keyring
 
-				import keyring
-	#			from keyring.backends.Windows import WinVaultKeyring
-				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring'))
-				return keyring
+				import keyring #nocoverage (Fails on Travis CI)
+				keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.Windows.WinVaultKeyring')) #nocoverage (Fails on Travis CI)
+				return keyring #nocoverage (Fails on Travis CI)
 
 			elif LINUX:
 
 				try:
 					import keyring
-	#				from keyring.backends.kwallet import DBusKeyring
 					keyring.core.set_keyring(keyring.core.load_keyring('keyring.backends.kwallet.DBusKeyring'))
 				except:
 					keyring = dummyKeyRing
 
-	#			if not 'TRAVIS' in os.environ: assert usingRealKeyring == True
 				return keyring
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
@@ -1590,7 +1569,7 @@ Version: {typeWorld.api.VERSION}
 				else:
 					return _payload
 			else:
-				return _payload
+				return _payload #nocoverage (this seems to never get executed, because code always contains `File "..."` like it should. Leaving this here just in case)
 
 		# Normalize file paths
 		if WIN:
@@ -1609,7 +1588,7 @@ Version: {typeWorld.api.VERSION}
 			if getattr(sourceMethod, '__self__') and sourceMethod.__self__:
 				supplementary['sourceMethodSignature'] = str(sourceMethod.__self__.__class__.__name__) + '.' + str(sourceMethod.__name__) + str(inspect.signature(sourceMethod))
 			else:
-				supplementary['sourceMethodSignature'] = str(sourceMethod.__name__) + str(inspect.signature(sourceMethod))
+				supplementary['sourceMethodSignature'] = str(sourceMethod.__name__) + str(inspect.signature(sourceMethod)) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
 		supplementary['stack'] = []
 		supplementary['trace'] = []
@@ -1644,13 +1623,11 @@ Version: {typeWorld.api.VERSION}
 			def handleTracebackWorker(self):
 
 				success, response = self.performRequest(self.mothership, parameters)
-				if not success:
-					self.log('handleTraceback() error on server, step 1: %s' % response)
+				if not success: self.log('handleTraceback() error on server, step 1: %s' % response)
 
 				response = json.loads(response.read().decode())
 
-				if response['response'] != 'success':
-					self.log('handleTraceback() error on server, step 2: %s' % response)
+				if response['response'] != 'success': self.log('handleTraceback() error on server, step 2: %s' % response)
 
 
 			handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self, ))
@@ -1661,7 +1638,7 @@ Version: {typeWorld.api.VERSION}
 		if sourceMethod:
 			self.log(payload + '\nMethod signature:\n' + supplementary['sourceMethodSignature'])
 		else:
-			self.log(payload)
+			self.log(payload) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
 
 	def log(self, *arg):
@@ -2303,31 +2280,31 @@ class APISubscription(PubSubClient):
 
 	def announceChange(self):
 		try:
-			userID = self.user()
+			
+			if not self.user(): return False, 'No user'
 
-			if userID:
+			self.set('lastServerSync', int(time.time()))
 
-				self.set('lastServerSync', int(time.time()))
+			parameters = {
+				'command': 'updateSubscription',
+				'anonymousAppID': self.anonymousAppID(),
+				'anonymousUserID': self.user(),
+				'subscriptionURL': self.protocol.url.secretURL(),
+				'secretKey': self.secretKey(),
+			}
 
-				parameters = {
-					'command': 'updateSubscription',
-					'anonymousAppID': self.anonymousAppID(),
-					'anonymousUserID': userID,
-					'subscriptionURL': self.protocol.url.secretURL(),
-					'secretKey': self.secretKey(),
-				}
+			success, response = self.performRequest(self.mothership, parameters)
+			if not success:
+				return False, response
 
-				success, response = self.performRequest(self.mothership, parameters)
-				if not success:
-					return False, response
+			response = json.loads(response.read().decode())
 
-				response = json.loads(response.read().decode())
-
-				if response['response'] != 'success':
-					return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if response['response'] != 'success':
+				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Success
 			return True, None
+
 		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 	def hasProtectedFonts(self):
@@ -2357,8 +2334,7 @@ class APISubscription(PubSubClient):
 				}
 
 				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
-				if not success:
-					return False, response
+				if not success: return False, response
 
 				response = json.loads(response.read().decode())
 
@@ -2576,7 +2552,7 @@ class APISubscription(PubSubClient):
 
 			folder = self.parent.folder()
 
-			if not font:
+			if fontID:
 				for foundry in installabeFontsCommand.foundries:
 					for family in foundry.families:
 						for font in family.fonts:
@@ -2585,11 +2561,12 @@ class APISubscription(PubSubClient):
 									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
 									if os.path.exists(path):
 										return version.number
-			else:
+			elif font:
 				for version in font.getVersions():
 					path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
 					if os.path.exists(path):
 						return version.number
+
 		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 	# def fontIsOutdated(self, fontID):

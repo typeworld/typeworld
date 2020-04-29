@@ -50,15 +50,15 @@ if 'TRAVIS' in os.environ:
 
 # Local testing
 else:
-	MOTHERSHIP = 'https://api.type.world/v1'
+	MOTHERSHIP = 'https://api.type.world/v1' #nocoverage (for local testing only)
 
 	# Testing specific version
-	if len(sys.argv) >= 2:
-		MOTHERSHIP = sys.argv[1]#.replace('-dot-', '.')
-		del sys.argv[1:]
+	if len(sys.argv) >= 2: #nocoverage (for local testing only)
+		MOTHERSHIP = sys.argv[1]#.replace('-dot-', '.') #nocoverage (for local testing only)
+		del sys.argv[1:] #nocoverage (for local testing only)
 
-		if not MOTHERSHIP.endswith('/v1'):
-			MOTHERSHIP += '/v1'
+		if not MOTHERSHIP.endswith('/v1'): #nocoverage (for local testing only)
+			MOTHERSHIP += '/v1' #nocoverage (for local testing only)
 
 
 print('Testing on %s' % MOTHERSHIP)
@@ -297,7 +297,7 @@ class User(object):
 		self.client.testScenario = None
 		self.clearInvitations()
 		self.clearSubscriptions()
-		self.unlinkUser()
+#		self.unlinkUser() # (don't execute here so that user can be unlinked from within deleteUserAccount() )
 		if self.login:
 			self.client.deleteUserAccount(*self.login)
 
@@ -399,13 +399,6 @@ class TestStringMethods(unittest.TestCase):
 			r2.public = 'True'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Wrong data type. Is <class \'str\'>, should be: <class \'bool\'>.')
-
-		# version
-		r2 = copy.deepcopy(root)
-		try:
-			r2.version = '0.1.7.2'
-		except ValueError as e:
-			self.assertEqual(str(e), '0.1.7.2 is not valid SemVer string')
 
 		# website
 		r2 = copy.deepcopy(root)
@@ -887,12 +880,6 @@ class TestStringMethods(unittest.TestCase):
 
 		print('test_Foundry()')
 
-		i2 = copy.deepcopy(installableFonts)
-		try:
-			i2.foundries[0].backgroundColor = 'CDEFGH'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Not a valid hex color of format RRGGBB (like FF0000 for red): CDEFGH')
-
 		# description
 		# allowed to be empty
 		i2 = copy.deepcopy(installableFonts)
@@ -934,13 +921,6 @@ class TestStringMethods(unittest.TestCase):
 			i2.foundries[0].supportEmail = 'post_at_yanone.de'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
-
-		# facebook
-		i2 = copy.deepcopy(installableFonts)
-		try:
-			i2.foundries[0].facebook = 1
-		except ValueError as e:
-			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
 		# instagram
 		# TODO: test this value, can't currently be tested
@@ -1037,12 +1017,6 @@ class TestStringMethods(unittest.TestCase):
 		print('test_InstallFontsResponse()')
 
 		installFonts = InstallFontsResponse()
-		try:
-			installFonts.response = 'abc'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
-
-		installFonts = InstallFontsResponse()
 		asset = InstallFontAsset()
 		installFonts.assets.append(asset)
 		asset.uniqueID = 'abc'
@@ -1085,13 +1059,7 @@ class TestStringMethods(unittest.TestCase):
 	def test_UninstallFontsResponse(self):
 
 		print('test_UninstallFontsResponse()')
-
-		uninstallFont = UninstallFontsResponse()
-		try:
-			uninstallFont.response = 'abc'
-		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "abc". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
-
+		# TODO: add procedures from above
 
 
 	def test_InstallableFontsResponse_Old(self):
@@ -1374,15 +1342,6 @@ class TestStringMethods(unittest.TestCase):
 
 		print('test_normalSubscription() started...')
 
-		# Announce subscription update
-		parameters = {"command": "subscriptionHasChanged",
-					"subscriptionURL": "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
-					"APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
-					}
-
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
-		self.assertEqual(success, True)
-
 		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
 
 		self.assertTrue(user2.client.user())
@@ -1482,6 +1441,11 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertTrue(subscription.hasProtectedFonts())
 
+		# announce subscription change		
+		success, result = user1.client.publishers()[0].subscriptions()[-1].announceChange()
+		self.assertEqual(success, True)
+
+		# Protocol
 		success, protocol = typeWorld.client.getProtocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
 		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
@@ -1571,6 +1535,10 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
+		# Test for version
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].installedFontVersion(fontID = user1.testFont().uniqueID), user1.testFont().getVersions()[-1].number)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].installedFontVersion(font = user1.testFont()), user1.testFont().getVersions()[-1].number)
+
 
 		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
 	
@@ -1606,8 +1574,7 @@ class TestStringMethods(unittest.TestCase):
 		# Uninstall font here
 		user1.client.testScenario = None
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
-		if success == False:
-			print('Uninstall font:', message)
+		if success == False: print('Uninstall font:', message)
 		self.assertEqual(success, True)
 
 
@@ -1703,11 +1670,14 @@ class TestStringMethods(unittest.TestCase):
 
 		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
 
+		# linkedAppInstances
+		success, instances = user1.client.linkedAppInstances()
+		self.assertEqual(success, True)
+		self.assertTrue(len(instances) >= 1)
 
 		# Revoke app instance
 		success, response = user1.client.revokeAppInstance(user1.client.anonymousAppID())
-		if not success:
-			print(response)
+		if not success: print(response)
 		self.assertEqual(success, True)
 
 		# Save test font's uniqueID and version for later
@@ -1739,8 +1709,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# Reactivate app instance
 		success, response = user1.client.reactivateAppInstance(user1.client.anonymousAppID())
-		if not success:
-			print(response)
+		if not success: print(response)
 		self.assertEqual(success, True)
 
 		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
@@ -2169,8 +2138,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		user2.client.testScenario = None
 		success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser('test3@type.world')
-		if not success:
-			print(message)
+		if not success: print(message)
 		self.assertEqual(success, True)
 
 		print('STATUS: -6')
@@ -2207,7 +2175,13 @@ class TestStringMethods(unittest.TestCase):
 
 		print('STATUS: -2')
 
-		# Get publisher's logo
+		# Get publisher's logo, first time
+		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Get publisher's logo, second time (from cache in preferences)
 		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 		self.assertEqual(success, True)
@@ -2233,25 +2207,25 @@ class TestStringMethods(unittest.TestCase):
 		print('test_normalSubscription() finished...')
 
 
-	def _test_APIValidator(self):
+	# def _test_APIValidator(self):
 
-		print('test_APIValidator() started...')
+	# 	print('test_APIValidator() started...')
 
-		# Announce subscription update
-		parameters = {"command": "validateAPIEndpoint",
-					"subscriptionURL": protectedSubscription,
-					}
+	# 	# Announce subscription update
+	# 	parameters = {"command": "validateAPIEndpoint",
+	# 				"subscriptionURL": protectedSubscription,
+	# 				}
 
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
-		self.assertEqual(success, True)
+	# 	success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+	# 	self.assertEqual(success, True)
 
-		response = json.loads(response.read().decode())
-		print(response)
+	# 	response = json.loads(response.read().decode())
+	# 	print(response)
 
-		self.assertEqual(response['response'], 'success')
+	# 	self.assertEqual(response['response'], 'success')
 
 
-		print('test_APIValidator() finished...')
+	# 	print('test_APIValidator() finished...')
 
 
 	def test_UserAccounts(self):
