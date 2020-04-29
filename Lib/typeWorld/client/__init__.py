@@ -527,6 +527,9 @@ class APIClient(PubSubClient):
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 
+	def __repr__(self):
+		return f'<APIClient user="{self.user()}">'
+
 	def tracebackTest(self):
 		try:
 			assert abc
@@ -2271,6 +2274,8 @@ class APISubscription(PubSubClient):
 
 		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
+	def __repr__(self):
+		return f'<APISubscription url="{self.url}">'
 
 	def uniqueID(self):
 		try:
