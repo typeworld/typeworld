@@ -292,25 +292,6 @@ class AppKitNSUserDefaults(Preferences):
 			return str(item)
 
 
-	def convertDict(self, d):
-
-		d = dict(d)
-
-		for k, v in d.items():        
-			if 'Array' in v.__class__.__name__:
-				_list = list(v)
-				for _item in _list:
-					d[k] = list(v)
-
-			elif 'Dictionary' in v.__class__.__name__:
-				d[k] = self.convertDict(v)
-
-			elif 'unicode' in v.__class__.__name__:
-				d[k] = str(v)
-
-		return d
-
-
 	def dictionary(self):
 
 		d = self.defaults.dictionaryRepresentation()
