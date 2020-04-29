@@ -199,8 +199,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 									deleteTheseFonts.append(fontID)
 
 			success, message = self.subscription.removeFonts(deleteTheseFonts, updateSubscription = False)
-			if not success:
-				return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
+			if not success: return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
 
 		# Compare
 		identical = self._installableFontsCommand.sameContent(api)
@@ -310,15 +309,12 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		api = root.installableFonts
 		
 		# Errors
-		if responses['errors']:
-			return False, responses['errors'][0]
+		if responses['errors']: return False, responses['errors'][0]
 
 		# Check for installableFonts response support
 		success, message = self.rootCommand(testScenario = testScenario)
-		if success:
-			rootCommand = message
-		else:
-			return False, 'Error when getting rootCommand: %s' % message
+		if success: rootCommand = message
+		else: return False, 'Error when getting rootCommand: %s' % message
 
 		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFonts' in rootCommand.supportedCommands:
 			return False, 'API endpoint %s does not support the "installableFonts" or "installFonts" commands.' % rootCommand.canonicalURL

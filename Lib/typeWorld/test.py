@@ -21,7 +21,7 @@ from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType,
 from typeWorld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeWorld.api import InstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
+from typeWorld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
 
 # Constants
 from typeWorld.api import COMMANDS, MAC
@@ -538,6 +538,10 @@ class TestStringMethods(unittest.TestCase):
 #		print(validate)
 		self.assertEqual(validate[1], ['<InstallableFontsResponse> --> The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'])
 
+		i2 = copy.deepcopy(installableFonts)
+		i2.response = 'error'
+		validate = i2.validate()
+		self.assertEqual(validate[2][0], '<InstallableFontsResponse> --> <InstallableFontsResponse>.response is "error", but <InstallableFontsResponse>.errorMessage is missing.')
 
 	def test_Designer(self):
 
@@ -840,6 +844,25 @@ class TestStringMethods(unittest.TestCase):
 		validate = i2.validate()
 		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> <Foundry "Awesome Fonts"> --> <Family "Yanone Kaffeesatz"> --> <Font "YanoneKaffeesatz-Regular"> is a desktop font (see .purpose), but has no .format value.'])
 
+		# language support
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].languageSupport = {'LATN': ['DEU']}
+		except ValueError as e:
+			self.assertEqual(str(e), 'Script tag "LATN" needs to be a four-letter lowercase tag.')
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].languageSupport = {'latn': ['de']}
+		except ValueError as e:
+			self.assertEqual(str(e), 'Language tag "de" needs to be a three-letter uppercase tag.')
+
+		# features
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].fonts[0].features = ['aal', 'liga']
+		except ValueError as e:
+			self.assertEqual(str(e), 'OpenType feature tag "aal" needs to be a four-letter lowercase tag.')
+
 
 	def test_Family(self):
 
@@ -1070,6 +1093,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(protocol.secretURL(), freeNamedSubscription)
 		self.assertEqual(protocol.unsecretURL(), freeNamedSubscription)
 
+		typeWorld.client.helpers.Garbage(20, uppercase = True, lowercase = True, numbers = True, punctuation = True)
+
 
 
 	def test_InstallFontsResponse(self):
@@ -1082,6 +1107,7 @@ class TestStringMethods(unittest.TestCase):
 		asset.uniqueID = 'abc'
 		asset.response = 'success'
 		asset.mimeType = 'font/otf'
+#		asset.encoding = 'base64' # missing
 		asset.data = b'ABC'
 		validate = asset.validate()
 		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.data is set, but <InstallFontAsset>.encoding is missing'])
@@ -1091,8 +1117,20 @@ class TestStringMethods(unittest.TestCase):
 		installFonts.assets.append(asset)
 		asset.uniqueID = 'abc'
 		asset.response = 'success'
+		asset.encoding = 'base64'
+#		asset.mimeType = 'font/otf' # missing
+		asset.data = b'ABC'
+		validate = asset.validate()
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.data is set, but <InstallFontAsset>.mimeType is missing'])
+
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.response = 'success'
 		asset.mimeType = 'font/otf'
 		asset.encoding = 'base64'
+#		asset.data = b'ABC' # missing
 		validate = asset.validate()
 		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.response is set to success, but <InstallFontAsset>.data is missing'])
 
@@ -1103,23 +1141,30 @@ class TestStringMethods(unittest.TestCase):
 		asset.mimeType = 'font/otf'
 		asset.response = 'error'
 		validate = asset.validate()
-		self.assertEqual(validate[2], ['<InstallFontAsset> --> <InstallFontAsset>.response is "error", but <InstallFontAsset>.errorMessage is missing.'])
+		self.assertEqual(validate[2][0], '<InstallFontAsset> --> <InstallFontAsset>.response is "error", but <InstallFontAsset>.errorMessage is missing.')
 
 		installFonts = InstallFontsResponse()
 		asset = InstallFontAsset()
-		asset.uniqueID = 'abc'
-		asset.mimeType = 'font/otf'
-		installFonts.assets.append(asset)
-		asset.response = 'error'
 		try:
-			asset.dumpDict()
+			asset.mimeType = 'font/whatevs'
 		except ValueError as e:
-			self.assertEqual(str(e), '<InstallFontAsset> --> <InstallFontAsset>.response is "error", but <InstallFontAsset>.errorMessage is missing.')
+			self.assertEqual(str(e), 'Unknown font MIME Type: "font/whatevs". Possible: [\'font/collection\', \'font/otf\', \'font/sfnt\', \'font/ttf\']')
+
+		asset = InstallFontAsset()
+		try:
+			asset.response = 'a'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
 
 	def test_UninstallFontsResponse(self):
 
 		print('test_UninstallFontsResponse()')
-		# TODO: add procedures from above
+
+		asset = UninstallFontAsset()
+		try:
+			asset.response = 'a'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
 
 
 	def test_InstallableFontsResponse_Old(self):
@@ -1445,6 +1490,8 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[0].name.getTextAndLocale(), ('Test Foundry', 'en'))
 
 		self.assertFalse(subscription.hasProtectedFonts())
+
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[-1].protocol.protocolName(), 'Type.World JSON Protocol')
 
 		# # Logo
 		# user0.client.testScenario = 'simulateProgrammingError'

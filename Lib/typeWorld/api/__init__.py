@@ -1918,7 +1918,7 @@ class BaseResponse(DictBasedObject):
     def customValidation(self):
         information, warnings, critical = [], [], []
 
-        if hasattr(self, 'type') and self.response == ERROR and self.errorMessage.isEmpty():
+        if hasattr(self, 'response') and self.response == ERROR and self.errorMessage.isEmpty():
             critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         return information, warnings, critical
@@ -1994,6 +1994,9 @@ class InstallableFontsResponse(BaseResponse):
 
     def customValidation(self):
         information, warnings, critical = [], [], []
+
+        if hasattr(self, 'response') and self.response == ERROR and self.errorMessage.isEmpty():
+            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
 
         if self.response == 'success' and not self.name.getText():
             warnings.append('The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.')

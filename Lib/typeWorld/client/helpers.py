@@ -56,9 +56,6 @@ def Garbage(length, uppercase = True, lowercase = True, numbers = True, punctuat
 	if punctuation:
 		pool += punctuationparts
 	
-	if not pool:
-		pool = lowercaseparts
-	
 	garbage = ''
 	
 	while len(garbage) < length:
@@ -108,7 +105,7 @@ def MachineName():
 		if os.path.exists('/sys/devices/virtual/dmi/id/sys_vendor') and os.path.exists('/sys/devices/virtual/dmi/id/product_name'):
 			humanReadableName = '%s %s' % (Execute('cat /sys/devices/virtual/dmi/id/sys_vendor').decode(), Execute('cat /sys/devices/virtual/dmi/id/product_name').decode())
 		else:
-			humanReadableName = 'Google App Engine'
+			humanReadableName = 'Google App Engine' #nocoverage
 		specsDescription = cpu
 
 
@@ -214,10 +211,10 @@ if MAC:
 	# Name of the UTF-16 encoding with the system byte order.
 	if sys.byteorder == 'little':
 		UTF16_NATIVE = 'utf-16-le'
-	elif sys.byteorder == 'big':
-		UTF16_NATIVE = 'utf-16-be'
+	elif sys.byteorder == 'big': #nocoverage
+		UTF16_NATIVE = 'utf-16-be' #nocoverage
 	else:
-		raise AssertionError('Unknown byte order: ' + sys.byteorder)
+		raise AssertionError('Unknown byte order: ' + sys.byteorder) #nocoverage
 
 	# Note: Many of the following definitions are duplicated in other rubicon.objc submodules.
 	# However because this module is used to debug the early startup process of Rubicon, we can't use any of the other

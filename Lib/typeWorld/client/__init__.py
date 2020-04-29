@@ -425,8 +425,8 @@ class PubSubClient(object):
 
 				if self.executeCondition():
 					if client.mode == 'gui' or direct:
-						stillAliveThread = threading.Thread(target=self.pubSubSetup_worker)
-						stillAliveThread.start()
+						stillAliveThread = threading.Thread(target=self.pubSubSetup_worker) #nocoverage (is not executed in headleass mode)
+						stillAliveThread.start() #nocoverage (is not executed in headleass mode)
 					elif client.mode == 'headless':
 						self.pubSubSetup_worker()
 
@@ -442,11 +442,9 @@ class PubSubClient(object):
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 				self.pubSubCallback(None)
 			except google.api_core.exceptions.NotFound:
-				print('###############################\n###############################\n###############################')
-				print(f'google.api_core.exceptions.NotFound for {self}')
+				pass #nocoverage
 			except google.api_core.exceptions.DeadlineExceeded:
-				print('###############################\n###############################\n###############################')
-				print(f'google.api_core.exceptions.DeadlineExceeded for {self}')
+				pass #nocoverage
 			except google.api_core.exceptions.AlreadyExists:
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
 
@@ -1187,8 +1185,7 @@ class APIClient(PubSubClient):
 				# Unlink user first
 				if self.userEmail() == email:
 					success, message = self.performUnlinkUser()
-					if not success:
-						return False, message
+					if not success: return False, message
 
 				parameters = {
 					'command': 'deleteUserAccount',
@@ -1347,13 +1344,11 @@ class APIClient(PubSubClient):
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+			if not success: return False, response
 
 			response = json.loads(response.read().decode())
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if response['response'] != 'success': return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			return True, None
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
@@ -1372,13 +1367,11 @@ class APIClient(PubSubClient):
 			}
 
 			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+			if not success: return False, response
 
 			response = json.loads(response.read().decode())
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+			if response['response'] != 'success': return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			return True, None
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
@@ -1678,11 +1671,7 @@ Version: {typeWorld.api.VERSION}
 				# 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
 				# 	request.add_header("Authorization", "Basic %s" % base64string)   
 
-				try:
-					response = urllib.request.urlopen(request, context=self.sslcontext)
-				except:
-					return False, traceback.format_exc().splitlines()[-1], None
-
+				response = urllib.request.urlopen(request, context=self.sslcontext)
 
 				content = response.read()
 				if binary:
