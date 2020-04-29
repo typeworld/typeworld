@@ -150,6 +150,8 @@ font.variableFont = False
 font.versions.append(fontVersion)
 font.versions = [fontVersion]
 assert len(font.versions) == 1
+font.languageSupport = {'latn': ['DEU']}
+font.features = ['aalt', 'liga']
 
 # Font 2
 font2 = Font()
@@ -222,6 +224,7 @@ foundry.name.en = 'Awesome Fonts'
 foundry.name.de = 'Tolle Schriften'
 
 foundry.socialWebURLs.append('https://facebook.com/pages/YanoneYanone')
+foundry.socialWebURLs.append('https://twitter.com/yanone')
 
 foundry.supportEmail = 'support@yanone.de'
 foundry.supportTelephone = '+49123456789'
@@ -233,6 +236,51 @@ foundry.website = 'https://yanone.de'
 foundry.families.append(family)
 foundry.families = [family]
 assert len(foundry.families) == 1
+foundry.styling = json.loads('''{"light": {
+            "headerColor": "F20D5E",
+            "headerTextColor": "000000",
+            "headerLinkColor": "E5F20D",
+
+            "backgroundColor": "E5F20D",
+            "textColor": "000000",
+            "linkColor": "F7AD22",
+
+            "selectionColor": "0D79F2",
+            "selectionTextColor": "E5F20D",
+
+            "buttonColor": "197AA3",
+            "buttonTextColor": "FFFFFF",
+
+            "informationViewBackgroundColor": "469BF5",
+            "informationViewTextColor": "000000",
+            "informationViewLinkColor": "E5F20D",
+
+            "informationViewButtonColor": "E5F20D",
+            "informationViewButtonTextColor": "000000"
+
+        }, "dark": {
+            "headerColor": "B10947",
+            "headerTextColor": "000000",
+            "headerLinkColor": "E5F20D",
+
+            "backgroundColor": "1A1A1A",
+            "textColor": "E5F20D",
+            "linkColor": "C07F07",
+
+            "selectionColor": "B10947",
+            "selectionTextColor": "E5F20D",
+
+            "buttonColor": "22A4DC",
+            "buttonTextColor": "000000",
+
+            "informationViewBackgroundColor": "000000",
+            "informationViewTextColor": "999999",
+            "informationViewLinkColor": "E5F20D",
+
+            "informationViewButtonColor": "1E90C1",
+            "informationViewButtonTextColor": "000000"
+
+        } }''')
 
 # InstallableFontsResponse
 installableFonts = InstallableFontsResponse()
@@ -301,11 +349,11 @@ class User(object):
 		if self.login:
 			self.client.deleteUserAccount(*self.login)
 
-	def unlinkUser(self):
-		self.client.testScenario = None
-		if self.login:
-			if self.client.user():
-				self.client.unlinkUser()
+	# def unlinkUser(self):
+	# 	self.client.testScenario = None
+	# 	if self.login:
+	# 		if self.client.user():
+	# 			self.client.unlinkUser()
 
 	def loadClient(self):
 		self.client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % id(self)) if MAC else JSON(self.prefFile), mothership = MOTHERSHIP, pubSubSubscriptions = True, online = self.online)
@@ -476,13 +524,6 @@ class TestStringMethods(unittest.TestCase):
 		validate = i2.validate()
 		self.assertEqual(validate[2], [])
 
-		# version
-		i2 = copy.deepcopy(installableFonts)
-		try:
-			i2.version = '1.1.2.3'
-		except ValueError as e:
-			self.assertEqual(str(e), '1.1.2.3 is not valid SemVer string')
-
 		# foundries
 		i2 = copy.deepcopy(installableFonts)
 		try:
@@ -577,6 +618,13 @@ class TestStringMethods(unittest.TestCase):
 		except ValueError as e:
 			self.assertEqual(str(e), '1.1.2.3 is not valid SemVer string')
 
+		# number
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].families[0].versions[0].number = 'a'
+		except ValueError as e:
+			self.assertEqual(str(e), 'False')
+
 		# releaseDate
 		i2 = copy.deepcopy(installableFonts)
 		try:
@@ -653,6 +701,14 @@ class TestStringMethods(unittest.TestCase):
 
 		i2 = copy.deepcopy(installableFonts)
 		print(i2.foundries[0].families[0].fonts[0].usedLicenses[0])
+
+	def test_FontPackage(self):
+
+		print('test_FontPackage()')
+
+		i2 = copy.deepcopy(installableFonts)
+		print(i2.foundries[0].families[0].packages[0])
+
 
 	def test_Font(self):
 
@@ -922,20 +978,24 @@ class TestStringMethods(unittest.TestCase):
 		except ValueError as e:
 			self.assertEqual(str(e), 'Not a valid email format: post_at_yanone.de')
 
-		# instagram
-		# TODO: test this value, can't currently be tested
-
-		# skype
-		# TODO: test this value, can't currently be tested
-
-		# twitter
-		# TODO: test this value, can't currently be tested
-
 		# telephone
-		# TODO: test this value, can't currently be tested
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].telephone = '+49176123456a456'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with + and contain only numbers 0-9')
+		i2 = copy.deepcopy(installableFonts)
+		try:
+			i2.foundries[0].telephone = '0049176123456456'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with + and contain only numbers 0-9')
+		try:
+			i2.foundries[0].telephone = 'a'
+		except ValueError as e:
+			self.assertEqual(str(e), 'Needs to start with + and contain only numbers 0-9')
 
-		# supportTelephone
-		# TODO: test this value, can't currently be tested
+		# socialWebURLs
+		self.assertEqual(str(foundry.socialWebURLs), "['https://facebook.com/pages/YanoneYanone', 'https://twitter.com/yanone']")
 
 		# website
 		i2 = copy.deepcopy(installableFonts)
@@ -2185,6 +2245,20 @@ class TestStringMethods(unittest.TestCase):
 		# Get publisher's logo, second time (from cache in preferences)
 		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
 		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Get foundry's logo, first time
+		logoURL = user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].styling['light']['logoURL']
+		self.assertTrue(logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Get foundry's logo, second time (from cache in preferences)
+		logoURL = user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].styling['light']['logoURL']
+		self.assertTrue(logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 

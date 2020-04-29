@@ -573,11 +573,13 @@ class DictBasedObject(object):
         elif '' in ('%s' % class_.dataType):
             return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
-        elif 'typeWorld.api.' in ('%s' % class_.dataType):
-            return self.linkDocuText('::%s::' % class_.dataType.__name__)
+        # Seems unused
 
-        else:
-            return class_.dataType.__name__.title()
+        # elif 'typeWorld.api.' in ('%s' % class_.dataType):
+        #     return self.linkDocuText('::%s::' % class_.dataType.__name__)
+
+        # else:
+        #     return class_.dataType.__name__.title()
 
     def docu(self):
 
@@ -921,9 +923,10 @@ class DictBasedObject(object):
                     else:
                         d[key] = getattr(self, key)
 
-                    # delete empty sets that are not required
-                    if (key in self._structure and self._structure[key][1] == False) and d[key] == None:
-                        del d[key]
+                    # seems to be unnecessary because not-empty is checked 10 lines above
+                    # # delete empty sets that are not required
+                    # if (key in self._structure and self._structure[key][1] == False) and d[key] == None:
+                    #     del d[key]
 
 
         return d
