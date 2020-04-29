@@ -516,6 +516,7 @@ class APIClient(PubSubClient):
 			self._online = {}
 
 			# Pub/Sub
+			self.pubSubExecuteConditionMethod = None
 			if self.pubSubSubscriptions:
 
 				# In App
@@ -2266,6 +2267,7 @@ class APISubscription(PubSubClient):
 			self._updatingProblem = None
 
 			# Pub/Sub
+			self.pubSubExecuteConditionMethod = None
 			if self.parent.parent.pubSubSubscriptions:
 				self.pubsubSubscription = None
 				self.pubSubTopicID = 'subscription-%s' % urllib.parse.quote_plus(self.protocol.unsecretURL())
