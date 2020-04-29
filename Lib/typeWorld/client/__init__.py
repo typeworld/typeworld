@@ -2278,34 +2278,37 @@ class APISubscription(PubSubClient):
 		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 
-	def announceChange(self):
-		try:
+
+	# TODO: Temporarily suspended because the central API updateSubscription requires an APIKey parameter, so is intended for publishers atm
+
+	# def announceChange(self):
+	# 	try:
 			
-			if not self.user(): return False, 'No user'
+	# 		if not self.parent.parent.user(): return False, 'No user'
 
-			self.set('lastServerSync', int(time.time()))
+	# 		self.set('lastServerSync', int(time.time()))
 
-			parameters = {
-				'command': 'updateSubscription',
-				'anonymousAppID': self.anonymousAppID(),
-				'anonymousUserID': self.user(),
-				'subscriptionURL': self.protocol.url.secretURL(),
-				'secretKey': self.secretKey(),
-			}
+	# 		parameters = {
+	# 			'command': 'updateSubscription',
+	# 			'anonymousAppID': self.parent.parent.anonymousAppID(),
+	# 			'anonymousUserID': self.parent.parent.user(),
+	# 			'subscriptionURL': self.protocol.url.secretURL(),
+	# 			'secretKey': self.parent.parent.secretKey(),
+	# 		}
 
-			success, response = self.performRequest(self.mothership, parameters)
-			if not success:
-				return False, response
+	# 		success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+	# 		if not success:
+	# 			return False, response
 
-			response = json.loads(response.read().decode())
+	# 		response = json.loads(response.read().decode())
 
-			if response['response'] != 'success':
-				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+	# 		if response['response'] != 'success':
+	# 			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			# Success
-			return True, None
+	# 		# Success
+	# 		return True, None
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+	# 	except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 	def hasProtectedFonts(self):
 		try:
