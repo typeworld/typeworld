@@ -35,6 +35,7 @@ from typeWorld.api import makeSemVer
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+freeNamedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 testUser1 = ('test1@type.world', '12345678')
 testUser2 = ('test2@type.world', '01234567')
 testUser3 = ('test3@type.world', '23456789')
@@ -1022,6 +1023,12 @@ class TestStringMethods(unittest.TestCase):
 		from deepdiff import DeepDiff
 		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		
+		# URL parsing and constructing
+		success, protocol = typeWorld.client.getProtocol(freeNamedSubscription)
+		self.assertEqual(protocol.secretURL(), freeNamedSubscription)
+		self.assertEqual(protocol.unsecretURL(), freeNamedSubscription)
+
+
 
 	def test_InstallFontsResponse(self):
 
@@ -1468,7 +1475,6 @@ class TestStringMethods(unittest.TestCase):
 		success, protocol = typeWorld.client.getProtocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
 		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
-
 
 		# saveURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.unsecretURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
