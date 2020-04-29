@@ -51,8 +51,8 @@ jobs:
       python: &latest_py3 3.7
       install:
         - python -m pip install -r requirements.txt
-      script: python -m coverage run ./Lib/typeWorld/test.py
-      after_success: python -m codecov
+      script: coverage run ./Lib/typeWorld/test.py
+      after_success: codecov
 
 script: python3 -m coverage run ./Lib/typeWorld/test.py
 
