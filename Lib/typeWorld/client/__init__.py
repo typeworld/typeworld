@@ -97,13 +97,13 @@ class URL(object):
 
 def getProtocol(url):
 
-	protocol = URL(url).protocol
+	protocolName = URL(url).protocol
 
 	for ext in ('.py', '.pyc'):
-		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
+		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocolName + ext)):
 
 			import importlib
-			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
+			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocolName + ext))
 			module = importlib.util.module_from_spec(spec)
 			spec.loader.exec_module(module)
 			
@@ -111,7 +111,7 @@ def getProtocol(url):
 
 			return True, protocolObject
 
-	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
+	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocolName
 
 
 def performRequest(url, parameters, sslcontext):
@@ -2644,8 +2644,10 @@ class APISubscription(PubSubClient):
 			# Server access
 			# Protected fonts
 			if uninstallTheseProtectedFontIDs:
-				assert self == self.protocol.client and self.testScenario == self.protocol.client.testScenario
-				print(f'self: client id {id(self)}')
+
+				assert self == self.protocol.client
+				assert self.testScenario == self.protocol.client.testScenario
+
 				success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
 
 				if success:
