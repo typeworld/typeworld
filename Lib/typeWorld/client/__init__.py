@@ -2640,14 +2640,13 @@ class APISubscription(PubSubClient):
 					uninstallTheseUnprotectedFontIDs.append(fontID)
 
 
+			assert self == self.protocol.client
+			assert self.testScenario == self.protocol.client.testScenario
 
 
 			# Server access
 			# Protected fonts
 			if uninstallTheseProtectedFontIDs:
-
-				assert self == self.protocol.client
-				assert self.testScenario == self.protocol.client.testScenario
 
 				success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
 
