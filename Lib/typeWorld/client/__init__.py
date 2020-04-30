@@ -95,30 +95,21 @@ class URL(object):
 		else:
 			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.restDomain)
 
-_protocols = {}
-
 def getProtocol(url):
 
 	protocol = URL(url).protocol
 
-	if url in _protocols:
-		return True, _protocols[url]
+	for ext in ('.py', '.pyc'):
+		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
 
-	else:
+			import importlib
+			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
+			module = importlib.util.module_from_spec(spec)
+			spec.loader.exec_module(module)
+			
+			protocolObject = module.TypeWorldProtocol(url)
 
-		for ext in ('.py', '.pyc'):
-			if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
-
-				import importlib
-				spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
-				module = importlib.util.module_from_spec(spec)
-				spec.loader.exec_module(module)
-				
-				protocolObject = module.TypeWorldProtocol(url)
-
-				_protocols[url] = protocolObject
-
-				return True, protocolObject
+			return True, protocolObject
 
 	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
@@ -1865,8 +1856,7 @@ Version: {typeWorld.api.VERSION}
 
 			protocol.subscriptionAdded()
 
-
-			return True, None, self.publisher(rootCommand.canonicalURL), subscription
+			return True, None, publisher, subscription
 
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
@@ -2151,10 +2141,12 @@ class APIPublisher(object):
 
 				self._subscriptions[url] = e
 
+
 			if self.get('subscriptions') and url in self.get('subscriptions'):
 				self._subscriptions[url].exists = True
 
 			return self._subscriptions[url]
+
 		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 	def subscriptions(self):
@@ -2595,7 +2587,7 @@ class APISubscription(PubSubClient):
 
 	def removeFonts(self, fonts, dryRun = False, updateSubscription = True):
 		try:
-			success, installabeFontsCommand = self.protocol.installableFontsCommand()
+			success, installableFontsCommand = self.protocol.installableFontsCommand()
 
 			uninstallTheseProtectedFontIDs = []
 			uninstallTheseUnprotectedFontIDs = []
@@ -2609,7 +2601,7 @@ class APISubscription(PubSubClient):
 				fontIDs.append(fontID)
 
 				path = None
-				for foundry in installabeFontsCommand.foundries:
+				for foundry in installableFontsCommand.foundries:
 					for family in foundry.families:
 						for font in family.fonts:
 							if font.uniqueID == fontID:
@@ -2652,6 +2644,8 @@ class APISubscription(PubSubClient):
 			# Server access
 			# Protected fonts
 			if uninstallTheseProtectedFontIDs:
+				assert self == self.protocol.client and self.testScenario == self.protocol.client.testScenario
+				print(f'self: client id {id(self)}')
 				success, payload = self.protocol.removeFonts(uninstallTheseProtectedFontIDs, updateSubscription = updateSubscription)
 
 				if success:
@@ -2678,7 +2672,7 @@ class APISubscription(PubSubClient):
 						if incomingFont.response == 'success':
 
 							path = None
-							for foundry in installabeFontsCommand.foundries:
+							for foundry in installableFontsCommand.foundries:
 								for family in foundry.families:
 									for font in family.fonts:
 										if font.uniqueID == incomingFont.uniqueID:
@@ -2706,7 +2700,7 @@ class APISubscription(PubSubClient):
 				for fontID in uninstallTheseUnprotectedFontIDs:
 
 					path = None
-					for foundry in installabeFontsCommand.foundries:
+					for foundry in installableFontsCommand.foundries:
 						for family in foundry.families:
 							for font in family.fonts:
 								if font.uniqueID == fontID:

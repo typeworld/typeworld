@@ -11,7 +11,7 @@ print('Started...')
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import ssl, certifi, json
+import ssl, certifi, json, urllib
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
@@ -331,6 +331,9 @@ class User(object):
 	# 	self.unlinkUser()
 	# 	if self.login:
 	# 		return self.client.linkUser(*self.credentials)
+
+	def expiringTestFont(self):
+		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[0].fonts[-1]
 
 	def testFont(self):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[-1].fonts[-1]
@@ -1665,6 +1668,12 @@ class TestStringMethods(unittest.TestCase):
 
 		print('test_normalSubscription() started...')
 
+		# Reset Test Conditions
+		request = urllib.request.Request('https://typeworldserver.com/resetTestConditions')
+		response = urllib.request.urlopen(request, context=sslcontext).read()
+		print(response)
+
+
 		self.assertTrue(user0.client.online(MOTHERSHIP.split('//')[1].split('/')[0].split(':')[0]))
 
 		self.assertTrue(user2.client.user())
@@ -2243,6 +2252,7 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
+		# Supposed to succeed
 		user1.client.testScenario = None
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, True)
@@ -2528,6 +2538,22 @@ class TestStringMethods(unittest.TestCase):
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
 		print('STATUS: -1')
+
+
+		##########################################################################################
+
+		# Expiring font
+
+		# Install font
+		user1.client.testScenario = None
+		success, response = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.expiringTestFont().uniqueID, user1.expiringTestFont().getVersions()[-1].number]])
+		self.assertEqual(success, True)
+
+		self.assertEqual(len(user1.client.expiringInstalledFonts()), 1)
+
+
+
+
 
 
 		# Traceback Test
