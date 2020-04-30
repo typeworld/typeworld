@@ -1810,13 +1810,6 @@ Version: {typeWorld.api.VERSION}
 			else:
 				return False, message, None, None
 
-			# Initial rootCommand
-			success, message = self.rootCommand(url)
-			if success:
-				rootCommand = message
-			else:
-				return False, message, None, None
-
 			if not updateSubscriptionsOnServer and protocol.url.accessToken:
 				return False, 'Accessing a subscription with an access token requires the subscription to be synched to the server afterwards, but `updateSubscriptionsOnServer` is set to False.', None, None
 
@@ -1825,11 +1818,20 @@ Version: {typeWorld.api.VERSION}
 
 			# Change secret key
 			if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
+
+				# Initial rootCommand
+				success, message = self.rootCommand(url)
+				if success:
+					rootCommand = message
+				else:
+					return False, message, None, None
+
 				protocol.setSecretKey(protocol.url.secretKey)
 				publisher = self.publisher(rootCommand.canonicalURL)
 				subscription = publisher.subscription(protocol.unsecretURL(), protocol)
 
 			else:
+
 				# Initial Health Check
 				success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 				if not success:
@@ -1839,6 +1841,13 @@ Version: {typeWorld.api.VERSION}
 						message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
 						if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
 							self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
+					return False, message, None, None
+
+				# rootCommand
+				success, message = self.rootCommand(url)
+				if success:
+					rootCommand = message
+				else:
 					return False, message, None, None
 
 				publisher = self.publisher(rootCommand.canonicalURL)
