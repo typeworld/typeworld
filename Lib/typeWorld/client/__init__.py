@@ -1776,6 +1776,7 @@ Version: {typeWorld.api.VERSION}
 
 			# Get subscription
 			success, protocol = getProtocol(url)
+			protocol.client = self
 			# Get Root Command
 			return protocol.rootCommand(testScenario = self.testScenario)
 		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
@@ -2719,6 +2720,7 @@ class APISubscription(PubSubClient):
 					self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
 			return True, None
+
 		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 
 
