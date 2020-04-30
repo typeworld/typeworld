@@ -210,8 +210,11 @@ class DataType(object):
             self.value = self.dataType()
 
 
-    # def __repr__(self):
-    #     return '<%s "%s">' % (self.__class__.__name__, self.get())
+    def __repr__(self):
+        if issubclass(self.__class__, Proxy):
+            return '<%s>' % (self.dataType.__name__)
+        else:
+            return '<%s>' % (self.__class__.__name__)
 
     def valid(self):
         if not self.value: return True
@@ -293,7 +296,7 @@ class FontEncodingDataType(StringDataType):
         if not self.value: return True
         
         if self.value not in FONTENCODINGS:
-            return 'Encoding %s is unknown. Known are: %s' % (self.value, FONTENCODINGS)
+            return 'Encoding "%s" is unknown. Known are: %s' % (self.value, FONTENCODINGS)
 
         return True
 
@@ -786,16 +789,28 @@ class DictBasedObject(object):
 
     #     return information, warnings, critical
 
-    def _validate(self):
+    def validate(self):
 
         information = []
         warnings = []
         critical = []
 
-        def extendWithKey(values):
+        def extendWithKey(values, key = None, sourceObject = None):
+
+            # Remove duplicates
+            seen = set()
+            seen_add = seen.add
+            values = [x for x in values if not (x in seen or seen_add(x))]
+#                values = list(set(values))
+
             _list = []
             for value in values:
-                _list.append('%s --> %s' % (self.__repr__(), value))
+                if sourceObject and key:
+                    _list.append('%s.%s --> %s --> %s' % (self, key, sourceObject, value))
+                elif key:
+                    _list.append('%s.%s --> %s' % (self, key, value))
+                else:
+                    _list.append('%s --> %s' % (self, value))
             return _list
 
 
@@ -813,21 +828,20 @@ class DictBasedObject(object):
 
                     # recurse
                     if issubclass(self._content[key].__class__, (Proxy)):
-                        if self._content[key]:
-            
-                            if self._content[key].isEmpty() == False:
-                                if self._content[key].value:
-                                    newInformation, newWarnings, newCritical = self._content[key].value._validate()
-                                    information.extend(extendWithKey(newInformation))
-                                    warnings.extend(extendWithKey(newWarnings))
-                                    critical.extend(extendWithKey(newCritical))
+                        
 
-                                # Check custom messages:
-                                if hasattr(self._content[key].value, 'customValidation') and isinstance(self._content[key].value.customValidation, types.MethodType):
-                                    newInformation, newWarnings, newCritical = self._content[key].value.customValidation()
-                                    information.extend(extendWithKey(newInformation))
-                                    warnings.extend(extendWithKey(newWarnings))
-                                    critical.extend(extendWithKey(newCritical))
+                        if self._content[key].isEmpty() == False:
+                            newInformation, newWarnings, newCritical = self._content[key].value.validate()
+                            information.extend(extendWithKey(newInformation, key))
+                            warnings.extend(extendWithKey(newWarnings, key))
+                            critical.extend(extendWithKey(newCritical, key))
+
+                            # Check custom messages:
+                            if hasattr(self._content[key].value, 'customValidation') and isinstance(self._content[key].value.customValidation, types.MethodType):
+                                newInformation, newWarnings, newCritical = self._content[key].value.customValidation()
+                                information.extend(extendWithKey(newInformation, key, self._content[key]))
+                                warnings.extend(extendWithKey(newWarnings, key, self._content[key]))
+                                critical.extend(extendWithKey(newCritical, key, self._content[key]))
 
 
                     # recurse
@@ -835,40 +849,19 @@ class DictBasedObject(object):
 
                         if self._content[key].isEmpty() == False:
                             for item in self._content[key]:
-                                if hasattr(item, '_validate') and isinstance(item._validate, types.MethodType):
-                                    newInformation, newWarnings, newCritical = item._validate()
-                                    information.extend(extendWithKey(newInformation))
-                                    warnings.extend(extendWithKey(newWarnings))
-                                    critical.extend(extendWithKey(newCritical))
+                                if hasattr(item, 'validate') and isinstance(item.validate, types.MethodType):
+                                    newInformation, newWarnings, newCritical = item.validate()
+                                    information.extend(extendWithKey(newInformation, key))
+                                    warnings.extend(extendWithKey(newWarnings, key))
+                                    critical.extend(extendWithKey(newCritical, key))
 
                                 # Check custom messages:
                                 if hasattr(item, 'customValidation') and isinstance(item.customValidation, types.MethodType):
                                     newInformation, newWarnings, newCritical = item.customValidation()
-                                    information.extend(extendWithKey(newInformation))
-                                    warnings.extend(extendWithKey(newWarnings))
-                                    critical.extend(extendWithKey(newCritical))
+                                    information.extend(extendWithKey(newInformation, key, item))
+                                    warnings.extend(extendWithKey(newWarnings, key, item))
+                                    critical.extend(extendWithKey(newCritical, key, item))
 
-                    # # Check data types for validity recursively
-                    # for key in list(self._content.keys()):
-
-                    #     required = key in self._structure and self._structure[key][1] == True
-                    #     empty = self._content[key].isEmpty()
-
-                    #     if required:
-                    #         self.initAttr(key)
-                    #         data = self._content[key]
-
-                    #         newInformation, newWarnings, newCritical = self.validateData(key, data)
-                    #         information.extend(extendWithKey(newInformation))
-                    #         warnings.extend(extendWithKey(newWarnings))
-                    #         critical.extend(extendWithKey(newCritical))
-
-                        # TODO: Seems to be unneccessary maybe?
-                        # if hasattr(self._content[key], 'customValidation') and isinstance(self._content[key].customValidation, types.MethodType):
-                        #     newInformation, newWarnings, newCritical = self._content[key].customValidation()
-                        #     information.extend(extendWithKey(newInformation))
-                        #     warnings.extend(extendWithKey(newWarnings))
-                        #     critical.extend(extendWithKey(newCritical))
 
 
         # Check custom messages:
@@ -883,12 +876,7 @@ class DictBasedObject(object):
         return information, warnings, critical
 
     def discardThisKey(self, key):
-
         return False
-
-    def validate(self):
-        return self._validate()
-
 
     def dumpDict(self):
 
@@ -1060,19 +1048,18 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
         return text
 
-
     def customValidation(self):
 
         information, warnings, critical = [], [], []
 
-        if self.isEmpty(): critical.append('%s needs to contain at least one language field' % (self.__repr__()))
+        if self.isEmpty(): critical.append('Needs to contain at least one language field')
 
         # Check for text length
         for langId in self._possible_keys:
             if self.get(langId):
                 string = self.get(langId)
                 if len(string) > self._length:
-                    critical.append('%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length))
+                    critical.append('Language entry "%s" is too long. Allowed are %s characters.' % (langId, self._length))
 
                 if re.findall(r'(<.+?>)', string):
                     if self._markdownAllowed:
@@ -1399,7 +1386,7 @@ class LicenseUsage(DictBasedObject):
 
         # Checking for existing license
         if self.keyword and not self.getLicense():
-            critical.append('%s has license "%s", but %s has no matching license.' % (self, self.keyword, self.parent.parent.parent))
+            critical.append('Has license "%s", but %s has no matching license.' % (self.keyword, self.parent.parent.parent))
 
         return information, warnings, critical
 
@@ -1540,22 +1527,22 @@ class Font(DictBasedObject):
 
         # Checking font type/extension
         if self.purpose == 'desktop' and not self.format:
-            critical.append('%s is a desktop font (see .purpose), but has no .format value.' % (self))
+            critical.append('Is a desktop font (see .purpose), but has no .format value.')
 
         # Checking version information
         if not self.hasVersionInformation():
-            critical.append('%s has no version information, and neither has its family %s. Either one needs to carry version information.' % (self, self.parent))
+            critical.append('Has no version information, and neither has its family %s. Either one needs to carry version information.' % (self.parent))
 
         # Checking for designers
         for designerKeyword in self.designerKeywords:
             if not self.parent.parent.parent.getDesignerByKeyword(designerKeyword):
-                critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent.parent))
+                critical.append('Has designer "%s", but %s.designers has no matching designer.' % (designerKeyword, self.parent.parent.parent))
 
         # Checking uniqueID for file name contradictions:
         forbidden = '/?<>\\:*|^,;'
         for char in forbidden:
             if self.uniqueID.count(char) > 0:
-                critical.append("uniqueID must not contain the character %s because it will be used for the font's file name on disk." % char)
+                critical.append('.uniqueID must not contain the character "%s" because it will be used for the font’s file name on disk.' % char)
 
         for version in self.getVersions():
             filename = self.filename(version.number)
@@ -1664,7 +1651,7 @@ class Family(DictBasedObject):
         # Checking for designers
         for designerKeyword in self.designerKeywords:
             if not self.parent.parent.getDesignerByKeyword(designerKeyword):
-                critical.append('%s has designer "%s", but %s.designers has no matching designer.' % (self, designerKeyword, self.parent.parent))
+                critical.append('Has designer "%s", but %s.designers has no matching designer.' % (designerKeyword, self.parent.parent))
 
         return information, warnings, critical
 
@@ -1870,7 +1857,7 @@ class Foundry(DictBasedObject):
         if self.styling:
             for theme in self.styling:
                 if theme not in themes:
-                    critical.append('Styling keyword %s is unknown. Known are %s.' % (theme, themes))
+                    critical.append('Styling keyword "%s" is unknown. Known are %s.' % (theme, themes))
 
                 for colorKey in self._stylingColorAttributes:
                     if colorKey in self.styling[theme]:
@@ -1884,7 +1871,7 @@ class Foundry(DictBasedObject):
                 if 'logo' in self.styling[theme]:
                     l = WebURLDataType()
                     l.value = self.styling[theme]['logo']
-                    valid = c.valid()
+                    valid = l.valid()
                     if valid != True:
                         critical.append('Logo URL attribute: %s' % (valid))
 
@@ -1919,7 +1906,7 @@ class BaseResponse(DictBasedObject):
         information, warnings, critical = [], [], []
 
         if hasattr(self, 'response') and self.response == ERROR and self.errorMessage.isEmpty():
-            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
+            critical.append('.response is "%s", but .errorMessage is missing.' % (ERROR))
 
         return information, warnings, critical
 
@@ -1996,7 +1983,7 @@ class InstallableFontsResponse(BaseResponse):
         information, warnings, critical = [], [], []
 
         if hasattr(self, 'response') and self.response == ERROR and self.errorMessage.isEmpty():
-            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
+            critical.append('.response is "%s", but .errorMessage is missing.' % (ERROR))
 
         if self.response == 'success' and not self.name.getText():
             warnings.append('The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.')
@@ -2085,16 +2072,16 @@ class InstallFontAsset(BaseResponse):
         information, warnings, critical = [], [], []
 
         if self.response == 'success' and not self.data:
-            critical.append('%s.response is set to success, but %s.data is missing' % (self, self))
+            critical.append('.response is set to success, but .data is missing')
 
         if self.data and not self.encoding:
-            critical.append('%s.data is set, but %s.encoding is missing' % (self, self))
+            critical.append('.data is set, but .encoding is missing')
 
         if self.data and not self.mimeType:
-            critical.append('%s.data is set, but %s.mimeType is missing' % (self, self))
+            critical.append('.data is set, but .mimeType is missing')
 
         if self.response == ERROR and self.errorMessage.isEmpty():
-            critical.append('%s.response is "%s", but %s.errorMessage is missing.' % (self, ERROR, self))
+            critical.append('.response is "%s", but .errorMessage is missing.' % (ERROR))
 
         newInformation, newWarnings, newCritical = super().customValidation()
         if newInformation: information.extend(newInformation)
@@ -2263,7 +2250,7 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
         information, warnings, critical = [], [], []
 
         if self.canonicalURL and not self.canonicalURL.startswith('https://'):
-            warnings.append('%s.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.' % (self))
+            warnings.append('.canonicalURL is not using SSL (https://). Consider using SSL to protect your data.')
 
         return information, warnings, critical
 
