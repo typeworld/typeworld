@@ -95,21 +95,30 @@ class URL(object):
 		else:
 			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.restDomain)
 
+_protocols = {}
+
 def getProtocol(url):
 
 	protocol = URL(url).protocol
 
-	for ext in ('.py', '.pyc'):
-		if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
+	if url in _protocols:
+		return True, _protocols[url]
 
-			import importlib
-			spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
-			module = importlib.util.module_from_spec(spec)
-			spec.loader.exec_module(module)
-			
-			protocolObject = module.TypeWorldProtocol(url)
+	else:
 
-			return True, protocolObject
+		for ext in ('.py', '.pyc'):
+			if os.path.exists(os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext)):
+
+				import importlib
+				spec = importlib.util.spec_from_file_location('json', os.path.join(os.path.dirname(__file__), 'protocols', protocol + ext))
+				module = importlib.util.module_from_spec(spec)
+				spec.loader.exec_module(module)
+				
+				protocolObject = module.TypeWorldProtocol(url)
+
+				_protocols[url] = protocolObject
+
+				return True, protocolObject
 
 	return False, 'Protocol %s doesn’t exist in this app (yet).' % protocol
 
