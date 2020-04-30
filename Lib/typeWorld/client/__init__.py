@@ -1661,7 +1661,7 @@ Version: {typeWorld.api.VERSION}
 		try:
 			resources = self.get('resources') or {}
 
-			if url not in resources or update:
+			if not url in resources or update:
 
 				if self.testScenario:
 					url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)

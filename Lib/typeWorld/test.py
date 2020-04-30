@@ -496,10 +496,18 @@ class TestStringMethods(unittest.TestCase):
 
 		# error
 		i2 = copy.deepcopy(installableFonts)
+		i2.response = 'error'
+		validate = i2.validate()
+		print(validate[2])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse> --> .response is "error", but .errorMessage is missing.'])
+
+		# error
+		i2 = copy.deepcopy(installableFonts)
+		i2.response = 'error'
 		try:
-			i2.response = 'error'
+			d = i2.dumpDict()
 		except ValueError as e:
-			self.assertEqual(str(e), '<InstallableFontsResponse> --> <InstallableFontsResponse>.response is "error", but <InstallableFontsResponse>.errorMessage is missing.')
+			self.assertEqual(str(e), '<InstallableFontsResponse> --> .response is "error", but .errorMessage is missing.')
 
 		# name
 		# allowed to be emtpy
@@ -856,7 +864,6 @@ class TestStringMethods(unittest.TestCase):
 		i2.foundries[0].families[0].fonts[0].versions = []
 		try:
 			validate = i2.validate()
-			print(validate[2])
 		except ValueError as e:
 			self.assertEqual(str(e), '<Font "YanoneKaffeesatz-Regular"> has no version information, and neither has its family <Family "Yanone Kaffeesatz">. Either one needs to carry version information.')
 
@@ -1104,7 +1111,58 @@ class TestStringMethods(unittest.TestCase):
         } }''')
 		validate = i2.validate()
 		print(validate[2])
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts"> --> Logo URL attribute: Needs to start with http:// or https://'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts"> --> .styling "logo" attribute: Needs to start with http:// or https://'])
+
+		# styling
+		i2 = copy.deepcopy(installableFonts)
+		i2.foundries[0].styling = json.loads('''{"light": {
+            "headerColor": "F20D5I",
+            "headerTextColor": "000000",
+            "headerLinkColor": "E5F20D",
+
+            "backgroundColor": "E5F20D",
+            "textColor": "000000",
+            "linkColor": "F7AD22",
+
+            "selectionColor": "0D79F2",
+            "selectionTextColor": "E5F20D",
+
+            "buttonColor": "197AA3",
+            "buttonTextColor": "FFFFFF",
+
+            "informationViewBackgroundColor": "469BF5",
+            "informationViewTextColor": "000000",
+            "informationViewLinkColor": "E5F20D",
+
+            "informationViewButtonColor": "E5F20D",
+            "informationViewButtonTextColor": "000000"
+
+        }, "dark": {
+            "headerColor": "B10947",
+            "headerTextColor": "000000",
+            "headerLinkColor": "E5F20D",
+
+            "backgroundColor": "1A1A1A",
+            "textColor": "E5F20D",
+            "linkColor": "C07F07",
+
+            "selectionColor": "B10947",
+            "selectionTextColor": "E5F20D",
+
+            "buttonColor": "22A4DC",
+            "buttonTextColor": "000000",
+
+            "informationViewBackgroundColor": "000000",
+            "informationViewTextColor": "999999",
+            "informationViewLinkColor": "E5F20D",
+
+            "informationViewButtonColor": "1E90C1",
+            "informationViewButtonTextColor": "000000"
+
+        } }''')
+		validate = i2.validate()
+		print(validate[2])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts"> --> .styling color attribute "headerColor": Not a valid hex color of format RRGGBB (like FF0000 for red): F20D5I'])
 
 		# email
 		i2 = copy.deepcopy(installableFonts)
@@ -1196,6 +1254,11 @@ class TestStringMethods(unittest.TestCase):
 		if not ONLINE: return
 
 		print('test_otherStuff()')
+
+		# __repr__
+		s = typeWorld.api.StringDataType()
+		s.value = 'a'
+		self.assertEqual(str(s), '<StringDataType "a">')
 
 		assert type(root.supportedCommands.index('installableFonts')) == int
 		assert installableFonts.designers[0].parent == installableFonts

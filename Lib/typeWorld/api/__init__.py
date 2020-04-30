@@ -214,7 +214,7 @@ class DataType(object):
         if issubclass(self.__class__, Proxy):
             return '<%s>' % (self.dataType.__name__)
         else:
-            return '<%s>' % (self.__class__.__name__)
+            return '<%s "%s">' % (self.__class__.__name__, self.get())
 
     def valid(self):
         if not self.value: return True
@@ -1866,14 +1866,14 @@ class Foundry(DictBasedObject):
                         c.value = self.styling[theme][colorKey]
                         valid = c.valid()
                         if valid != True:
-                            critical.append('Color attribute %s: %s' % (colorKey, valid))
+                            critical.append('.styling color attribute "%s": %s' % (colorKey, valid))
 
                 if 'logo' in self.styling[theme]:
                     l = WebURLDataType()
                     l.value = self.styling[theme]['logo']
                     valid = l.valid()
                     if valid != True:
-                        critical.append('Logo URL attribute: %s' % (valid))
+                        critical.append('.styling "logo" attribute: %s' % (valid))
 
 
         return information, warnings, critical
