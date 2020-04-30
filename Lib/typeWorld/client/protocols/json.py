@@ -99,13 +99,12 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			if testScenario:
 				data['testScenario'] = testScenario
 			root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.EndpointResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
-			api = root.endpoint
 			
 			# Errors
 			if responses['errors']:
 				return False, responses['errors'][0]
 
-			self._rootCommand = api
+			self._rootCommand = root.endpoint
 
 		# Success
 		return True, self._rootCommand
@@ -305,19 +304,19 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if testScenario:
 			data['testScenario'] = testScenario
 
-		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.EndpointResponse(), typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+
+		# InstallableFontsResponse
 		api = root.installableFonts
+
+		# EndpointResponse
+		self._rootCommand = root.endpoint
 		
 		# Errors
 		if responses['errors']: return False, responses['errors'][0]
 
-		# Check for installableFonts response support
-		success, message = self.rootCommand(testScenario = testScenario)
-		if success: rootCommand = message
-		else: return False, 'Error when getting rootCommand: %s' % message
-
-		if not 'installableFonts' in rootCommand.supportedCommands or not 'installFonts' in rootCommand.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" or "installFonts" commands.' % rootCommand.canonicalURL
+		if not 'installableFonts' in self._rootCommand.supportedCommands or not 'installFonts' in self._rootCommand.supportedCommands:
+			return False, 'API endpoint %s does not support the "installableFonts" or "installFonts" commands.' % self._rootCommand.canonicalURL
 
 		if api.response == 'error':
 			return False, api.errorMessage
