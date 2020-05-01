@@ -1661,12 +1661,32 @@ Version: {typeWorld.api.VERSION}
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
+	def deleteResources(self, urls):
+
+		try:
+			resources = self.get('resources') or {}
+
+			for url in urls:
+				for key in resources:
+					if key.startswith(url):
+						del resources[key]
+						break
+
+			self.set('resources', resources)
+
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
+
 	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 		try:
 			resources = self.get('resources') or {}
 
-			if not url in resources or update:
+			key = f'{url},binary={binary}'
+
+			# Load fresh
+			if not key in resources or update:
+
+				print(f'Load {key} fresh')
 
 				if self.testScenario:
 					url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
@@ -1684,14 +1704,17 @@ Version: {typeWorld.api.VERSION}
 				else:
 					content = content.decode()
 
-				resources[url] = response.headers['content-type'] + ',' + content
+				resources[key] = response.headers['content-type'] + ',' + content
 				self.set('resources', resources)
 
 				return True, content, response.headers['content-type']
 
+			# Serve from cache
 			else:
 
-				response = resources[url]
+				print(f'Serve {key} from cache')
+
+				response = resources[key]
 				mimeType = response.split(',')[0]
 				content = response[len(mimeType)+1:]
 
@@ -2193,16 +2216,17 @@ class APIPublisher(object):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 
 		try:
-			response = self.parent.resourceByURL(url, binary, update)
+			success, response, mimeType = self.parent.resourceByURL(url, binary, update)
 
 			# Save resource
-			if response[0] == True:
+			if success == True:
 				resourcesList = self.get('resources') or []
 				if not url in resourcesList:
 					resourcesList.append(url)
 					self.set('resources', resourcesList)
 
-			return response
+			return success, response, mimeType
+
 		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
@@ -2213,10 +2237,13 @@ class APIPublisher(object):
 
 			# Resources
 			resources = self.parent.get('resources') or {}
-			for url in self.get('resources') or []:
-				if url in resources:
+			ownResources = self.get('resources') or []
+			for url in ownResources:
+				if url in [x.split(',')[0] for x in resources.keys()]:
 					del resources[url]
 			self.parent.set('resources', resources)
+
+			self.parent.deleteResources(ownResources)
 
 			self.parent.remove('publisher(%s)' % self.canonicalURL)
 			publishers = self.parent.get('publishers')
@@ -2459,16 +2486,17 @@ class APISubscription(PubSubClient):
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
 		try:
-			response = self.parent.parent.resourceByURL(url, binary, update)
+			success, response, mimeType = self.parent.parent.resourceByURL(url, binary, update)
 
 			# Save resource
-			if response[0] == True:
+			if success == True:
 				resourcesList = self.get('resources') or []
 				if not url in resourcesList:
 					resourcesList.append(url)
 					self.set('resources', resourcesList)
 
-			return response
+			return success, response, mimeType
+
 		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
@@ -2992,10 +3020,13 @@ class APISubscription(PubSubClient):
 
 			# Resources
 			resources = self.parent.parent.get('resources') or {}
-			for url in self.get('resources') or []:
+			ownResources = self.get('resources') or []
+			for url in ownResources:
 				if url in resources:
 					resources.pop(url)
 			self.parent.parent.set('resources', resources)
+
+			self.parent.parent.deleteResources(ownResources)
 
 
 			# New
