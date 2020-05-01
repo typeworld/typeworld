@@ -1,4 +1,4 @@
 [report]
 exclude_lines =
-    except: (.*)handleTraceback(.*)
+    except(.*): (.*)handleTraceback(.*)
     (.*)#(.*)nocoverage(.*)
