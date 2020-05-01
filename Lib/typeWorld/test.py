@@ -2576,13 +2576,13 @@ class TestStringMethods(unittest.TestCase):
 		self.assertTrue(logoURL)
 		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL, binary = True)
 		self.assertEqual(success, True)
-		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+		self.assertTrue(logo.startswith('PD94b'))
 
 		# Get foundry's logo, second time (from cache in preferences)
 		self.assertTrue(logoURL)
 		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL, binary = True)
 		self.assertEqual(success, True)
-		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+		self.assertTrue(logo.startswith('PD94b'))
 
 		print('STATUS: -1')
 
