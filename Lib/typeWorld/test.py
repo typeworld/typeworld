@@ -2558,17 +2558,29 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
-		# Get foundry's logo, first time
 		logoURL = user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].styling['light']['logoURL']
+
+		# Get foundry's logo, first time
 		self.assertTrue(logoURL)
 		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
 		# Get foundry's logo, second time (from cache in preferences)
-		logoURL = user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].styling['light']['logoURL']
 		self.assertTrue(logoURL)
 		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Get foundry's logo, first time
+		self.assertTrue(logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL, binary = True)
+		self.assertEqual(success, True)
+		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+
+		# Get foundry's logo, second time (from cache in preferences)
+		self.assertTrue(logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL, binary = True)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
