@@ -515,7 +515,7 @@ class APIClient(PubSubClient):
 				self.pubSubExecuteConditionMethod = self.user
 				self.pubSubSetup()
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def __repr__(self):
@@ -525,7 +525,7 @@ class APIClient(PubSubClient):
 		try:
 			assert abc
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def pubSubCallback(self, message):
@@ -536,7 +536,7 @@ class APIClient(PubSubClient):
 				message.ack()
 				self.set('lastPubSubMessage', int(time.time()))
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	# def clearPendingOnlineCommands(self):
@@ -553,18 +553,18 @@ class APIClient(PubSubClient):
 	def get(self, key):
 		try:
 			return self._preferences.get('world.type.guiapp.' + key) or self._preferences.get(key)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def set(self, key, value):
 		try:
 			self._preferences.set('world.type.guiapp.' + key, value)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def remove(self, key):
 		try:
 			self._preferences.remove('world.type.guiapp.' + key)
 			self._preferences.remove(key)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def performRequest(self, url, parameters):
@@ -585,7 +585,7 @@ class APIClient(PubSubClient):
 			# else:
 			# 	return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def pendingInvitations(self):
 		try:
@@ -596,7 +596,7 @@ class APIClient(PubSubClient):
 					invitation.parent = self
 					_list.append(invitation)
 			return _list
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def acceptedInvitations(self):
 		try:
@@ -607,7 +607,7 @@ class APIClient(PubSubClient):
 					invitation.parent = self
 					_list.append(invitation)
 			return _list
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def sentInvitations(self):
 		try:
@@ -618,7 +618,7 @@ class APIClient(PubSubClient):
 					invitation.parent = self
 					_list.append(invitation)
 			return _list
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def secretSubscriptionURLs(self):
 		try:
@@ -631,7 +631,7 @@ class APIClient(PubSubClient):
 
 			return _list
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def unsecretSubscriptionURLs(self):
 		try:
@@ -642,12 +642,12 @@ class APIClient(PubSubClient):
 					_list.append(subscription.protocol.unsecretURL())
 
 			return _list
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def timezone(self):
 		try:
 			return strftime("%z", gmtime())
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def syncProblems(self):
 		return self._syncProblems
@@ -675,7 +675,7 @@ class APIClient(PubSubClient):
 
 			return parameters
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def online(self, server = None):
@@ -696,7 +696,7 @@ class APIClient(PubSubClient):
 
 			return True
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -724,7 +724,7 @@ class APIClient(PubSubClient):
 					commands[commandName].append(commandListItem)
 			self.set('pendingOnlineCommands', commands)
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def performCommands(self):
 		try:
@@ -832,7 +832,7 @@ class APIClient(PubSubClient):
 				self._syncProblems.append('#(response.notOnline)')
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def uploadSubscriptions(self, performCommands = True):
 		try:
@@ -845,7 +845,7 @@ class APIClient(PubSubClient):
 				success, message = self.performCommands()
 			return success, message
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def perfomUploadSubscriptions(self, oldURLs):
 
@@ -878,7 +878,7 @@ class APIClient(PubSubClient):
 
 			# Success
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def downloadSubscriptions(self, performCommands = True):
 
@@ -890,7 +890,7 @@ class APIClient(PubSubClient):
 			else:
 				return True, None
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def performDownloadSubscriptions(self):
 		try:
@@ -920,7 +920,7 @@ class APIClient(PubSubClient):
 				return self.executeDownloadSubscriptions(response)
 
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def executeDownloadSubscriptions(self, response):
@@ -969,7 +969,7 @@ class APIClient(PubSubClient):
 			self.pubSubSetup(direct = True)
 
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def acceptInvitation(self, ID):
 		try:
@@ -978,7 +978,7 @@ class APIClient(PubSubClient):
 				self.appendCommands('acceptInvitation', [ID])
 
 			return self.performCommands()
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def performAcceptInvitation(self, IDs):
@@ -1009,7 +1009,7 @@ class APIClient(PubSubClient):
 
 				# Success
 				return self.executeDownloadSubscriptions(response)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def declineInvitation(self, ID):
@@ -1021,7 +1021,7 @@ class APIClient(PubSubClient):
 
 			return self.performCommands()
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def performDeclineInvitation(self, IDs):
 		try:
@@ -1051,7 +1051,7 @@ class APIClient(PubSubClient):
 
 				# Success
 				return self.executeDownloadSubscriptions(response)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def syncSubscriptions(self, performCommands = True):
@@ -1062,7 +1062,7 @@ class APIClient(PubSubClient):
 				return self.performCommands()
 			else:
 				return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def performSyncSubscriptions(self, oldURLs):
 		try:
@@ -1103,32 +1103,32 @@ class APIClient(PubSubClient):
 
 			return True, None
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def user(self):
 		try:
 			return self.get('typeWorldUserAccount') or ''
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def userKeychainKey(self, ID):
 		try:
 			return 'https://%s@%s.type.world' % (ID, self.anonymousAppID())
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def secretKey(self, userID = None):
 		try:
 			keyring = self.keyring()
 			if keyring:
 				return keyring.get_password(self.userKeychainKey(userID or self.user()), 'secretKey')
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def userName(self):
 		try:
 			keyring = self.keyring()
 			if keyring:
 				return keyring.get_password(self.userKeychainKey(self.user()), 'userName')
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def userEmail(self):
 		try:
@@ -1136,7 +1136,7 @@ class APIClient(PubSubClient):
 			if keyring:
 				return keyring.get_password(self.userKeychainKey(self.user()), 'userEmail')
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def createUserAccount(self, name, email, password1, password2):
 		try:
@@ -1170,7 +1170,7 @@ class APIClient(PubSubClient):
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def deleteUserAccount(self, email, password):
@@ -1208,7 +1208,7 @@ class APIClient(PubSubClient):
 
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def logInUserAccount(self, email, password):
 		try:
@@ -1232,7 +1232,7 @@ class APIClient(PubSubClient):
 
 			# success
 			return self.linkUser(response['anonymousUserID'], response['secretKey'])
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def linkUser(self, userID, secretKey):
 		try:
@@ -1247,7 +1247,7 @@ class APIClient(PubSubClient):
 			self.downloadSubscriptions(performCommands = False)
 
 			return self.performCommands()
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def performLinkUser(self, userID):
@@ -1289,7 +1289,7 @@ class APIClient(PubSubClient):
 
 			return True, None
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def linkedAppInstances(self):
@@ -1329,7 +1329,7 @@ class APIClient(PubSubClient):
 				instances.append(instance)
 
 			return True, instances
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def revokeAppInstance(self, anonymousAppID):
@@ -1351,7 +1351,7 @@ class APIClient(PubSubClient):
 			if response['response'] != 'success': return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def reactivateAppInstance(self, anonymousAppID):
@@ -1374,14 +1374,14 @@ class APIClient(PubSubClient):
 			if response['response'] != 'success': return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def unlinkUser(self):
 		try:
 			self.appendCommands('unlinkUser')
 			return self.performCommands()
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def uninstallAllProtectedFonts(self, dryRun = False):
@@ -1412,7 +1412,7 @@ class APIClient(PubSubClient):
 						if not success: return False, message
 
 			return True, None
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def performUnlinkUser(self):
@@ -1457,7 +1457,7 @@ class APIClient(PubSubClient):
 			# Success
 			return True, None
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def systemLocale(self):
@@ -1472,7 +1472,7 @@ class APIClient(PubSubClient):
 					self._systemLocale = locale.getdefaultlocale()[0].split('_')[0]
 
 			return self._systemLocale
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def locale(self):
 		try:
@@ -1492,7 +1492,7 @@ class APIClient(PubSubClient):
 				_locale.append('en')
 
 			return _locale
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def expiringInstalledFonts(self):
 		try:
@@ -1501,7 +1501,7 @@ class APIClient(PubSubClient):
 				for subscription in publisher.subscriptions():
 					fonts.extend(subscription.expiringInstalledFonts())
 			return fonts
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def amountOutdatedFonts(self):
 		try:
@@ -1509,7 +1509,7 @@ class APIClient(PubSubClient):
 			for publisher in self.publishers():
 				amount += publisher.amountOutdatedFonts()
 			return amount
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def keyring(self):
@@ -1540,9 +1540,9 @@ class APIClient(PubSubClient):
 					keyring = dummyKeyRing
 
 				return keyring
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
-	def handleTraceback(self, file = None, sourceMethod = None):
+	def handleTraceback(self, file = None, sourceMethod = None, e = None):
 
 		payload = f'''\
 Version: {typeWorld.api.VERSION}
@@ -1633,7 +1633,10 @@ Version: {typeWorld.api.VERSION}
 		else:
 			self.log(payload) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
-		raise Exception(payload)
+		if e:
+			raise e
+		else:
+			raise Exception(payload)
 
 
 	def log(self, *arg):
@@ -1655,7 +1658,7 @@ Version: {typeWorld.api.VERSION}
 					if subscription.stillUpdating(): return False
 
 			return True
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def resourceByURL(self, url, binary = False, update = False): # , username = None, password = None
@@ -1693,7 +1696,7 @@ Version: {typeWorld.api.VERSION}
 				content = response[len(mimeType)+1:]
 
 				return True, content, mimeType
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -1766,7 +1769,7 @@ Version: {typeWorld.api.VERSION}
 
 
 			return anonymousAppID
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def rootCommand(self, url):
@@ -1781,7 +1784,7 @@ Version: {typeWorld.api.VERSION}
 			protocol.client = self
 			# Get Root Command
 			return protocol.rootCommand(testScenario = self.testScenario)
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def addSubscription(self, url, username = None, password = None, updateSubscriptionsOnServer = True, JSON = None, secretTypeWorldAPIKey = None):
@@ -1861,7 +1864,7 @@ Version: {typeWorld.api.VERSION}
 
 			return True, None, publisher, subscription
 
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 			# Outdated (for now)
 			# elif url.startswith('typeworldgithub://'):
@@ -1929,7 +1932,7 @@ Version: {typeWorld.api.VERSION}
 				self._publishers[canonicalURL].exists = True
 
 			return self._publishers[canonicalURL]
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def publishers(self):
 		try:
@@ -1937,7 +1940,7 @@ Version: {typeWorld.api.VERSION}
 				return [self.publisher(canonicalURL) for canonicalURL in self.get('publishers')]
 			else:
 				return []
-		except: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 class APIPublisher(object):
@@ -1976,13 +1979,13 @@ class APIPublisher(object):
 			else:
 				import tempfile
 				return tempfile.gettempdir()
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def stillUpdating(self):
 		try:
 			return len(self._updatingSubscriptions) > 0
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def updatingProblem(self):
@@ -1996,7 +1999,7 @@ class APIPublisher(object):
 
 			if problems: return problems
 
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	# def gitHubRateLimit(self):
@@ -2027,7 +2030,7 @@ class APIPublisher(object):
 			rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
 			if rootCommand:
 				return rootCommand.name.getTextAndLocale(locale = locale)
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	# def getPassword(self, username):
 	# 	keyring = self.parent.keyring()
@@ -2054,7 +2057,7 @@ class APIPublisher(object):
 	def amountInstalledFonts(self):
 		try:
 			return len(self.installedFonts())
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def installedFonts(self):
 		try:
@@ -2066,12 +2069,12 @@ class APIPublisher(object):
 						l.append(font)
 
 			return l
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def amountOutdatedFonts(self):
 		try:
 			return len(self.outdatedFonts())
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def outdatedFonts(self):
 		try:
@@ -2083,7 +2086,7 @@ class APIPublisher(object):
 						l.append(font)
 
 			return l
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	# def currentSubscription(self):
 	# 	if self.get('currentSubscription'):
@@ -2102,14 +2105,14 @@ class APIPublisher(object):
 				elif 'Dictionary' in o.__class__.__name__: o = dict(o)
 
 				return o
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def set(self, key, value):
 		try:
 			preferences = dict(self.parent.get(self.canonicalURL) or self.parent.get('publisher(%s)' % self.canonicalURL) or {})
 			preferences[key] = value
 			self.parent.set('publisher(%s)' % self.canonicalURL, preferences)
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	# def addGitHubSubscription(self, url, commits):
@@ -2150,12 +2153,12 @@ class APIPublisher(object):
 
 			return self._subscriptions[url]
 
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def subscriptions(self):
 		try:
 			return [self.subscription(url) for url in self.get('subscriptions') or []]
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def update(self):
 		try:
@@ -2176,7 +2179,7 @@ class APIPublisher(object):
 
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)'], False
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def save(self):
 		try:
@@ -2184,7 +2187,7 @@ class APIPublisher(object):
 			if not self.canonicalURL in publishers:
 				publishers.append(self.canonicalURL)
 			self.parent.set('publishers', publishers)
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
@@ -2200,7 +2203,7 @@ class APIPublisher(object):
 					self.set('resources', resourcesList)
 
 			return response
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def delete(self):
@@ -2224,7 +2227,7 @@ class APIPublisher(object):
 			self.parent.delegate._publisherWasDeleted(self)
 
 			self.parent._publishers = {}
-		except: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -2254,7 +2257,7 @@ class APISubscription(PubSubClient):
 				self.pubSubExecuteConditionMethod = None
 				self.pubSubSetup()
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def __repr__(self):
 		return f'<APISubscription url="{self.url}">'
@@ -2269,7 +2272,7 @@ class APISubscription(PubSubClient):
 				self.set('uniqueID', uniqueID)
 
 			return uniqueID
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def pubSubCallback(self, message):
 		try:
@@ -2277,7 +2280,7 @@ class APISubscription(PubSubClient):
 			if message:
 				message.ack()
 				self.set('lastPubSubMessage', int(time.time()))
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -2310,7 +2313,7 @@ class APISubscription(PubSubClient):
 	# 		# Success
 	# 		return True, None
 
-	# 	except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+	# 	except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def hasProtectedFonts(self):
 		try:
@@ -2323,7 +2326,7 @@ class APISubscription(PubSubClient):
 							return True
 
 			return False
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def stillAlive(self):
@@ -2352,7 +2355,7 @@ class APISubscription(PubSubClient):
 					stillAliveThread.start()
 
 					self.stillAliveTouched = time.time()			
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def inviteUser(self, targetEmail):
@@ -2383,7 +2386,7 @@ class APISubscription(PubSubClient):
 
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -2425,7 +2428,7 @@ class APISubscription(PubSubClient):
 
 			else:
 				return False, ['#(response.notOnline)', '#(response.notOnline.headline)']
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def invitationAccepted(self):
 		try:
@@ -2437,12 +2440,12 @@ class APISubscription(PubSubClient):
 						if self.protocol.unsecretURL() == invitation.url:
 							return True
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def stillUpdating(self):
 		try:
 			return self.url in self.parent._updatingSubscriptions
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def name(self, locale = ['en']):
@@ -2451,7 +2454,7 @@ class APISubscription(PubSubClient):
 			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
 			return installabeFontsCommand.name.getText(locale) or '#(Unnamed)'
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def resourceByURL(self, url, binary = False, update = False):
 		'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
@@ -2466,7 +2469,7 @@ class APISubscription(PubSubClient):
 					self.set('resources', resourcesList)
 
 			return response
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -2478,7 +2481,7 @@ class APISubscription(PubSubClient):
 				for family in foundry.families:
 					if family.uniqueID == ID:
 						return family
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def fontByID(self, ID):
 		try:
@@ -2489,12 +2492,12 @@ class APISubscription(PubSubClient):
 					for font in family.fonts:
 						if font.uniqueID == ID:
 							return font
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def amountInstalledFonts(self):
 		try:
 			return len(self.installedFonts())
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def installedFonts(self):
 		try:
@@ -2510,7 +2513,7 @@ class APISubscription(PubSubClient):
 							if not font in l:
 								l.append(font)
 			return l
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def expiringInstalledFonts(self):
 		try:
@@ -2526,12 +2529,12 @@ class APISubscription(PubSubClient):
 							if not font in l:
 								l.append(font)
 			return l
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def amountOutdatedFonts(self):
 		try:
 			return len(self.outdatedFonts())
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def outdatedFonts(self):
 		try:
@@ -2548,7 +2551,7 @@ class APISubscription(PubSubClient):
 							if not font in l:
 								l.append(font.uniqueID)
 			return l
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def installedFontVersion(self, fontID = None, font = None):
 		try:
@@ -2572,7 +2575,7 @@ class APISubscription(PubSubClient):
 					if os.path.exists(path):
 						return version.number
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	# def fontIsOutdated(self, fontID):
 
@@ -2722,7 +2725,7 @@ class APISubscription(PubSubClient):
 
 			return True, None
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 
@@ -2830,7 +2833,7 @@ class APISubscription(PubSubClient):
 				self.parent.parent.delegate._fontHasInstalled(False, payload, font)
 				return False, payload
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 		# elif self.parent.get('type') == 'GitHub':
@@ -2924,12 +2927,12 @@ class APISubscription(PubSubClient):
 				self._updatingProblem = ['#(response.serverNotReachable)', '#(response.serverNotReachable.headline)']
 				return False, self._updatingProblem, False
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def updatingProblem(self):
 		try:
 			return self._updatingProblem
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def get(self, key):
 		try:
@@ -2945,7 +2948,7 @@ class APISubscription(PubSubClient):
 					o = dict(o)
 
 				return o
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def set(self, key, value):
 		try:
@@ -2953,7 +2956,7 @@ class APISubscription(PubSubClient):
 			preferences = dict(self.parent.parent.get('subscription(%s)' % self.protocol.unsecretURL()) or {})
 			preferences[key] = value
 			self.parent.parent.set('subscription(%s)' % self.protocol.unsecretURL(), preferences)
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def save(self):
 		try:
@@ -2963,7 +2966,7 @@ class APISubscription(PubSubClient):
 			self.parent.set('subscriptions', subscriptions)
 
 			self.protocol.save()
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
 	def delete(self, calledFromParent = False, updateSubscriptionsOnServer = True):
@@ -3020,4 +3023,4 @@ class APISubscription(PubSubClient):
 			if updateSubscriptionsOnServer:
 				self.parent.parent.uploadSubscriptions()
 
-		except: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
