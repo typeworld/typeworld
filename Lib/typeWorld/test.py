@@ -1,5 +1,39 @@
 # -*- coding: utf-8 -*-
 
+# freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+# from typeWorld.client import *
+
+# import time
+
+# client = APIClient(preferences = AppKitNSUserDefaults('world.type.test%s' % time.time()))
+# success, message, publisher, subscription = client.addSubscription(freeSubscription)
+
+# print(id(client), id(subscription.protocol.client))
+
+# fonts = []
+# delete = []
+
+# for publisher in client.publishers():
+# 	for subscription in publisher.subscriptions():
+# 		for foundry in subscription.protocol.installableFontsCommand()[1].foundries:
+# 			for family in foundry.families:
+# 				for font in family.fonts:
+# 					fonts.append([font.uniqueID, font.getVersions()[-1].number])
+# 					delete.append(font.uniqueID)
+
+# print(fonts)
+
+# subscription = client.publishers()[0].subscriptions()[0]
+# print(id(client), id(subscription.protocol.client))
+
+# subscription.set('acceptedTermsOfService', True)
+
+# print(subscription.installFonts(fonts))
+# print(subscription.removeFonts(delete))
+
+
+# sys.exit(0)
+
 
 ONLINE = True
 

@@ -2639,8 +2639,8 @@ class APISubscription(PubSubClient):
 				else:
 					uninstallTheseUnprotectedFontIDs.append(fontID)
 
-
-			assert self == self.protocol.client
+			print(f'removeFonts() {self.parent.parent} {id(self.parent.parent)} {self.parent.parent.testScenario} {self.protocol.client} {id(self.protocol.client)} {self.protocol.client.testScenario}')
+			assert self.parent.parent == self.protocol.client
 			assert self.testScenario == self.protocol.client.testScenario
 
 
