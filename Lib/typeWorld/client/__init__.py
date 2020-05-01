@@ -1864,11 +1864,9 @@ Version: {typeWorld.api.VERSION}
 					return False, message, None, None
 
 				# rootCommand
-				success, message = self.rootCommand(url)
-				if success:
-					rootCommand = message
-				else:
-					return False, message, None, None
+				success, rootCommand = self.rootCommand(url)
+				assert success
+				assert rootCommand
 
 				publisher = self.publisher(rootCommand.canonicalURL)
 				subscription = publisher.subscription(protocol.unsecretURL(), protocol)
