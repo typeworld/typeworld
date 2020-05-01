@@ -1290,6 +1290,7 @@ class TestStringMethods(unittest.TestCase):
 
 		if not ONLINE: return
 
+
 		print('test_otherStuff()')
 
 		# __repr__
@@ -2587,11 +2588,11 @@ class TestStringMethods(unittest.TestCase):
 
 
 
-
-
-
 		# Traceback Test
-		user1.client.tracebackTest()
+		try:
+			user1.client.tracebackTest()
+		except:
+			pass
 
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
