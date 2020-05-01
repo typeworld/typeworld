@@ -1633,6 +1633,8 @@ Version: {typeWorld.api.VERSION}
 		else:
 			self.log(payload) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
+		raise Exception(payload)
+
 
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
@@ -2641,7 +2643,7 @@ class APISubscription(PubSubClient):
 
 			print(f'removeFonts() {self.parent.parent} {id(self.parent.parent)} {self.parent.parent.testScenario} {self.protocol.client} {id(self.protocol.client)} {self.protocol.client.testScenario}')
 			assert self.parent.parent == self.protocol.client
-			assert self.testScenario == self.protocol.client.testScenario
+			assert self.parent.parent.testScenario == self.protocol.client.testScenario
 
 
 			# Server access
