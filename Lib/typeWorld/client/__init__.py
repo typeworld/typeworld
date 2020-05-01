@@ -1667,7 +1667,7 @@ Version: {typeWorld.api.VERSION}
 			resources = self.get('resources') or {}
 
 			for url in urls:
-				for key in resources:
+				for key in resources.keys():
 					if key.startswith(url):
 						del resources[key]
 						break
@@ -2236,14 +2236,7 @@ class APIPublisher(object):
 				subscription.delete(calledFromParent = True)
 
 			# Resources
-			resources = self.parent.get('resources') or {}
-			ownResources = self.get('resources') or []
-			for url in ownResources:
-				if url in [x.split(',')[0] for x in resources.keys()]:
-					del resources[url]
-			self.parent.set('resources', resources)
-
-			self.parent.deleteResources(ownResources)
+			self.parent.deleteResources(self.get('resources') or [])
 
 			self.parent.remove('publisher(%s)' % self.canonicalURL)
 			publishers = self.parent.get('publishers')
@@ -3019,14 +3012,7 @@ class APISubscription(PubSubClient):
 			self.pubSubDelete()
 
 			# Resources
-			resources = self.parent.parent.get('resources') or {}
-			ownResources = self.get('resources') or []
-			for url in ownResources:
-				if url in resources:
-					resources.pop(url)
-			self.parent.parent.set('resources', resources)
-
-			self.parent.parent.deleteResources(ownResources)
+			self.parent.parent.deleteResources(self.get('resources') or [])
 
 
 			# New
