@@ -567,7 +567,7 @@ class APIClient(PubSubClient):
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
-	def performRequest(self, url, parameters):
+	def performRequest(self, url, parameters = {}):
 
 		try:
 			parameters['clientVersion'] = VERSION
