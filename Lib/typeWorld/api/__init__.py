@@ -244,6 +244,9 @@ class DataType(object):
     def isEmpty(self):
         return self.value == None or self.value == [] or self.value == ''
 
+    def isSet(self):
+        return not self.isEmpty()
+
     def formatHint(self):
         return None
 
@@ -893,7 +896,7 @@ class DictBasedObject(object):
             if self.discardThisKey(key) == False:
 
                 # if required or not empty
-                if (key in self._structure and self._structure[key][1]) or getattr(self, key) is not None:
+                if (key in self._structure and self._structure[key][1]) or getattr(self, key) or (hasattr(getattr(self, key), 'isSet') and getattr(self, key).isSet()):
 
                     
                     if hasattr(getattr(self, key), 'dumpDict'):
@@ -1071,6 +1074,10 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                     critical.append('String contains Markdown code, which is not allowed.')
 
         return information, warnings, critical
+
+    def isSet(self):
+        return not self.isEmpty()
+
 
     def isEmpty(self):
 
