@@ -72,6 +72,7 @@ from typeWorld.api import makeSemVer
 
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+flatFreeSubscription = 'typeworld://json+https//typeworldserver.com/flatapi/q8JZfYn9olyUvcCOiqHq/'
 protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 freeNamedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 testUser1 = ('test1@type.world', '12345678')
@@ -336,7 +337,6 @@ installableFonts.version = '0.1.7-alpha'
 installableFonts.foundries.append(foundry)
 #print(installableFonts.designers)
 
-print(installableFonts.dumpJSON())
 
 class User(object):
 	def __init__(self, login = None, online = True):
@@ -1782,6 +1782,18 @@ class TestStringMethods(unittest.TestCase):
 		user0.clearSubscriptions()
 
 
+		# Flat subscription
+		result = user0.client.addSubscription(flatFreeSubscription)
+		success, message, publisher, subscription = result
+		self.assertEqual(success, True)
+
+		data = user0.client.get(f'subscription({flatFreeSubscription})')['data']
+		self.assertTrue('installFontsCommand' in data and data['installFontsCommand'])
+		i = typeWorld.api.InstallFontsResponse()
+		i.loadJSON(data['installFontsCommand'])
+		self.assertEqual(i.validate()[2], [])
+
+		user0.clearSubscriptions()
 
 
 		### ###

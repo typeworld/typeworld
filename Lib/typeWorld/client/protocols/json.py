@@ -62,9 +62,16 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		self.versions = []
 		self._rootCommand = None
 		self._installableFontsCommand = None
+		self._installFontsCommand = None
 
 	def loadFromDB(self):
 		'''Overwrite this'''
+
+		if self.get('rootCommand'):
+			api = typeWorld.api.EndpointResponse()
+			api.parent = self
+			api.loadJSON(self.get('rootCommand'))
+			self._rootCommand = api
 
 		if self.get('installableFontsCommand'):
 			api = typeWorld.api.InstallableFontsResponse()
@@ -72,11 +79,11 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			api.loadJSON(self.get('installableFontsCommand'))
 			self._installableFontsCommand = api
 
-		if self.get('rootCommand'):
-			api = typeWorld.api.EndpointResponse()
+		if self.get('installFontsCommand'):
+			api = typeWorld.api.InstallFontsResponse()
 			api.parent = self
-			api.loadJSON(self.get('rootCommand'))
-			self._rootCommand = api
+			api.loadJSON(self.get('installFontsCommand'))
+			self._installFontsCommand = api
 
 	def latestVersion(self):
 		return self._installableFontsCommand
@@ -118,8 +125,6 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 
 	def update(self):
 
-		self.updateRootCommand()
-
 		data = {
 			'subscriptionID': self.url.subscriptionID, 
 			'anonymousAppID': self.client.anonymousAppID(), 
@@ -133,7 +138,7 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		if secretKey:
 			data['secretKey'] = secretKey
 
-		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+		root, responses = readJSONResponse(self.connectURL(), [typeWorld.api.EndpointResponse(), typeWorld.api.InstallableFontsResponse()], typeWorld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
 		api = root.installableFonts
 
 		if responses['errors']:
@@ -204,6 +209,16 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 		identical = self._installableFontsCommand.sameContent(api)
 		self._installableFontsCommand = api
 
+		# EndpointResponse
+		if root.endpoint:
+			self._rootCommand = root.endpoint
+
+		# InstallFontsResponse
+		if root.installFonts:
+			self._installFontsCommand = root.installFonts
+		else:
+			self._installFontsCommand = None
+
 		self.save()
 
 		return True, None, not identical
@@ -249,40 +264,47 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 
 		# Build URL
 
-		data = {
-			'fonts': ','.join([f'{x[0]}/{x[1]}' for x in fonts]),
-			'anonymousAppID': self.client.anonymousAppID(),
-			'anonymousTypeWorldUserID': self.client.user(),
-			'subscriptionID': self.url.subscriptionID,
-			'secretKey': self.getSecretKey(),
-			'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
-			'appVersion': VERSION,
-			'mothership': self.client.mothership,
-		}
-		if self.client.testScenario:
-			data['testScenario'] = self.client.testScenario
+		print(f'installFonts({fonts}, updateSubscription={updateSubscription})')
 
-		if self.subscription.get('revealIdentity') and self.client.userName():
-			data['userName'] = self.client.userName()
-		if self.subscription.get('revealIdentity') and self.client.userEmail():
-			data['userEmail'] = self.client.userEmail()
+		if self._installFontsCommand:
+			return True, self._installFontsCommand
 
-		# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
+		else:
 
-		commands = [typeWorld.api.InstallFontsResponse()]
-		if updateSubscription:
-			commands.append(typeWorld.api.InstallableFontsResponse())
+			data = {
+				'fonts': ','.join([f'{x[0]}/{x[1]}' for x in fonts]),
+				'anonymousAppID': self.client.anonymousAppID(),
+				'anonymousTypeWorldUserID': self.client.user(),
+				'subscriptionID': self.url.subscriptionID,
+				'secretKey': self.getSecretKey(),
+				'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
+				'appVersion': VERSION,
+				'mothership': self.client.mothership,
+			}
+			if self.client.testScenario:
+				data['testScenario'] = self.client.testScenario
 
-		root, messages = readJSONResponse(self.connectURL(), commands, typeWorld.api.INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
-		api = root.installFonts
+			if self.subscription.get('revealIdentity') and self.client.userName():
+				data['userName'] = self.client.userName()
+			if self.subscription.get('revealIdentity') and self.client.userEmail():
+				data['userEmail'] = self.client.userEmail()
 
-		if messages['errors']:
-			return False, '\n\n'.join(messages['errors'])
+			# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 
-		if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
-			self.setInstallableFontsCommand(root.installableFonts)
+			commands = [typeWorld.api.InstallFontsResponse()]
+			if updateSubscription:
+				commands.append(typeWorld.api.InstallableFontsResponse())
 
-		return True, api
+			root, messages = readJSONResponse(self.connectURL(), commands, typeWorld.api.INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
+			api = root.installFonts
+
+			if messages['errors']:
+				return False, '\n\n'.join(messages['errors'])
+
+			if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
+				self.setInstallableFontsCommand(root.installableFonts)
+
+			return True, api
 
 
 	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, accessToken, secretTypeWorldAPIKey, testScenario):
@@ -326,16 +348,29 @@ class TypeWorldProtocol(typeWorld.client.protocols.TypeWorldProtocolBase):
 			return False, ['#(response.%s)' % api.response, '#(response.%s.headline)' % api.response]
 
 		# Success
-
 		self._installableFontsCommand = api
+
+		# InstallFontsResponse
+		if root.installFonts:
+			self._installFontsCommand = root.installFonts
+		else:
+			self._installFontsCommand = None
 
 		if self.url.secretKey:
 			self.setSecretKey(self.url.secretKey)
+
 		return True, None
 
 	def save(self):
-		if self._installableFontsCommand:
-			self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
+
 		if self._rootCommand:
 			self.set('rootCommand', self._rootCommand.dumpJSON())
+
+		if self._installableFontsCommand:
+			self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
+
+		if self._installFontsCommand:
+			self.set('installFontsCommand', self._installFontsCommand.dumpJSON())
+		else:
+			self.set('installFontsCommand', '')
 

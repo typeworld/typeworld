@@ -1712,8 +1712,6 @@ Version: {typeWorld.api.VERSION}
 			# Serve from cache
 			else:
 
-				print(f'Serve {key} from cache')
-
 				response = resources[key]
 				mimeType = response.split(',')[0]
 				content = response[len(mimeType)+1:]
@@ -2536,7 +2534,7 @@ class APISubscription(PubSubClient):
 
 	def expiringInstalledFonts(self):
 		try:
-			l = []
+			fonts = []
 			# Get font
 
 			success, installabeFontsCommand = self.protocol.installableFontsCommand()
@@ -2544,10 +2542,10 @@ class APISubscription(PubSubClient):
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						if self.installedFontVersion(font.uniqueID) and font.expiry:
-							if not font in l:
-								l.append(font)
-			return l
+						if self.installedFontVersion(font = font) and font.expiry:
+							if not font in fonts:
+								fonts.append(font)
+			return fonts
 		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def amountOutdatedFonts(self):
@@ -2675,44 +2673,46 @@ class APISubscription(PubSubClient):
 
 				if success:
 
-					# Security check
-					if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-						return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
+					# # Security check
+					# if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+					# 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
 					# Process fonts
 					for incomingFont in payload.assets:
 
-						proceed = ['unknownInstallation'] # 
+						if incomingFont.uniqueID in fontIDs:
 
-						if incomingFont.response in proceed:
-							pass
+							proceed = ['unknownInstallation'] # 
 
-						elif incomingFont.response == 'error':
-							return False, incomingFont.errorMessage
+							if incomingFont.response in proceed:
+								pass
 
-						# Predefined response messages
-						elif incomingFont.response != 'error' and incomingFont.response != 'success':
-							return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+							elif incomingFont.response == 'error':
+								return False, incomingFont.errorMessage
 
-						if incomingFont.response == 'success':
+							# Predefined response messages
+							elif incomingFont.response != 'error' and incomingFont.response != 'success':
+								return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
 
-							path = None
-							for foundry in installableFontsCommand.foundries:
-								for family in foundry.families:
-									for font in family.fonts:
-										if font.uniqueID == incomingFont.uniqueID:
-											if self.installedFontVersion(font.uniqueID):
-												path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-												break
+							if incomingFont.response == 'success':
 
-							if not path and not dryRun:
-								return False, 'Font path couldn’t be determined (deleting protected fonts)'
+								path = None
+								for foundry in installableFontsCommand.foundries:
+									for family in foundry.families:
+										for font in family.fonts:
+											if font.uniqueID == incomingFont.uniqueID:
+												if self.installedFontVersion(font.uniqueID):
+													path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
+													break
 
-							if not dryRun:
-								os.remove(path)
-								# print('Actually deleted font %s' % path)
+								if not path and not dryRun:
+									return False, 'Font path couldn’t be determined (deleting protected fonts)'
 
-							self.parent.parent.delegate._fontHasUninstalled(True, None, font)
+								if not dryRun:
+									os.remove(path)
+									# print('Actually deleted font %s' % path)
+
+								self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
 
 				else:
@@ -2775,7 +2775,7 @@ class APISubscription(PubSubClient):
 						for font in family.fonts:
 							if font.uniqueID == fontID:
 								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-								if font.protected:
+								if font.protected or font.expiry or font.expiryDuration:
 									protectedFonts = True
 								break
 				assert path
@@ -2808,52 +2808,54 @@ class APISubscription(PubSubClient):
 
 			if success:
 
-				# Security check
-				if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-					return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
+				# # Security check
+				# if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+				# 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
 				# Process fonts
 				for incomingFont in payload.assets:
 
-					if incomingFont.response == 'error':
-						return False, incomingFont.errorMessage
+					if incomingFont.uniqueID in fontIDs:
 
-					# Predefined response messages
-					elif incomingFont.response != 'error' and incomingFont.response != 'success':
-						return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+						if incomingFont.response == 'error':
+							return False, incomingFont.errorMessage
 
-					if incomingFont.response == 'success':
+						# Predefined response messages
+						elif incomingFont.response != 'error' and incomingFont.response != 'success':
+							return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
 
-						path = None
-						for foundry in installabeFontsCommand.foundries:
-							for family in foundry.families:
-								for font in family.fonts:
-									if font.uniqueID == incomingFont.uniqueID:
-										path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-										break
-						assert path
+						if incomingFont.response == 'success':
 
-						if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
+							path = None
+							for foundry in installabeFontsCommand.foundries:
+								for family in foundry.families:
+									for font in family.fonts:
+										if font.uniqueID == incomingFont.uniqueID:
+											path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
+											break
+							assert path
 
-						if incomingFont.data and incomingFont.encoding:
+							if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
 
-							f = open(path, 'wb')
-							f.write(base64.b64decode(incomingFont.data))
-							f.close()
+							if incomingFont.data and incomingFont.encoding:
 
-						elif incomingFont.dataURL:
-
-							success, response = self.parent.parent.performRequest(incomingFont.dataURL)
-
-							if not success:
-								return False, response
-
-							else:
 								f = open(path, 'wb')
-								f.write(response.read())
+								f.write(base64.b64decode(incomingFont.data))
 								f.close()
 
-						self.parent.parent.delegate._fontHasInstalled(True, None, font)
+							elif incomingFont.dataURL:
+
+								success, response = self.parent.parent.performRequest(incomingFont.dataURL)
+
+								if not success:
+									return False, response
+
+								else:
+									f = open(path, 'wb')
+									f.write(response.read())
+									f.close()
+
+							self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
 				# Ping
 				self.stillAlive()
