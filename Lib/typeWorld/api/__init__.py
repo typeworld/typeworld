@@ -2060,10 +2060,12 @@ class InstallFontAsset(BaseResponse):
         'response':             [InstallFontResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTSCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
 
-        'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
+        'uniqueID':         [StringDataType,            True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
         'mimeType':         [FontMimeType,              False,  None,   'MIME Type of data. For desktop fonts, these are %s.' % FONTPURPOSES['desktop']['acceptableMimeTypes']],
-        'data':             [FontDataType,              False,  None,   'Binary data encoded to a string using ::InstallFontResponse.encoding::'],
-        'encoding':         [FontEncodingDataType,      False,  None,   'Encoding type for binary font data. Currently supported: %s' % (FONTENCODINGS)],
+        'dataURL':          [WebURLDataType,            False,  None,   'HTTP link of font file resource. ::InstallFontAsset.data:: and ::InstallFontAsset.dataURL:: are mutually exclusive; only one can be specified. The HTTP resource must be served under the correct MIME type specified in ::InstallFontAsset.mimeType:: and is expected to be in raw binary encoding; ::InstallFontAsset.encoding:: is not regarded.'],
+        'data':             [FontDataType,              False,  None,   'Binary data as a string encoded as one of the following supported encodings: ::InstallFontResponse.encoding::. ::InstallFontAsset.data:: and ::InstallFontAsset.dataURL:: are mutually exclusive; only one can be specified.'],
+        'encoding':         [FontEncodingDataType,      False,  None,   'Encoding type for font data in ::InstallFontResponse.data::. Currently supported: %s' % (FONTENCODINGS)],
+
 
         }
 
@@ -2071,14 +2073,17 @@ class InstallFontAsset(BaseResponse):
 
         information, warnings, critical = [], [], []
 
-        if self.response == 'success' and not self.data:
-            critical.append('.response is set to success, but .data is missing')
+        if self.response == 'success' and (not self.data and not self.dataURL):
+            critical.append('.response is set to success, but neither .data nor .dataURL are set.')
 
         if self.data and not self.encoding:
             critical.append('.data is set, but .encoding is missing')
 
         if self.data and not self.mimeType:
             critical.append('.data is set, but .mimeType is missing')
+
+        if self.dataURL and not self.mimeType:
+            critical.append('.dataURL is set, but .mimeType is missing')
 
         if self.response == ERROR and self.errorMessage.isEmpty():
             critical.append('.response is "%s", but .errorMessage is missing.' % (ERROR))

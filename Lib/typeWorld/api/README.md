@@ -1607,7 +1607,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'otf', 'ttf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1921,7 +1921,7 @@ return installFonts.dumpJSON()
 
 ### Attributes
 
-[data](#class-installfontasset-attribute-data)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />
+[data](#class-installfontasset-attribute-data)<br />[dataURL](#class-installfontasset-attribute-dataurl)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />
 
 ### Methods
 
@@ -1933,7 +1933,15 @@ return installFonts.dumpJSON()
 
 ### data
 
-Binary data encoded to a string using [InstallFontResponse.encoding](#user-content-class-installfontresponse-attribute-encoding)
+Binary data as a string encoded as one of the following supported encodings: [InstallFontResponse.encoding](#user-content-class-installfontresponse-attribute-encoding). [InstallFontAsset.data](#user-content-class-installfontasset-attribute-data) and [InstallFontAsset.dataURL](#user-content-class-installfontasset-attribute-dataurl) are mutually exclusive; only one can be specified.
+
+__Required:__ False<br />
+__Type:__ Str<br />
+<div id="class-installfontasset-attribute-dataURL"></div>
+
+### dataURL
+
+HTTP link of font file resource. [InstallFontAsset.data](#user-content-class-installfontasset-attribute-data) and [InstallFontAsset.dataURL](#user-content-class-installfontasset-attribute-dataurl) are mutually exclusive; only one can be specified. The HTTP resource must be served under the correct MIME type specified in [InstallFontAsset.mimeType](#user-content-class-installfontasset-attribute-mimetype) and is expected to be in raw binary encoding; [InstallFontAsset.encoding](#user-content-class-installfontasset-attribute-encoding) is not regarded.
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1941,7 +1949,7 @@ __Type:__ Str<br />
 
 ### encoding
 
-Encoding type for binary font data. Currently supported: ['base64']
+Encoding type for font data in [InstallFontResponse.data](#user-content-class-installfontresponse-attribute-data). Currently supported: ['base64']
 
 __Required:__ False<br />
 __Type:__ Str<br />

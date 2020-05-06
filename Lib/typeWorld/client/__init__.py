@@ -2663,7 +2663,6 @@ class APISubscription(PubSubClient):
 				else:
 					uninstallTheseUnprotectedFontIDs.append(fontID)
 
-			print(f'removeFonts() {self.parent.parent} {id(self.parent.parent)} {self.parent.parent.testScenario} {self.protocol.client} {id(self.protocol.client)} {self.protocol.client.testScenario}')
 			assert self.parent.parent == self.protocol.client
 			assert self.parent.parent.testScenario == self.protocol.client.testScenario
 
@@ -2835,10 +2834,24 @@ class APISubscription(PubSubClient):
 						assert path
 
 						if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
-						f = open(path, 'wb')
-						f.write(base64.b64decode(incomingFont.data))
-						f.close()
-						# print('Actually wrote font %s to disk' % path)
+
+						if incomingFont.data and incomingFont.encoding:
+
+							f = open(path, 'wb')
+							f.write(base64.b64decode(incomingFont.data))
+							f.close()
+
+						elif incomingFont.dataURL:
+
+							success, response = self.parent.parent.performRequest(incomingFont.dataURL)
+
+							if not success:
+								return False, response
+
+							else:
+								f = open(path, 'wb')
+								f.write(response.read())
+								f.close()
 
 						self.parent.parent.delegate._fontHasInstalled(True, None, font)
 

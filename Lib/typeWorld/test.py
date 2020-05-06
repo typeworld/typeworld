@@ -370,7 +370,13 @@ class User(object):
 		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[0].fonts[-1]
 
 	def testFont(self):
-		return self.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries[-1].families[-1].fonts[-1]
+		publisher = self.client.publishers()[0]
+		subscription = publisher.subscriptions()[-1]
+		installableFontsCommand = subscription.protocol.installableFontsCommand()[1]
+		foundry = installableFontsCommand.foundries[-1]
+		family = foundry.families[-1]
+		font = family.fonts[-1]
+		return font
 
 	def clearSubscriptions(self):
 		self.client.testScenario = None
@@ -1381,7 +1387,7 @@ class TestStringMethods(unittest.TestCase):
 #		asset.data = b'ABC' # missing
 		validate = asset.validate()
 		print(validate[2])
-		self.assertEqual(validate[2], ['<InstallFontAsset> --> .response is set to success, but .data is missing'])
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> .response is set to success, but neither .data nor .dataURL are set.'])
 
 		installFonts = InstallFontsResponse()
 		asset = InstallFontAsset()
@@ -1952,12 +1958,21 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# Repeat font installation
+		user1.client.testScenario = 'simulateLoginRequired'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if success == False: print(message)
+		self.assertEqual(success, False)
+		self.assertEqual(message, ['#(response.loginRequired)', '#(response.loginRequired.headline)'])
+
+		# Repeat font installation
 		user1.client.testScenario = 'simulateProgrammingError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulatePermissionError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, False)
 
 
@@ -1966,6 +1981,7 @@ class TestStringMethods(unittest.TestCase):
 
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
@@ -1974,15 +1990,11 @@ class TestStringMethods(unittest.TestCase):
 
 
 		user1.client.testScenario = 'simulateInsufficientPermissions'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
-		self.assertEqual(success, False)
-
-
-		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
-
-
-		user1.client.testScenario = 'simulateLoginRequired'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		publisher = user1.client.publishers()[0]
+		subscription = publisher.subscriptions()[-1]
+		print(user1.testFont().getVersions())
+		success, message = subscription.installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, False)
 
 
@@ -1991,10 +2003,9 @@ class TestStringMethods(unittest.TestCase):
 
 		# Supposed to pass
 		user1.client.testScenario = None
-		self.assertEqual(
-			user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
-			(True, None)
-		)
+		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
+		self.assertEqual(success, True)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
