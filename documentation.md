@@ -200,8 +200,6 @@ This approach cannot prevent a user to invite other users to share a subscriptio
 
 This approach is the only way to make sure that users are authentic. If a user violates any of the publisher’s terms, the publisher may revoke the access to a subscription using the invitation API, and along with revoking access to one or all of its initial users, all subsequent invitations by those users to even other users will be revoked as well.
 
-***Note:*** This command isn’t yet implemented with the central Type.World server as of this writing, Feb 26nd 2020.
-
 ## Remote De-Authorization of App Instances by the User
 
 Subscriptions are synchronized with the central server for registered users and users can de-authorize all subscriptions for an entire app instance through the app preferences. 
@@ -223,5 +221,3 @@ Invite team lead to a subscription.
 # TODO
 
 * When trial fonts expire while the computer is offline, the uninstallation calls won't reach the server and need to be recorded for later sending.
-* Widen `installFont` and `uninstallFont` commands to serve multiple fonts at once for faster installation.
-* Create a multi part response that may contain fonts and also new subscription data for faster server interactions.
