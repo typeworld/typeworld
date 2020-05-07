@@ -67,22 +67,22 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 	def loadFromDB(self):
 		'''Overwrite this'''
 
-		if self.get('rootCommand'):
-			api = typeWorld.api.EndpointResponse()
+		if self.get('endpoint'):
+			api = typeworld.api.EndpointResponse()
 			api.parent = self
-			api.loadJSON(self.get('rootCommand'))
+			api.loadJSON(self.get('endpoint'))
 			self._rootCommand = api
 
-		if self.get('installableFontsCommand'):
-			api = typeWorld.api.InstallableFontsResponse()
+		if self.get('installableFonts'):
+			api = typeworld.api.InstallableFontsResponse()
 			api.parent = self
-			api.loadJSON(self.get('installableFontsCommand'))
+			api.loadJSON(self.get('installableFonts'))
 			self._installableFontsCommand = api
 
-		if self.get('installFontsCommand'):
-			api = typeWorld.api.InstallFontsResponse()
+		if self.get('installFonts'):
+			api = typeworld.api.InstallFontsResponse()
 			api.parent = self
-			api.loadJSON(self.get('installFontsCommand'))
+			api.loadJSON(self.get('installFonts'))
 			self._installFontsCommand = api
 
 	def latestVersion(self):
@@ -364,13 +364,17 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 	def save(self):
 
 		if self._rootCommand:
-			self.set('rootCommand', self._rootCommand.dumpJSON())
+			self.set('endpoint', self._rootCommand.dumpJSON())
+		else:
+			self.set('endpoint', '')
 
 		if self._installableFontsCommand:
-			self.set('installableFontsCommand', self._installableFontsCommand.dumpJSON())
+			self.set('installableFonts', self._installableFontsCommand.dumpJSON())
+		else:
+			self.set('installableFonts', '')
 
 		if self._installFontsCommand:
-			self.set('installFontsCommand', self._installFontsCommand.dumpJSON())
+			self.set('installFonts', self._installFontsCommand.dumpJSON())
 		else:
-			self.set('installFontsCommand', '')
+			self.set('installFonts', '')
 

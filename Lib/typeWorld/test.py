@@ -1788,9 +1788,9 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 
 		data = user0.client.get(f'subscription({flatFreeSubscription})')['data']
-		self.assertTrue('installFontsCommand' in data and data['installFontsCommand'])
+		self.assertTrue('installFonts' in data and data['installFonts'])
 		i = typeworld.api.InstallFontsResponse()
-		i.loadJSON(data['installFontsCommand'])
+		i.loadJSON(data['installFonts'])
 		self.assertEqual(i.validate()[2], [])
 
 		user0.clearSubscriptions()
