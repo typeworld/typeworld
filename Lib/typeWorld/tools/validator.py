@@ -1,6 +1,6 @@
-import typeWorld.client, typeWorld.api
+import typeworld.client, typeworld.api
 import traceback
-from typeWorld.client.helpers import Garbage
+from typeworld.client.helpers import Garbage
 
 
 def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://api.type.world/v1'):
@@ -10,7 +10,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 		responses = {
 			'response': 'success',
 		}
-		responses['version'] = typeWorld.api.VERSION
+		responses['version'] = typeworld.api.VERSION
 
 
 	responses['stages'] = []
@@ -18,8 +18,8 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 	responses['warnings'] = []
 	responses['errors'] = []
 
-	typeWorldClient = typeWorld.client.APIClient(mothership = endpointURL)
-	typeWorldClient2 = typeWorld.client.APIClient(mothership = endpointURL)
+	typeworldClient = typeworld.client.APIClient(mothership = endpointURL)
+	typeworldClient2 = typeworld.client.APIClient(mothership = endpointURL)
 	testUser = (f'{Garbage(20)}@type.world', Garbage(20))
 	testUser2 = (f'{Garbage(20)}@type.world', Garbage(20))
 	check = None
@@ -52,8 +52,8 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 			responses['stages'][-1]['result'] = 'failed'
 			responses['response'] = 'failed'
 			responses['errors'].append(message)
-			typeWorldClient.deleteUserAccount(*testUser)
-			typeWorldClient2.deleteUserAccount(*testUser2)
+			typeworldClient.deleteUserAccount(*testUser)
+			typeworldClient2.deleteUserAccount(*testUser2)
 
 
 	class Stage(object):
@@ -85,7 +85,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 		## Check EndpointResponse
 		check = Check('Loading `EndpointResponse`')
-		success, message = typeWorldClient.rootCommand(subscriptionURL)
+		success, message = typeworldClient.rootCommand(subscriptionURL)
 
 		if type(message) == list:
 			message = message[0]
@@ -103,7 +103,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 		## Check normal subscription
 		check = Check('Loading subscription with `installableFonts` command')
-		success, message, publisher, subscription = typeWorldClient.addSubscription(subscriptionURL)
+		success, message, publisher, subscription = typeworldClient.addSubscription(subscriptionURL)
 
 		if type(message) == list:
 			message = message[0]
@@ -127,7 +127,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 			# Create User Account
 			check = Check('Create first Type.World user account')
-			success, message = typeWorldClient.createUserAccount('API Validator Test User', testUser[0], testUser[1], testUser[1])
+			success, message = typeworldClient.createUserAccount('API Validator Test User', testUser[0], testUser[1], testUser[1])
 
 			if type(message) == list:
 				message = message[0]
@@ -145,7 +145,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 			## Retry normal subscription
 			check = Check('Loading subscription another time, this time with valid Type.World user account')
-			success, message, publisher, subscription = typeWorldClient.addSubscription(subscriptionURL)
+			success, message, publisher, subscription = typeworldClient.addSubscription(subscriptionURL)
 
 			if type(message) == list:
 				message = message[0]
@@ -168,7 +168,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 		protectedExpiringFonts = []
 		protectedNonExpiringYetTrialFonts = []
 
-		for publisher in typeWorldClient.publishers():
+		for publisher in typeworldClient.publishers():
 			for subscription in publisher.subscriptions():
 				for foundry in subscription.protocol.installableFontsCommand()[1].foundries:
 					for family in foundry.families:
@@ -357,7 +357,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 				# Install font on second computer
 				# Create User Account
 				check = Check('Create second Type.World user account')
-				success, message = typeWorldClient2.createUserAccount('API Validator Test User 2', testUser2[0], testUser2[1], testUser2[1])
+				success, message = typeworldClient2.createUserAccount('API Validator Test User 2', testUser2[0], testUser2[1], testUser2[1])
 
 				if type(message) == list:
 					message = message[0]
@@ -375,7 +375,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 				## Load normal subscription
 				check = Check('Loading subscription for second user')
-				success, message, publisher2, subscription2 = typeWorldClient2.addSubscription(subscriptionURL)
+				success, message, publisher2, subscription2 = typeworldClient2.addSubscription(subscriptionURL)
 
 				if type(message) == list:
 					message = message[0]
@@ -536,7 +536,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 	stage = Stage('Teardown')
 	check = Check('Uninstall all remaining fonts and delete temporary user accounts (if created)')
 
-	success, message = typeWorldClient.deleteUserAccount(*testUser)
+	success, message = typeworldClient.deleteUserAccount(*testUser)
 	if type(message) == list:
 		message = message[0]
 
@@ -551,7 +551,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 			check.fail(message)
 			return
 
-	success, message = typeWorldClient2.deleteUserAccount(*testUser2)
+	success, message = typeworldClient2.deleteUserAccount(*testUser2)
 	if type(message) == list:
 		message = message[0]
 

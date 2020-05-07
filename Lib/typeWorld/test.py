@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
-# from typeWorld.client import *
+# from typeworld.client import *
 
 # import time
 
@@ -50,22 +50,22 @@ sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
 import unittest
-from typeWorld.client import APIClient, JSON, AppKitNSUserDefaults, performRequest
-import typeWorld.client
+from typeworld.client import APIClient, JSON, AppKitNSUserDefaults, performRequest
+import typeworld.client
 import tempfile, os
 
 # Data Types
-from typeWorld.api import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
-from typeWorld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
+from typeworld.api import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
+from typeworld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeWorld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
+from typeworld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
 
 # Constants
-from typeWorld.api import COMMANDS, MAC
+from typeworld.api import COMMANDS, MAC
 
 # Methods
-from typeWorld.api import makeSemVer
+from typeworld.api import makeSemVer
 
 # Inspection/Interactive shell
 # import code; code.interact(local=locals())
@@ -892,7 +892,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.foundries[0].families[0].fonts[0].usedLicenses = ['hergerg']
 		except ValueError as e:
-			self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'typeWorld.api.LicenseUsage'>.")
+			self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'typeworld.api.LicenseUsage'>.")
 
 		# variableFont
 		i2 = copy.deepcopy(installableFonts)
@@ -1036,7 +1036,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].getFormats(), ['otf'])
 
 		self.assertEqual(i2.foundries[0].families[0].fonts[0].getPackageKeywords(), ['desktop'])
-		self.assertEqual(i2.foundries[0].families[0].fonts[1].getPackageKeywords(), [typeWorld.api.DEFAULT])
+		self.assertEqual(i2.foundries[0].families[0].fonts[1].getPackageKeywords(), [typeworld.api.DEFAULT])
 
 
 	def test_Foundry(self):
@@ -1300,7 +1300,7 @@ class TestStringMethods(unittest.TestCase):
 		print('test_otherStuff()')
 
 		# __repr__
-		s = typeWorld.api.StringDataType()
+		s = typeworld.api.StringDataType()
 		s.value = 'a'
 		self.assertEqual(str(s), '<StringDataType "a">')
 
@@ -1327,7 +1327,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# TODO: Invite user to subscription with API endpoint as source
 
-		self.assertEqual(typeWorld.client.helpers.addAttributeToURL('https://type.world?hello=world#xyz', 'hello=type&world=type'), 'https://type.world?hello=type&world=type#xyz')
+		self.assertEqual(typeworld.client.helpers.addAttributeToURL('https://type.world?hello=world#xyz', 'hello=type&world=type'), 'https://type.world?hello=type&world=type#xyz')
 
 		# load json/dict
 		d = {
@@ -1335,17 +1335,17 @@ class TestStringMethods(unittest.TestCase):
 			'de': 'Hallo Welt'
 		}
 		j = json.dumps(d)
-		d1 = typeWorld.api.MultiLanguageText(json=j).dumpDict()
-		d2 = typeWorld.api.MultiLanguageText(dict=d).dumpDict()
+		d1 = typeworld.api.MultiLanguageText(json=j).dumpDict()
+		d2 = typeworld.api.MultiLanguageText(dict=d).dumpDict()
 		from deepdiff import DeepDiff
 		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		
 		# URL parsing and constructing
-		success, protocol = typeWorld.client.getProtocol(freeNamedSubscription)
+		success, protocol = typeworld.client.getProtocol(freeNamedSubscription)
 		self.assertEqual(protocol.secretURL(), freeNamedSubscription)
 		self.assertEqual(protocol.unsecretURL(), freeNamedSubscription)
 
-		typeWorld.client.helpers.Garbage(20, uppercase = True, lowercase = True, numbers = True, punctuation = True)
+		typeworld.client.helpers.Garbage(20, uppercase = True, lowercase = True, numbers = True, punctuation = True)
 
 
 
@@ -1588,12 +1588,12 @@ class TestStringMethods(unittest.TestCase):
 
 
 		# urlIsValid()
-		self.assertEqual(typeWorld.client.urlIsValid('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], True)
-		self.assertEqual(typeWorld.client.urlIsValid('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
-		self.assertEqual(typeWorld.client.urlIsValid('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
+		self.assertEqual(typeworld.client.urlIsValid('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], True)
+		self.assertEqual(typeworld.client.urlIsValid('https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
+		self.assertEqual(typeworld.client.urlIsValid('typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')[0], False)
 
 		# splitJSONURL()
-		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm:accessToken@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+		self.assertEqual(typeworld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm:accessToken@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'https://',
@@ -1602,7 +1602,7 @@ class TestStringMethods(unittest.TestCase):
 			'accessToken',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
-		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+		self.assertEqual(typeworld.client.splitJSONURL('typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'https://',
@@ -1611,7 +1611,7 @@ class TestStringMethods(unittest.TestCase):
 			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
-		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+		self.assertEqual(typeworld.client.splitJSONURL('typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'https://',
@@ -1620,7 +1620,7 @@ class TestStringMethods(unittest.TestCase):
 			'',
 			'typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/',
 			))
-		self.assertEqual(typeWorld.client.splitJSONURL('typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
+		self.assertEqual(typeworld.client.splitJSONURL('typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'), (
 			'typeworld://',
 			'json',
 			'http://',
@@ -1641,7 +1641,7 @@ class TestStringMethods(unittest.TestCase):
 			user0.client.set('customLocaleChoice', 'de')
 			self.assertEqual(user0.client.locale(), ['de', 'en'])
 
-		from typeWorld.client.helpers import addAttributeToURL
+		from typeworld.client.helpers import addAttributeToURL
 		self.assertEqual(addAttributeToURL('https://type.world/', 'hello=world'), 'https://type.world/?hello=world')
 		self.assertEqual(addAttributeToURL('https://type.world/?foo=bar', 'hello=world'), 'https://type.world/?foo=bar&hello=world')
 
@@ -1743,7 +1743,7 @@ class TestStringMethods(unittest.TestCase):
 
 		# General stuff
 		self.assertEqual(type(user0.client.locale()), list)
-		self.assertTrue(typeWorld.client.urlIsValid(freeSubscription)[0])
+		self.assertTrue(typeworld.client.urlIsValid(freeSubscription)[0])
 
 		## Scenario 1:
 		## Test a simple subscription of free fonts without Type.World user account
@@ -1789,7 +1789,7 @@ class TestStringMethods(unittest.TestCase):
 
 		data = user0.client.get(f'subscription({flatFreeSubscription})')['data']
 		self.assertTrue('installFontsCommand' in data and data['installFontsCommand'])
-		i = typeWorld.api.InstallFontsResponse()
+		i = typeworld.api.InstallFontsResponse()
 		i.loadJSON(data['installFontsCommand'])
 		self.assertEqual(i.validate()[2], [])
 
@@ -1834,7 +1834,7 @@ class TestStringMethods(unittest.TestCase):
 		# self.assertEqual(success, True)
 
 		# Protocol
-		success, protocol = typeWorld.client.getProtocol(protectedSubscription)
+		success, protocol = typeworld.client.getProtocol(protectedSubscription)
 		self.assertEqual(protocol.secretURL(), protectedSubscription)
 		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
 

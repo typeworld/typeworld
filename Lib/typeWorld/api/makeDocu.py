@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-import typeWorld.api
+import typeworld.api
 from ynlib.files import WriteToFile, ReadFromFile
 
 docstrings = []
 
-docstrings.extend(typeWorld.api.RootResponse().docu())
-docstrings.extend(typeWorld.api.EndpointResponse().docu())
-docstrings.extend(typeWorld.api.InstallableFontsResponse().docu())
-docstrings.extend(typeWorld.api.InstallFontsResponse().docu())
-docstrings.extend(typeWorld.api.UninstallFontsResponse().docu())
+docstrings.extend(typeworld.api.RootResponse().docu())
+docstrings.extend(typeworld.api.EndpointResponse().docu())
+docstrings.extend(typeworld.api.InstallableFontsResponse().docu())
+docstrings.extend(typeworld.api.InstallFontsResponse().docu())
+docstrings.extend(typeworld.api.UninstallFontsResponse().docu())
 
 docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'docu.md'))
 

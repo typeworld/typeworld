@@ -7,11 +7,11 @@ The Type.World protocol and software is in **alpha** stage. Changes to the proto
 
 This document covers the syntax of the JSON Protocol only. The general Type.World developer documentation is located at [type.world/developer](https://type.world/developer).
 
-## The typeWorld.client Python module
+## The typeworld.client Python module
 
-This page is simultaneously the documentation of the `typeWorld.client` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. 
+This page is simultaneously the documentation of the `typeworld.client` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. 
 
-While you can assemble your JSON responses in the server side programming language of your choice, the `typeWorld.client` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
+While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.client` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
 
 This module is very strict about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a field that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
 
@@ -254,7 +254,7 @@ Below you see the minimum possible object tree for a sucessful `root` response.
 ```python
 
 # Import module
-from typeWorld.api import *
+from typeworld.api import *
 
 # Root of API
 root = RootResponse()
@@ -299,7 +299,7 @@ Below you see the minimum possible object tree for a sucessful `installabefonts`
 ```python
 
 # Import module
-from typeWorld.api import *
+from typeworld.api import *
 
 # Response for 'availableFonts' command
 installableFonts = InstallableFontsResponse()

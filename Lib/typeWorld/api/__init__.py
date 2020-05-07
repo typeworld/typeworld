@@ -581,7 +581,7 @@ class DictBasedObject(object):
 
         # Seems unused
 
-        # elif 'typeWorld.api.' in ('%s' % class_.dataType):
+        # elif 'typeworld.api.' in ('%s' % class_.dataType):
         #     return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
         # else:
@@ -937,7 +937,7 @@ class DictBasedObject(object):
 
 #                       exec('self.%s = d[key]' % (key))
                         try:
-                            exec('self.%s = typeWorld.api.%s()' % (key, self._structure[key][0].dataType.__name__))
+                            exec('self.%s = typeworld.api.%s()' % (key, self._structure[key][0].dataType.__name__))
                         except:
                             exec('self.%s = %s()' % (key, self._structure[key][0].dataType.__name__))
                         exec('self.%s.loadDict(d[key])' % (key))

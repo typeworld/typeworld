@@ -3,10 +3,10 @@
 import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect, re
 from time import gmtime, strftime
 
-import typeWorld.api
-from typeWorld.api import VERSION
+import typeworld.api
+from typeworld.api import VERSION
 
-from typeWorld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
+from typeworld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
 
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
@@ -23,7 +23,7 @@ else:
 
 if MAC:
 	from AppKit import NSUserDefaults
-	from typeWorld.client.helpers import nslog
+	from typeworld.client.helpers import nslog
 
 class DummyKeyring(object):
 	def __init__(self):
@@ -54,12 +54,12 @@ def urlIsValid(url):
 		return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
 
 	found = False
-	for protocol in typeWorld.api.PROTOCOLS:
+	for protocol in typeworld.api.PROTOCOLS:
 		if url.startswith(protocol + '://'):
 			found = True
 			break
 	if not found:
-		return False, 'Unknown custom protocol, known are: %s' % (typeWorld.api.PROTOCOLS)
+		return False, 'Unknown custom protocol, known are: %s' % (typeworld.api.PROTOCOLS)
 
 	if url.count('://') > 1:
 		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
@@ -308,35 +308,35 @@ class TypeWorldClientDelegate(object):
 		try: self.fontWillInstall(font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillInstall(self, font):
-		assert type(font) == typeWorld.api.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontHasInstalled(self, success, message, font):
 		try: self.fontHasInstalled(success, message, font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasInstalled(self, success, message, font):
-		assert type(font) == typeWorld.api.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontWillUninstall(self, font):
 		try: self.fontWillUninstall(font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillUninstall(self, font):
-		assert type(font) == typeWorld.api.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontHasUninstalled(self, success, message, font):
 		try: self.fontHasUninstalled(success, message, font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasUninstalled(self, success, message, font):
-		assert type(font) == typeWorld.api.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
 		try: self.subscriptionUpdateNotificationHasBeenReceived(subscription)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
-		assert type(subscription) == typeWorld.client.APISubscription
+		assert type(subscription) == typeworld.client.APISubscription
 		subscription.update()
 
 
@@ -1108,7 +1108,7 @@ class APIClient(PubSubClient):
 
 	def user(self):
 		try:
-			return self.get('typeWorldUserAccount') or ''
+			return self.get('typeworldUserAccount') or ''
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def userKeychainKey(self, ID):
@@ -1273,7 +1273,7 @@ class APIClient(PubSubClient):
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
 			# Success
-			self.set('typeWorldUserAccount', userID)
+			self.set('typeworldUserAccount', userID)
 			assert userID == self.user()
 
 			# Pub/Sub
@@ -1439,7 +1439,7 @@ class APIClient(PubSubClient):
 			if response['response'] != 'success' and not response['response'] in continueFor:
 				return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
 
-			self.set('typeWorldUserAccount', '')
+			self.set('typeworldUserAccount', '')
 			self.remove('acceptedInvitations')
 			self.remove('pendingInvitations')
 			self.remove('sentInvitations')
@@ -1545,7 +1545,7 @@ class APIClient(PubSubClient):
 	def handleTraceback(self, file = None, sourceMethod = None, e = None):
 
 		payload = f'''\
-Version: {typeWorld.api.VERSION}
+Version: {typeworld.api.VERSION}
 {traceback.format_exc()}
 '''
 
@@ -1567,7 +1567,7 @@ Version: {typeWorld.api.VERSION}
 		# Normalize file paths
 		if WIN:
 			payload = removePathPrefix(payload, 'TypeWorld.exe', __file__).replace('\\', '/').replace('TypeWorld.exe', 'app.py')
-		payload = removePathPrefix(payload, 'typeWorld/client/', __file__).replace('\\', '/')
+		payload = removePathPrefix(payload, 'typeworld/client/', __file__).replace('\\', '/')
 		payload = removePathPrefix(payload, 'app.py', file).replace('\\', '/')
 
 		# Create supplementary information
@@ -1853,7 +1853,7 @@ Version: {typeWorld.api.VERSION}
 				# Initial Health Check
 				success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 				if not success:
-					if type(response) == typeWorld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+					if type(response) == typeworld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 						message = response
 					else:
 						message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
