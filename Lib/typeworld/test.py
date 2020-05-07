@@ -117,25 +117,25 @@ root.adminEmail = 'admin@fontpublisher.com'
 root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
 root.backgroundColor = 'AABBCC'
 root.licenseIdentifier = 'CC-BY-NC-ND-4.0'
-root.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
-root.privacyPolicy = 'https://type.world/legal/privacy.html'
-root.termsOfServiceAgreement = 'https://type.world/legal/terms.html'
+root.logoURL = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+root.privacyPolicyURL = 'https://type.world/legal/privacy.html'
+root.termsOfServiceURL = 'https://type.world/legal/terms.html'
 root.public = False
 root.version = '0.1.7-alpha'
-root.website = 'https://typeworldserver.com'
+root.websiteURL = 'https://typeworldserver.com'
 
 ### InstallableFontsResponse
 designer = Designer()
 designer.description.en = 'Yanone is a type designer based in Germany.'
 designer.keyword = 'yanone'
 designer.name.en = 'Yanone'
-designer.website = 'https://yanone.de'
+designer.websiteURL = 'https://yanone.de'
 
 designer2 = Designer()
 designer2.description.en = 'Yanone is a type designer based in Germany.'
 designer2.keyword = 'yanone2'
 designer2.name.en = 'Yanone'
-designer2.website = 'https://yanone.de'
+designer2.websiteURL = 'https://yanone.de'
 
 # License
 license = LicenseDefinition()
@@ -226,14 +226,14 @@ familyVersion.releaseDate = '2004-10-10'
 
 # Family
 family = Family()
-family.billboards = ['https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image']
-family.billboards.append('https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image')
+family.billboardURLs = ['https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image']
+family.billboardURLs.append('https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image')
 family.dateFirstPublished = '2019-10-01'
 family.description.en = 'Kaffeesatz is a free font classic'
 family.designerKeywords.append('yanone')
 family.designerKeywords = ['yanone'] # same as above
 assert len(family.designerKeywords) == 1
-family.inUseURL = 'https://fontsinuse.com/kaffeesatz'
+family.galleryURL = 'https://fontsinuse.com/kaffeesatz'
 family.issueTrackerURL = 'https://github.com/yanone/kaffeesatzfont/issues'
 family.name.en = 'Yanone Kaffeesatz'
 family.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
@@ -258,20 +258,20 @@ foundry.backgroundColor = 'AABBCC'
 foundry.description.en = 'Yanone is a foundry lead by German type designer Yanone.'
 foundry.email = 'font@yanone.de'
 foundry.licenses.append(license)
-#foundry.logo = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+#foundry.logoURL = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
 foundry.name.en = 'Awesome Fonts'
 foundry.name.de = 'Tolle Schriften'
 
-foundry.socialWebURLs.append('https://facebook.com/pages/YanoneYanone')
-foundry.socialWebURLs.append('https://twitter.com/yanone')
+foundry.socialURLs.append('https://facebook.com/pages/YanoneYanone')
+foundry.socialURLs.append('https://twitter.com/yanone')
 
 foundry.supportEmail = 'support@yanone.de'
 foundry.supportTelephone = '+49123456789'
-foundry.supportWebsite = 'https://yanone.de/support/'
+foundry.supportURL = 'https://yanone.de/support/'
 foundry.telephone = '+49123456789'
 foundry.twitter = 'yanone'
 foundry.uniqueID = 'yanone'
-foundry.website = 'https://yanone.de'
+foundry.websiteURL = 'https://yanone.de'
 foundry.families.append(family)
 foundry.families = [family]
 assert len(foundry.families) == 1
@@ -470,21 +470,21 @@ class TestStringMethods(unittest.TestCase):
 		# logo
 		r2 = copy.deepcopy(root)
 		try:
-			r2.logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			r2.logoURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
-		# privacyPolicy
+		# privacyPolicyURL
 		r2 = copy.deepcopy(root)
 		try:
-			r2.privacyPolicy = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			r2.privacyPolicyURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
-		# termsOfServiceAgreement
+		# termsOfServiceURL
 		r2 = copy.deepcopy(root)
 		try:
-			r2.termsOfServiceAgreement = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			r2.termsOfServiceURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -498,7 +498,7 @@ class TestStringMethods(unittest.TestCase):
 		# website
 		r2 = copy.deepcopy(root)
 		try:
-			r2.website = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			r2.websiteURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -643,7 +643,7 @@ class TestStringMethods(unittest.TestCase):
 		# website
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.designers[0].website = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			i2.designers[0].websiteURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -949,10 +949,10 @@ class TestStringMethods(unittest.TestCase):
 
 		print('test_Family()')
 
-		# billboards
+		# billboardURLs
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].families[0].billboards[0] = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			i2.foundries[0].families[0].billboardURLs[0] = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -982,10 +982,10 @@ class TestStringMethods(unittest.TestCase):
 		print(validate[2])
 		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts">.families --> <Family "Yanone Kaffeesatz"> --> Has designer "awieberg", but <InstallableFontsResponse>.designers has no matching designer.'])
 
-		# inUseURL
+		# galleryURL
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].families[0].inUseURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			i2.foundries[0].families[0].galleryURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -1224,7 +1224,7 @@ class TestStringMethods(unittest.TestCase):
 		# logo
 		# i2 = copy.deepcopy(installableFonts)
 		# try:
-		# 	i2.foundries[0].logo = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+		# 	i2.foundries[0].logoURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		# except ValueError as e:
 		# 	self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -1259,13 +1259,13 @@ class TestStringMethods(unittest.TestCase):
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with + and contain only numbers 0-9')
 
-		# socialWebURLs
-		self.assertEqual(str(foundry.socialWebURLs), "['https://facebook.com/pages/YanoneYanone', 'https://twitter.com/yanone']")
+		# socialURLs
+		self.assertEqual(str(foundry.socialURLs), "['https://facebook.com/pages/YanoneYanone', 'https://twitter.com/yanone']")
 
 		# website
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].website = 1
+			i2.foundries[0].websiteURL = 1
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -1763,11 +1763,11 @@ class TestStringMethods(unittest.TestCase):
 
 		# # Logo
 		# user0.client.testScenario = 'simulateProgrammingError'
-		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logoURL)
 		# self.assertEqual(success, False)
 
 		# user0.client.testScenario = None
-		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logo)
+		# success, logo, mimeType = subscription.resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.installableFontsCommand()[1].foundries[0].logoURL)
 		# self.assertEqual(success, True)
 		# self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
@@ -2570,14 +2570,14 @@ class TestStringMethods(unittest.TestCase):
 		print('STATUS: -2')
 
 		# Get publisher's logo, first time
-		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
-		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logoURL)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
 		# Get publisher's logo, second time (from cache in preferences)
-		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
-		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logo)
+		self.assertTrue(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logoURL)
+		success, logo, mimeType = user0.client.publishers()[0].resourceByURL(user0.client.publishers()[0].subscriptions()[0].protocol.rootCommand()[1].logoURL)
 		self.assertEqual(success, True)
 		self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 

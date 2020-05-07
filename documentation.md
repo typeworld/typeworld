@@ -7,7 +7,7 @@ Over time, end users will accumulate font subscriptions from different publisher
 
 Initially, only metadata about which fonts are available to a user is received by the app, and not the fonts themselves, which means that they cannot be readily displayed in the app, only the meta data about their existence. Instead, publishers can define preview poster images that the users can check out next to PDF links describing and previewing the fonts in detail.
 
-Upon the user’s request, the app will download and install the fonts which will be immediately accessible in all apps in the operating system. The installed fonts will remain installed when the app isn’t open or the computer is offline, although a select few features will require the app to keep running. Only new font installations or deletions require an internet connection.
+Upon the user’s request, the app will download and install the fonts which will be immediately accessible in all apps in the operating system. The installed fonts will remain installed when the app isn’t open or the computer is offline, although a select few features will require the app to keep running. Only new font installations or deletions of so called *protected fonts* require an internet connection.
 
 Users will be notified of available font updates. And they can synchronize their subscriptions to other computers or invite other users to share a subscription.
 
@@ -15,9 +15,9 @@ Because the Type.World technology is also meant as an excercize in self empowerm
 
 It needs to be understood that Type.World doesn’t offer a 100% ready turn-key solution. It defines the protocol and provides the end user app.
 
-The fonts and subscriptions are decentrally hosted by each publisher for each of their users. The central Type.World server will handle the knowledge of subscriptions per Type.World user account for the purpose of backup, synchronization, and invitations.
+The fonts and subscriptions are decentrally hosted by each publisher for their users. The central Type.World server will handle the knowledge of subscriptions per Type.World user account for the purpose of backup, synchronization, and invitations.
 
-The technology is aimed at the following three font sources:
+The technology is aimed at the following three font publishing schemes:
 
 * Free Fonts
 * Commercial Fonts
@@ -36,15 +36,15 @@ These fonts could be hosted either on API endpoints implemented by the type foun
 
 ## Benefits
 
-In summary, the technology provides the following benefits over existing technology:
+In summary, the technology provides the following benefits over established font download conduct:
 
 ### Benefits For Users
 
-* One-click font installation directly from inside the browser, given that the end user has installed the Type.World App once
-* Organizing font subscriptions from different publishers in a central Type.World user account. This user account can be automatically synchronized to another computer’s Type.World App that’s connected to the same user account (like a work station computer and a laptop for traveling). Only the subscriptions are synchronized, and not the installation status of each font. Because seat allowances for commercial font subscriptions are expected to be limited, automatically activating fonts on a second synchronized computer is problematic and not currently planned. Instead, users can organize fonts into collections and activate/deactivate them on separate computers as needed.
-* Restoring font subscriptions after a computer has crashed or got lost is as easy as logging back into the Type.World user account in the app. The whole process of archiving and backing up purchased fonts disappears and the time needed to restore a complete work environment after an operating reinstallation is reduced dramatically in regards to the fonts. In that sense, in terms of user experience, the Type.World technology mimicks the behaviours of modern day app stores where all previously purchased apps are readily available for installation on a new machine with one click, except that the Type.World technology doesn’t get itself involved in the selling part.
+* One-click font installation triggered directly from inside the browser, given that the end user has installed the Type.World App once
+* Organizing font subscriptions from different publishers in a central Type.World user account. This user account can be automatically synchronized to another computer’s Type.World App that’s connected to the same user account (like a work station computer and a laptop for traveling). For the time being, only the subscriptions are synchronized, and not the installation status of each font. Because seat allowances for commercial font subscriptions are expected to be limited, automatically activating fonts on a second synchronized computer is problematic and not currently planned. Instead, users can organize fonts into collections and activate/deactivate them on separate computers as needed.
+* Restoring font subscriptions after a computer has crashed or got lost is as easy as logging back into the Type.World user account in the app. The whole process of archiving and backing up purchased fonts disappears and the time needed to restore a complete work environment after an operating reinstallation is reduced dramatically in regards to the fonts. In that sense, in terms of user experience, the Type.World technology mimicks the behaviours of modern day app stores where all previously purchased apps are readily available for installation on a new machine with one click, except that the Type.World technology doesn’t get itself involved in the selling part like an app store does.
 * Users may invite other users to share font subscriptions from within the app
-* Installation of font updates is as easy as following the notification in the operating system to trigger the font update. However, fonts will never be installed fully automatically, although this might be an option for the future, because in a professional workflow the designers need to be fully aware of the possibility that the fonts’ metrics may have changed which might mess with their documents. Therefore, font updates will come only as notifications and need to be explicitly triggered by the user.
+* Installation of font updates is as easy as following the notification via the operating system to trigger the font update. However, fonts will never be installed fully automatically, although this might be an option for the future, because in a professional workflow the designers need to be fully aware of the possibility that the fonts’ metrics may have changed which might mess with their documents. Therefore, font updates will come only as notifications and need to be explicitly triggered by the user.
 
 ### Benefits For Publishers
 
@@ -74,7 +74,7 @@ The URL parts in detail:
 * `json` The protocol to be used within the Type.World app. Currently, only the Type.World JSON Protocol is available to use.
 * `https//` The transport protocol to be used, in this case SSL-encrypted HTTPS. *Note:* because valid URLs are only allowed to contain one `://` sequence which is already in use to denote the custom protocol handler `typeworld://`, the colon `:` will be stripped off of the URL in a browser, even if you define it. The Type.World app will internally convert `https//` back to `https://`.
 * `subscriptionID` uniquely identifies a subscription. In case of per-user subscriptions, you would probably use it to identify a user and then decide which fonts to serve him/her. The `subscriptionID` should be an anonymous string and must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts). Allowed characters: **[a-z][A-Z][0-9]_-**
-* `secretKey` matches with the `subscriptionID` and is used to authenticate the request. This secret key is saved in the OS’s keychain. The `secretKey ` must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts). The secret key is actually not necessary to authenticate the request against the server. Instead it’s necessary to store a secret key in the user’s OS keychain so that complete URLs are not openly visible. Allowed characters: **[a-z][A-Z][0-9]_-**
+* `secretKey` matches with the `subscriptionID` and is used to authenticate the request. This secret key is saved in the OS’s keychain. The `secretKey ` must not contain either `:` or `@` and is optional for publicly accessible subscriptions (such as free fonts). The secret key is actually not necessary to authenticate the request against the server (because the `subscriptionID` is supposed to ba anonymous). Instead it’s necessary to store a secret key in the user’s OS keychain so that complete URLs are not openly visible. Allowed characters: **[a-z][A-Z][0-9]_-**
 * `accessToken` Single use access token. Allowed characters: **[a-z][A-Z][0-9]_-**
 * `awesomefonts.com/api/` is where your API endpoint sits and waits to serve fonts to your customers.
 
@@ -103,17 +103,16 @@ Example for a protected subscription with access token:
 
 ### `POST` requests
 
-To avoid the subscription URL complete with the `subscriptionID` and `secretKey` showing up in server logs, your server should serve protected your JSON data only when replying to `POST` requests. With `POST`, requests parameters will be transmitted in the HTTP headers and will be invisible to server logs.
+To avoid the subscription URL complete with the `subscriptionID` and `secretKey` showing up in server logs, your server should serve your protected JSON data only when replying to `POST` requests. With `POST`, requests parameters will be transmitted in the HTTP headers and will be invisible to server logs.
 
 The app will ask for the JSON responses at your API endpoint (`https://awesomefonts.com/api/` in the above URL examples) and will hand over some or all of the following parameters through HTTP headers:
 
-* `command` The command to reply to, such as `installableFonts`.
+* `commands` The commands to reply to, such as `installableFonts`.
 * `subscriptionID` The aforementioned ID to uniquely identify the fonts you serve.
 * `secretKey` The secret key to authenticate the requester.
-* `accessToken` The single use access token that you may use to identify whether a user was logged in to your website when first accessing a subscription. The access token is only ever served there in your website’s user account, and thrown away and replace upon first access using this token. Afterwards users need to be verified with the central Type.World server. See *"Security Design, Level 2"* for details.
-* `anonymousAppID` is a key that uniquely identifies the Type.World app installation. You should use this to track how often fonts have been installed through the app for a certain user and reject requests once the limit has been reached.
-* `fontID` identifying the font to install or uninstall. This will be taken from the [Font.uniqueID](#user-content-class-font-attribute-uniqueid) attribute.
-* `fontVersion` identifying the font’s version to install
+* `accessToken` The single use access token that you may use to identify whether a user was logged in to your website when first accessing a subscription. The access token is only ever served there in your website’s user account, and thrown away and replaced upon first access using this token. Afterwards users need to be verified with the central Type.World server. See *"Security Design, Level 2"* for details.
+* `anonymousAppID` is a key that uniquely and anonymously identifies a Type.World app installation. You should use this to track how often fonts have been installed through the app for a certain user to reject requests once the limit has been reached.
+* `fonts` identifying the unique font ID and version number to install or uninstall.
 * `userEmail` and `userName` in case the user has a Type.World user account and has explicitly agreed to reveal his/her identity on a per-subscription basis. This only makes sense in a trusted custom type development environment where the type designers may want to get in touch personally with the font’s users in a small work group, for instance in a branding agency. This tremendously streamlines everyone’s workflow. If necessary, a publisher in a trusted custom type development environment could reject the serving of subscriptions to requesters who are unidentified.
 
 ### `GET` requests
@@ -136,7 +135,7 @@ For protected subscriptions, the publisher provides a subscription link that con
 
 `typeworld://json+https//subscriptionID:secretKey:accessToken@awesomefonts.com/api/`
 
-The security design outlined below consists of a an unprotected base level and two optional security levels. The optional security level’s intention isn’t securing the leaking of fonts alone, but also dominantly a user experience issue (See *"Remote De-Authorization of App Instances by the User"*).
+The security design outlined below consists of an unprotected base level and two optional security levels. The optional security level’s intention isn’t securing the leaking of fonts alone, but also very dominantly a user experience issue in the long run (See *"Remote De-Authorization of App Instances by the User"*).
 
 ## Subscription Access
 
@@ -146,7 +145,7 @@ Instead, two ways are designated to grant a user access to a subscription:
 
 * **Button on publisher’s website**: The user can access the subscription on the publisher’s website in their personal account section, available only after login. This way, the subscription URL is passed from the browser directly to the app with no transmission other than (ideally) encrypted HTTPS traffic. The subscription URL with its secret key is as secure as the publisher’s website login.
 * **Invitation API**: The central Type.World server provides an API ([`inviteUserToSubscription ` command](https://type.world/developer/api#inviteUserToSubscription)) to invite users to a subscription, identified by their Type.World user account email address, which must be known to the publisher. The user will receive an email notifying them of the subscription invitation, and in the app they may accept or decline the invitation.
-Again, no subscription link is transmitted except between the Type.World server and app over HTTPS. The primary use of this API command is for users to pass the subscription on to other users in the app. But a publisher could theoretically use it to invite their users to a subscription directly without providing a button on their website. However, that’s not very convenient, as the publisher needs to collect their users’ Type.World user account email addresses, which could be different from the user account email addresses registered with the publisher. For initial access, the button on the publisher’s website is recommended.
+Again, no subscription link is transmitted except between the Type.World server and app over HTTPS. The primary use of this API command is for users to pass the subscription on to other users in the app. But a publisher could theoretically use it to invite their users to a subscription directly without providing a button on their website. However, that’s not very convenient, as the publisher needs to collect their users’ Type.World user account email addresses, which could be different from the user account email addresses registered with the publisher. For normal access, the button on the publisher’s website is recommended.
 
 The secret keys are then stored in the operating system’s keychain app and subscription URLs stored in the user preferences are stripped of that secret key so that they cannot be easily read by third party code. Since keychain access is normally restricted to the app that created a key in the keychain, a user is normally prompted when a third party wants to read it out.
 
@@ -154,23 +153,23 @@ With it, the subscription URLs with their secret key are stored as securely on t
 
 ## Security Levels
 
-Securing your subscription could involve three different levels of security, of which only two are intended for protected fonts. Of those two, different security levels can be achieved through different implementation effort be the publisher.
+Securing your subscription could involve three different levels of security, of which only two are intended for protected fonts. Of those two, different security levels can be achieved through different implementation effort by the publisher.
 
 ### Level 0: No access restriction
 
 At the very bottom of security levels there is no access restriction to a subscription and its fonts.
 
-URL *Format A* or *Format B* are used here. Anyone can access these fonts and its primary use would be free font subscriptions.
+URL *Format A* or *Format B* are used here. Anyone can access these fonts and its primary use would be free fonts.
 
 ### Level 1: Secret Key
 
 As soon as a subscription contains a single protected font, the app will require to be linked to a Type.World user account so that the subscription can be recorded in that user account.
 
-When the API Endpoint receives a request for either `installableFonts` or `installFont` or `uninstallFont` commands, it should check with the central Type.World server API ([`verifyCredentials` command](https://type.world/developer/api#verifyCredentials)) whether that user account is linked to at least one app instance, or in other words, whether this app instance is linked to a user account. For the verification API call, the publisher hands the `anonymousTypeWorldUserID` and `anonymousAppID` parameters that it received by the app over to the central server.
+When the API Endpoint receives a request for either `installableFonts` or `installFonts` or `uninstallFonts` commands, it should check with the central Type.World server API ([`verifyCredentials` command](https://type.world/developer/api#verifyCredentials)) whether that user account is linked to at least one app instance, or rather, whether the request origin’s app instance is linked to a user account. For the verification API call, the publisher hands the `anonymousTypeWorldUserID` and `anonymousAppID` parameters that it received by the app over to the central server.
 
 **Downsides:**
 
-The security of this approach is limited by the operating system’s keychain security and by links being transmitted by non-encypted means, such as in emails. A user could unintentionally grant access to a secret key request by third party code. It is the operating system’s responsibility to prevent this from happening and/or notifying the user sufficiently. But a user also needs to pay sufficient attention. The same is true for all other passwords stored in the keychains and is the normal scenario for storing passwords.
+The security of this approach is limited by the operating system’s keychain security and by links being transmitted by non-encypted means, such as in emails. A user could unintentionally grant access to a secret key request by third party code in the operating system. It is the operating system’s responsibility to prevent this from happening and/or notifying the user sufficiently. But a user also needs to pay sufficient attention. The same is true for all other passwords stored in the keychains and is the normal scenario for storing passwords.
 
 **Benefits:**
 
@@ -181,7 +180,7 @@ While the security level of this approach is limited, a rather important benefit
 
 The highest level of security can be achieved with some additional effort by the publisher. It involves the single use access token of the subscription URL *Format CE* for initial subscription access, and the inclusion of the subscription URL in the [`verifyCredentials` command](https://type.world/developer/api#verifyCredentials) with the Type.World server.
 
-The access button in the publisher’s user account section contains the addition single use access token under the URL *Format CE*. This access token is stored in the user account with the publisher and only ever included in this download button. Once the user clicks the button and the app requests the subscription with the `installableFonts` command for the first time, the access token is submitted along with the request in a `accessToken` parameter. The publisher verifies that the request carries the correct access token for this user. If authentication was successful, the publisher invalidates this access token and assigns a fresh one, allowing future access only with the fresh token. (Make sure that the access button isn’t visible on your website when that happens, or that it will be reloaded with the fresh access token instantly upon clicking, because if something goes wrong in the communication after the access token has been invalidated, the user will want to click again and needs to be able to access the fresh access token).
+The access button in the publisher’s user account section contains the single use access token under the URL *Format CE*. This access token is stored in the user account with the publisher and only ever included in this download button. Once the user clicks the button and the app requests the subscription with the `installableFonts` command for the first time, the access token is submitted along with the request in a `accessToken` parameter. The publisher verifies that the request carries the correct access token for this user. If authentication was successful, the publisher invalidates this access token and assigns a fresh one, allowing future access only with the fresh token. (Make sure that the access button isn’t visible on your website when that happens, or that it will be reloaded with the fresh access token instantly upon clicking, because if something goes wrong in the communication after the access token has been invalidated, the user will want to click again and needs to be able to access the fresh access token).
 
 Otherwise, the publisher’s server returns the `insufficientPermission` response and the subscription isn’t added the user account.
 

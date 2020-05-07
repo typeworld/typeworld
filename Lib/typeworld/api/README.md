@@ -9,9 +9,9 @@ This document covers the syntax of the JSON Protocol only. The general Type.Worl
 
 ## The typeworld.client Python module
 
-This page is simultaneously the documentation of the `typeworld.client` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. 
+This page is simultaneously the documentation of the `typeworld.api` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. In fact, this documentation is generated directly from the module code.
 
-While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.client` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
+While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.api` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
 
 This module is very strict about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a field that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
 
@@ -276,8 +276,8 @@ Will output the following JSON code:
 {
   "licenseIdentifier": "CC-BY-NC-ND-4.0",
   "public": false,
-  "privacyPolicy": "https://type.world/legal/default/PrivacyPolicy.html",
-  "termsOfServiceAgreement": "https://type.world/legal/default/TermsOfService.html",
+  "privacyPolicyURL": "https://type.world/legal/default/PrivacyPolicy.html",
+  "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html",
   "version": "0.1.7-alpha",
   "name": {
     "en": "Font Publisher"
@@ -551,7 +551,7 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
 
 ### Attributes
 
-[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logo](#class-endpointresponse-attribute-logo)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicy](#class-endpointresponse-attribute-privacypolicy)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceAgreement](#class-endpointresponse-attribute-termsofserviceagreement)<br />[website](#class-endpointresponse-attribute-website)<br />
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
 
 ### Methods
 
@@ -571,7 +571,7 @@ __Type:__ Str<br />
 
 ### backgroundColor
 
-Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logo](#user-content-class-apiroot-attribute-logo)
+Publisher’s preferred background color. This is meant to go as a background color to the logo at [APIRoot.logoURL](#user-content-class-apiroot-attribute-logourl)
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -602,9 +602,9 @@ URL for user to log in to publisher’s account in case a validation is required
 
 __Required:__ False<br />
 __Type:__ Str<br />
-<div id="class-endpointresponse-attribute-logo"></div>
+<div id="class-endpointresponse-attribute-logoURL"></div>
 
-### logo
+### logoURL
 
 URL of logo of API endpoint, for publication. Specifications to follow.
 
@@ -620,9 +620,9 @@ Human-readable name of API endpoint
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
-<div id="class-endpointresponse-attribute-privacyPolicy"></div>
+<div id="class-endpointresponse-attribute-privacyPolicyURL"></div>
 
-### privacyPolicy
+### privacyPolicyURL
 
 URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
 
@@ -650,9 +650,9 @@ List of commands this API endpoint supports: ['endpoint', 'installableFonts', 'i
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
-<div id="class-endpointresponse-attribute-termsOfServiceAgreement"></div>
+<div id="class-endpointresponse-attribute-termsOfServiceURL"></div>
 
-### termsOfServiceAgreement
+### termsOfServiceURL
 
 URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
 
@@ -662,9 +662,9 @@ __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ https://type.world/legal/default/TermsOfService.html
 
-<div id="class-endpointresponse-attribute-website"></div>
+<div id="class-endpointresponse-attribute-websiteURL"></div>
 
-### website
+### websiteURL
 
 URL of human-visitable website of API endpoint, for publication
 
@@ -895,7 +895,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[description](#class-designer-attribute-description)<br />[keyword](#class-designer-attribute-keyword)<br />[name](#class-designer-attribute-name)<br />[website](#class-designer-attribute-website)<br />
+[description](#class-designer-attribute-description)<br />[keyword](#class-designer-attribute-keyword)<br />[name](#class-designer-attribute-name)<br />[websiteURL](#class-designer-attribute-websiteurl)<br />
 
 ### Methods
 
@@ -929,9 +929,9 @@ Human-readable name of designer
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
-<div id="class-designer-attribute-website"></div>
+<div id="class-designer-attribute-websiteURL"></div>
 
-### website
+### websiteURL
 
 Designer’s web site
 
@@ -1019,7 +1019,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[families](#class-foundry-attribute-families)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[socialWebURLs](#class-foundry-attribute-socialweburls)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportWebsite](#class-foundry-attribute-supportwebsite)<br />[telephone](#class-foundry-attribute-telephone)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[website](#class-foundry-attribute-website)<br />
+[description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[families](#class-foundry-attribute-families)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[socialURLs](#class-foundry-attribute-socialurls)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportURL](#class-foundry-attribute-supporturl)<br />[telephone](#class-foundry-attribute-telephone)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[websiteURL](#class-foundry-attribute-websiteurl)<br />
 
 ### Methods
 
@@ -1077,9 +1077,9 @@ Foundry-wide list of [FontPackage](#user-content-class-fontpackage) objects. The
 
 __Required:__ False<br />
 __Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
-<div id="class-foundry-attribute-socialWebURLs"></div>
+<div id="class-foundry-attribute-socialURLs"></div>
 
-### socialWebURLs
+### socialURLs
 
 List of web URLs pointing to social media channels
 
@@ -1153,9 +1153,9 @@ Support telephone number for this foundry.
 __Required:__ False<br />
 __Type:__ Str<br />
 __Format:__ +1234567890<br />
-<div id="class-foundry-attribute-supportWebsite"></div>
+<div id="class-foundry-attribute-supportURL"></div>
 
-### supportWebsite
+### supportURL
 
 Support website for this foundry, such as a chat room, forum, online service desk.
 
@@ -1178,9 +1178,9 @@ An string that uniquely identifies this foundry within the publisher.
 
 __Required:__ True<br />
 __Type:__ Str<br />
-<div id="class-foundry-attribute-website"></div>
+<div id="class-foundry-attribute-websiteURL"></div>
 
-### website
+### websiteURL
 
 Website for this foundry
 
@@ -1267,7 +1267,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[billboards](#class-family-attribute-billboards)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designerKeywords](#class-family-attribute-designerkeywords)<br />[fonts](#class-family-attribute-fonts)<br />[inUseURL](#class-family-attribute-inuseurl)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[packages](#class-family-attribute-packages)<br />[pdf](#class-family-attribute-pdf)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
+[billboardURLs](#class-family-attribute-billboardurls)<br />[dateFirstPublished](#class-family-attribute-datefirstpublished)<br />[description](#class-family-attribute-description)<br />[designerKeywords](#class-family-attribute-designerkeywords)<br />[fonts](#class-family-attribute-fonts)<br />[galleryURL](#class-family-attribute-galleryurl)<br />[issueTrackerURL](#class-family-attribute-issuetrackerurl)<br />[name](#class-family-attribute-name)<br />[packages](#class-family-attribute-packages)<br />[pdfURL](#class-family-attribute-pdfurl)<br />[sourceURL](#class-family-attribute-sourceurl)<br />[uniqueID](#class-family-attribute-uniqueid)<br />[versions](#class-family-attribute-versions)<br />
 
 ### Methods
 
@@ -1275,9 +1275,9 @@ Requires deepdiff module.
 
 ## Attributes
 
-<div id="class-family-attribute-billboards"></div>
+<div id="class-family-attribute-billboardURLs"></div>
 
-### billboards
+### billboardURLs
 
 List of URLs pointing at images to show for this typeface, specifications to follow
 
@@ -1317,11 +1317,11 @@ List of [Font](#user-content-class-font) objects. The order will be displayed un
 
 __Required:__ True<br />
 __Type:__ List of [Font](#user-content-class-font) objects<br />
-<div id="class-family-attribute-inUseURL"></div>
+<div id="class-family-attribute-galleryURL"></div>
 
-### inUseURL
+### galleryURL
 
-URL pointing to a web site that shows real world examples of the fonts in use.
+URL pointing to a web site that shows real world examples of the fonts in use or other types of galleries.
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1350,9 +1350,9 @@ Family-wide list of [FontPackage](#user-content-class-fontpackage) objects. Thes
 
 __Required:__ False<br />
 __Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
-<div id="class-family-attribute-pdf"></div>
+<div id="class-family-attribute-pdfURL"></div>
 
-### pdf
+### pdfURL
 
 URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at [Font.pdf](#user-content-class-font-attribute-pdf).
 
@@ -1554,7 +1554,7 @@ Requires deepdiff module.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdf](#class-font-attribute-pdf)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1607,7 +1607,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'otf', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1644,9 +1644,9 @@ List of references to [FontPackage](#user-content-class-fontpackage) objects by 
 
 __Required:__ False<br />
 __Type:__ List of Str objects<br />
-<div id="class-font-attribute-pdf"></div>
+<div id="class-font-attribute-pdfURL"></div>
 
-### pdf
+### pdfURL
 
 URL of PDF file with type specimen and/or instructions for this particular font. (See also: [Family.pdf](#user-content-class-family-attribute-pdf)
 

@@ -383,7 +383,7 @@ class APIInvitation(object):
 			# 	setattr(self, key, None)
 
 class APIPendingInvitation(APIInvitation):
-	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
+	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'websiteURL')
 
 	def accept(self):
 		return self.parent.acceptInvitation(self.ID)
@@ -392,7 +392,7 @@ class APIPendingInvitation(APIInvitation):
 		return self.parent.declineInvitation(self.ID)
 
 class APIAcceptedInvitation(APIInvitation):
-	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'website')
+	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'websiteURL')
 
 class APISentInvitation(APIInvitation):
 	keywords = ('url', 'invitedUserName', 'invitedUserEmail', 'invitedTime', 'acceptedTime', 'confirmed')

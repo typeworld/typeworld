@@ -282,13 +282,6 @@ class DictionaryDataType(DataType):
         return dict(value)
 
 
-class UnicodeDataType(DataType):
-    dataType = str
-
-    def shapeValue(self, value):
-        return str(value)
-
-
 class FontDataType(StringDataType):
     pass
 
@@ -345,7 +338,7 @@ class DateDataType(StringDataType):
         return 'YYYY-MM-DD'
 
 
-class WebURLDataType(UnicodeDataType):
+class WebURLDataType(StringDataType):
 
     def valid(self):
         if not self.value: return True
@@ -355,7 +348,7 @@ class WebURLDataType(UnicodeDataType):
         else:
             return True
 
-class TelephoneDataType(UnicodeDataType):
+class TelephoneDataType(StringDataType):
 
     def valid(self):
         if not self.value: return True
@@ -381,7 +374,7 @@ class WebResourceURLDataType(WebURLDataType):
     def formatHint(self):
         return 'This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062'
 
-class EmailDataType(UnicodeDataType):
+class EmailDataType(StringDataType):
 
     def valid(self):
         if not self.value: return True
@@ -974,7 +967,7 @@ class Proxy(DataType):
     #         return True
 
 
-class ResponseCommandDataType(UnicodeDataType):
+class ResponseCommandDataType(StringDataType):
 
     def formatHint(self):
         return 'To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.'
@@ -1008,7 +1001,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 """
 
     _possible_keys = ['ab', 'aa', 'af', 'ak', 'sq', 'am', 'ar', 'an', 'hy', 'as', 'av', 'ae', 'ay', 'az', 'bm', 'ba', 'eu', 'be', 'bn', 'bh', 'bi', 'bs', 'br', 'bg', 'my', 'ca', 'ch', 'ce', 'ny', 'zh', 'cv', 'kw', 'co', 'cr', 'hr', 'cs', 'da', 'dv', 'nl', 'dz', 'en', 'eo', 'et', 'ee', 'fo', 'fj', 'fi', 'fr', 'ff', 'gl', 'ka', 'de', 'el', 'gn', 'gu', 'ht', 'ha', 'he', 'hz', 'hi', 'ho', 'hu', 'ia', 'id', 'ie', 'ga', 'ig', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'kl', 'kn', 'kr', 'ks', 'kk', 'km', 'ki', 'rw', 'ky', 'kv', 'kg', 'ko', 'ku', 'kj', 'la', 'lb', 'lg', 'li', 'ln', 'lo', 'lt', 'lu', 'lv', 'gv', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mh', 'mn', 'na', 'nv', 'nd', 'ne', 'ng', 'nb', 'nn', 'no', 'ii', 'nr', 'oc', 'oj', 'cu', 'om', 'or', 'os', 'pa', 'pi', 'fa', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 'ro', 'ru', 'sa', 'sc', 'sd', 'se', 'sm', 'sg', 'sr', 'gd', 'sn', 'si', 'sk', 'sl', 'so', 'st', 'es', 'su', 'sw', 'ss', 'sv', 'ta', 'te', 'tg', 'th', 'ti', 'bo', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk', 'ur', 'uz', 've', 'vi', 'vo', 'wa', 'cy', 'wo', 'fy', 'xh', 'yi', 'yo', 'za', 'zu']
-    _dataType_for_possible_keys = UnicodeDataType
+    _dataType_for_possible_keys = StringDataType
     _length = 100
     _markdownAllowed = False
 
@@ -1201,7 +1194,7 @@ class OpenTypeFeatureDataType(StringDataType):
 class OpenTypeFeatureListProxy(ListProxy):
     dataType = OpenTypeFeatureDataType
 
-class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
+class OpenSourceLicenseIdentifierDataType(StringDataType):
     
     def valid(self):
         if not self.value: return True
@@ -1212,7 +1205,7 @@ class OpenSourceLicenseIdentifierDataType(UnicodeDataType):
             return 'Unknown license identifier: "%s". See https://spdx.org/licenses/' % (self.value)
 
 
-class SupportedAPICommandsDataType(UnicodeDataType):
+class SupportedAPICommandsDataType(StringDataType):
     
     commands = [x['keyword'] for x in COMMANDS]
 
@@ -1228,7 +1221,7 @@ class SupportedAPICommandsListProxy(ListProxy):
     dataType = SupportedAPICommandsDataType
 
 
-class FontPurposeDataType(UnicodeDataType):
+class FontPurposeDataType(StringDataType):
     def valid(self):
         if not self.value: return True
 
@@ -1237,7 +1230,7 @@ class FontPurposeDataType(UnicodeDataType):
         else:
             return 'Unknown font type: "%s". Possible: %s' % (self.value, list(FONTPURPOSES.keys()))
 
-class FontMimeType(UnicodeDataType):
+class FontMimeType(StringDataType):
     def valid(self):
         if not self.value: return True
 
@@ -1247,7 +1240,7 @@ class FontMimeType(UnicodeDataType):
             return 'Unknown font MIME Type: "%s". Possible: %s' % (self.value, list(FONTPURPOSES['desktop']['acceptableMimeTypes']))
 
 
-class FontStatusDataType(UnicodeDataType):
+class FontStatusDataType(StringDataType):
     
     statuses = FONTSTATUSES
 
@@ -1261,7 +1254,7 @@ class FontStatusDataType(UnicodeDataType):
             return 'Unknown Font Status: "%s". Possible: %s' % (self.value, self.statuses)
 
 
-class FontExtensionDataType(UnicodeDataType):
+class FontExtensionDataType(StringDataType):
     def valid(self):
         if not self.value: return True
 
@@ -1287,7 +1280,7 @@ class FontExtensionDataType(UnicodeDataType):
 class LicenseDefinition(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
-        'keyword':                  [UnicodeDataType,       True,   None,   'Machine-readable keyword under which the license will be referenced from the individual fonts.'],
+        'keyword':                  [StringDataType,       True,   None,   'Machine-readable keyword under which the license will be referenced from the individual fonts.'],
         'name':                     [MultiLanguageTextProxy,        True,   None,   'Human-readable name of font license'],
         'URL':                      [WebURLDataType,        True,   None,   'URL where the font license text can be viewed online'],
     }
@@ -1334,7 +1327,7 @@ class FontPackage(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
 
-        'keyword':                     [UnicodeDataType,       True,   None,   'Keyword of font packages. This keyword must be referenced in ::Font.packageKeywords:: and must be unique to this subscription.'],
+        'keyword':                     [StringDataType,       True,   None,   'Keyword of font packages. This keyword must be referenced in ::Font.packageKeywords:: and must be unique to this subscription.'],
         'name':                        [MultiLanguageTextProxy, True,  None,   'Name of package'],
         'description':                 [MultiLanguageTextProxy, False,  None,   'Description'],
     }
@@ -1367,7 +1360,7 @@ class FontPackageListProxy(ListProxy):
     dataType = FontPackageProxy
 
 class FontPackageReferencesListProxy(ListProxy):
-    dataType = UnicodeDataType
+    dataType = StringDataType
 
 ####################################################################################################################################
 
@@ -1377,7 +1370,7 @@ class LicenseUsage(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
 
-        'keyword':                      [UnicodeDataType,       True,   None,   'Keyword reference of font’s license. This license must be specified in ::Foundry.licenses::'],
+        'keyword':                      [StringDataType,       True,   None,   'Keyword reference of font’s license. This license must be specified in ::Foundry.licenses::'],
         'seatsAllowed':                 [IntegerDataType,       False,  None,   'In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.'],
         'seatsInstalled':               [IntegerDataType,       False,  None,   'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.' % (INSTALLFONTSCOMMAND['keyword'], UNINSTALLFONTSCOMMAND['keyword'], INSTALLFONTSCOMMAND['keyword'])],
         'allowanceDescription':         [MultiLanguageTextProxy,False,  None,   'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"'],
@@ -1423,9 +1416,9 @@ class LicenseUsageListProxy(ListProxy):
 class Designer(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
-        'keyword':                  [UnicodeDataType,       True,   None,   'Machine-readable keyword under which the designer will be referenced from the individual fonts or font families'],
+        'keyword':                  [StringDataType,       True,   None,   'Machine-readable keyword under which the designer will be referenced from the individual fonts or font families'],
         'name':                     [MultiLanguageTextProxy,        True,   None,   'Human-readable name of designer'],
-        'website':                  [WebURLDataType,        False,  None,   'Designer’s web site'],
+        'websiteURL':                  [WebURLDataType,        False,  None,   'Designer’s web site'],
         'description':              [MultiLanguageLongTextProxy,        False,  None,   'Description of designer'],
     }
 
@@ -1444,7 +1437,7 @@ class DesignersListProxy(ListProxy):
     dataType = DesignerProxy
 
 class DesignersReferencesListProxy(ListProxy):
-    dataType = UnicodeDataType
+    dataType = StringDataType
 
 ####################################################################################################################################
 
@@ -1489,7 +1482,7 @@ class Font(DictBasedObject):
     _structure = {
         'name':             [MultiLanguageTextProxy,        True,   None,   'Human-readable name of font. This may include any additions that you find useful to communicate to your users.'],
         'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \\ : * | ^'],
-        'postScriptName':   [UnicodeDataType,       True,   None,   'Complete PostScript name of font'],
+        'postScriptName':   [StringDataType,       True,   None,   'Complete PostScript name of font'],
         'packageKeywords':  [FontPackageReferencesListProxy,False,  None,   'List of references to ::FontPackage:: objects by their keyword'],
         'versions':         [VersionListProxy,      False,  None,   'List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
         'designerKeywords': [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.'],
@@ -1501,7 +1494,7 @@ class Font(DictBasedObject):
         'protected':        [BooleanDataType,       False,  False,  'Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.'],
         'dateFirstPublished':[DateDataType,         False,  None,   'Human readable date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.'],
         'usedLicenses':     [LicenseUsageListProxy, True,   None,   'List of ::LicenseUsage:: objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.'],
-        'pdf':              [WebResourceURLDataType,False,  None,   'URL of PDF file with type specimen and/or instructions for this particular font. (See also: ::Family.pdf::'],
+        'pdfURL':           [WebResourceURLDataType,False,  None,   'URL of PDF file with type specimen and/or instructions for this particular font. (See also: ::Family.pdf::'],
         'expiry':           [TimestampDataType,     False,  None,   'Unix timestamp of font’s expiry. The font will be deleted on that moment. This could be set either upon initial installation of a trial font, or also before initial installation as a general expiry moment.'],
         'expiryDuration':   [IntegerDataType,       False,  None,   'Minutes for which the user will be able to use the font after initial installation. This attribute is used only as a visual hint in the UI and should be set for trial fonts that expire a certain period after initial installation, such as 60 minutes. If the font is a trial font limited to a certain usage period after initial installation, it must also be marked as ::Font.protected::, with no ::Font.expiry:: timestamp set at first (because the expiry depends on the moment of initial installation). On initial font installation by the user, the publisher’s server needs to record that moment’s time, and from there onwards serve the subscription with ::Font.expiry:: attribute set in the future. Because the font is marked as ::Font.protected::, the app will update the subscription directly after font installation, upon when it will learn of the newly added ::Font.expiry:: attribute. Please note that you *have* to set ::Font.expiry:: after initial installation yourself. The Type.World app will not follow up on its own on installed fonts just with the ::Font.expiryDuration:: attribute, which is used only for display.'],
         'features':         [OpenTypeFeatureListProxy,False,    None,   'List of supported OpenType features as per https://docs.microsoft.com/en-us/typography/opentype/spec/featuretags'],
@@ -1635,18 +1628,18 @@ class Family(DictBasedObject):
         'uniqueID':                 [StringDataType,        True,   None,   'An string that uniquely identifies this family within the publisher.'],
         'name':                     [MultiLanguageTextProxy,True,   None,   'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
         'description':              [MultiLanguageLongTextProxy,False,  None,   'Description of font family'],
-        'billboards':               [BillboardListProxy,    False,  None,   'List of URLs pointing at images to show for this typeface, specifications to follow'],
+        'billboardURLs':            [BillboardListProxy,    False,  None,   'List of URLs pointing at images to show for this typeface, specifications to follow'],
         'designerKeywords':         [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
         'packages':                 [FontPackageListProxy,           False,   None,   'Family-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::'],
 
         'sourceURL':                [WebURLDataType,        False,  None,   'URL pointing to the source of a font project, such as a GitHub repository'],
         'issueTrackerURL':          [WebURLDataType,        False,  None,   'URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities'],
 
-        'inUseURL':                 [WebURLDataType,        False,  None,   'URL pointing to a web site that shows real world examples of the fonts in use.'],
+        'galleryURL':               [WebURLDataType,        False,  None,   'URL pointing to a web site that shows real world examples of the fonts in use or other types of galleries.'],
         'versions':                 [VersionListProxy,      False,  None,   'List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.'],
         'fonts':                    [FontListProxy,         True,   None,   'List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.'],
         'dateFirstPublished':       [DateDataType,          False,  None,   'Human readable date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
-        'pdf':                      [WebResourceURLDataType,False,  None,   'URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at ::Font.pdf::.'],
+        'pdfURL':                   [WebResourceURLDataType,False,  None,   'URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at ::Font.pdf::.'],
     }
 
     def __repr__(self):
@@ -1811,13 +1804,13 @@ class Foundry(DictBasedObject):
         'styling':                  [StylingDataType,    False,  {'light': {}, 'dark': {}},   'Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.'],
 
         'email':                    [EmailDataType,         False,  None,   'General email address for this foundry.'],
-        'website':                  [WebURLDataType,        False,  None,   'Website for this foundry'],
+        'websiteURL':                  [WebURLDataType,        False,  None,   'Website for this foundry'],
         'telephone':                [TelephoneDataType,       False,  None,   'Telephone number for this foundry'],
 
-        'socialWebURLs':           [WebURLListProxy,       False,  None,   'List of web URLs pointing to social media channels'],
+        'socialURLs':               [WebURLListProxy,       False,  None,   'List of web URLs pointing to social media channels'],
 
         'supportEmail':             [EmailDataType,         False,  None,   'Support email address for this foundry.'],
-        'supportWebsite':           [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
+        'supportURL':               [WebURLDataType,        False,  None,   'Support website for this foundry, such as a chat room, forum, online service desk.'],
         'supportTelephone':         [TelephoneDataType,       False,  None,   'Support telephone number for this foundry.'],
 
         # data
@@ -2244,12 +2237,12 @@ response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFont
         'supportedCommands':    [SupportedAPICommandsListProxy, True,   None,   'List of commands this API endpoint supports: %s' % [x['keyword'] for x in COMMANDS]],
         'name':                 [MultiLanguageTextProxy,    True,   None,   'Human-readable name of API endpoint'],
         'public':               [BooleanDataType,           True,   False,  'API endpoint is meant to be publicly visible and its existence may be publicized within the project'],
-        'logo':                 [WebResourceURLDataType,    False,  None,   'URL of logo of API endpoint, for publication. Specifications to follow.'],
-        'backgroundColor':      [HexColorDataType,          False,  None,   'Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logo::'],
-        'website':              [WebURLDataType,            False,  None,   'URL of human-visitable website of API endpoint, for publication'],
-        'privacyPolicy':        [WebURLDataType,            True,   'https://type.world/legal/default/PrivacyPolicy.html',  'URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
-        'termsOfServiceAgreement': [WebURLDataType,         True,   'https://type.world/legal/default/TermsOfService.html',     'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
-        'loginURL':          [WebURLDataType,           False,   None,   'URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.'],
+        'logoURL':              [WebResourceURLDataType,    False,  None,   'URL of logo of API endpoint, for publication. Specifications to follow.'],
+        'backgroundColor':      [HexColorDataType,          False,  None,   'Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logoURL::'],
+        'websiteURL':           [WebURLDataType,            False,  None,   'URL of human-visitable website of API endpoint, for publication'],
+        'privacyPolicyURL':     [WebURLDataType,            True,   'https://type.world/legal/default/PrivacyPolicy.html',  'URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
+        'termsOfServiceURL':    [WebURLDataType,         True,   'https://type.world/legal/default/TermsOfService.html',     'URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.'],
+        'loginURL':             [WebURLDataType,           False,   None,   'URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.'],
     }
 
 
