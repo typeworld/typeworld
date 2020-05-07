@@ -1828,12 +1828,6 @@ Version: {typeworld.api.VERSION}
 			else:
 				return False, message, None, None
 
-			if not updateSubscriptionsOnServer and protocol.url.accessToken:
-				return False, 'Accessing a subscription with an access token requires the subscription to be synched to the server afterwards, but `updateSubscriptionsOnServer` is set to False.', None, None
-
-			if not self.user() and protocol.url.accessToken:
-				return False, 'Accessing a subscription with an access token requires the app to be linked to a Type.World user account.', None, None
-
 			# Change secret key
 			if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
 
@@ -1853,12 +1847,12 @@ Version: {typeworld.api.VERSION}
 				# Initial Health Check
 				success, response = protocol.aboutToAddSubscription(anonymousAppID = self.anonymousAppID(), anonymousTypeWorldUserID = self.user(), accessToken = protocol.url.accessToken, secretTypeWorldAPIKey = secretTypeWorldAPIKey or self.secretTypeWorldAPIKey, testScenario = self.testScenario)
 				if not success:
-					if type(response) == typeworld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
-						message = response
-					else:
-						message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
-						if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
-							self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
+					message = response
+					self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
+					# if type(response) == typeworld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+					# else:
+					# 	message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
+					# 	if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
 					return False, message, None, None
 
 				# rootCommand

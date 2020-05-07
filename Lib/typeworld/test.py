@@ -73,7 +73,8 @@ from typeworld.api import makeSemVer
 
 freeSubscription = 'typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 flatFreeSubscription = 'typeworld://json+https//typeworldserver.com/flatapi/q8JZfYn9olyUvcCOiqHq/'
-protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+protectedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr:qncMnRXZLvHfLLwteTsX@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
+protectedSubscriptionWithoutAccessToken = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 freeNamedSubscription = 'typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/'
 testUser1 = ('test1@type.world', '12345678')
 testUser2 = ('test2@type.world', '01234567')
@@ -175,7 +176,7 @@ font.format = 'otf'
 font.free = True
 font.name.en = 'Regular'
 font.name.de = 'Normale'
-font.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+font.pdfURL = 'https://yanone.de/fonts/kaffeesatz.pdf'
 font.postScriptName = 'YanoneKaffeesatz-Regular'
 font.protected = False
 font.purpose = 'desktop'
@@ -202,7 +203,7 @@ font2.format = 'otf'
 font2.free = True
 font2.name.en = 'Bold'
 font2.name.de = 'Fette'
-font2.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+font2.pdfURL = 'https://yanone.de/fonts/kaffeesatz.pdf'
 font2.postScriptName = 'YanoneKaffeesatz-Bold'
 font2.protected = False
 font2.purpose = 'desktop'
@@ -236,7 +237,7 @@ assert len(family.designerKeywords) == 1
 family.galleryURL = 'https://fontsinuse.com/kaffeesatz'
 family.issueTrackerURL = 'https://github.com/yanone/kaffeesatzfont/issues'
 family.name.en = 'Yanone Kaffeesatz'
-family.pdf = 'https://yanone.de/fonts/kaffeesatz.pdf'
+family.pdfURL = 'https://yanone.de/fonts/kaffeesatz.pdf'
 family.sourceURL = 'https://github.com/yanone/kaffeesatzfont'
 family.uniqueID = 'yanone-yanonekaffeesatz'
 family.versions.append(familyVersion)
@@ -831,7 +832,7 @@ class TestStringMethods(unittest.TestCase):
 		# pdf
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].families[0].fonts[0].pdf = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			i2.foundries[0].families[0].fonts[0].pdfURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -1005,7 +1006,7 @@ class TestStringMethods(unittest.TestCase):
 		# pdf
 		i2 = copy.deepcopy(installableFonts)
 		try:
-			i2.foundries[0].families[0].pdf = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
+			i2.foundries[0].families[0].pdfURL = 'typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image'
 		except ValueError as e:
 			self.assertEqual(str(e), 'Needs to start with http:// or https://')
 
@@ -1376,6 +1377,31 @@ class TestStringMethods(unittest.TestCase):
 		validate = asset.validate()
 		print(validate[2])
 		self.assertEqual(validate[2], ['<InstallFontAsset> --> .data is set, but .mimeType is missing'])
+
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.response = 'success'
+		asset.encoding = 'base64'
+#		asset.mimeType = 'font/otf' # missing
+		asset.dataURL = 'https://awesomefonts.com/font.otf'
+		validate = asset.validate()
+		print(validate[2])
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> .dataURL is set, but .mimeType is missing'])
+
+		installFonts = InstallFontsResponse()
+		asset = InstallFontAsset()
+		installFonts.assets.append(asset)
+		asset.uniqueID = 'abc'
+		asset.response = 'success'
+		asset.encoding = 'base64'
+		asset.mimeType = 'font/otf' # missing
+		asset.dataURL = 'https://awesomefonts.com/font.otf'
+		asset.data = b'ABC'
+		validate = asset.validate()
+		print(validate[2])
+		self.assertEqual(validate[2], ['<InstallFontAsset> --> Either .dataURL or .data can be defined, not both'])
 
 		installFonts = InstallFontsResponse()
 		asset = InstallFontAsset()
@@ -1793,6 +1819,8 @@ class TestStringMethods(unittest.TestCase):
 		i.loadJSON(data['installFonts'])
 		self.assertEqual(i.validate()[2], [])
 
+		user0.loadClient()
+
 		user0.clearSubscriptions()
 
 
@@ -1835,18 +1863,18 @@ class TestStringMethods(unittest.TestCase):
 
 		# Protocol
 		success, protocol = typeworld.client.getProtocol(protectedSubscription)
-		self.assertEqual(protocol.secretURL(), protectedSubscription)
-		self.assertEqual(protocol.unsecretURL(), protectedSubscription.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
+		self.assertEqual(protocol.secretURL(), protectedSubscriptionWithoutAccessToken)
+		self.assertEqual(protocol.unsecretURL(), protectedSubscriptionWithoutAccessToken.replace(':OxObIWDJjW95SkeL3BNr@', ':secretKey@'))
 
 		# saveURL
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.unsecretURL(), 'typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 		# completeURL
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscription)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscriptionWithoutAccessToken)
 
 		# Reload client
 		# Equal to closing the app and re-opening, so code gets loaded from disk/defaults
 		user1.loadClient()
-		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscription)
+		self.assertEqual(user1.client.publishers()[0].subscriptions()[-1].protocol.secretURL(), protectedSubscriptionWithoutAccessToken)
 
 
 		user1.client.testScenario = 'simulateCentralServerNotReachable'
@@ -2239,6 +2267,10 @@ class TestStringMethods(unittest.TestCase):
 		# Protected subscription, installation on second machine
 
 
+		# user2.client.testScenario = 'simulateLoginRequiredResponse'
+		# success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
+		# self.assertEqual(success, False)
+		# self.assertEqual(message, ['#(response.loginRequired)', '#(response.loginRequired.headline)'])
 		user2.client.testScenario = 'simulateWrongMimeType'
 		success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
 		self.assertEqual(success, False)

@@ -88,12 +88,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 	def latestVersion(self):
 		return self._installableFontsCommand
 
-
-	def updateRootCommand(self):
-		self._rootCommand = None
-		success, rootCommand = self.rootCommand()
-
-
 	def returnRootCommand(self, testScenario):
 
 		if not self._rootCommand:

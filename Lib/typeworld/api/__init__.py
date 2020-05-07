@@ -2085,6 +2085,9 @@ class InstallFontAsset(BaseResponse):
         if self.dataURL and not self.mimeType:
             critical.append('.dataURL is set, but .mimeType is missing')
 
+        if self.dataURL and self.data:
+            critical.append('Either .dataURL or .data can be defined, not both')
+
         if self.response == ERROR and self.errorMessage.isEmpty():
             critical.append('.response is "%s", but .errorMessage is missing.' % (ERROR))
 
