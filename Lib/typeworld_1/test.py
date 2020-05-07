@@ -1127,7 +1127,7 @@ class TestStringMethods(unittest.TestCase):
             "informationViewButtonColor": "E5F20D",
             "informationViewButtonTextColor": "000000",
 
-            "logo": "awesomefonts.com/logo.svg"
+            "logoURL": "awesomefonts.com/logo.svg"
 
         }, "dark": {
             "headerColor": "B10947",
@@ -1154,7 +1154,7 @@ class TestStringMethods(unittest.TestCase):
         } }''')
 		validate = i2.validate()
 		print(validate[2])
-		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts"> --> .styling "logo" attribute: Needs to start with http:// or https://'])
+		self.assertEqual(validate[2], ['<InstallableFontsResponse>.foundries --> <Foundry "Awesome Fonts"> --> .styling "logoURL" attribute: Needs to start with http:// or https://'])
 
 		# styling
 		i2 = copy.deepcopy(installableFonts)

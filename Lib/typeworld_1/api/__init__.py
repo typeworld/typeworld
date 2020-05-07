@@ -1774,7 +1774,7 @@ class StylingDataType(DictionaryDataType):
             "informationViewButtonColor": "197AA3",
             "informationViewButtonTextColor": "FFFFFF",
 
-            "logo": "https://awesomefoundry.com/logo-lighttheme.svg",
+            "logoURL": "https://awesomefoundry.com/logo-lighttheme.svg",
 
         }, "dark": {
             "headerColor": "156486",
@@ -1798,7 +1798,7 @@ class StylingDataType(DictionaryDataType):
             "informationViewButtonColor": "22A4DC",
             "informationViewButtonTextColor": "000000",
 
-            "logo": "https://awesomefoundry.com/logo-lighttheme.svg",
+            "logoURL": "https://awesomefoundry.com/logo-darktheme.svg",
         }}
 
 
@@ -1875,12 +1875,12 @@ class Foundry(DictBasedObject):
                         if valid != True:
                             critical.append('.styling color attribute "%s": %s' % (colorKey, valid))
 
-                if 'logo' in self.styling[theme]:
+                if 'logoURL' in self.styling[theme]:
                     l = WebURLDataType()
-                    l.value = self.styling[theme]['logo']
+                    l.value = self.styling[theme]['logoURL']
                     valid = l.valid()
                     if valid != True:
-                        critical.append('.styling "logo" attribute: %s' % (valid))
+                        critical.append('.styling "logoURL" attribute: %s' % (valid))
 
 
         return information, warnings, critical
