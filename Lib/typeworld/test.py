@@ -1745,18 +1745,18 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertTrue(user2.client.user())
 
+		# verifyCredentials without subscriptionURL
 		parameters = {
 			'command': 'verifyCredentials',
 			'anonymousAppID': user2.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user2.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 		}
-
 		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
 		self.assertEqual(success, True)
-
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
+
 
 		# # Load subscription with offline client
 		# userOffline = User(online = False)
@@ -1843,6 +1843,21 @@ class TestStringMethods(unittest.TestCase):
 
 
 
+		# verifyCredentials with subscriptionURL
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		print(response)
+		self.assertEqual(response['response'], 'invalid')
+
+
 		# Scenario 3:
 		# Protected subscription, installation on first machine with Type.World user account
 		result = user1.client.addSubscription(protectedSubscription)
@@ -1853,8 +1868,71 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, True)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries), 1)
-
 		self.assertTrue(subscription.hasProtectedFonts())
+
+		# verifyCredentials with subscriptionURL
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		print(response)
+		self.assertEqual(response['response'], 'success')
+
+		# verifyCredentials with subscriptionURL
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken.replace('@', 'a@'), # change URL slightly
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		print(response)
+		self.assertEqual(response['response'], 'invalid')
+
+		# Clear
+		user1.clearSubscriptions()
+
+		# verifyCredentials with subscriptionURL
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		print(response)
+		self.assertEqual(response['response'], 'invalid')
+
+		# Re-add subscription
+		result = user1.client.addSubscription(protectedSubscription)
+		success, message, publisher, subscription = result
+		self.assertEqual(success, True)
+
+		# verifyCredentials with subscriptionURL
+		parameters = {
+			'command': 'verifyCredentials',
+			'anonymousAppID': user1.client.anonymousAppID(),
+			'anonymousTypeWorldUserID': user1.client.user(),
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		print(response)
+		self.assertEqual(response['response'], 'success')
 
 		# # announce subscription change		
 		# success, result = user1.client.publishers()[0].subscriptions()[-1].announceChange()
