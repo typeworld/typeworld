@@ -1114,7 +1114,7 @@ Example:
         "informationViewLinkColor": "1D89B8",
         "informationViewButtonColor": "197AA3",
         "informationViewButtonTextColor": "FFFFFF",
-        "logo": "https://awesomefoundry.com/logo-lighttheme.svg"
+        "logoURL": "https://awesomefoundry.com/logo-lighttheme.svg"
     },
     "dark": {
         "headerColor": "156486",
@@ -1132,7 +1132,7 @@ Example:
         "informationViewLinkColor": "53B9E4",
         "informationViewButtonColor": "22A4DC",
         "informationViewButtonTextColor": "000000",
-        "logo": "https://awesomefoundry.com/logo-lighttheme.svg"
+        "logoURL": "https://awesomefoundry.com/logo-darktheme.svg"
     }
 }
 ```
@@ -1607,7 +1607,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'otf', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'otf', 'ttc', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
