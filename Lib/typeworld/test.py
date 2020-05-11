@@ -111,19 +111,19 @@ print('setting up objects started...')
 
 
 ### EndpointResponse
-endpoint = EndpointResponse()
-endpoint.name.en = 'Font Publisher'
-endpoint.canonicalURL = 'http://fontpublisher.com/api/'
-endpoint.adminEmail = 'admin@fontpublisher.com'
-endpoint.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
-endpoint.backgroundColor = 'AABBCC'
-endpoint.licenseIdentifier = 'CC-BY-NC-ND-4.0'
-endpoint.logoURL = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
-endpoint.privacyPolicyURL = 'https://type.world/legal/privacy.html'
-endpoint.termsOfServiceURL = 'https://type.world/legal/terms.html'
-endpoint.public = False
-endpoint.version = '0.1.7-alpha'
-endpoint.websiteURL = 'https://typeworldserver.com'
+root = EndpointResponse()
+root.name.en = 'Font Publisher'
+root.canonicalURL = 'http://fontpublisher.com/api/'
+root.adminEmail = 'admin@fontpublisher.com'
+root.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+root.backgroundColor = 'AABBCC'
+root.licenseIdentifier = 'CC-BY-NC-ND-4.0'
+root.logoURL = 'https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo'
+root.privacyPolicyURL = 'https://type.world/legal/privacy.html'
+root.termsOfServiceURL = 'https://type.world/legal/terms.html'
+root.public = False
+root.version = '0.1.7-alpha'
+root.websiteURL = 'https://typeworldserver.com'
 
 ### InstallableFontsResponse
 designer = Designer()
@@ -423,10 +423,10 @@ class TestStringMethods(unittest.TestCase):
 
 		print(root)
 		# Dump and reload
-		json = endpoint.dumpJSON()
+		json = root.dumpJSON()
 		root2 = EndpointResponse()
 		root2.loadJSON(json)
-		self.assertTrue(endpoint.sameContent(root2))
+		self.assertTrue(root.sameContent(root2))
 
 		# name
 		r2 = copy.deepcopy(root)
@@ -1305,7 +1305,7 @@ class TestStringMethods(unittest.TestCase):
 		s.value = 'a'
 		self.assertEqual(str(s), '<StringDataType "a">')
 
-		assert type(endpoint.supportedCommands.index('installableFonts')) == int
+		assert type(root.supportedCommands.index('installableFonts')) == int
 		assert installableFonts.designers[0].parent == installableFonts
 
 		success, message = user1.client.rootCommand(protectedSubscription)
