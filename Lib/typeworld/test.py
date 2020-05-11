@@ -2443,9 +2443,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
-		user1.client.testScenario = 'simulateUnknownFontError'
-		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
-		self.assertEqual(success, False)
+		# user1.client.testScenario = 'simulateUnknownFontError'
+		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
+		# self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateInsufficientPermissions'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])

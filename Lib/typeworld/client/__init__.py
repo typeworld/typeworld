@@ -2665,7 +2665,7 @@ class APISubscription(PubSubClient):
 
 						if incomingFont.uniqueID in fontIDs:
 
-							proceed = ['unknownInstallation'] # 
+							proceed = ['unknownInstallation', 'unknownFont'] # 
 
 							if incomingFont.response in proceed: pass
 
