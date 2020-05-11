@@ -527,6 +527,12 @@ class APIClient(PubSubClient):
 
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
+	def tracebackTest2(self):
+		try:
+			assert abc
+
+		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+
 
 	def pubSubCallback(self, message):
 		try:
@@ -2678,8 +2684,7 @@ class APISubscription(PubSubClient):
 
 							proceed = ['unknownInstallation'] # 
 
-							if incomingFont.response in proceed:
-								pass
+							if incomingFont.response in proceed: pass
 
 							elif incomingFont.response == 'error':
 								return False, incomingFont.errorMessage
@@ -2699,8 +2704,7 @@ class APISubscription(PubSubClient):
 													path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 													break
 
-								if not path and not dryRun:
-									return False, 'Font path couldn’t be determined (deleting protected fonts)'
+								assert path and not dryRun
 
 								if not dryRun:
 									os.remove(path)
@@ -2841,8 +2845,7 @@ class APISubscription(PubSubClient):
 
 								success, response = self.parent.parent.performRequest(incomingFont.dataURL)
 
-								if not success:
-									return False, response
+								if not success: return False, response
 
 								else:
 									f = open(path, 'wb')
@@ -2969,13 +2972,11 @@ class APISubscription(PubSubClient):
 
 				o = preferences[key]
 
-				if 'Array' in o.__class__.__name__:
-					o = list(o)
-
-				elif 'Dictionary' in o.__class__.__name__:
-					o = dict(o)
+				if 'Array' in o.__class__.__name__: o = list(o)
+				elif 'Dictionary' in o.__class__.__name__: o = dict(o)
 
 				return o
+
 		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def set(self, key, value):

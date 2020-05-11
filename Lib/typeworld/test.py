@@ -38,7 +38,7 @@
 ONLINE = True
 
 
-import sys, os, copy
+import sys, os, copy, time
 
 print('Started...')
 
@@ -1819,6 +1819,16 @@ class TestStringMethods(unittest.TestCase):
 		i.loadJSON(data['installFonts'])
 		self.assertEqual(i.validate()[2], [])
 
+		# Update Flat subscription
+		result = user0.client.publishers()[0].subscriptions()[0].update()
+		success, message, changed = result
+		self.assertEqual(success, True)
+
+		# Install Font
+		user0.client.publishers()[0].subscriptions()[0].set('acceptedTermsOfService', True)
+		success, message = user0.client.publishers()[0].subscriptions()[0].installFonts([[user0.testFont().uniqueID, user0.testFont().getVersions()[-1].number]])
+		self.assertEqual(success, True)
+
 		user0.loadClient()
 
 		user0.clearSubscriptions()
@@ -1938,6 +1948,29 @@ class TestStringMethods(unittest.TestCase):
 		# success, result = user1.client.publishers()[0].subscriptions()[-1].announceChange()
 		# if not success: print(result)
 		# self.assertEqual(success, True)
+
+
+
+
+
+		# verifyCredentials without subscriptionURL
+		parameters = {
+			'command': 'updateSubscription',
+			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
+			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
+		}
+		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		self.assertEqual(success, True)
+		response = json.loads(response.read().decode())
+		self.assertEqual(response['response'], 'success')
+
+		time.sleep(5)
+
+
+
+
+
+
 
 		# Protocol
 		success, protocol = typeworld.client.getProtocol(protectedSubscription)
@@ -2404,8 +2437,8 @@ class TestStringMethods(unittest.TestCase):
 
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
-		self.assertEqual(success, False)
 		print(message)
+		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
 		user1.client.testScenario = 'simulateProgrammingError'
