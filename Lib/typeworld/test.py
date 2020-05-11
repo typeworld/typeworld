@@ -1747,12 +1747,11 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials without subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user2.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user2.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')
@@ -1855,13 +1854,12 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials with subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user1.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user1.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		print(response)
@@ -1882,13 +1880,12 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials with subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user1.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user1.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		print(response)
@@ -1896,13 +1893,12 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials with subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user1.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user1.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken.replace('@', 'a@'), # change URL slightly
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		print(response)
@@ -1913,13 +1909,12 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials with subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user1.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user1.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		print(response)
@@ -1932,13 +1927,12 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials with subscriptionURL
 		parameters = {
-			'command': 'verifyCredentials',
 			'anonymousAppID': user1.client.anonymousAppID(),
 			'anonymousTypeWorldUserID': user1.client.user(),
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/verifyCredentials', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		print(response)
@@ -1955,11 +1949,10 @@ class TestStringMethods(unittest.TestCase):
 
 		# verifyCredentials without subscriptionURL
 		parameters = {
-			'command': 'updateSubscription',
 			'subscriptionURL': protectedSubscriptionWithoutAccessToken,
 			'APIKey': 'I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T',
 		}
-		success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+		success, response = performRequest(MOTHERSHIP + '/updateSubscription', parameters, sslcontext)
 		self.assertEqual(success, True)
 		response = json.loads(response.read().decode())
 		self.assertEqual(response['response'], 'success')

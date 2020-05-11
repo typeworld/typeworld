@@ -866,14 +866,13 @@ class APIClient(PubSubClient):
 				self.log('Uploading subscriptions: %s' % oldURLs)
 
 				parameters = {
-					'command': 'uploadUserSubscriptions',
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
 					'subscriptionURLs': ','.join(oldURLs),
 					'secretKey': self.secretKey(),
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/uploadUserSubscriptions', parameters)
 				if not success:
 					return False, response
 
@@ -907,14 +906,13 @@ class APIClient(PubSubClient):
 				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
-					'command': 'downloadUserSubscriptions',
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
 					'userTimezone': self.timezone(),
 					'secretKey': self.secretKey(),
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/downloadUserSubscriptions', parameters)
 				if not success:
 					return False, response
 
@@ -997,14 +995,13 @@ class APIClient(PubSubClient):
 				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
-					'command': 'acceptInvitations',
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
 					'subscriptionIDs': ','.join([str(x) for x in IDs]),
 					'secretKey': self.secretKey(),
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/acceptInvitations', parameters)
 				if not success:
 					return False, response
 
@@ -1039,14 +1036,13 @@ class APIClient(PubSubClient):
 				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
-					'command': 'declineInvitations',
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
 					'subscriptionIDs': ','.join([str(x) for x in IDs]),
 					'secretKey': self.secretKey(),
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/declineInvitations', parameters)
 				if not success:
 					return False, response
 
@@ -1081,14 +1077,13 @@ class APIClient(PubSubClient):
 				self.set('lastServerSync', int(time.time()))
 
 				parameters = {
-					'command': 'syncUserSubscriptions',
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
 					'subscriptionURLs': ','.join(oldURLs),
 					'secretKey': self.secretKey(),
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/syncUserSubscriptions', parameters)
 				if not success:
 					return False, response
 
@@ -1155,13 +1150,12 @@ class APIClient(PubSubClient):
 					return False, '#(PasswordsDontMatch)'
 
 				parameters = {
-					'command': 'createUserAccount',
 					'name': name,
 					'email': email,
 					'password': password1,
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/createUserAccount', parameters)
 				if not success:
 					return False, response
 
@@ -1194,12 +1188,11 @@ class APIClient(PubSubClient):
 					if not success: return False, message
 
 				parameters = {
-					'command': 'deleteUserAccount',
 					'email': email,
 					'password': password,
 				}
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/deleteUserAccount', parameters)
 				if not success:
 					return False, response
 
@@ -1222,12 +1215,11 @@ class APIClient(PubSubClient):
 				return False, '#(RequiredFieldEmpty)'
 
 			parameters = {
-				'command': 'logInUserAccount',
 				'email': email,
 				'password': password,
 			}
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/logInUserAccount', parameters)
 			if not success:
 				return False, response
 
@@ -1260,7 +1252,6 @@ class APIClient(PubSubClient):
 		try:
 
 			parameters = {
-				'command': 'linkTypeWorldUserAccount',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'secretKey': self.secretKey(userID),
@@ -1268,7 +1259,7 @@ class APIClient(PubSubClient):
 
 			parameters = self.addMachineIDToParameters(parameters)
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/linkTypeWorldUserAccount', parameters)
 			if not success:
 				return False, response
 
@@ -1303,13 +1294,12 @@ class APIClient(PubSubClient):
 			if not self.user(): return False, 'No user'
 
 			parameters = {
-				'command': 'userAppInstances',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': self.user(),
 				'secretKey': self.secretKey(),
 			}
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/userAppInstances', parameters)
 			if not success: return False, response
 
 			response = json.loads(response.read().decode())
@@ -1343,13 +1333,12 @@ class APIClient(PubSubClient):
 			if not self.user(): return False, 'No user'
 
 			parameters = {
-				'command': 'revokeAppInstance',
 				'anonymousAppID': anonymousAppID,
 				'anonymousUserID': self.user(),
 				'secretKey': self.secretKey(),
 			}
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/revokeAppInstance', parameters)
 			if not success: return False, response
 
 			response = json.loads(response.read().decode())
@@ -1366,13 +1355,12 @@ class APIClient(PubSubClient):
 			if not self.user(): return False, 'No user'
 
 			parameters = {
-				'command': 'reactivateAppInstance',
 				'anonymousAppID': anonymousAppID,
 				'anonymousUserID': self.user(),
 				'secretKey': self.secretKey(),
 			}
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/reactivateAppInstance', parameters)
 			if not success: return False, response
 
 			response = json.loads(response.read().decode())
@@ -1429,13 +1417,12 @@ class APIClient(PubSubClient):
 			if not success: return False, response
 
 			parameters = {
-				'command': 'unlinkTypeWorldUserAccount',
 				'anonymousAppID': self.anonymousAppID(),
 				'anonymousUserID': userID,
 				'secretKey': self.secretKey(),
 			}
 
-			success, response = self.performRequest(self.mothership, parameters)
+			success, response = self.performRequest(self.mothership + '/unlinkTypeWorldUserAccount', parameters)
 			if not success:
 				return False, response
 
@@ -1612,7 +1599,6 @@ Version: {typeworld.api.VERSION}
 			payload = payload.replace('\n \n', '\n')
 
 		parameters = {
-			'command': 'handleTraceback',
 			'payload': payload,
 			'supplementary': json.dumps(supplementary),
 		}
@@ -1621,7 +1607,7 @@ Version: {typeworld.api.VERSION}
 		if True:
 			def handleTracebackWorker(self):
 
-				success, response = self.performRequest(self.mothership, parameters)
+				success, response = self.performRequest(self.mothership + '/handleTraceback', parameters)
 				if not success: self.log('handleTraceback() error on server, step 1: %s' % response)
 
 				response = json.loads(response.read().decode())
@@ -2353,11 +2339,10 @@ class APISubscription(PubSubClient):
 				# Register endpoint
 
 				parameters = {
-					'command': 'registerAPIEndpoint',
 					'url': 'typeworld://%s+%s' % (self.protocol.url.protocol, self.parent.canonicalURL.replace('://', '//')),
 				}
 
-				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership + '/registerAPIEndpoint', parameters)
 				if not success: return False, response
 
 				response = json.loads(response.read().decode())
@@ -2383,13 +2368,12 @@ class APISubscription(PubSubClient):
 					return False, 'No source user linked.'
 
 				parameters = {
-					'command': 'inviteUserToSubscription',
 					'targetUserEmail': targetEmail,
 					'sourceUserEmail': self.parent.parent.userEmail(),
 					'subscriptionURL': self.protocol.secretURL(),
 				}
 
-				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership + '/inviteUserToSubscription', parameters)
 				if not success:
 					return False, response
 
@@ -2425,13 +2409,12 @@ class APISubscription(PubSubClient):
 			if self.parent.parent.online():
 
 				parameters = {
-					'command': 'revokeSubscriptionInvitation',
 					'targetUserEmail': targetEmail,
 					'sourceUserEmail': self.parent.parent.userEmail(),
 					'subscriptionURL': self.protocol.secretURL(),
 				}
 
-				success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+				success, response = self.parent.parent.performRequest(self.parent.parent.mothership + '/revokeSubscriptionInvitation', parameters)
 				if not success:
 					return False, response
 
@@ -2689,6 +2672,9 @@ class APISubscription(PubSubClient):
 							elif incomingFont.response == 'error':
 								return False, incomingFont.errorMessage
 
+							elif incomingFont.response != 'success':
+								return False, [f'#(response.{incomingFont.response})', f'#(response.{incomingFont.response}.headline)']
+
 							# Predefined response messages
 							elif incomingFont.response != 'error' and incomingFont.response != 'success':
 								return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
@@ -2704,7 +2690,11 @@ class APISubscription(PubSubClient):
 													path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 													break
 
-								assert path and not dryRun
+								if self.parent.parent.testScenario == 'simulateNoPath':
+									path = None
+
+								if not path and not dryRun:
+									return False, 'Font path couldn’t be determined (deleting unprotected fonts)'
 
 								if not dryRun:
 									os.remove(path)
