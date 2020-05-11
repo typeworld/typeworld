@@ -2441,6 +2441,11 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(success, False)
 		self.assertEqual(message.getText(), 'simulateCustomError')
 
+		user1.client.testScenario = 'simulateNoPath'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
+		print(message)
+		self.assertEqual(success, False)
+
 		user1.client.testScenario = 'simulateProgrammingError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)

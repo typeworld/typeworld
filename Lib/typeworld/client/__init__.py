@@ -2731,6 +2731,9 @@ class APISubscription(PubSubClient):
 										path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 										break
 
+					if self.parent.parent.testScenario == 'simulateNoPath':
+						path = None
+
 					if not path and not dryRun:
 						return False, 'Font path couldn’t be determined (deleting unprotected fonts)'
 
