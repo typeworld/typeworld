@@ -2433,9 +2433,9 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
 		self.assertEqual(success, False)
 
-		# user1.client.testScenario = 'simulateMissingFont'
-		# success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID)
-		# self.assertEqual(success, False)
+		user1.client.testScenario = 'simulateTemporarilyUnavailable'
+		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
+		self.assertEqual(success, False)
 
 		user1.client.testScenario = 'simulateCustomError'
 		success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
