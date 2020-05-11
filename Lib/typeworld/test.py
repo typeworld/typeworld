@@ -1828,6 +1828,15 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user0.client.publishers()[0].subscriptions()[0].installFonts([[user0.testFont().uniqueID, user0.testFont().getVersions()[-1].number]])
 		self.assertEqual(success, True)
 
+		# Remove Font
+		user0.client.testScenario = 'simulateNoPath'
+		success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts([user0.testFont().uniqueID])
+		self.assertEqual(success, False)
+		user0.client.testScenario = None
+		success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts([user0.testFont().uniqueID])
+		self.assertEqual(success, True)
+
+
 		user0.loadClient()
 
 		user0.clearSubscriptions()

@@ -2669,15 +2669,12 @@ class APISubscription(PubSubClient):
 
 							if incomingFont.response in proceed: pass
 
-							elif incomingFont.response == 'error':
-								return False, incomingFont.errorMessage
-
-							elif incomingFont.response != 'success':
-								return False, [f'#(response.{incomingFont.response})', f'#(response.{incomingFont.response}.headline)']
-
 							# Predefined response messages
 							elif incomingFont.response != 'error' and incomingFont.response != 'success':
 								return False, ['#(response.%s)' % incomingFont.response, '#(response.%s.headline)' % incomingFont.response]
+
+							elif incomingFont.response == 'error':
+								return False, incomingFont.errorMessage
 
 							if incomingFont.response == 'success':
 
