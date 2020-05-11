@@ -3,6 +3,7 @@
 import os
 import typeworld.api
 from ynlib.files import WriteToFile, ReadFromFile
+from ynlib.system import Execute
 
 docstrings = []
 
@@ -26,6 +27,16 @@ for handle in handles:
 classTOC += '\n\n'
 
 docstring = docstring.replace('__classTOC__', classTOC)
+
+# Test code
+testCode1Path = os.path.join(os.path.dirname(__file__), 'testcode1.py')
+docstring = docstring.replace('__testcode1__', open(testCode1Path).read())
+docstring = docstring.replace('__testcode1result__', Execute('python ' + testCode1Path).decode())
+
+testCode2Path = os.path.join(os.path.dirname(__file__), 'testcode2.py')
+docstring = docstring.replace('__testcode2__', open(testCode2Path).read())
+docstring = docstring.replace('__testcode2result__', Execute('python ' + testCode2Path).decode())
+
 
 for handle in handles:
 	for className, string in docstrings:
