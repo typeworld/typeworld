@@ -20,8 +20,4 @@ keyring.set_password('http://127.0.0.1:8080/api', 'revokeAppInstance', key)
 
 # API
 
-For the documentation of the official API, jump [→ here](Lib/typeWorld/api).
-
-# Client
-
-For the documentation of the client, jump [→ here](Lib/typeWorld/client).
+For the documentation of the official API in detail, jump [→ here](Lib/typeworld/api).
