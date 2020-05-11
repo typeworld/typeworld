@@ -2777,6 +2777,11 @@ class TestStringMethods(unittest.TestCase):
 		except:
 			pass
 
+		# Traceback Test
+		try:
+			user1.client.tracebackTest2()
+		except:
+			pass
 
 		# Delete subscription from first user. Subsequent invitation must then be taken down as well.
 		user1.client.publishers()[0].delete()
