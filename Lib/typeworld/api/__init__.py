@@ -1927,19 +1927,7 @@ class InstallableFontsResponseType(ResponseCommandDataType):
 
 class InstallableFontsResponse(BaseResponse):
     '''\
-    This is the response expected to be returned when the API is invoked using the `?command=installableFonts` parameter.
-
-    ```python
-    # Create root object
-    installableFonts = InstallableFontsResponse()
-
-    # Add data to the command here
-    # ...
-
-    # Return the call’s JSON content to the HTTP request
-    return installableFonts.dumpJSON()
-    ```
-
+    This is the response expected to be returned when the API is invoked using the `?commands=installableFonts` parameter, and contains metadata about which fonts are available to install for a user.
     '''
 
     _command = INSTALLABLEFONTSCOMMAND
@@ -2038,19 +2026,7 @@ class InstallFontResponseType(ResponseCommandDataType):
 
 class InstallFontAsset(BaseResponse):
     '''\
-    This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-    ```python
-    # Create root object
-    installFonts = InstallFontsResponse()
-
-    # Add data to the command here
-    # ...
-
-    # Return the call’s JSON content to the HTTP request
-    return installFonts.dumpJSON()
-    ```
-
+    This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter.
     '''
 
     #   key:                    [data type, required, default value, description]
@@ -2108,19 +2084,7 @@ class InstallFontAssetListProxy(ListProxy):
 
 class InstallFontsResponse(BaseResponse):
     '''\
-    This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-    ```python
-    # Create root object
-    installFonts = InstallFontsResponse()
-
-    # Add data to the command here
-    # ...
-
-    # Return the call’s JSON content to the HTTP request
-    return installFonts.dumpJSON()
-    ```
-
+    This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter, and contains the requested binary fonts attached as ::InstallFontAsset:: obects.
     '''
 
     _command = INSTALLFONTSCOMMAND
@@ -2149,19 +2113,7 @@ class UninstallFontResponseType(ResponseCommandDataType):
 
 class UninstallFontAsset(BaseResponse):
     '''\
-    This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
-
-    ```python
-    # Create root object
-    uninstallFonts = UninstallFontsResponse()
-
-    # Add data to the command here
-    # ...
-
-    # Return the call’s JSON content to the HTTP request
-    return uninstallFonts.dumpJSON()
-    ```
-
+    This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter.
     '''
     #   key:                    [data type, required, default value, description]
 
@@ -2184,19 +2136,8 @@ class UninstallFontAssetListProxy(ListProxy):
 
 class UninstallFontsResponse(BaseResponse):
     '''\
-    This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-    ```python
-    # Create root object
-    installFonts = InstallFontsResponse()
-
-    # Add data to the command here
-    # ...
-
-    # Return the call’s JSON content to the HTTP request
-    return installFonts.dumpJSON()
-    ```
-
+    This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter, and contains empty responses as ::UninstallFontAsset:: objects. 
+    While empty of data, these asset objects are still necessary because each font uninstallation request may return a different response, to which the GUI app needs to respond to accordingly.
     '''
 
     _command = UNINSTALLFONTSCOMMAND
@@ -2213,21 +2154,9 @@ class UninstallFontsResponse(BaseResponse):
 
 class EndpointResponse(BaseResponse):
     '''\
-This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+This is the response expected to be returned when the API is invoked using the `?commands=endpoint` parameter.
 
-Any API response is expected to carry this minimum information, even when invoked without a particular command.
-
-In case the API endpoint has been invoked with a particular command, the response data is attached to the ::APIRoot.response:: attribute.
-
-
-```python
-response = EndpointResponse()
-response.name.en = u'Font Publisher'
-response.canonicalURL = 'https://fontpublisher.com/api/'
-response.adminEmail = 'admin@fontpublisher.com'
-response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
-```
-
+This response contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
     '''
 
     _command = ENDPOINTCOMMAND

@@ -455,21 +455,9 @@ Requires deepdiff module.
 
 # _class_ EndpointResponse()
 
-This is the main class that sits at the root of all API responses. It contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+This is the response expected to be returned when the API is invoked using the `?commands=endpoint` parameter.
 
-Any API response is expected to carry this minimum information, even when invoked without a particular command.
-
-In case the API endpoint has been invoked with a particular command, the response data is attached to the [APIRoot.response](#user-content-class-apiroot-attribute-response) attribute.
-
-
-```python
-response = EndpointResponse()
-response.name.en = u'Font Publisher'
-response.canonicalURL = 'https://fontpublisher.com/api/'
-response.adminEmail = 'admin@fontpublisher.com'
-response.supportedCommands = ['installableFonts', 'installFonts', 'uninstallFonts']
-```
-
+This response contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
     
 
 ### Attributes
@@ -679,18 +667,8 @@ Requires deepdiff module.
 
 # _class_ InstallableFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?command=installableFonts` parameter.
-
-```python
-# Create root object
-installableFonts = InstallableFontsResponse()
-
-# Add data to the command here
-# ...
-
-# Return the call’s JSON content to the HTTP request
-return installableFonts.dumpJSON()
-```
+This is the response expected to be returned when the API is invoked using the `?commands=installableFonts` parameter, and contains metadata about which fonts are available to install for a user.
+    
 
 ### Attributes
 
@@ -1530,7 +1508,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'ttf', 'otf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'ttf', 'otf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1778,18 +1756,8 @@ Requires deepdiff module.
 
 # _class_ InstallFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-```python
-# Create root object
-installFonts = InstallFontsResponse()
-
-# Add data to the command here
-# ...
-
-# Return the call’s JSON content to the HTTP request
-return installFonts.dumpJSON()
-```
+This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter, and contains the requested binary fonts attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
+    
 
 ### Attributes
 
@@ -1829,18 +1797,8 @@ Requires deepdiff module.
 
 # _class_ InstallFontAsset()
 
-This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-```python
-# Create root object
-installFonts = InstallFontsResponse()
-
-# Add data to the command here
-# ...
-
-# Return the call’s JSON content to the HTTP request
-return installFonts.dumpJSON()
-```
+This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter.
+    
 
 ### Attributes
 
@@ -1950,18 +1908,8 @@ Requires deepdiff module.
 
 # _class_ UninstallFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?command=installFonts` parameter.
-
-```python
-# Create root object
-installFonts = InstallFontsResponse()
-
-# Add data to the command here
-# ...
-
-# Return the call’s JSON content to the HTTP request
-return installFonts.dumpJSON()
-```
+This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter, and contains empty responses as [UninstallFontAsset](#user-content-class-uninstallfontasset) objects. 
+While empty of data, these asset objects are still necessary because each font uninstallation request may return a different response, to which the GUI app needs to respond to accordingly.
 
 ### Attributes
 
@@ -2001,18 +1949,8 @@ Requires deepdiff module.
 
 # _class_ UninstallFontAsset()
 
-This is the response expected to be returned when the API is invoked using the `?command=uninstallFonts` parameter.
-
-```python
-# Create root object
-uninstallFonts = UninstallFontsResponse()
-
-# Add data to the command here
-# ...
-
-# Return the call’s JSON content to the HTTP request
-return uninstallFonts.dumpJSON()
-```
+This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter.
+    
 
 ### Attributes
 
