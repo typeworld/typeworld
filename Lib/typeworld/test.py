@@ -1324,7 +1324,7 @@ class TestStringMethods(unittest.TestCase):
 		success, message = user1.client.rootCommand(protectedSubscription)
 		self.assertFalse(success)
 		print(message)
-		self.assertTrue("Expecting ',' delimiter" in message)
+		self.assertTrue("Invalid control character at: line 6 column 47 (char 225)" in message)
 
 		# TODO: Invite user to subscription with API endpoint as source
 
@@ -1827,6 +1827,7 @@ class TestStringMethods(unittest.TestCase):
 		# Install Font
 		user0.client.publishers()[0].subscriptions()[0].set('acceptedTermsOfService', True)
 		success, message = user0.client.publishers()[0].subscriptions()[0].installFonts([[user0.testFont().uniqueID, user0.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, True)
 
 		# Remove Font
@@ -2768,6 +2769,7 @@ class TestStringMethods(unittest.TestCase):
 		# Install font
 		user1.client.testScenario = None
 		success, response = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.expiringTestFont().uniqueID, user1.expiringTestFont().getVersions()[-1].number]])
+		if not success: print(response)
 		self.assertEqual(success, True)
 
 		self.assertEqual(len(user1.client.expiringInstalledFonts()), 1)
