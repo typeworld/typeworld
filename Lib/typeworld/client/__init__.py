@@ -3016,11 +3016,10 @@ class APISubscription(PubSubClient):
 			self.parent.parent.deleteResources(self.get('resources') or [])
 
 
-			# New
 			self.parent.parent.remove('subscription(%s)' % self.protocol.unsecretURL())
 
 			# Subscriptions
-			subscriptions = self.parent.get('subscriptions')
+			subscriptions = self.parent.get('subscriptions') or []
 			subscriptions.remove(self.protocol.unsecretURL())
 			self.parent.set('subscriptions', subscriptions)
 			self.parent._subscriptions = {}
