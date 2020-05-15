@@ -1574,7 +1574,7 @@ Version: {typeworld.api.VERSION}
 		}
 
 		if sourceMethod:
-			if getattr(sourceMethod, '__self__') and sourceMethod.__self__:
+			if hasattr(sourceMethod, '__self__') and sourceMethod.__self__:
 				supplementary['sourceMethodSignature'] = str(sourceMethod.__self__.__class__.__name__) + '.' + str(sourceMethod.__name__) + str(inspect.signature(sourceMethod))
 			else:
 				supplementary['sourceMethodSignature'] = str(sourceMethod.__name__) + str(inspect.signature(sourceMethod)) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
