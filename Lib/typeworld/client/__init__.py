@@ -2104,7 +2104,7 @@ class APIPublisher(object):
 
 	def get(self, key):
 		try:
-			preferences = dict(self.parent.get(self.canonicalURL) or self.parent.get('publisher(%s)' % self.canonicalURL) or {})
+			preferences = self.parent.get('publisher(%s)' % self.canonicalURL) or {}
 			if key in preferences:
 
 				o = preferences[key]
@@ -2117,7 +2117,7 @@ class APIPublisher(object):
 
 	def set(self, key, value):
 		try:
-			preferences = dict(self.parent.get(self.canonicalURL) or self.parent.get('publisher(%s)' % self.canonicalURL) or {})
+			preferences = self.parent.get('publisher(%s)' % self.canonicalURL) or {}
 			preferences[key] = value
 			self.parent.set('publisher(%s)' % self.canonicalURL, preferences)
 		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
