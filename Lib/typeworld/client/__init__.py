@@ -95,6 +95,9 @@ class URL(object):
 		else:
 			return str(self.customProtocol) + str(self.protocol) + '+' + str(self.transportProtocol.replace('://', '//')) + str(self.restDomain)
 
+	def HTTPURL(self):
+		return str(self.transportProtocol) + str(self.restDomain)
+
 def getProtocol(url):
 
 	protocolName = URL(url).protocol

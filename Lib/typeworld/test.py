@@ -1345,6 +1345,7 @@ class TestStringMethods(unittest.TestCase):
 		success, protocol = typeworld.client.getProtocol(freeNamedSubscription)
 		self.assertEqual(protocol.secretURL(), freeNamedSubscription)
 		self.assertEqual(protocol.unsecretURL(), freeNamedSubscription)
+		self.assertEqual(typeworld.client.URL(freeNamedSubscription).HTTPURL(), 'https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/')
 
 		typeworld.client.helpers.Garbage(20, uppercase = True, lowercase = True, numbers = True, punctuation = True)
 
