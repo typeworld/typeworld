@@ -389,10 +389,10 @@ class APIPendingInvitation(APIInvitation):
 	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'websiteURL')
 
 	def accept(self):
-		return self.parent.acceptInvitation(self.ID)
+		return self.parent.acceptInvitation(self.url)
 
 	def decline(self):
-		return self.parent.declineInvitation(self.ID)
+		return self.parent.declineInvitation(self.url)
 
 class APIAcceptedInvitation(APIInvitation):
 	keywords = ('url', 'ID', 'invitedByUserName', 'invitedByUserEmail', 'time', 'canonicalURL', 'publisherName', 'subscriptionName', 'logoURL', 'backgroundColor', 'fonts', 'families', 'foundries', 'websiteURL')
@@ -978,20 +978,28 @@ class APIClient(PubSubClient):
 			return True, None
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
-	def acceptInvitation(self, ID):
+	def acceptInvitation(self, url):
 		try:
 			userID = self.user()
 			if userID:
-				self.appendCommands('acceptInvitation', [ID])
+				self.appendCommands('acceptInvitation', [url])
 
 			return self.performCommands()
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
-	def performAcceptInvitation(self, IDs):
+	def performAcceptInvitation(self, urls):
 		try:
 			userID = self.user()
-	#		oldURLs = self.secretSubscriptionURLs()
+
+			# Get Invitation IDs from urls
+			IDs = []
+			for invitation in self.pendingInvitations():
+				for url in urls:
+					if invitation.url == url:
+						if not invitation.ID in IDs:
+							IDs.append(invitation.ID)
+			assert len(IDs) == len(urls)
 
 			if userID:
 
@@ -1000,7 +1008,7 @@ class APIClient(PubSubClient):
 				parameters = {
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
-					'subscriptionIDs': ','.join([str(x) for x in IDs]),
+					'subscriptionIDs': ','.join(IDs),
 					'secretKey': self.secretKey(),
 				}
 
@@ -1018,21 +1026,29 @@ class APIClient(PubSubClient):
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
-	def declineInvitation(self, ID):
+	def declineInvitation(self, url):
 		try:
 
 			userID = self.user()
 			if userID:
-				self.appendCommands('declineInvitation', [ID])
+				self.appendCommands('declineInvitation', [url])
 
 			return self.performCommands()
 
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
-	def performDeclineInvitation(self, IDs):
+	def performDeclineInvitation(self, urls):
 		try:
 			userID = self.user()
-	#		oldURLs = self.secretSubscriptionURLs()
+
+			# Get Invitation IDs from urls
+			IDs = []
+			for invitation in self.pendingInvitations():
+				for url in urls:
+					if invitation.url == url:
+						if not invitation.ID in IDs:
+							IDs.append(invitation.ID)
+			assert len(IDs) == len(urls)
 
 			if userID:
 
@@ -1041,7 +1057,7 @@ class APIClient(PubSubClient):
 				parameters = {
 					'anonymousAppID': self.anonymousAppID(),
 					'anonymousUserID': userID,
-					'subscriptionIDs': ','.join([str(x) for x in IDs]),
+					'subscriptionIDs': ','.join(IDs),
 					'secretKey': self.secretKey(),
 				}
 
