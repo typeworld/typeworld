@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime, markdown, semver, functools, platform
+import json, copy, types, inspect, re, traceback, datetime, markdown2, semver, functools, platform
 
 
 
@@ -1063,7 +1063,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                     else:
                         critical.append('String contains HTML code, which is not allowed.')
 
-                if not self._markdownAllowed and string and '<p>' + string + '</p>' != markdown.markdown(string):
+                if not self._markdownAllowed and string and '<p>' + string + '</p>\n' != markdown2.markdown(string):
                     critical.append('String contains Markdown code, which is not allowed.')
 
         return information, warnings, critical
