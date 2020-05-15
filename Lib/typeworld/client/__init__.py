@@ -1611,11 +1611,10 @@ Version: {typeworld.api.VERSION}
 			def handleTracebackWorker(self):
 
 				success, response = self.performRequest(self.mothership + '/handleTraceback', parameters)
+				if success:
+					response = json.loads(response.read().decode())
+					if response['response'] != 'success': self.log('handleTraceback() error on server, step 2: %s' % response)
 				if not success: self.log('handleTraceback() error on server, step 1: %s' % response)
-
-				response = json.loads(response.read().decode())
-
-				if response['response'] != 'success': self.log('handleTraceback() error on server, step 2: %s' % response)
 
 
 			handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self, ))
