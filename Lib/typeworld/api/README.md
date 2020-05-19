@@ -1180,7 +1180,7 @@ Requires deepdiff module.
 
 ### billboardURLs
 
-List of URLs pointing at images to show for this typeface, specifications to follow
+List of URLs pointing at images to show for this typeface. These must be uncompressed SVG images. It is suggested to use square dimensions, but it’s not compulsory. It’s unclear at this point how pixel data in the SVG will be displayed in the app on the two different operating systems Mac and Windows.
 
 __Required:__ False<br />
 __Type:__ List of Str objects<br />
@@ -1508,7 +1508,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'ttf', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'ttf', 'otf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />

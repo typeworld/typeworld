@@ -1628,7 +1628,7 @@ class Family(DictBasedObject):
         'uniqueID':                 [StringDataType,        True,   None,   'An string that uniquely identifies this family within the publisher.'],
         'name':                     [MultiLanguageTextProxy,True,   None,   'Human-readable name of font family. This may include any additions that you find useful to communicate to your users.'],
         'description':              [MultiLanguageLongTextProxy,False,  None,   'Description of font family'],
-        'billboardURLs':            [BillboardListProxy,    False,  None,   'List of URLs pointing at images to show for this typeface, specifications to follow'],
+        'billboardURLs':            [BillboardListProxy,    False,  None,   'List of URLs pointing at images to show for this typeface. These must be uncompressed SVG images. It is suggested to use square dimensions, but it’s not compulsory. It’s unclear at this point how pixel data in the SVG will be displayed in the app on the two different operating systems Mac and Windows.'],
         'designerKeywords':         [DesignersReferencesListProxy,  False,  None,   'List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.'],
         'packages':                 [FontPackageListProxy,           False,   None,   'Family-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::'],
 
