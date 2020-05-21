@@ -450,6 +450,9 @@ class PubSubClient(object):
 				pass #nocoverage
 			except google.api_core.exceptions.AlreadyExists:
 				self.pubsubSubscription = self.pubSubSubscriber.subscribe(self.subscriptionPath, self.pubSubCallback)
+			# Topic doesn't yet exist. For instance, subscription topic are only created after the first `updateSubscription` call on the central server
+			except google.api_core.exceptions.PermissionDenied:
+				pass #nocoverage
 
 			if self.pubsubSubscription:
 				pass
