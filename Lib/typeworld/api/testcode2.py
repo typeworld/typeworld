@@ -62,9 +62,5 @@ font.usedLicenses.append(licenseUsage)
 # Attach EndpointResponse to RootResponse
 root.installableFonts = installableFonts
 
-# Create API response as JSON
-jsonResponse = root.dumpJSON()
-
-# Read JSON code back in for pretty printing
-import json
-print(json.dumps(json.loads(jsonResponse), indent=4, sort_keys=True))
+# Print API response as JSON
+print(root.dumpJSON())

@@ -170,13 +170,8 @@ endpoint.supportedCommands = [x['keyword'] for x in COMMANDS] # this API support
 # Attach EndpointResponse to RootResponse
 root.endpoint = endpoint
 
-# Create API response as JSON
-jsonResponse = root.dumpJSON()
-
-# Read JSON code back in for pretty printing
-import json
-print(json.dumps(json.loads(jsonResponse), indent=4, sort_keys=True))
-
+# Print API response as JSON
+print(root.dumpJSON())
 ```
 
 Will output the following JSON code:
@@ -273,13 +268,8 @@ font.usedLicenses.append(licenseUsage)
 # Attach EndpointResponse to RootResponse
 root.installableFonts = installableFonts
 
-# Create API response as JSON
-jsonResponse = root.dumpJSON()
-
-# Read JSON code back in for pretty printing
-import json
-print(json.dumps(json.loads(jsonResponse), indent=4, sort_keys=True))
-
+# Print API response as JSON
+print(root.dumpJSON())
 ```
 
 Will output the following JSON code:
@@ -1508,7 +1498,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'ttf', 'otf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttc', 'woff2', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
