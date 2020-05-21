@@ -1598,6 +1598,7 @@ Version: {typeworld.api.VERSION}
 			else:
 				supplementary['sourceMethodSignature'] = str(sourceMethod.__name__) + str(inspect.signature(sourceMethod)) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
+		supplementary['traceback'] = payload
 		supplementary['stack'] = []
 		supplementary['trace'] = []
 		for s in inspect.stack():
