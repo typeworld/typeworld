@@ -3,6 +3,6 @@ semver
 codecov
 certifi
 keyring
-markdown
+markdown2
 google-cloud-ndb
 google-cloud-pubsub
