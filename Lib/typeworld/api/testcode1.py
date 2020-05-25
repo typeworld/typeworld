@@ -1,15 +1,15 @@
 # Import module
-from typeworld.api import *
+import typeworld.api
 
 # Root of Response
-root = RootResponse()
+root = typeworld.api.RootResponse()
 
 ### EndpointResponse
-endpoint = EndpointResponse()
+endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = 'Font Publisher'
 endpoint.canonicalURL = 'http://fontpublisher.com/api/'
 endpoint.adminEmail = 'admin@fontpublisher.com'
-endpoint.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+endpoint.supportedCommands = [x['keyword'] for x in typeworld.api.COMMANDS] # this API supports all commands
 
 # Attach EndpointResponse to RootResponse
 root.endpoint = endpoint

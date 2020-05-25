@@ -1,49 +1,49 @@
 # Import module
-from typeworld.api import *
+import typeworld.api
 
 # Root of Response
-root = RootResponse()
+root = typeworld.api.RootResponse()
 
 # Response for 'availableFonts' command
-installableFonts = InstallableFontsResponse()
+installableFonts = typeworld.api.InstallableFontsResponse()
 installableFonts.response = 'success'
 
 ###
 
 # Add designer to root of response
-designer = Designer()
+designer = typeworld.api.Designer()
 designer.keyword = 'max'
 designer.name.en = 'Max Mustermann'
 installableFonts.designers.append(designer)
 
 # Add foundry to root of response
-foundry = Foundry()
+foundry = typeworld.api.Foundry()
 foundry.name.en = 'Awesome Fonts'
 foundry.website = 'https://awesomefonts.com'
 foundry.uniqueID = 'awesomefontsfoundry'
 installableFonts.foundries.append(foundry)
 
 # Add license to foundry
-license = LicenseDefinition()
+license = typeworld.api.LicenseDefinition()
 license.keyword = 'awesomeFontsEULA'
 license.name.en = 'Awesome Fonts Desktop EULA'
 license.URL = 'https://awesomefonts.com/EULA/'
 foundry.licenses.append(license)
 
 # Add font family to foundry
-family = Family()
+family = typeworld.api.Family()
 family.name.en = 'Awesome Sans'
 family.designerKeywords.append('max')
 family.uniqueID = 'awesomefontsfoundry-awesomesans'
 foundry.families.append(family)
 
 # Add version to font family
-version = Version()
+version = typeworld.api.Version()
 version.number = 0.1
 family.versions.append(version)
 
 # Add font to family
-font = Font()
+font = typeworld.api.Font()
 font.name.en = 'Regular'
 font.postScriptName = 'AwesomeSans-Regular'
 font.licenseKeyword = 'awesomeFontsEULA'
@@ -53,7 +53,7 @@ font.uniqueID = 'awesomefontsfoundry-awesomesans-regular'
 family.fonts.append(font)
 
 # Font's license usage
-licenseUsage = LicenseUsage()
+licenseUsage = typeworld.api.LicenseUsage()
 licenseUsage.keyword = 'awesomeFontsEULA'
 font.usedLicenses.append(licenseUsage)
 
