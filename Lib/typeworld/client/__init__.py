@@ -375,6 +375,12 @@ class TypeWorldClientDelegate(object):
 	def subscriptionWasUpdated(self, subscription):
 		pass
 
+	def _clientPreferenceChanged(self, key, value):
+		try: self.clientPreferenceChanged(key, value)
+		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
+	def clientPreferenceChanged(self, key, value):
+		pass
+
 class APIInvitation(object):
 	keywords = ()
 
@@ -570,6 +576,7 @@ class APIClient(PubSubClient):
 	def set(self, key, value):
 		try:
 			self._preferences.set('world.type.guiapp.' + key, value)
+			self.delegate._clientPreferenceChanged(key, value)
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def remove(self, key):
