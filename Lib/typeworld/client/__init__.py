@@ -2636,6 +2636,7 @@ class APISubscription(PubSubClient):
 								if self.installedFontVersion(font.uniqueID):
 									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
 									break
+#				print(installedFontVersion)
 
 				if not path and not dryRun:
 					return False, 'Font path couldn’t be determined (preflight)'
@@ -2717,7 +2718,6 @@ class APISubscription(PubSubClient):
 
 								if not dryRun:
 									os.remove(path)
-									# print('Actually deleted font %s' % path)
 
 								self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
