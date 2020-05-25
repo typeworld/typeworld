@@ -1420,7 +1420,7 @@ class APIClient(PubSubClient):
 									fontIDs.append(font.uniqueID) #nocoverage (This is executed only when the central server uninstalls *all* fonts)
 
 								# Run from local client, add only actually installed fonts
-								elif not dryRun and font.protected and subscription.installedFontVersion(font.uniqueID):
+								elif not dryRun and font.protected and subscription.installedFontVersion(font=font):
 									fontIDs.append(font.uniqueID)
 					
 					if fontIDs:
@@ -2531,7 +2531,7 @@ class APISubscription(PubSubClient):
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						if self.installedFontVersion(font.uniqueID):
+						if self.installedFontVersion(font=font):
 							if not font in l:
 								l.append(font)
 			return l
@@ -2568,7 +2568,7 @@ class APISubscription(PubSubClient):
 			for foundry in installabeFontsCommand.foundries:
 				for family in foundry.families:
 					for font in family.fonts:
-						installedFontVersion = self.installedFontVersion(font.uniqueID)
+						installedFontVersion = self.installedFontVersion(font=font)
 						if installedFontVersion and installedFontVersion != font.getVersions()[-1].number:
 							if not font in l:
 								l.append(font.uniqueID)
