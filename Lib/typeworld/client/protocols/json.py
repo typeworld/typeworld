@@ -248,6 +248,12 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 		if messages['errors']:
 			return False, '\n\n'.join(messages['errors'])
 
+		if api.response == 'error':
+			return False, api.errorMessage
+
+		if api.response != 'success':
+			return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
+
 		if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
 			self.setInstallableFontsCommand(root.installableFonts)
 
@@ -294,6 +300,12 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
 			if messages['errors']:
 				return False, '\n\n'.join(messages['errors'])
+
+			if api.response == 'error':
+				return False, api.errorMessage
+
+			if api.response != 'success':
+				return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
 
 			if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
 				self.setInstallableFontsCommand(root.installableFonts)
