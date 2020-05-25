@@ -38,14 +38,15 @@
 ONLINE = True
 
 
-import sys, os, copy, time
+import sys, os, copy,time
+import urllib.request, urllib.parse
 
 print('Started...')
 
 # if 'TRAVIS' in os.environ:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import ssl, certifi, json, urllib
+import ssl, certifi, json
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 
 
@@ -378,6 +379,14 @@ class User(object):
 		family = foundry.families[-1]
 		font = family.fonts[-1]
 		return font
+
+	def testFonts(self):
+		publisher = self.client.publishers()[0]
+		subscription = publisher.subscriptions()[-1]
+		installableFontsCommand = subscription.protocol.installableFontsCommand()[1]
+		foundry = installableFontsCommand.foundries[-1]
+		family = foundry.families[-1]
+		return family.fonts
 
 	def clearSubscriptions(self):
 		self.client.testScenario = None
@@ -1437,7 +1446,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			asset.response = 'a'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'seatAllowanceReached\', \'validTypeWorldUserAccountRequired\', \'revealedUserIdentityRequired\', \'loginRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\', \'revealedUserIdentityRequired\', \'seatAllowanceReached\']')
 
 	def test_UninstallFontsResponse(self):
 
@@ -1447,7 +1456,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			asset.response = 'a'
 		except ValueError as e:
-			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'unknownInstallation\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\']')
+			self.assertEqual(str(e), 'Unknown response type: "a". Possible: [\'success\', \'error\', \'unknownFont\', \'insufficientPermission\', \'temporarilyUnavailable\', \'validTypeWorldUserAccountRequired\', \'loginRequired\', \'unknownInstallation\']')
 
 
 	def test_InstallableFontsResponse_Old(self):
@@ -1811,6 +1820,7 @@ class TestStringMethods(unittest.TestCase):
 		# Flat subscription
 		result = user0.client.addSubscription(flatFreeSubscription)
 		success, message, publisher, subscription = result
+		if not success: print(message)
 		self.assertEqual(success, True)
 
 		data = user0.client.get(f'subscription({flatFreeSubscription})')['data']
@@ -1824,19 +1834,39 @@ class TestStringMethods(unittest.TestCase):
 		success, message, changed = result
 		self.assertEqual(success, True)
 
-		# Install Font
+		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
+
+		# Install All 4 Fonts
 		user0.client.publishers()[0].subscriptions()[0].set('acceptedTermsOfService', True)
-		success, message = user0.client.publishers()[0].subscriptions()[0].installFonts([[user0.testFont().uniqueID, user0.testFont().getVersions()[-1].number]])
+		fonts = [[x.uniqueID, x.getVersions()[-1].number] for x in user0.testFonts()]
+		success, message = user0.client.publishers()[0].subscriptions()[0].installFonts(fonts)
 		if not success: print(message)
 		self.assertEqual(success, True)
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 4)
+
+
+		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
+
 
 		# Remove Font
 		user0.client.testScenario = 'simulateNoPath'
 		success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts([user0.testFont().uniqueID])
+		if not success: print(message)
 		self.assertEqual(success, False)
+
+
+		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
+
+		# Remove all 4 fonts
 		user0.client.testScenario = None
-		success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts([user0.testFont().uniqueID])
+		fonts = [x.uniqueID for x in user0.testFonts()]
+		success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts(fonts)
+		if not success: print(message)
 		self.assertEqual(success, True)
+		self.assertEqual(user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
+
+
+		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
 
 
 		user0.loadClient()
@@ -2241,7 +2271,7 @@ class TestStringMethods(unittest.TestCase):
 		success, message = response
 		print(response)
 		self.assertEqual(success, False)
-		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
+		self.assertEqual(message, ['#(response.validTypeWorldUserAccountRequired)', '#(response.validTypeWorldUserAccountRequired.headline)'])
 
 		# Reactivate app instance
 		success, response = user1.client.reactivateAppInstance(user1.client.anonymousAppID())
@@ -2253,6 +2283,7 @@ class TestStringMethods(unittest.TestCase):
 		# Reinstall font
 		user1.client.testScenario = None
 		success, message = user1.client.publishers()[0].subscriptions()[-1].installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
+		if not success: print(message)
 		self.assertEqual(success, True)
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)

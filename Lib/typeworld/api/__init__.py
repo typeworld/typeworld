@@ -64,17 +64,24 @@ INSTALLABLEFONTSCOMMAND = {
     'responseTypes': [SUCCESS, ERROR, NOFONTSAVAILABLE, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
-INSTALLFONTSCOMMAND ={
+INSTALLFONTSCOMMAND = {
     'keyword': 'installFonts',
     'currentVersion': VERSION,
-    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, SEATALLOWANCEREACHED, VALIDTYPEWORLDUSERACCOUNTREQUIRED, REVEALEDUSERIDENTITYREQUIRED, LOGINREQUIRED],
+    'responseTypes': [SUCCESS, ERROR, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED, REVEALEDUSERIDENTITYREQUIRED],
     'acceptableMimeTypes': ['application/json'],
     }
-UNINSTALLFONTSCOMMAND =  {
+UNINSTALLFONTSCOMMAND = {
     'keyword': 'uninstallFonts',
     'currentVersion': VERSION,
-    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, UNKNOWNINSTALLATION, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED],
+    'responseTypes': [SUCCESS, ERROR, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED],
     'acceptableMimeTypes': ['application/json'],
+    }
+
+INSTALLFONTASSETCOMMAND = {
+    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED, REVEALEDUSERIDENTITYREQUIRED, SEATALLOWANCEREACHED],
+    }
+UNINSTALLFONTASSETCOMMAND = {
+    'responseTypes': [SUCCESS, ERROR, UNKNOWNFONT, INSUFFICIENTPERMISSION, TEMPORARILYUNAVAILABLE, VALIDTYPEWORLDUSERACCOUNTREQUIRED, LOGINREQUIRED, UNKNOWNINSTALLATION],
     }
 
 COMMANDS = [ENDPOINTCOMMAND, INSTALLABLEFONTSCOMMAND, INSTALLFONTSCOMMAND, UNINSTALLFONTSCOMMAND]
@@ -2010,14 +2017,14 @@ class InstallableFontsResponse(BaseResponse):
 #  InstallFonts
 
 
-class InstallFontResponseType(ResponseCommandDataType):
+class InstallFontAssetResponseType(ResponseCommandDataType):
     def valid(self):
         if not self.value: return True
 
-        if self.value in INSTALLFONTSCOMMAND['responseTypes']:
+        if self.value in INSTALLFONTASSETCOMMAND['responseTypes']:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTSCOMMAND['responseTypes'])
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTASSETCOMMAND['responseTypes'])
 
 class InstallFontAsset(BaseResponse):
     '''\
@@ -2028,7 +2035,7 @@ class InstallFontAsset(BaseResponse):
     _structure = {
 
         # Root
-        'response':             [InstallFontResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTSCOMMAND['responseTypes']))],
+        'response':         [InstallFontAssetResponseType,   True,   None,   'Type of response: %s' % (ResponsesDocu(INSTALLFONTASSETCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
 
         'uniqueID':         [StringDataType,            True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
@@ -2071,6 +2078,15 @@ class InstallFontAsset(BaseResponse):
 
 
 
+class InstallFontResponseType(ResponseCommandDataType):
+    def valid(self):
+        if not self.value: return True
+
+        if self.value in INSTALLFONTSCOMMAND['responseTypes']:
+            return True
+        else:
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, INSTALLFONTSCOMMAND['responseTypes'])
+
 class InstallFontAssetProxy(Proxy):
     dataType = InstallFontAsset
 
@@ -2088,7 +2104,9 @@ class InstallFontsResponse(BaseResponse):
     _structure = {
 
         # Root
-        'assets':    [InstallFontAssetListProxy,   True,   None,   'List of ::InstallFontAsset:: objects.'],
+        'response':         [InstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
+        'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
+        'assets':           [InstallFontAssetListProxy,   False,   None,   'List of ::InstallFontAsset:: objects.'],
         }
 
 
@@ -2096,14 +2114,14 @@ class InstallFontsResponse(BaseResponse):
 
 #  Uninstall Fonts
 
-class UninstallFontResponseType(ResponseCommandDataType):
+class UninstallFontAssedResponseType(ResponseCommandDataType):
     def valid(self):
         if not self.value: return True
 
-        if self.value in UNINSTALLFONTSCOMMAND['responseTypes']:
+        if self.value in UNINSTALLFONTASSETCOMMAND['responseTypes']:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTSCOMMAND['responseTypes'])
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTASSETCOMMAND['responseTypes'])
 
 
 class UninstallFontAsset(BaseResponse):
@@ -2115,13 +2133,22 @@ class UninstallFontAsset(BaseResponse):
     _structure = {
 
         # Root
-        'response':         [UninstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
+        'response':         [UninstallFontAssedResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTASSETCOMMAND['responseTypes']))],
         'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
         'uniqueID':         [StringDataType,        True,   None,   'A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.'],
 
         # Response-specific
         }
 
+
+class UninstallFontResponseType(ResponseCommandDataType):
+    def valid(self):
+        if not self.value: return True
+
+        if self.value in UNINSTALLFONTSCOMMAND['responseTypes']:
+            return True
+        else:
+            return 'Unknown response type: "%s". Possible: %s' % (self.value, UNINSTALLFONTSCOMMAND['responseTypes'])
 
 class UninstallFontAssetProxy(Proxy):
     dataType = UninstallFontAsset
@@ -2140,7 +2167,9 @@ class UninstallFontsResponse(BaseResponse):
     #   key:                    [data type, required, default value, description]
     _structure = {
         # Root
-        'assets':    [UninstallFontAssetListProxy,   True,   None,   'List of ::UninstallFontAsset:: objects.'],
+        'response':         [UninstallFontResponseType, True,   None,   'Type of response: %s' % (ResponsesDocu(UNINSTALLFONTSCOMMAND['responseTypes']))],
+        'errorMessage':     [MultiLanguageTextProxy,    False,  None,   'Description of error in case of custom response type'],
+        'assets':           [UninstallFontAssetListProxy,   False,   None,   'List of ::UninstallFontAsset:: objects.'],
         }
 
 
