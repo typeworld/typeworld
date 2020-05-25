@@ -718,8 +718,8 @@ class DictBasedObject(object):
         # Fill default values
         for key in self._structure:
 
-            # if required and default value is not empty
-            if self._structure[key][1] and self._structure[key][2] is not None:
+            # Set default values
+            if self._structure[key][2] is not None:
                 setattr(self, key, self._structure[key][2])
 
         if json:
