@@ -2580,20 +2580,13 @@ class APISubscription(PubSubClient):
 
 			folder = self.parent.folder()
 
-			if fontID:
-				for foundry in installabeFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-							if font.uniqueID == fontID:
-								for version in font.getVersions():
-									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
-									if os.path.exists(path):
-										return version.number
-			elif font:
-				for version in font.getVersions():
-					path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
-					if os.path.exists(path):
-						return version.number
+			if fontID and not font:
+				font = self.fontByID(fontID)
+
+			for version in font.getVersions():
+				path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version.number))
+				if os.path.exists(path):
+					return version.number
 
 		except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
@@ -2627,14 +2620,11 @@ class APISubscription(PubSubClient):
 				fontIDs.append(fontID)
 
 				path = None
-				for foundry in installableFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-							if font.uniqueID == fontID:
-								if self.installedFontVersion(font.uniqueID):
-									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-									break
+				font = self.fontByID(fontID)
+				installedFontVersion = self.installedFontVersion(font = font)
 #				print(installedFontVersion)
+				if installedFontVersion:
+					path = os.path.join(folder, self.uniqueID() + '-' + font.filename(installedFontVersion))
 
 				if not path and not dryRun:
 					return False, 'Font path couldn’t be determined (preflight)'
@@ -2681,6 +2671,9 @@ class APISubscription(PubSubClient):
 					# if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
 					# 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
+					if len(payload.assets) == 0:
+						return False, f'No fonts to uninstall in .assets, expected {len(uninstallTheseProtectedFontIDs)} assets'
+
 					# Process fonts
 					for incomingFont in payload.assets:
 
@@ -2700,13 +2693,10 @@ class APISubscription(PubSubClient):
 							if incomingFont.response == 'success':
 
 								path = None
-								for foundry in installableFontsCommand.foundries:
-									for family in foundry.families:
-										for font in family.fonts:
-											if font.uniqueID == incomingFont.uniqueID:
-												if self.installedFontVersion(font.uniqueID):
-													path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-													break
+								font = self.fontByID(fontID)
+								installedFontVersion = self.installedFontVersion(font = font)
+								if installedFontVersion:
+									path = os.path.join(folder, self.uniqueID() + '-' + font.filename(installedFontVersion))
 
 								if self.parent.parent.testScenario == 'simulateNoPath':
 									path = None
@@ -2730,13 +2720,10 @@ class APISubscription(PubSubClient):
 				for fontID in uninstallTheseUnprotectedFontIDs:
 
 					path = None
-					for foundry in installableFontsCommand.foundries:
-						for family in foundry.families:
-							for font in family.fonts:
-								if font.uniqueID == fontID:
-									if self.installedFontVersion(font.uniqueID):
-										path = os.path.join(folder, self.uniqueID() + '-' + font.filename(self.installedFontVersion(font.uniqueID)))
-										break
+					font = self.fontByID(fontID)
+					installedFontVersion = self.installedFontVersion(font = font)
+					if installedFontVersion:
+						path = os.path.join(folder, self.uniqueID() + '-' + font.filename(installedFontVersion))
 
 					if self.parent.parent.testScenario == 'simulateNoPath':
 						path = None
@@ -2767,6 +2754,7 @@ class APISubscription(PubSubClient):
 
 			installTheseFontIDs = []
 			protectedFonts = False
+			versionByFont = {}
 
 			folder = self.parent.folder()
 
@@ -2775,17 +2763,14 @@ class APISubscription(PubSubClient):
 			for fontID, version in fonts:
 
 				fontIDs.append(fontID)
+				versionByFont[fontID] = version
 
 				path = None
-				font = None
-				for foundry in installabeFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-							if font.uniqueID == fontID:
-								path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-								if font.protected or font.expiry or font.expiryDuration:
-									protectedFonts = True
-								break
+				font = self.fontByID(fontID)
+				path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
+				if font.protected or font.expiry or font.expiryDuration:
+					protectedFonts = True
+
 				assert path
 				# print('path', path)
 				assert font
@@ -2820,6 +2805,10 @@ class APISubscription(PubSubClient):
 				# if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
 				# 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
 
+				if len(payload.assets) == 0:
+					return False, f'No fonts to install in .assets, expected {len(installTheseFontIDs)} assets'
+	
+
 				# Process fonts
 				for incomingFont in payload.assets:
 
@@ -2835,12 +2824,8 @@ class APISubscription(PubSubClient):
 						if incomingFont.response == 'success':
 
 							path = None
-							for foundry in installabeFontsCommand.foundries:
-								for family in foundry.families:
-									for font in family.fonts:
-										if font.uniqueID == incomingFont.uniqueID:
-											path = os.path.join(folder, self.uniqueID() + '-' + font.filename(version))
-											break
+							font = self.fontByID(incomingFont.uniqueID)
+							path = os.path.join(folder, self.uniqueID() + '-' + font.filename(versionByFont[incomingFont.uniqueID]))
 							assert path
 
 							if not os.path.exists(os.path.dirname(path)): os.makedirs(os.path.dirname(path))
