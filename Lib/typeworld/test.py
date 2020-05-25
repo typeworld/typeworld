@@ -2225,16 +2225,22 @@ class TestStringMethods(unittest.TestCase):
 
 		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
 		self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
-
-
-		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
-
-
 		self.assertEqual(len(user1.client.publishers()), 1)
 		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 
 
 		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
+
+		# Remove font again
+		user1.client.testScenario = None
+		self.assertEqual(
+			user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID]),
+			(True, None)
+		)
+
+
+		print('\nLine %s' % getframeinfo(currentframe()).lineno) #########################################################
+
 
 		# linkedAppInstances
 		success, instances = user1.client.linkedAppInstances()
@@ -2258,12 +2264,15 @@ class TestStringMethods(unittest.TestCase):
 		success, response = user1.client.linkedAppInstances()
 		self.assertEqual(response, ['#(response.appInstanceRevoked)', '#(response.appInstanceRevoked.headline)'])
 
-		# Download subscriptions
-		self.assertEqual(user1.client.downloadSubscriptions(), (True, None))
-		self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 0)
+# 		# Download subscriptions
+# 		success, response = user1.client.downloadSubscriptions()
+# 		self.assertEqual(success, False)
+# #		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
 
-		self.assertEqual(len(user1.client.publishers()), 1)
-		self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
+		# Update subscriptions
+		success, message, changed = user1.client.publishers()[0].subscriptions()[-1].update()
+		self.assertEqual(success, True)
+#		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
 
 		# Reinstall font, fails because no permissions
 		user1.client.testScenario = None
@@ -2271,7 +2280,7 @@ class TestStringMethods(unittest.TestCase):
 		success, message = response
 		print(response)
 		self.assertEqual(success, False)
-		self.assertEqual(message, ['#(response.validTypeWorldUserAccountRequired)', '#(response.validTypeWorldUserAccountRequired.headline)'])
+		self.assertEqual(message, ['#(response.insufficientPermission)', '#(response.insufficientPermission.headline)'])
 
 		# Reactivate app instance
 		success, response = user1.client.reactivateAppInstance(user1.client.anonymousAppID())
