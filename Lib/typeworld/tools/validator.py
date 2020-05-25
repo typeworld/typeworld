@@ -587,7 +587,7 @@ def validateAPIEndpoint(subscriptionURL, runProfiles, endpointURL = 'https://api
 						if message in passOnResponses:
 							check.success()
 						else:
-							check.fail(message)
+							check.fail('It seems intuitive to return a `insufficientPermission` response when the user isn’t valid. But we need a successful response here in case anything in the revokation process needs to be repeated while the app instance is already marked as revoked. In this case we still need to be able to access the meta data about the fonts (= the subscription), to be able to send `uninstall` requests. Only the font installation must fail (this would have been the next step)')
 #							return responses
 						
 					# Install font
@@ -605,7 +605,7 @@ def validateAPIEndpoint(subscriptionURL, runProfiles, endpointURL = 'https://api
 						if message in passOnResponses:
 							check.success()
 						else:
-							check.fail(message)
+							check.fail('When an app instance is revoked, the font installation request needs to return with a `insufficientPermission` response here.')
 #							return responses
 
 					# Reactivate App Instance
