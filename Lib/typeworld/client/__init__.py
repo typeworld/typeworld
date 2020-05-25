@@ -1350,12 +1350,12 @@ class APIClient(PubSubClient):
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
-	def revokeAppInstance(self, anonymousAppID):
+	def revokeAppInstance(self, anonymousAppID = None):
 		try:
 			if not self.user(): return False, 'No user'
 
 			parameters = {
-				'anonymousAppID': anonymousAppID,
+				'anonymousAppID': anonymousAppID or self.anonymousAppID(),
 				'anonymousUserID': self.user(),
 				'secretKey': self.secretKey(),
 			}
@@ -1371,13 +1371,13 @@ class APIClient(PubSubClient):
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 
-	def reactivateAppInstance(self, anonymousAppID):
+	def reactivateAppInstance(self, anonymousAppID = None):
 		try:
 
 			if not self.user(): return False, 'No user'
 
 			parameters = {
-				'anonymousAppID': anonymousAppID,
+				'anonymousAppID': anonymousAppID or self.anonymousAppID(),
 				'anonymousUserID': self.user(),
 				'secretKey': self.secretKey(),
 			}
