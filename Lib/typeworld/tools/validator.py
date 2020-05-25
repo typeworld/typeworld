@@ -1,4 +1,4 @@
-import typeworld.client, typeworld.api
+import typeworld.client, typeworld.protocol
 import traceback
 from typeworld.client.helpers import Garbage
 
@@ -10,7 +10,7 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 		responses = {
 			'response': 'success',
 		}
-		responses['version'] = typeworld.api.VERSION
+		responses['version'] = typeworld.protocol.VERSION
 
 
 	responses['stages'] = []
@@ -575,3 +575,19 @@ def validateAPIEndpoint(subscriptionURL, responses = {}, endpointURL = 'https://
 
 	return responses
 
+
+if __name__ == '__main__':
+	import argparse
+
+	profiles = (
+		('setup', 'Setup', 'Check API endpoint response (EndpointResponse class) and download subscription (InstallableFontsResponse class). If necessary, create a Type.World user account and try again.'),
+		('freefont', 'Free fonts', 'Download and install a free font'),
+		('nonexpiringprotectedfont', 'Non-expiring protected fonts', 'To check the proper response of your API Endpoint in handling protected fonts (the norm for commercial setups), this test requires the subscription to hold at least one protected font with at least one LicenseUsage object with a seatsAllowed attribute of 1 and a seatsInstalled attribute of 0. The routine will install the font, and then attempt to install the same font a second time on another (assumed) computer. This is supposed to fail because only 1 seat is allowed. Only after removing the font installation, the second computer can succeed in installing the font.'),
+	)
+	choices = [x[0] for x in profiles]
+
+	parser = argparse.ArgumentParser(description='Validate a Type.World API JSON Endpoint')
+	parser.add_argument('profiles', metavar='profile', type=str, nargs='+', help=f'a profile name: {"|".join(choices)}', choices = choices)
+
+	args = parser.parse_args()
+	print(args.profiles)

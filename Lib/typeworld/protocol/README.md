@@ -7,9 +7,9 @@ This document covers the syntax of the JSON Protocol only. The general Type.Worl
 
 ## The typeworld.client Python module
 
-This page is simultaneously the documentation of the `typeworld.api` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. In fact, this documentation is generated directly from the module code.
+This page is simultaneously the documentation of the `typeworld.protocol` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. In fact, this documentation is generated directly from the module code.
 
-While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.api` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
+While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.protocol` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
 
 This module is very strict about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a field that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
 
@@ -155,17 +155,17 @@ Below you see the minimum possible object tree for a request for the `endpoint` 
 
 ```python
 # Import module
-from typeworld.api import *
+import typeworld.protocol
 
 # Root of Response
-root = RootResponse()
+root = typeworld.protocol.RootResponse()
 
 ### EndpointResponse
-endpoint = EndpointResponse()
+endpoint = typeworld.protocol.EndpointResponse()
 endpoint.name.en = 'Font Publisher'
 endpoint.canonicalURL = 'http://fontpublisher.com/api/'
 endpoint.adminEmail = 'admin@fontpublisher.com'
-endpoint.supportedCommands = [x['keyword'] for x in COMMANDS] # this API supports all commands
+endpoint.supportedCommands = [x['keyword'] for x in typeworld.protocol.COMMANDS] # this API supports all commands
 
 # Attach EndpointResponse to RootResponse
 root.endpoint = endpoint
@@ -205,51 +205,51 @@ Below you see the minimum possible object tree for a sucessful `installabefonts`
 
 ```python
 # Import module
-from typeworld.api import *
+import typeworld.protocol
 
 # Root of Response
-root = RootResponse()
+root = typeworld.protocol.RootResponse()
 
 # Response for 'availableFonts' command
-installableFonts = InstallableFontsResponse()
+installableFonts = typeworld.protocol.InstallableFontsResponse()
 installableFonts.response = 'success'
 
 ###
 
 # Add designer to root of response
-designer = Designer()
+designer = typeworld.protocol.Designer()
 designer.keyword = 'max'
 designer.name.en = 'Max Mustermann'
 installableFonts.designers.append(designer)
 
 # Add foundry to root of response
-foundry = Foundry()
+foundry = typeworld.protocol.Foundry()
 foundry.name.en = 'Awesome Fonts'
 foundry.website = 'https://awesomefonts.com'
 foundry.uniqueID = 'awesomefontsfoundry'
 installableFonts.foundries.append(foundry)
 
 # Add license to foundry
-license = LicenseDefinition()
+license = typeworld.protocol.LicenseDefinition()
 license.keyword = 'awesomeFontsEULA'
 license.name.en = 'Awesome Fonts Desktop EULA'
 license.URL = 'https://awesomefonts.com/EULA/'
 foundry.licenses.append(license)
 
 # Add font family to foundry
-family = Family()
+family = typeworld.protocol.Family()
 family.name.en = 'Awesome Sans'
 family.designerKeywords.append('max')
 family.uniqueID = 'awesomefontsfoundry-awesomesans'
 foundry.families.append(family)
 
 # Add version to font family
-version = Version()
+version = typeworld.protocol.Version()
 version.number = 0.1
 family.versions.append(version)
 
 # Add font to family
-font = Font()
+font = typeworld.protocol.Font()
 font.name.en = 'Regular'
 font.postScriptName = 'AwesomeSans-Regular'
 font.licenseKeyword = 'awesomeFontsEULA'
@@ -259,7 +259,7 @@ font.uniqueID = 'awesomefontsfoundry-awesomesans-regular'
 family.fonts.append(font)
 
 # Font's license usage
-licenseUsage = LicenseUsage()
+licenseUsage = typeworld.protocol.LicenseUsage()
 licenseUsage.keyword = 'awesomeFontsEULA'
 font.usedLicenses.append(licenseUsage)
 
@@ -376,10 +376,6 @@ This exists to speed up processes by reducing server calls. For instance, instal
 
 [endpoint](#class-rootresponse-attribute-endpoint)<br />[installFonts](#class-rootresponse-attribute-installfonts)<br />[installableFonts](#class-rootresponse-attribute-installablefonts)<br />[uninstallFonts](#class-rootresponse-attribute-uninstallfonts)<br />[version](#class-rootresponse-attribute-version)<br />
 
-### Methods
-
-[sameContent()](#class-rootresponse-method-samecontent)<br />
-
 ## Attributes
 
 <div id="class-rootresponse-attribute-endpoint"></div>
@@ -427,18 +423,6 @@ __Default value:__ 0.1.7-alpha
 
 
 
-## Methods
-
-<div id="class-rootresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-endpointresponse"></div>
@@ -453,10 +437,6 @@ This response contains some mandatory information about the API endpoint such as
 ### Attributes
 
 [adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
-
-### Methods
-
-[customValidation()](#class-endpointresponse-method-customvalidation)<br />[sameContent()](#class-endpointresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -573,26 +553,6 @@ __Required:__ False<br />
 __Type:__ Str<br />
 
 
-## Methods
-
-<div id="class-endpointresponse-method-customvalidation"></div>
-
-#### customValidation()
-
-Return three lists with informations, warnings, and errors.
-
-An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
-
-<div id="class-endpointresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-multilanguagetext"></div>
@@ -625,7 +585,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 ### Methods
 
-[getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />[sameContent()](#class-multilanguagetext-method-samecontent)<br />
+[getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />
 
 ## Methods
 
@@ -641,14 +601,6 @@ Returns the text in the first language found from the specified list of language
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
-<div id="class-multilanguagetext-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -663,10 +615,6 @@ This is the response expected to be returned when the API is invoked using the `
 ### Attributes
 
 [designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[packages](#class-installablefontsresponse-attribute-packages)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
-
-### Methods
-
-[sameContent()](#class-installablefontsresponse-method-samecontent)<br />
 
 ## Attributes
 
@@ -764,18 +712,6 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
 
 
-## Methods
-
-<div id="class-installablefontsresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-designer"></div>
@@ -787,10 +723,6 @@ Requires deepdiff module.
 ### Attributes
 
 [description](#class-designer-attribute-description)<br />[keyword](#class-designer-attribute-keyword)<br />[name](#class-designer-attribute-name)<br />[websiteURL](#class-designer-attribute-websiteurl)<br />
-
-### Methods
-
-[sameContent()](#class-designer-method-samecontent)<br />
 
 ## Attributes
 
@@ -830,18 +762,6 @@ __Required:__ False<br />
 __Type:__ Str<br />
 
 
-## Methods
-
-<div id="class-designer-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-multilanguagelongtext"></div>
@@ -874,7 +794,7 @@ HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](
 
 ### Methods
 
-[getText()](#class-multilanguagelongtext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagelongtext-method-gettextandlocale)<br />[sameContent()](#class-multilanguagelongtext-method-samecontent)<br />
+[getText()](#class-multilanguagelongtext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagelongtext-method-gettextandlocale)<br />
 
 ## Methods
 
@@ -890,14 +810,6 @@ Returns the text in the first language found from the specified list of language
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
-<div id="class-multilanguagelongtext-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -911,10 +823,6 @@ Requires deepdiff module.
 ### Attributes
 
 [description](#class-foundry-attribute-description)<br />[email](#class-foundry-attribute-email)<br />[families](#class-foundry-attribute-families)<br />[licenses](#class-foundry-attribute-licenses)<br />[name](#class-foundry-attribute-name)<br />[packages](#class-foundry-attribute-packages)<br />[socialURLs](#class-foundry-attribute-socialurls)<br />[styling](#class-foundry-attribute-styling)<br />[supportEmail](#class-foundry-attribute-supportemail)<br />[supportTelephone](#class-foundry-attribute-supporttelephone)<br />[supportURL](#class-foundry-attribute-supporturl)<br />[telephone](#class-foundry-attribute-telephone)<br />[uniqueID](#class-foundry-attribute-uniqueid)<br />[websiteURL](#class-foundry-attribute-websiteurl)<br />
-
-### Methods
-
-[sameContent()](#class-foundry-method-samecontent)<br />
 
 ## Attributes
 
@@ -1079,18 +987,6 @@ __Required:__ False<br />
 __Type:__ Str<br />
 
 
-## Methods
-
-<div id="class-foundry-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-licensedefinition"></div>
@@ -1102,10 +998,6 @@ Requires deepdiff module.
 ### Attributes
 
 [URL](#class-licensedefinition-attribute-url)<br />[keyword](#class-licensedefinition-attribute-keyword)<br />[name](#class-licensedefinition-attribute-name)<br />
-
-### Methods
-
-[sameContent()](#class-licensedefinition-method-samecontent)<br />
 
 ## Attributes
 
@@ -1136,18 +1028,6 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
 
 
-## Methods
-
-<div id="class-licensedefinition-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-family"></div>
@@ -1162,7 +1042,7 @@ Requires deepdiff module.
 
 ### Methods
 
-[getAllDesigners()](#class-family-method-getalldesigners)<br />[sameContent()](#class-family-method-samecontent)<br />
+[getAllDesigners()](#class-family-method-getalldesigners)<br />
 
 ## Attributes
 
@@ -1287,14 +1167,6 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 Returns a list of [Designer](#user-content-class-designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
         
 
-<div id="class-family-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -1322,10 +1194,6 @@ For the time being, only family-level FontPackages are supported in the UI.
 ### Attributes
 
 [description](#class-fontpackage-attribute-description)<br />[keyword](#class-fontpackage-attribute-keyword)<br />[name](#class-fontpackage-attribute-name)<br />
-
-### Methods
-
-[sameContent()](#class-fontpackage-method-samecontent)<br />
 
 ## Attributes
 
@@ -1357,18 +1225,6 @@ __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
 
 
-## Methods
-
-<div id="class-fontpackage-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-version"></div>
@@ -1383,7 +1239,7 @@ Requires deepdiff module.
 
 ### Methods
 
-[isFontSpecific()](#class-version-method-isfontspecific)<br />[sameContent()](#class-version-method-samecontent)<br />
+[isFontSpecific()](#class-version-method-isfontspecific)<br />
 
 ## Attributes
 
@@ -1425,14 +1281,6 @@ __Format:__ YYYY-MM-DD<br />
 Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
         
 
-<div id="class-version-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -1449,7 +1297,7 @@ Requires deepdiff module.
 
 ### Methods
 
-[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />[sameContent()](#class-font-method-samecontent)<br />
+[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
 
 ## Attributes
 
@@ -1498,7 +1346,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttc', 'woff2', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'ttc', 'woff2', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1641,14 +1489,6 @@ Returns list of [Version](#user-content-class-version) objects.
 
 This is the final list based on the version information in this font object as well as in its parent [Family](#user-content-class-family) object. Please read the section about [versioning](#versioning) above.
 
-<div id="class-font-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -1665,7 +1505,7 @@ Requires deepdiff module.
 
 ### Methods
 
-[getLicense()](#class-licenseusage-method-getlicense)<br />[sameContent()](#class-licenseusage-method-samecontent)<br />
+[getLicense()](#class-licenseusage-method-getlicense)<br />
 
 ## Attributes
 
@@ -1730,14 +1570,6 @@ __Type:__ Str<br />
 Returns the [License](#user-content-class-license) object that this font references.
         
 
-<div id="class-licenseusage-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
@@ -1751,11 +1583,7 @@ This is the response expected to be returned when the API is invoked using the `
 
 ### Attributes
 
-[assets](#class-installfontsresponse-attribute-assets)<br />
-
-### Methods
-
-[sameContent()](#class-installfontsresponse-method-samecontent)<br />
+[assets](#class-installfontsresponse-attribute-assets)<br />[errorMessage](#class-installfontsresponse-attribute-errormessage)<br />[response](#class-installfontsresponse-attribute-response)<br />
 
 ## Attributes
 
@@ -1765,20 +1593,40 @@ This is the response expected to be returned when the API is invoked using the `
 
 List of [InstallFontAsset](#user-content-class-installfontasset) objects.
 
-__Required:__ True<br />
+__Required:__ False<br />
 __Type:__ List of [InstallFontAsset](#user-content-class-installfontasset) objects<br />
+<div id="class-installfontsresponse-attribute-errorMessage"></div>
+
+### errorMessage
+
+Description of error in case of custom response type
+
+__Required:__ False<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
+<div id="class-installfontsresponse-attribute-response"></div>
+
+### response
+
+Type of response: 
+
+`success`: The request has been processed successfully.
+
+`error`: There request produced an error. You may add a custom error message in the `errorMessage` field.
+
+`insufficientPermission`: The Type.World user account credentials couldn’t be confirmed by the publisher (which are checked with the central server) and therefore access to the subscription is denied.
+
+`temporarilyUnavailable`: The service is temporarily unavailable but should work again later on.
+
+`validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
+
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
 
 
-## Methods
 
-<div id="class-installfontsresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
 
 
 
@@ -1793,10 +1641,6 @@ This is the response expected to be returned when the API is invoked using the `
 ### Attributes
 
 [data](#class-installfontasset-attribute-data)<br />[dataURL](#class-installfontasset-attribute-dataurl)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />
-
-### Methods
-
-[sameContent()](#class-installfontasset-method-samecontent)<br />
 
 ## Attributes
 
@@ -1857,13 +1701,13 @@ Type of response:
 
 `temporarilyUnavailable`: The service is temporarily unavailable but should work again later on.
 
-`seatAllowanceReached`: The user has exhausted their seat allowances for this font. The app may take them to the publisher’s website as defined in [LicenseUsage.upgradeURL](#user-content-class-licenseusage-attribute-upgradeurl) to upgrade their font license.
-
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
+
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
 
 `revealedUserIdentityRequired`: The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`seatAllowanceReached`: The user has exhausted their seat allowances for this font. The app may take them to the publisher’s website as defined in [LicenseUsage.upgradeURL](#user-content-class-licenseusage-attribute-upgradeurl) to upgrade their font license.
 
 
 
@@ -1880,18 +1724,6 @@ __Required:__ True<br />
 __Type:__ Str<br />
 
 
-## Methods
-
-<div id="class-installfontasset-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
-
-
 
 
 <div id="class-uninstallfontsresponse"></div>
@@ -1903,11 +1735,7 @@ While empty of data, these asset objects are still necessary because each font u
 
 ### Attributes
 
-[assets](#class-uninstallfontsresponse-attribute-assets)<br />
-
-### Methods
-
-[sameContent()](#class-uninstallfontsresponse-method-samecontent)<br />
+[assets](#class-uninstallfontsresponse-attribute-assets)<br />[errorMessage](#class-uninstallfontsresponse-attribute-errormessage)<br />[response](#class-uninstallfontsresponse-attribute-response)<br />
 
 ## Attributes
 
@@ -1917,20 +1745,40 @@ While empty of data, these asset objects are still necessary because each font u
 
 List of [UninstallFontAsset](#user-content-class-uninstallfontasset) objects.
 
-__Required:__ True<br />
+__Required:__ False<br />
 __Type:__ List of [UninstallFontAsset](#user-content-class-uninstallfontasset) objects<br />
+<div id="class-uninstallfontsresponse-attribute-errorMessage"></div>
+
+### errorMessage
+
+Description of error in case of custom response type
+
+__Required:__ False<br />
+__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
+__Format:__ Maximum allowed characters: 100.<br />
+<div id="class-uninstallfontsresponse-attribute-response"></div>
+
+### response
+
+Type of response: 
+
+`success`: The request has been processed successfully.
+
+`error`: There request produced an error. You may add a custom error message in the `errorMessage` field.
+
+`insufficientPermission`: The Type.World user account credentials couldn’t be confirmed by the publisher (which are checked with the central server) and therefore access to the subscription is denied.
+
+`temporarilyUnavailable`: The service is temporarily unavailable but should work again later on.
+
+`validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
+
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
 
 
-## Methods
 
-<div id="class-uninstallfontsresponse-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side.<br />
 
 
 
@@ -1945,10 +1793,6 @@ This is the response expected to be returned when the API is invoked using the `
 ### Attributes
 
 [errorMessage](#class-uninstallfontasset-attribute-errormessage)<br />[response](#class-uninstallfontasset-attribute-response)<br />[uniqueID](#class-uninstallfontasset-attribute-uniqueid)<br />
-
-### Methods
-
-[sameContent()](#class-uninstallfontasset-method-samecontent)<br />
 
 ## Attributes
 
@@ -1973,8 +1817,6 @@ Type of response:
 
 `unknownFont`: No font could be identified for the given `fontID`.
 
-`unknownInstallation`: This font installation (combination of app instance and user credentials) is unknown. The response with this error message is crucial to remote de-authorization of app instances. When a user de-authorizes an entire app instance’s worth of font installations, such as when a computer got bricked and re-installed or is lost, the success of the remote de-authorization process is judged by either `success` responses (app actually had this font installed and its deletion has been recorded) or `unknownInstallation` responses (app didn’t have this font installed). All other reponses count as errors in the remote de-authorization process.
-
 `insufficientPermission`: The Type.World user account credentials couldn’t be confirmed by the publisher (which are checked with the central server) and therefore access to the subscription is denied.
 
 `temporarilyUnavailable`: The service is temporarily unavailable but should work again later on.
@@ -1982,6 +1824,8 @@ Type of response:
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
 `loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+
+`unknownInstallation`: This font installation (combination of app instance and user credentials) is unknown. The response with this error message is crucial to remote de-authorization of app instances. When a user de-authorizes an entire app instance’s worth of font installations, such as when a computer got bricked and re-installed or is lost, the success of the remote de-authorization process is judged by either `success` responses (app actually had this font installed and its deletion has been recorded) or `unknownInstallation` responses (app didn’t have this font installed). All other reponses count as errors in the remote de-authorization process.
 
 
 
@@ -1996,18 +1840,6 @@ A machine-readable string that uniquely identifies this font within the subscrip
 
 __Required:__ True<br />
 __Type:__ Str<br />
-
-
-## Methods
-
-<div id="class-uninstallfontasset-method-samecontent"></div>
-
-#### sameContent()
-
-Compares the data structure of this object to the other object.
-
-Requires deepdiff module.
-
 
 
 
