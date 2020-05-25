@@ -754,10 +754,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['unlinkUser'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('unlinkUser finished successfully')
+#						self.log('unlinkUser finished successfully')
 
 					else:
-						self.log('unlinkUser failure:', message)
+#						self.log('unlinkUser failure:', message)
 						self._syncProblems.append(message)
 
 
@@ -767,10 +767,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['linkUser'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('linkUser finished successfully')
+#						self.log('linkUser finished successfully')
 
 					else:
-						self.log('linkUser failure:', message)
+#						self.log('linkUser failure:', message)
 						self._syncProblems.append(message)
 
 				if 'syncSubscriptions' in commands and commands['syncSubscriptions']:
@@ -779,10 +779,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['syncSubscriptions'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('syncSubscriptions finished successfully')
+#						self.log('syncSubscriptions finished successfully')
 
 					else:
-						self.log('syncSubscriptions failure:', message)
+#						self.log('syncSubscriptions failure:', message)
 						self._syncProblems.append(message)
 
 
@@ -792,10 +792,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['uploadSubscriptions'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('uploadSubscriptions finished successfully')
+#						self.log('uploadSubscriptions finished successfully')
 
 					else:
-						self.log('uploadSubscriptions failure:', message)
+#						self.log('uploadSubscriptions failure:', message)
 						self._syncProblems.append(message)
 
 				if 'acceptInvitation' in commands and commands['acceptInvitation']:
@@ -804,10 +804,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['acceptInvitation'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('acceptInvitation finished successfully')
+#						self.log('acceptInvitation finished successfully')
 
 					else:
-						self.log('acceptInvitation failure:', message)
+#						self.log('acceptInvitation failure:', message)
 						self._syncProblems.append(message)
 
 				if 'declineInvitation' in commands and commands['declineInvitation']:
@@ -816,10 +816,10 @@ class APIClient(PubSubClient):
 					if success:
 						commands['declineInvitation'] = []
 						self.set('pendingOnlineCommands', commands)
-						self.log('declineInvitation finished successfully')
+#						self.log('declineInvitation finished successfully')
 
 					else:
-						self.log('declineInvitation failure:', message)
+#						self.log('declineInvitation failure:', message)
 						self._syncProblems.append(message)
 
 				if 'downloadSubscriptions' in commands and commands['downloadSubscriptions']:
@@ -831,7 +831,7 @@ class APIClient(PubSubClient):
 	#					self.log('downloadSubscriptions finished successfully')
 
 					else:
-						self.log('downloadSubscriptions failure:', message)
+#						self.log('downloadSubscriptions failure:', message)
 						self._syncProblems.append(message)
 
 				if self._syncProblems:
@@ -869,7 +869,7 @@ class APIClient(PubSubClient):
 
 				self.set('lastServerSync', int(time.time()))
 
-				self.log('Uploading subscriptions: %s' % oldURLs)
+#				self.log('Uploading subscriptions: %s' % oldURLs)
 
 				parameters = {
 					'anonymousAppID': self.anonymousAppID(),
@@ -2997,7 +2997,7 @@ class APISubscription(PubSubClient):
 
 	def delete(self, calledFromParent = False, updateSubscriptionsOnServer = True):
 		try:
-			self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
+#			self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
 
 			success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
