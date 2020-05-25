@@ -417,7 +417,7 @@ class PubSubClient(object):
 			client = self.parent.parent
 
 		if client.pubSubSubscriptions:
-			print('Pub/Sub subscription setup for %s' % self)
+#			print('Pub/Sub subscription setup for %s' % self)
 
 			if not self.pubsubSubscription:
 
@@ -1700,7 +1700,7 @@ Version: {typeworld.api.VERSION}
 			# Load fresh
 			if not key in resources or update:
 
-				print(f'Load {key} fresh')
+#				print(f'Load {key} fresh')
 
 				if self.testScenario:
 					url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
@@ -2852,6 +2852,7 @@ class APISubscription(PubSubClient):
 								f = open(path, 'wb')
 								f.write(base64.b64decode(incomingFont.data))
 								f.close()
+#								print('Actually wrote font to disk from .data', path)
 
 							elif incomingFont.dataURL:
 
@@ -2863,6 +2864,7 @@ class APISubscription(PubSubClient):
 									f = open(path, 'wb')
 									f.write(response.read())
 									f.close()
+#									print('Actually wrote font to disk from URL', path)
 
 							self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
