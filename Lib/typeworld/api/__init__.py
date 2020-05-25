@@ -508,11 +508,6 @@ class DictBasedObject(object):
         return obj
 
     def sameContent(self, other):
-        '''\
-        Compares the data structure of this object to the other object.
-
-        Requires deepdiff module.
-        '''
         return self.difference(other) == {}
 
     def difference(self, other):
@@ -2179,11 +2174,6 @@ This response contains some mandatory information about the API endpoint such as
 
 
     def customValidation(self):
-        '''\
-        Return three lists with informations, warnings, and errors.
-
-        An empty errors list is regarded as a successful validation, otherwise the validation is regarded as a failure.
-        '''
         information, warnings, critical = [], [], []
 
         if self.canonicalURL and not self.canonicalURL.startswith('https://'):
