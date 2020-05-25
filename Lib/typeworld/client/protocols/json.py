@@ -313,7 +313,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 			'anonymousAppID': anonymousAppID, 
 			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
 			'accessToken': accessToken, 
-			'secretTypeWorldAPIKey': secretTypeWorldAPIKey,
 			'appVersion': VERSION,
 			'mothership': self.client.mothership,
 		}
