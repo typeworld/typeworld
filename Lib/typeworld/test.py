@@ -56,17 +56,17 @@ import typeworld.client
 import tempfile, os
 
 # Data Types
-from typeworld.protocol import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
-from typeworld.protocol import MultiLanguageText, MultiLanguageLongText, FloatDataType
+from typeworld.api import HexColorDataType, FontEncodingDataType, EmailDataType, BooleanDataType, WebURLDataType, IntegerDataType, DateDataType, VersionDataType
+from typeworld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeworld.protocol import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
+from typeworld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
 
 # Constants
-from typeworld.protocol import COMMANDS, MAC
+from typeworld.api import COMMANDS, MAC
 
 # Methods
-from typeworld.protocol import makeSemVer
+from typeworld.api import makeSemVer
 
 # Inspection/Interactive shell
 # import code; code.interact(local=locals())
@@ -902,7 +902,7 @@ class TestStringMethods(unittest.TestCase):
 		try:
 			i2.foundries[0].families[0].fonts[0].usedLicenses = ['hergerg']
 		except ValueError as e:
-			self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'typeworld.protocol.LicenseUsage'>.")
+			self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'typeworld.api.LicenseUsage'>.")
 
 		# variableFont
 		i2 = copy.deepcopy(installableFonts)
@@ -1046,7 +1046,7 @@ class TestStringMethods(unittest.TestCase):
 		self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].getFormats(), ['otf'])
 
 		self.assertEqual(i2.foundries[0].families[0].fonts[0].getPackageKeywords(), ['desktop'])
-		self.assertEqual(i2.foundries[0].families[0].fonts[1].getPackageKeywords(), [typeworld.protocol.DEFAULT])
+		self.assertEqual(i2.foundries[0].families[0].fonts[1].getPackageKeywords(), [typeworld.api.DEFAULT])
 
 
 	def test_Foundry(self):
@@ -1310,7 +1310,7 @@ class TestStringMethods(unittest.TestCase):
 		print('test_otherStuff()')
 
 		# __repr__
-		s = typeworld.protocol.StringDataType()
+		s = typeworld.api.StringDataType()
 		s.value = 'a'
 		self.assertEqual(str(s), '<StringDataType "a">')
 
@@ -1345,8 +1345,8 @@ class TestStringMethods(unittest.TestCase):
 			'de': 'Hallo Welt'
 		}
 		j = json.dumps(d)
-		d1 = typeworld.protocol.MultiLanguageText(json=j).dumpDict()
-		d2 = typeworld.protocol.MultiLanguageText(dict=d).dumpDict()
+		d1 = typeworld.api.MultiLanguageText(json=j).dumpDict()
+		d2 = typeworld.api.MultiLanguageText(dict=d).dumpDict()
 		from deepdiff import DeepDiff
 		self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
 		
@@ -1825,7 +1825,7 @@ class TestStringMethods(unittest.TestCase):
 
 		data = user0.client.get(f'subscription({flatFreeSubscription})')['data']
 		self.assertTrue('installFonts' in data and data['installFonts'])
-		i = typeworld.protocol.InstallFontsResponse()
+		i = typeworld.api.InstallFontsResponse()
 		i.loadJSON(data['installFonts'])
 		self.assertEqual(i.validate()[2], [])
 

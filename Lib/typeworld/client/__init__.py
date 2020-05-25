@@ -3,8 +3,8 @@
 import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect, re
 from time import gmtime, strftime
 
-import typeworld.protocol
-from typeworld.protocol import VERSION
+import typeworld.api
+from typeworld.api import VERSION
 
 from typeworld.client.helpers import ReadFromFile, WriteToFile, MachineName, addAttributeToURL, OSName, Garbage
 
@@ -54,12 +54,12 @@ def urlIsValid(url):
 		return False, 'URL contains more than one @ sign, so don’t know how to parse it.'
 
 	found = False
-	for protocol in typeworld.protocol.PROTOCOLS:
+	for protocol in typeworld.api.PROTOCOLS:
 		if url.startswith(protocol + '://'):
 			found = True
 			break
 	if not found:
-		return False, 'Unknown custom protocol, known are: %s' % (typeworld.protocol.PROTOCOLS)
+		return False, 'Unknown custom protocol, known are: %s' % (typeworld.api.PROTOCOLS)
 
 	if url.count('://') > 1:
 		return False, 'URL contains more than one :// combination, so don’t know how to parse it.'
@@ -311,28 +311,28 @@ class TypeWorldClientDelegate(object):
 		try: self.fontWillInstall(font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillInstall(self, font):
-		assert type(font) == typeworld.protocol.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontHasInstalled(self, success, message, font):
 		try: self.fontHasInstalled(success, message, font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasInstalled(self, success, message, font):
-		assert type(font) == typeworld.protocol.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontWillUninstall(self, font):
 		try: self.fontWillUninstall(font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontWillUninstall(self, font):
-		assert type(font) == typeworld.protocol.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _fontHasUninstalled(self, success, message, font):
 		try: self.fontHasUninstalled(success, message, font)
 		except: self.client.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
 	def fontHasUninstalled(self, success, message, font):
-		assert type(font) == typeworld.protocol.Font
+		assert type(font) == typeworld.api.Font
 
 
 	def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
@@ -1560,7 +1560,7 @@ class APIClient(PubSubClient):
 	def handleTraceback(self, file = None, sourceMethod = None, e = None):
 
 		payload = f'''\
-Version: {typeworld.protocol.VERSION}
+Version: {typeworld.api.VERSION}
 {traceback.format_exc()}
 '''
 
@@ -1863,7 +1863,7 @@ Version: {typeworld.protocol.VERSION}
 				if not success:
 					message = response
 					self._updatingProblem = ['#(response.loginRequired)', '#(response.loginRequired.headline)']
-					# if type(response) == typeworld.protocol.MultiLanguageText or type(response) == list and response[0].startswith('#('):
+					# if type(response) == typeworld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
 					# else:
 					# 	message = response # 'Response from protocol.aboutToAddSubscription(): %s' % 
 					# 	if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:

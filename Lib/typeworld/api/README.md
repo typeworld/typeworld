@@ -7,9 +7,9 @@ This document covers the syntax of the JSON Protocol only. The general Type.Worl
 
 ## The typeworld.client Python module
 
-This page is simultaneously the documentation of the `typeworld.protocol` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. In fact, this documentation is generated directly from the module code.
+This page is simultaneously the documentation of the `typeworld.api` Python module that the Type.World App uses to read and validate the incoming data, as well as the definition of the Type.World JSON Protocol. In fact, this documentation is generated directly from the module code.
 
-While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.protocol` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
+While you can assemble your JSON responses in the server side programming language of your choice, the `typeworld.api` Python module documented here will read your data and validate it and therefore acts as the official API documentation.
 
 This module is very strict about the format of the data you put in. If it detects a wrong data type (like an float number you are putting into a field that is supposed to hold integers), it will immediately throw a tantrum. Later, when you want to generate the JSON code for your response, it will perform additional logic checks, like checking if the designers are actually defined that you are referencing in the fonts. 
 
@@ -155,17 +155,17 @@ Below you see the minimum possible object tree for a request for the `endpoint` 
 
 ```python
 # Import module
-import typeworld.protocol
+import typeworld.api
 
 # Root of Response
-root = typeworld.protocol.RootResponse()
+root = typeworld.api.RootResponse()
 
 ### EndpointResponse
-endpoint = typeworld.protocol.EndpointResponse()
+endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = 'Font Publisher'
 endpoint.canonicalURL = 'http://fontpublisher.com/api/'
 endpoint.adminEmail = 'admin@fontpublisher.com'
-endpoint.supportedCommands = [x['keyword'] for x in typeworld.protocol.COMMANDS] # this API supports all commands
+endpoint.supportedCommands = [x['keyword'] for x in typeworld.api.COMMANDS] # this API supports all commands
 
 # Attach EndpointResponse to RootResponse
 root.endpoint = endpoint
@@ -205,51 +205,51 @@ Below you see the minimum possible object tree for a sucessful `installabefonts`
 
 ```python
 # Import module
-import typeworld.protocol
+import typeworld.api
 
 # Root of Response
-root = typeworld.protocol.RootResponse()
+root = typeworld.api.RootResponse()
 
 # Response for 'availableFonts' command
-installableFonts = typeworld.protocol.InstallableFontsResponse()
+installableFonts = typeworld.api.InstallableFontsResponse()
 installableFonts.response = 'success'
 
 ###
 
 # Add designer to root of response
-designer = typeworld.protocol.Designer()
+designer = typeworld.api.Designer()
 designer.keyword = 'max'
 designer.name.en = 'Max Mustermann'
 installableFonts.designers.append(designer)
 
 # Add foundry to root of response
-foundry = typeworld.protocol.Foundry()
+foundry = typeworld.api.Foundry()
 foundry.name.en = 'Awesome Fonts'
 foundry.website = 'https://awesomefonts.com'
 foundry.uniqueID = 'awesomefontsfoundry'
 installableFonts.foundries.append(foundry)
 
 # Add license to foundry
-license = typeworld.protocol.LicenseDefinition()
+license = typeworld.api.LicenseDefinition()
 license.keyword = 'awesomeFontsEULA'
 license.name.en = 'Awesome Fonts Desktop EULA'
 license.URL = 'https://awesomefonts.com/EULA/'
 foundry.licenses.append(license)
 
 # Add font family to foundry
-family = typeworld.protocol.Family()
+family = typeworld.api.Family()
 family.name.en = 'Awesome Sans'
 family.designerKeywords.append('max')
 family.uniqueID = 'awesomefontsfoundry-awesomesans'
 foundry.families.append(family)
 
 # Add version to font family
-version = typeworld.protocol.Version()
+version = typeworld.api.Version()
 version.number = 0.1
 family.versions.append(version)
 
 # Add font to family
-font = typeworld.protocol.Font()
+font = typeworld.api.Font()
 font.name.en = 'Regular'
 font.postScriptName = 'AwesomeSans-Regular'
 font.licenseKeyword = 'awesomeFontsEULA'
@@ -259,7 +259,7 @@ font.uniqueID = 'awesomefontsfoundry-awesomesans-regular'
 family.fonts.append(font)
 
 # Font's license usage
-licenseUsage = typeworld.protocol.LicenseUsage()
+licenseUsage = typeworld.api.LicenseUsage()
 licenseUsage.keyword = 'awesomeFontsEULA'
 font.usedLicenses.append(licenseUsage)
 
