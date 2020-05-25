@@ -151,8 +151,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 		if api.response in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
 			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
 				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
-			self.subscription._updatingProblem = '#(response.%s)' % api.response
-			return False, self.subscription._updatingProblem, False
+			self.subscription._updatingProblem = [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
+			return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)'], False
 
 
 		# # Detect installed fonts now not available in subscription anymore and delete them
