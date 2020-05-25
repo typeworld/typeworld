@@ -2578,8 +2578,6 @@ class APISubscription(PubSubClient):
 	def installedFontVersion(self, fontID = None, font = None):
 		try:
 
-			success, installabeFontsCommand = self.protocol.installableFontsCommand()
-
 			folder = self.parent.folder()
 
 			if fontID:
