@@ -258,7 +258,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
 		# Build URL
 
-		print(f'installFonts({fonts}, updateSubscription={updateSubscription})')
+#		print(f'installFonts({fonts}, updateSubscription={updateSubscription})')
 
 		if self._installFontsCommand:
 			return True, self._installFontsCommand
