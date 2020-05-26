@@ -1038,6 +1038,12 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
     def __bool__(self):
         return bool(self.getText())
 
+    def sample(self):
+        o = self.__class__()
+        o.en = 'Text in English'
+        o.de = 'Text auf Deutsch'
+        return o
+
     def getTextAndLocale(self, locale = ['en'], format = 'plain'):
         '''Like getText(), but additionally returns the language of whatever text was found first.'''
 
@@ -1312,6 +1318,14 @@ class LicenseDefinition(DictBasedObject):
     def __repr__(self):
         return '<LicenseDefinition "%s">' % self.name or self.keyword or 'undefined'
 
+    def sample(self):
+        o = self.__class__()
+        o.keyword = 'awesomefontsEULA'
+        o.name.en = 'Awesome Fonts End User License Agreement'
+        o.name.de = 'Awesome Fonts Endnutzerlizenzvereinbarung'
+        o.URL = 'https://awesomefonts.com/eula.html'
+        return o
+
 def LicenseDefinition_Parent(self):
     if hasattr(self, '_parent') and hasattr(self._parent, '_parent') and hasattr(self._parent._parent, '_parent'):
         return self._parent._parent._parent
@@ -1368,6 +1382,15 @@ class FontPackage(DictBasedObject):
 
     #     return information, warnings, critical
 
+    def sample(self):
+        o = self.__class__()
+        o.keyword = 'officefonts'
+        o.name.en = 'Office Fonts'
+        o.name.de = 'Office-Schriften'
+        o.description.en = 'These fonts are produced specifically to be used in Office applications.'
+        o.description.de = 'Diese Schriftdateien sind für die Benutzung in Office-Applikationen vorgesehen.'
+        return o
+
     def getFormats(self):
         formats = []
         if hasattr(self, 'fonts'):
@@ -1401,6 +1424,14 @@ class LicenseUsage(DictBasedObject):
         'upgradeURL':                   [WebURLDataType,        False,  None,   'URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.'],
         'dateAddedForUser':             [DateDataType,          False,  None,   'Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.'],
     }
+
+    def sample(self):
+        o = self.__class__()
+        o.keyword = 'awesomefontsEULA'
+        o.seatsAllowed = 5
+        o.seatsInstalled = 2
+        o.upgradeURL = 'https://awesomefonts.com/shop/upgradelicense/083487263904356'
+        return o
 
     def __repr__(self):
         return '<LicenseUsage "%s">' % self.keyword or 'undefined'
@@ -1446,6 +1477,13 @@ class Designer(DictBasedObject):
         'description':              [MultiLanguageLongTextProxy,        False,  None,   'Description of designer'],
     }
 
+    def sample(self):
+        o = self.__class__()
+        o.keyword = 'johndoe'
+        o.name.en = 'John Doe'
+        o.websiteURL = 'https://johndoe.com'
+        return o
+
     def __repr__(self):
         return '<Designer "%s">' % self.name.getText() or self.keyword or 'undefined'
 
@@ -1475,6 +1513,14 @@ class Version(DictBasedObject):
         'description':              [MultiLanguageLongTextProxy,    False,  None,   'Description of font version'],
         'releaseDate':              [DateDataType,              False,  None,   'Font version’s release date.'],
     }
+
+    def sample(self):
+        o = self.__class__()
+        o.number = '1.2'
+        o.description.en = 'Added capital SZ and Turkish Lira sign'
+        o.description.de = 'Versal-SZ und türkisches Lira-Zeichen hinzugefügt'
+        o.releaseDate = '2020-05-21'
+        return o
 
     def __repr__(self):
         return '<Version %s (%s)>' % (self.number if self.number else 'None', 'font-specific' if self.isFontSpecific() else 'family-specific')
@@ -1535,7 +1581,6 @@ class Font(DictBasedObject):
         o.uniqueID = 'AwesomeFonts-AwesomeFamily-Bold'
         o.postScriptName = 'AwesomeFamily-Bold'
         o.purpose = 'desktop'
-
         return o
 
 
@@ -1676,6 +1721,14 @@ class Family(DictBasedObject):
         'dateFirstPublished':       [DateDataType,          False,  None,   'Human readable date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.'],
         'pdfURL':                   [WebResourceURLDataType,False,  None,   'URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at ::Font.pdf::.'],
     }
+
+    def sample(self):
+        o = self.__class__()
+        o.name.en = 'Awesome Family'
+        o.description.en = 'Nice big fat face with smooth corners'
+        o.description.de = 'Fette Groteske mit runden Ecken'
+        o.uniqueID = 'AwesomeFonts-AwesomeFamily'
+        return o
 
     def __repr__(self):
         return '<Family "%s">' % self.name.getText() or 'undefined'
@@ -1872,6 +1925,14 @@ class Foundry(DictBasedObject):
             'informationViewButtonTextColor',
             )
 
+    def sample(self):
+        o = self.__class__()
+        o.name.en = 'Awesome Fonts'
+        o.name.de = 'Geile Schriften'
+        o.websiteURL = 'https://awesomefonts.com'
+        o.uniqueID = 'AwesomeFonts'
+        return o
+
     def __repr__(self):
         return '<Foundry "%s">' % self.name.getText() or 'undefined'
 
@@ -1986,6 +2047,11 @@ class InstallableFontsResponse(BaseResponse):
     }
 
 
+    def sample(self):
+        o = self.__class__()
+        o.response = 'success'
+        return o
+
     def getDesignerByKeyword(self, keyword):
         if not hasattr(self, '_designersDict'):
             self._designersDict = {}
@@ -2080,6 +2146,15 @@ class InstallFontAsset(BaseResponse):
 
         }
 
+    def sample(self):
+        o = self.__class__()
+        o.response = 'success'
+        o.uniqueID = 'AwesomeFonts-AwesomeFamily-Bold'
+        o.mimeType = 'font/otf'
+        o.data = 'emplNXpqdGpoNXdqdHp3enRq...'
+        o.encoding = 'base64'
+        return o
+
     def customValidation(self):
 
         information, warnings, critical = [], [], []
@@ -2142,6 +2217,11 @@ class InstallFontsResponse(BaseResponse):
         'assets':           [InstallFontAssetListProxy,   False,   None,   'List of ::InstallFontAsset:: objects.'],
         }
 
+    def sample(self):
+        o = self.__class__()
+        o.response = 'success'
+        return o
+
 
 ####################################################################################################################################
 
@@ -2173,6 +2253,11 @@ class UninstallFontAsset(BaseResponse):
         # Response-specific
         }
 
+    def sample(self):
+        o = self.__class__()
+        o.response = 'success'
+        o.uniqueID = 'AwesomeFonts-AwesomeFamily-Bold'
+        return o
 
 class UninstallFontResponseType(ResponseCommandDataType):
     def valid(self):
@@ -2205,6 +2290,11 @@ class UninstallFontsResponse(BaseResponse):
         'assets':           [UninstallFontAssetListProxy,   False,   None,   'List of ::UninstallFontAsset:: objects.'],
         }
 
+    def sample(self):
+        o = self.__class__()
+        o.response = 'success'
+        return o
+
 
 ####################################################################################################################################
 
@@ -2234,6 +2324,17 @@ This response contains some mandatory information about the API endpoint such as
         'loginURL':             [WebURLDataType,           False,   None,   'URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.'],
     }
 
+
+    def sample(self):
+        o = self.__class__()
+        o.canonicalURL = 'https://awesomefonts.com/api/'
+        o.adminEmail = 'admin@awesomefonts.com'
+        o.supportedCommands = ['endpoint', 'installableFonts', 'installFonts', 'uninstallFonts']
+        o.name.en = 'Awesome Fonts'
+        o.name.de = 'Geile Schriften'
+        o.privacyPolicyURL = 'https://awesomefonts.com/privacypolicy.html'
+        o.privacyPolicyURL = 'https://awesomefonts.com/termsofservice.html'
+        return o
 
     def customValidation(self):
         information, warnings, critical = [], [], []
@@ -2279,3 +2380,9 @@ class RootResponse(BaseResponse):
 
         'version':          [VersionDataType,           True,   INSTALLFONTSCOMMAND['currentVersion'],   'Version of "%s" response' % INSTALLFONTSCOMMAND['keyword']],
     }
+
+    def sample(self):
+        o = self.__class__()
+        o.endpoint = EndpointResponse().sample()
+        o.installableFonts = InstallableFontsResponse().sample()
+        return o
