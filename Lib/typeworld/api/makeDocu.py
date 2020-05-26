@@ -2,8 +2,32 @@
 
 import os
 import typeworld.api
-from ynlib.files import WriteToFile, ReadFromFile
-from ynlib.system import Execute
+
+def Execute(command):
+	"""\
+	Execute system command, return output.
+	"""
+
+	import sys, os, platform
+
+	if sys.version.startswith("2.3") or platform.system() == "Windows":
+
+		p = os.popen(command, "r")
+		response = p.read()
+		p.close()
+		return response
+
+
+	else:
+
+		import subprocess
+
+		process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, close_fds=True)
+		os.waitpid(process.pid, 0)
+		response = process.stdout.read().strip()
+		process.stdout.close()
+		return response
+
 
 docstrings = []
 
@@ -13,7 +37,7 @@ docstrings.extend(typeworld.api.InstallableFontsResponse().docu())
 docstrings.extend(typeworld.api.InstallFontsResponse().docu())
 docstrings.extend(typeworld.api.UninstallFontsResponse().docu())
 
-docstring = ReadFromFile(os.path.join(os.path.dirname(__file__), 'docu.md'))
+docstring = open(os.path.join(os.path.dirname(__file__), 'docu.md'), 'r').read()
 
 
 handles = []
@@ -46,4 +70,6 @@ for handle in handles:
 			break
 
 if not 'TRAVIS' in os.environ:
-	WriteToFile(os.path.join(os.path.dirname(__file__), 'README.md'), docstring)
+	f = open(os.path.join(os.path.dirname(__file__), 'README.md'), 'w')
+	f.write(docstring)
+	f.close()
