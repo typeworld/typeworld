@@ -2,9 +2,9 @@
 [![codecov](https://codecov.io/gh/typeWorld/typeWorld/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/typeWorld)
 
 
-# Requirements
+# Installation
 
-Install requirements with *pip*: `pip install -U certifi keyring deepdiff semver lxml Markdown`
+Install via PyPi: `pip install typeworld`
 
 # Tests
 
@@ -21,3 +21,11 @@ keyring.set_password('http://127.0.0.1:8080/api', 'revokeAppInstance', key)
 # API
 
 For the documentation of the official API in detail, jump [→ here](Lib/typeworld/api).
+
+
+# Package
+
+To create a new package, install twine via `pip install twine`, then `cd` to `Lib/` and then:
+
+* `python setup.py sdist`
+* `twine upload dist/*`
