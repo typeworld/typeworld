@@ -2220,6 +2220,7 @@ class InstallFontsResponse(BaseResponse):
     def sample(self):
         o = self.__class__()
         o.response = 'success'
+        o.assets = [InstallFontAsset().sample()]
         return o
 
 
@@ -2293,6 +2294,7 @@ class UninstallFontsResponse(BaseResponse):
     def sample(self):
         o = self.__class__()
         o.response = 'success'
+        o.assets = [UninstallFontAsset().sample()]
         return o
 
 
@@ -2334,6 +2336,7 @@ This response contains some mandatory information about the API endpoint such as
         o.name.de = 'Geile Schriften'
         o.privacyPolicyURL = 'https://awesomefonts.com/privacypolicy.html'
         o.privacyPolicyURL = 'https://awesomefonts.com/termsofservice.html'
+        o.public = True
         return o
 
     def customValidation(self):

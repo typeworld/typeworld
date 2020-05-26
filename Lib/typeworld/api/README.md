@@ -388,7 +388,7 @@ This exists to speed up processes by reducing server calls. For instance, instal
             "en": "Awesome Fonts"
         },
         "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
-        "public": false,
+        "public": true,
         "supportedCommands": [
             "endpoint",
             "installableFonts",
@@ -481,7 +481,7 @@ This response contains some mandatory information about the API endpoint such as
         "en": "Awesome Fonts"
     },
     "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
-    "public": false,
+    "public": true,
     "supportedCommands": [
         "endpoint",
         "installableFonts",
@@ -1549,7 +1549,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'woff2', 'ttc', 'ttf', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'otf', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1803,6 +1803,15 @@ This is the response expected to be returned when the API is invoked using the `
 *Example JSON data:*
 ```json
 {
+    "assets": [
+        {
+            "data": "emplNXpqdGpoNXdqdHp3enRq...",
+            "encoding": "base64",
+            "mimeType": "font/otf",
+            "response": "success",
+            "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+        }
+    ],
     "response": "success"
 }
 ```
@@ -1977,6 +1986,12 @@ While empty of data, these asset objects are still necessary because each font u
 *Example JSON data:*
 ```json
 {
+    "assets": [
+        {
+            "response": "success",
+            "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+        }
+    ],
     "response": "success"
 }
 ```
