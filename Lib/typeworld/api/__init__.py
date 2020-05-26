@@ -593,7 +593,6 @@ class DictBasedObject(object):
 {self.sample().dumpJSON(strict = False)}
 ```
 
-
 '''
 
         return doc
@@ -852,7 +851,7 @@ class DictBasedObject(object):
                         
 
                         if self._content[key].isEmpty() == False:
-                            newInformation, newWarnings, newCritical = self._content[key].value.validate()
+                            newInformation, newWarnings, newCritical = self._content[key].value.validate(strict = strict)
                             information.extend(extendWithKey(newInformation, key))
                             warnings.extend(extendWithKey(newWarnings, key))
                             critical.extend(extendWithKey(newCritical, key))
@@ -871,7 +870,7 @@ class DictBasedObject(object):
                         if self._content[key].isEmpty() == False:
                             for item in self._content[key]:
                                 if hasattr(item, 'validate') and isinstance(item.validate, types.MethodType):
-                                    newInformation, newWarnings, newCritical = item.validate()
+                                    newInformation, newWarnings, newCritical = item.validate(strict = strict)
                                     information.extend(extendWithKey(newInformation, key))
                                     warnings.extend(extendWithKey(newWarnings, key))
                                     critical.extend(extendWithKey(newCritical, key))
@@ -918,7 +917,7 @@ class DictBasedObject(object):
 
                     
                     if hasattr(getattr(self, key), 'dumpDict'):
-                        d[key] = getattr(self, key).dumpDict()
+                        d[key] = getattr(self, key).dumpDict(strict = strict)
 
                     # elif issubclass(getattr(self, key).__class__, (DictBasedObject)):
                     #   d[key] = getattr(self, key).dumpDict()
@@ -927,7 +926,7 @@ class DictBasedObject(object):
                         d[key] = list(getattr(self, key))
 
                         if len(d[key]) > 0 and hasattr(d[key][0], 'dumpDict'):
-                            d[key] = [x.dumpDict() for x in d[key]]
+                            d[key] = [x.dumpDict(strict = strict) for x in d[key]]
 
                     else:
                         d[key] = getattr(self, key)
