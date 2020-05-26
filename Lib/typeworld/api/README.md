@@ -376,6 +376,38 @@ This is the root object for each response, and contains one or more individual r
 
 This exists to speed up processes by reducing server calls. For instance, installing a protected fonts and afterwards asking for a refreshed installableFonts command requires two separate calls to the publisher’s API endpoint, which in turns needs to verify the requester’s identy with the central type.world server. By requesting `installFonts,installableFonts` commands in one go, a lot of time is saved.
 
+*Example JSON data:*
+```json
+{
+    "endpoint": {
+        "adminEmail": "admin@awesomefonts.com",
+        "canonicalURL": "https://awesomefonts.com/api/",
+        "licenseIdentifier": "CC-BY-NC-ND-4.0",
+        "name": {
+            "de": "Geile Schriften",
+            "en": "Awesome Fonts"
+        },
+        "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
+        "public": false,
+        "supportedCommands": [
+            "endpoint",
+            "installableFonts",
+            "installFonts",
+            "uninstallFonts"
+        ],
+        "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
+    },
+    "installableFonts": {
+        "foundries": [],
+        "prefersRevealedUserIdentity": false,
+        "response": "success"
+    },
+    "version": "0.1.7-alpha"
+}
+```
+
+
+
 ### Attributes
 
 [endpoint](#class-rootresponse-attribute-endpoint)<br />[installFonts](#class-rootresponse-attribute-installfonts)<br />[installableFonts](#class-rootresponse-attribute-installablefonts)<br />[uninstallFonts](#class-rootresponse-attribute-uninstallfonts)<br />[version](#class-rootresponse-attribute-version)<br />
@@ -437,6 +469,30 @@ This is the response expected to be returned when the API is invoked using the `
 
 This response contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
     
+
+*Example JSON data:*
+```json
+{
+    "adminEmail": "admin@awesomefonts.com",
+    "canonicalURL": "https://awesomefonts.com/api/",
+    "licenseIdentifier": "CC-BY-NC-ND-4.0",
+    "name": {
+        "de": "Geile Schriften",
+        "en": "Awesome Fonts"
+    },
+    "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
+    "public": false,
+    "supportedCommands": [
+        "endpoint",
+        "installableFonts",
+        "installFonts",
+        "uninstallFonts"
+    ],
+    "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
+}
+```
+
+
 
 ### Attributes
 
@@ -587,6 +643,16 @@ for languageCode, text in (
 
 Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
+*Example JSON data:*
+```json
+{
+    "de": "Text auf Deutsch",
+    "en": "Text in English"
+}
+```
+
+
+
 ### Methods
 
 [getText()](#class-multilanguagetext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagetext-method-gettextandlocale)<br />
@@ -615,6 +681,17 @@ Like getText(), but additionally returns the language of whatever text was found
 
 This is the response expected to be returned when the API is invoked using the `?commands=installableFonts` parameter, and contains metadata about which fonts are available to install for a user.
     
+
+*Example JSON data:*
+```json
+{
+    "foundries": [],
+    "prefersRevealedUserIdentity": false,
+    "response": "success"
+}
+```
+
+
 
 ### Attributes
 
@@ -724,6 +801,19 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 
 
+*Example JSON data:*
+```json
+{
+    "keyword": "johndoe",
+    "name": {
+        "en": "John Doe"
+    },
+    "websiteURL": "https://johndoe.com"
+}
+```
+
+
+
 ### Attributes
 
 [description](#class-designer-attribute-description)<br />[keyword](#class-designer-attribute-keyword)<br />[name](#class-designer-attribute-name)<br />[websiteURL](#class-designer-attribute-websiteurl)<br />
@@ -796,6 +886,16 @@ for languageCode, text in (
 
 HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links.
 
+*Example JSON data:*
+```json
+{
+    "de": "Text auf Deutsch",
+    "en": "Text in English"
+}
+```
+
+
+
 ### Methods
 
 [getText()](#class-multilanguagelongtext-method-gettext)<br />[getTextAndLocale()](#class-multilanguagelongtext-method-gettextandlocale)<br />
@@ -821,6 +921,26 @@ Like getText(), but additionally returns the language of whatever text was found
 <div id="class-foundry"></div>
 
 # _class_ Foundry()
+
+
+
+*Example JSON data:*
+```json
+{
+    "families": [],
+    "licenses": [],
+    "name": {
+        "de": "Geile Schriften",
+        "en": "Awesome Fonts"
+    },
+    "styling": {
+        "dark": {},
+        "light": {}
+    },
+    "uniqueID": "AwesomeFonts",
+    "websiteURL": "https://awesomefonts.com"
+}
+```
 
 
 
@@ -999,6 +1119,20 @@ __Type:__ Str<br />
 
 
 
+*Example JSON data:*
+```json
+{
+    "URL": "https://awesomefonts.com/eula.html",
+    "keyword": "awesomefontsEULA",
+    "name": {
+        "de": "Awesome Fonts Endnutzerlizenzvereinbarung",
+        "en": "Awesome Fonts End User License Agreement"
+    }
+}
+```
+
+
+
 ### Attributes
 
 [URL](#class-licensedefinition-attribute-url)<br />[keyword](#class-licensedefinition-attribute-keyword)<br />[name](#class-licensedefinition-attribute-name)<br />
@@ -1037,6 +1171,23 @@ __Format:__ Maximum allowed characters: 100.<br />
 <div id="class-family"></div>
 
 # _class_ Family()
+
+
+
+*Example JSON data:*
+```json
+{
+    "description": {
+        "de": "Fette Groteske mit runden Ecken",
+        "en": "Nice big fat face with smooth corners"
+    },
+    "fonts": [],
+    "name": {
+        "en": "Awesome Family"
+    },
+    "uniqueID": "AwesomeFonts-AwesomeFamily"
+}
+```
 
 
 
@@ -1195,6 +1346,23 @@ Each font may be part of several `FontPackages`.
 
 For the time being, only family-level FontPackages are supported in the UI.
 
+*Example JSON data:*
+```json
+{
+    "description": {
+        "de": "Diese Schriftdateien sind f\u00fcr die Benutzung in Office-Applikationen vorgesehen.",
+        "en": "These fonts are produced specifically to be used in Office applications."
+    },
+    "keyword": "officefonts",
+    "name": {
+        "de": "Office-Schriften",
+        "en": "Office Fonts"
+    }
+}
+```
+
+
+
 ### Attributes
 
 [description](#class-fontpackage-attribute-description)<br />[keyword](#class-fontpackage-attribute-keyword)<br />[name](#class-fontpackage-attribute-name)<br />
@@ -1234,6 +1402,20 @@ __Format:__ Maximum allowed characters: 100.<br />
 <div id="class-version"></div>
 
 # _class_ Version()
+
+
+
+*Example JSON data:*
+```json
+{
+    "description": {
+        "de": "Versal-SZ und t\u00fcrkisches Lira-Zeichen hinzugef\u00fcgt",
+        "en": "Added capital SZ and Turkish Lira sign"
+    },
+    "number": "1.2",
+    "releaseDate": "2020-05-21"
+}
+```
 
 
 
@@ -1312,7 +1494,6 @@ Returns True if this version is defined at the font level. Returns False if this
 
 
 
-
 ### Attributes
 
 [dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
@@ -1368,7 +1549,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'ttf', 'otf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'woff2', 'ttc', 'ttf', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1521,6 +1702,18 @@ This is the final list based on the version information in this font object as w
 
 
 
+*Example JSON data:*
+```json
+{
+    "keyword": "awesomefontsEULA",
+    "seatsAllowed": 5,
+    "seatsInstalled": 2,
+    "upgradeURL": "https://awesomefonts.com/shop/upgradelicense/083487263904356"
+}
+```
+
+
+
 ### Attributes
 
 [allowanceDescription](#class-licenseusage-attribute-allowancedescription)<br />[dateAddedForUser](#class-licenseusage-attribute-dateaddedforuser)<br />[keyword](#class-licenseusage-attribute-keyword)<br />[seatsAllowed](#class-licenseusage-attribute-seatsallowed)<br />[seatsInstalled](#class-licenseusage-attribute-seatsinstalled)<br />[upgradeURL](#class-licenseusage-attribute-upgradeurl)<br />
@@ -1607,6 +1800,15 @@ Returns the [License](#user-content-class-license) object that this font referen
 This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter, and contains the requested binary fonts attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
     
 
+*Example JSON data:*
+```json
+{
+    "response": "success"
+}
+```
+
+
+
 ### Attributes
 
 [assets](#class-installfontsresponse-attribute-assets)<br />[errorMessage](#class-installfontsresponse-attribute-errormessage)<br />[response](#class-installfontsresponse-attribute-response)<br />
@@ -1663,6 +1865,19 @@ __Format:__ To ensure the proper function of the entire Type.World protocol, you
 
 This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter.
     
+
+*Example JSON data:*
+```json
+{
+    "data": "emplNXpqdGpoNXdqdHp3enRq...",
+    "encoding": "base64",
+    "mimeType": "font/otf",
+    "response": "success",
+    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+}
+```
+
+
 
 ### Attributes
 
@@ -1759,6 +1974,15 @@ __Type:__ Str<br />
 This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter, and contains empty responses as [UninstallFontAsset](#user-content-class-uninstallfontasset) objects. 
 While empty of data, these asset objects are still necessary because each font uninstallation request may return a different response, to which the GUI app needs to respond to accordingly.
 
+*Example JSON data:*
+```json
+{
+    "response": "success"
+}
+```
+
+
+
 ### Attributes
 
 [assets](#class-uninstallfontsresponse-attribute-assets)<br />[errorMessage](#class-uninstallfontsresponse-attribute-errormessage)<br />[response](#class-uninstallfontsresponse-attribute-response)<br />
@@ -1815,6 +2039,16 @@ __Format:__ To ensure the proper function of the entire Type.World protocol, you
 
 This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter.
     
+
+*Example JSON data:*
+```json
+{
+    "response": "success",
+    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+}
+```
+
+
 
 ### Attributes
 
