@@ -238,17 +238,11 @@ class AppKitNSUserDefaults(Preferences):
 
 			if o:
 
-
-				# print('TYPE of', key, ':', o.__class__.__name__)
-
 				if 'Array' in o.__class__.__name__:
 					o = list(o)
 
 				elif 'Dictionary' in o.__class__.__name__:
 					o = dict(o)
-					# print('Converting TYPE of', key, ' to dict()')
-					# o['_xzy'] = 'a'
-					# del o['_xzy']
 
 				elif 'unicode' in o.__class__.__name__:
 					o = str(o)
@@ -262,7 +256,6 @@ class AppKitNSUserDefaults(Preferences):
 #		self.defaults.setObject_forKey_(json.dumps(value), key)
 		
 		# if MAC:
-		# 	print(type(value))
 		# 	if type(value) == dict:
 		# 		value = NSDictionary.alloc().initWithDictionary_(value)
 
@@ -423,7 +416,6 @@ class PubSubClient(object):
 			client = self.parent.parent
 
 		if client.pubSubSubscriptions:
-#			print('Pub/Sub subscription setup for %s' % self)
 
 			if not self.pubsubSubscription:
 
@@ -944,8 +936,6 @@ class APIClient(PubSubClient):
 		try:
 			oldURLs = self.secretSubscriptionURLs()
 
-			# print('executeDownloadSubscriptions():', response)
-
 			# Uninstall all protected fonts when app instance is reported as revoked
 			if response['appInstanceIsRevoked']:
 				success, message = self.uninstallAllProtectedFonts()
@@ -1098,8 +1088,6 @@ class APIClient(PubSubClient):
 	def performSyncSubscriptions(self, oldURLs):
 		try:
 			userID = self.user()
-
-			# print('performSyncSubscriptions: %s' % userID)
 
 			if userID:
 
@@ -1706,8 +1694,6 @@ Version: {typeworld.api.VERSION}
 
 			# Load fresh
 			if not key in resources or update:
-
-#				print(f'Load {key} fresh')
 
 				if self.testScenario:
 					url = addAttributeToURL(url, 'testScenario=%s' % self.testScenario)
@@ -2629,7 +2615,6 @@ class APISubscription(PubSubClient):
 				path = None
 				font = self.fontByID(fontID)
 				installedFontVersion = self.installedFontVersion(font = font)
-#				print(installedFontVersion)
 				if installedFontVersion:
 					path = os.path.join(folder, self.uniqueID() + '-' + font.filename(installedFontVersion))
 
@@ -2779,9 +2764,7 @@ class APISubscription(PubSubClient):
 					protectedFonts = True
 
 				assert path
-				# print('path', path)
 				assert font
-				# print('font', font)
 
 				self.parent.parent.delegate._fontWillInstall(font)
 
@@ -2842,7 +2825,6 @@ class APISubscription(PubSubClient):
 								f = open(path, 'wb')
 								f.write(base64.b64decode(incomingFont.data))
 								f.close()
-#								print('Actually wrote font to disk from .data', path)
 
 							elif incomingFont.dataURL:
 
@@ -2854,7 +2836,6 @@ class APISubscription(PubSubClient):
 									f = open(path, 'wb')
 									f.write(response.read())
 									f.close()
-#									print('Actually wrote font to disk from URL', path)
 
 							self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
@@ -2884,7 +2865,6 @@ class APISubscription(PubSubClient):
 
 		# 						for commit in json.loads(self.get('commits')):
 		# 							if commit['commit']['message'].startswith('Version: %s' % version):
-		# 								# print('Install version %s, commit %s' % (version, commit['sha']))
 
 		# 								owner = self.url.split('/')[3]
 		# 								repo = self.url.split('/')[4]

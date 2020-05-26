@@ -432,11 +432,9 @@ class ListProxy(DataType):
 
         if issubclass(value.__class__, (DictBasedObject, Proxy, ListProxy, DataType)):
             object.__setattr__(value, '_parent', self)
-#           print 'Setting _parent of %s to %s' % (value, self)
 
         self.value[i].put(value)
         object.__setattr__(self.value[i], '_parent', self)
-#       print 'Setting _parent of %s to %s' % (self.value[i], self)
 
     def __delitem__(self, i):
         del self.value[i]
@@ -945,21 +943,16 @@ class DictBasedObject(object):
         for key in list(d.keys()):
             if key in self._allowedKeys:
 
-#               print 'Load key %s' % key
-
                 if key in list(self._structure.keys()):
 
                     if issubclass(self._structure[key][0], (Proxy)):
- #                      print 'Proxy', self._structure[key][0].dataType
 
-#                       exec('self.%s = d[key]' % (key))
                         try:
                             exec('self.%s = typeworld.api.%s()' % (key, self._structure[key][0].dataType.__name__))
                         except:
                             exec('self.%s = %s()' % (key, self._structure[key][0].dataType.__name__))
                         exec('self.%s.loadDict(d[key])' % (key))
                     elif issubclass(self._structure[key][0], (ListProxy)):
-#                       print 'ListProxy', self._structure[key][0].dataType
                         _list = self.__getattr__(key)
                         for item in d[key]:
                             o = self._structure[key][0].dataType.dataType()

@@ -264,8 +264,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
 		# Build URL
 
-#		print(f'installFonts({fonts}, updateSubscription={updateSubscription})')
-
 		if self._installFontsCommand:
 			return True, self._installFontsCommand
 
@@ -288,8 +286,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 				data['userName'] = self.client.userName()
 			if self.subscription.get('revealIdentity') and self.client.userEmail():
 				data['userEmail'] = self.client.userEmail()
-
-			# print('curl -d "%s" -X POST %s' % ('&'.join(['{0}={1}'.format(k, v) for k,v in data.items()]), url))
 
 			commands = [typeworld.api.InstallFontsResponse()]
 			if updateSubscription:
