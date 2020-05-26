@@ -1463,6 +1463,7 @@ class TestStringMethods(unittest.TestCase):
 
 
 		## DOCU
+		RootResponse().docu()
 		EndpointResponse().docu()
 		InstallableFontsResponse().docu()
 		InstallFontsResponse().docu()
