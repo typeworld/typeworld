@@ -332,6 +332,10 @@ Will output the following JSON code:
                 "name": {
                     "en": "Awesome Fonts"
                 },
+                "styling": {
+                    "dark": {},
+                    "light": {}
+                },
                 "uniqueID": "awesomefontsfoundry"
             }
         ],
@@ -1291,6 +1295,24 @@ Returns True if this version is defined at the font level. Returns False if this
 
 
 
+*Example JSON data:*
+```json
+{
+    "name": {
+        "de": "Fette",
+        "en": "Bold"
+    },
+    "postScriptName": "AwesomeFamily-Bold",
+    "purpose": "desktop",
+    "status": "stable",
+    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
+    "usedLicenses": []
+}
+```
+
+
+
+
 ### Attributes
 
 [dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
@@ -1346,7 +1368,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'ttc', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'ttc', 'ttf', 'otf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1543,6 +1565,8 @@ In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-p
 
 __Required:__ False<br />
 __Type:__ Int<br />
+__Default value:__ 0
+
 <div id="class-licenseusage-attribute-seatsInstalled"></div>
 
 ### seatsInstalled
@@ -1551,6 +1575,8 @@ In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-p
 
 __Required:__ False<br />
 __Type:__ Int<br />
+__Default value:__ 0
+
 <div id="class-licenseusage-attribute-upgradeURL"></div>
 
 ### upgradeURL
