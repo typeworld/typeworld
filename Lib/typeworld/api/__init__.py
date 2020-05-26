@@ -1529,6 +1529,17 @@ class Font(DictBasedObject):
     def __repr__(self):
         return '<Font "%s">' % (self.postScriptName or self.name.getText() or 'undefined')
 
+    def sample(self):
+        o = self.__class__()
+        o.name.en = 'Bold'
+        o.name.de = 'Fette'
+        o.uniqueID = 'AwesomeFonts-AwesomeFamily-Bold'
+        o.postScriptName = 'AwesomeFamily-Bold'
+        o.purpose = 'desktop'
+
+        return o
+
+
     def filename(self, version):
         '''\
         Returns the recommended font file name to be used to store the font on disk.
