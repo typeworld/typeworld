@@ -722,8 +722,7 @@ def validateAPIEndpoint(subscriptionURL, runProfiles, endpointURL = 'https://api
 	return responses
 
 
-if __name__ == '__main__':
-
+def main():
 	import argparse
 	choices = ['all', *[x[0] for x in profiles]]
 	helpString = f'a profile name: {"|".join(choices)}\n\nIn details:'
@@ -737,3 +736,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	responses = validateAPIEndpoint(args.subscriptionURL, args.profiles)
 	print(json.dumps(responses, indent=4))
+
+
+if __name__ == '__main__':
+	main()
