@@ -60,7 +60,7 @@ from typeworld.api import HexColorDataType, FontEncodingDataType, EmailDataType,
 from typeworld.api import MultiLanguageText, MultiLanguageLongText, FloatDataType
 
 # Classes
-from typeworld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
+from typeworld.api import InstallFontAsset, UninstallFontAsset, FontListProxy, RootResponse, EndpointResponse, Designer, LicenseDefinition, Version, LicenseUsage, Font, Family, Foundry, InstallableFontsResponse, InstallFontsResponse, UninstallFontsResponse, FontPackage
 
 # Constants
 from typeworld.api import COMMANDS, MAC
