@@ -582,6 +582,22 @@ class DictBasedObject(object):
         # else:
         #     return class_.dataType.__name__.title()
 
+    def additionalDocu(self):
+
+        doc = ''
+
+        if hasattr(self, 'sample'):
+
+            doc += f'''*Example JSON data:*
+```json
+{self.sample().dumpJSON(strict = False)}
+```
+
+
+'''
+
+        return doc
+
     def docu(self):
 
         classes = []
@@ -602,6 +618,13 @@ class DictBasedObject(object):
         head += self.linkDocuText(inspect.getdoc(self))
 
         head += '\n\n'
+
+        additionalDocu = self.additionalDocu()
+        if additionalDocu:
+
+            head += additionalDocu + '\n\n'
+
+
 
         # attributes
 
@@ -787,7 +810,7 @@ class DictBasedObject(object):
 
     #     return information, warnings, critical
 
-    def validate(self):
+    def validate(self, strict = True):
 
         information = []
         warnings = []
@@ -819,7 +842,7 @@ class DictBasedObject(object):
 
             if self.discardThisKey(key) == False:
 
-                if self._structure[key][1] and self._content[key].isEmpty():
+                if strict and self._structure[key][1] and self._content[key].isEmpty():
                     critical.append('%s.%s is a required attribute, but empty' % (self, key))
 
                 else:
@@ -876,12 +899,12 @@ class DictBasedObject(object):
     def discardThisKey(self, key):
         return False
 
-    def dumpDict(self):
+    def dumpDict(self, strict = True):
 
         d = {}
 
         # Auto-validate
-        information, warnings, critical = self.validate()
+        information, warnings, critical = self.validate(strict = strict)
         if critical:
             raise ValueError(critical[0])
 
@@ -952,8 +975,8 @@ class DictBasedObject(object):
                     else:
                         self.set(key, d[key])
 
-    def dumpJSON(self):
-        return json.dumps(self.dumpDict(), indent=4, sort_keys=True)
+    def dumpJSON(self, strict = True):
+        return json.dumps(self.dumpDict(strict = strict), indent=4, sort_keys=True)
 
     def loadJSON(self, j):
         self.loadDict(json.loads(j))
