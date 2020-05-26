@@ -2328,7 +2328,7 @@ This response contains some mandatory information about the API endpoint such as
         o.name.en = 'Awesome Fonts'
         o.name.de = 'Geile Schriften'
         o.privacyPolicyURL = 'https://awesomefonts.com/privacypolicy.html'
-        o.privacyPolicyURL = 'https://awesomefonts.com/termsofservice.html'
+        o.termsOfServiceURL = 'https://awesomefonts.com/termsofservice.html'
         o.public = True
         return o
 
