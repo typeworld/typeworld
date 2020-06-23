@@ -703,7 +703,12 @@ class APIClient(PubSubClient):
 
 			import urllib.request
 			host='http://' + server
-			urllib.request.urlopen(host, context=self.sslcontext) #Python 3.x
+
+			try:
+				urllib.request.urlopen(host, context=self.sslcontext) #Python 3.x
+			# Do nothing if HTTP errors are returned, and let the subsequent methods handle the details
+			except urllib.error.HTTPError:
+				pass
 
 			return True
 
