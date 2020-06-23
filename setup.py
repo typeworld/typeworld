@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
   name = 'typeworld',         # How you named your package folder (MyLib)
-  version = '0.2.0a4',
+  version = '0.2.1a0',
   license='apache-2.0',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'This module hosts the Type.World JSON Protocol definitions in `typeworld.api` and the headless client module in `typeworld.client`, as well as various tools.',   # Give a short description about your library
   author = 'Type.World',                   # Type in your name
