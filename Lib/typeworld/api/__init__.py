@@ -15,7 +15,7 @@ import json, copy, types, inspect, re, traceback, datetime, markdown2, semver, f
 
 #  Constants
 
-VERSION = '0.1.7-alpha'
+VERSION = '0.2.1-alpha'
 
 WIN = platform.system() == 'Windows'
 MAC = platform.system() == 'Darwin'
