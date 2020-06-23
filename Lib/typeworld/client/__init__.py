@@ -1957,7 +1957,13 @@ Version: {typeworld.api.VERSION}
 	def publishers(self):
 		try:
 			if self.get('publishers'):
-				return [self.publisher(canonicalURL) for canonicalURL in self.get('publishers')]
+				publishers = []
+				if self.get('publishers'):
+					for canonicalURL in self.get('publishers'):
+						publisher = self.publisher(canonicalURL)
+						if publisher.subscriptions():
+							publishers.append(publisher)
+				return publishers
 			else:
 				return []
 		except Exception as e: self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
@@ -2177,7 +2183,12 @@ class APIPublisher(object):
 
 	def subscriptions(self):
 		try:
-			return [self.subscription(url) for url in self.get('subscriptions') or []]
+			subscriptions = []
+			if self.get('subscriptions'):
+				for url in self.get('subscriptions'):
+					if urlIsValid(url)[0] == True:
+						subscriptions.append(self.subscription(url))
+			return subscriptions
 		except Exception as e: self.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
 
 	def update(self):
