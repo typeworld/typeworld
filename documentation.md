@@ -351,7 +351,7 @@ Internally, the `typeworld.client` module uses a method called `performRequest()
 
 If you’re building your own API endpoint under the Type.World JSON protocol, we offer a remote API Endpoint Validator that will check your endpoint for proper functionality.
 
-* If you obtain the `typeworld` Python module via PyPi [PyPi](https://pypi.org/project/typeworld/) with `pip install typeworld`, you may invoke the validator from the command line: `validateTypeWorldEndpoint typeworld://json+https//typeworldserver.com/api/bZA2JbWHEAkFjako0Mtz/ all`. This is the preferred method because it allows you to check your local development server that isn’t live on the internet. Also if you run it locally, it reduces strain on the central server.
+* If you obtain the `typeworld` Python module via [PyPi](https://pypi.org/project/typeworld/) with `pip install typeworld`, you may invoke the validator from the command line: `validateTypeWorldEndpoint typeworld://json+https//typeworldserver.com/api/bZA2JbWHEAkFjako0Mtz/ all`. This is the preferred method because it allows you to check your local development server that isn’t live on the internet. Also if you run it locally, it reduces strain on the central server. (That’s because of latency. These validations will take long, and the load balancer will think it needs to start another instance, which will affect our billing)
 * You may invoke the validator on directly this website: [Online API Endpoint Validator](/developer/validate)
 * You may also use this validator remotely with its own API: [Type.World API](/developer/api/#validateAPIEndpoint).
 
@@ -395,3 +395,4 @@ The following items aren’t yet implemented in the app, but planned:
 * Email verification after account creation
 * Look over client’s Pub/Sub implementation. For instance, topics for subscriptions may not yet exist, so when they exist later, the client needs to try to subscribe again
 * Decide on whether incoming font asset lists may contain mixed successfull/erroneous results for only successful. In latter case, first check all incoming assets for errors before proceeding with the installation. Further, when an incoming asset list contains both successful as well as erroneous data, abort installation, and then send uninstallation requests back to server, so that recorded installation from just now can be removed again.
+* After linking a user account to the app, the existing subscriptions aren’t uploaded/synched
