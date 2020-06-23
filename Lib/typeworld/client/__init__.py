@@ -1642,11 +1642,6 @@ Version: {typeworld.api.VERSION}
 		else:
 			self.log(payload) #nocoverage (currently not testing for calling this method without a sourceMethod parameter)
 
-		if e:
-			raise e
-		else:
-			raise Exception(payload)
-
 
 	def log(self, *arg):
 		string = 'Type.World: %s' % ' '.join(map(str, arg))
