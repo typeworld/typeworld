@@ -1,377 +1,479 @@
 import urllib
 import typeworld.client.protocols
 import typeworld.api
-from typeworld.api import VERSION, NOFONTSAVAILABLE
-
-def readJSONResponse(url, responses, acceptableMimeTypes, data = {}):
-	d = {}
-	d['errors'] = []
-	d['warnings'] = []
-	d['information'] = []
-
-	root = typeworld.api.RootResponse()
-
-	request = urllib.request.Request(url)
-
-	if not 'source' in data:
-		data['source'] = 'typeworldApp'
-
-	# gather commands
-	commands = [response._command['keyword'] for response in responses]
-	data['commands'] = ','.join(commands)
-
-	data = urllib.parse.urlencode(data)
-	data = data.encode('ascii')
-	
-	try:
-		import ssl, certifi
-		sslcontext = ssl.create_default_context(cafile=certifi.where())
-		response = urllib.request.urlopen(request, data, context=sslcontext)
-
-		incomingMIMEType = response.headers['content-type'].split(';')[0]
-		if not incomingMIMEType in acceptableMimeTypes:
-			d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is "%s".' % (response.headers['content-type'], acceptableMimeTypes))
-
-		if response.getcode() != 200:
-			d['errors'].append(str(response.info()))
-
-		if response.getcode() == 200:
-			# Catching ValueErrors
-			try:
-				root.loadJSON(response.read().decode())
-				information, warnings, errors = root.validate()
-
-				if information: d['information'].extend(information)
-				if warnings: d['warnings'].extend(warnings)
-				if errors: d['errors'].extend(errors)
-			except ValueError as e:
-				d['errors'].append(str(e))
+from typeworld.api import VERSION
 
 
-	except urllib.request.HTTPError as e:
-		d['errors'].append('Error retrieving %s: %s' % (url, e))
+def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
+    d = {}
+    d["errors"] = []
+    d["warnings"] = []
+    d["information"] = []
 
-	return root, d
+    root = typeworld.api.RootResponse()
 
+    request = urllib.request.Request(url)
+
+    if not "source" in data:
+        data["source"] = "typeworldApp"
+
+    # gather commands
+    commands = [response._command["keyword"] for response in responses]
+    data["commands"] = ",".join(commands)
+
+    data = urllib.parse.urlencode(data)
+    data = data.encode("ascii")
+
+    try:
+        import ssl, certifi
+
+        sslcontext = ssl.create_default_context(cafile=certifi.where())
+        response = urllib.request.urlopen(request, data, context=sslcontext)
+
+        incomingMIMEType = response.headers["content-type"].split(";")[0]
+        if not incomingMIMEType in acceptableMimeTypes:
+            d["errors"].append(
+                'Resource headers returned wrong MIME type: "%s". Expected is "%s".'
+                % (response.headers["content-type"], acceptableMimeTypes)
+            )
+
+        if response.getcode() != 200:
+            d["errors"].append(str(response.info()))
+
+        if response.getcode() == 200:
+            # Catching ValueErrors
+            try:
+                root.loadJSON(response.read().decode())
+                information, warnings, errors = root.validate()
+
+                if information:
+                    d["information"].extend(information)
+                if warnings:
+                    d["warnings"].extend(warnings)
+                if errors:
+                    d["errors"].extend(errors)
+            except ValueError as e:
+                d["errors"].append(str(e))
+
+    except urllib.request.HTTPError as e:
+        d["errors"].append("Error retrieving %s: %s" % (url, e))
+
+    return root, d
 
 
 class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
+    def initialize(self):
+        self.versions = []
+        self._rootCommand = None
+        self._installableFontsCommand = None
+        self._installFontsCommand = None
 
+    def loadFromDB(self):
+        """Overwrite this"""
 
-	def initialize(self):
-		self.versions = []
-		self._rootCommand = None
-		self._installableFontsCommand = None
-		self._installFontsCommand = None
+        if self.get("endpoint"):
+            api = typeworld.api.EndpointResponse()
+            api.parent = self
+            api.loadJSON(self.get("endpoint"))
+            self._rootCommand = api
 
-	def loadFromDB(self):
-		'''Overwrite this'''
+        if self.get("installableFonts"):
+            api = typeworld.api.InstallableFontsResponse()
+            api.parent = self
+            api.loadJSON(self.get("installableFonts"))
+            self._installableFontsCommand = api
 
-		if self.get('endpoint'):
-			api = typeworld.api.EndpointResponse()
-			api.parent = self
-			api.loadJSON(self.get('endpoint'))
-			self._rootCommand = api
+        if self.get("installFonts"):
+            api = typeworld.api.InstallFontsResponse()
+            api.parent = self
+            api.loadJSON(self.get("installFonts"))
+            self._installFontsCommand = api
 
-		if self.get('installableFonts'):
-			api = typeworld.api.InstallableFontsResponse()
-			api.parent = self
-			api.loadJSON(self.get('installableFonts'))
-			self._installableFontsCommand = api
+    def latestVersion(self):
+        return self._installableFontsCommand
 
-		if self.get('installFonts'):
-			api = typeworld.api.InstallFontsResponse()
-			api.parent = self
-			api.loadJSON(self.get('installFonts'))
-			self._installFontsCommand = api
+    def returnRootCommand(self, testScenario):
 
-	def latestVersion(self):
-		return self._installableFontsCommand
+        if not self._rootCommand:
 
-	def returnRootCommand(self, testScenario):
+            # Read response
+            data = {
+                "subscriptionID": self.url.subscriptionID,
+                "appVersion": VERSION,
+            }
+            if testScenario:
+                data["testScenario"] = testScenario
+            root, responses = readJSONResponse(
+                self.connectURL(),
+                [typeworld.api.EndpointResponse()],
+                typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
+                data=data,
+            )
 
-		if not self._rootCommand:
+            # Errors
+            if responses["errors"]:
+                return False, responses["errors"][0]
 
-			# Read response
-			data = {
-				'subscriptionID': self.url.subscriptionID, 
-				'appVersion': VERSION,
-			}
-			if testScenario:
-				data['testScenario'] = testScenario
-			root, responses = readJSONResponse(self.connectURL(), [typeworld.api.EndpointResponse()], typeworld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
-			
-			# Errors
-			if responses['errors']:
-				return False, responses['errors'][0]
+            self._rootCommand = root.endpoint
 
-			self._rootCommand = root.endpoint
+        # Success
+        return True, self._rootCommand
 
-		# Success
-		return True, self._rootCommand
+    def returnInstallableFontsCommand(self):
+        return True, self.latestVersion()
 
+    def protocolName(self):
+        return "Type.World JSON Protocol"
 
-	def returnInstallableFontsCommand(self):
-		return True, self.latestVersion()
+    def update(self):
 
-	def protocolName(self):
-		return 'Type.World JSON Protocol'
+        data = {
+            "subscriptionID": self.url.subscriptionID,
+            "anonymousAppID": self.client.anonymousAppID(),
+            "anonymousTypeWorldUserID": self.client.user(),
+            "appVersion": VERSION,
+            "mothership": self.client.mothership,
+        }
+        if self.client.testScenario:
+            data["testScenario"] = self.client.testScenario
+        secretKey = self.getSecretKey()
+        if secretKey:
+            data["secretKey"] = secretKey
 
-	def update(self):
+        root, responses = readJSONResponse(
+            self.connectURL(),
+            [
+                typeworld.api.EndpointResponse(),
+                typeworld.api.InstallableFontsResponse(),
+            ],
+            typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
+            data=data,
+        )
+        api = root.installableFonts
 
-		data = {
-			'subscriptionID': self.url.subscriptionID, 
-			'anonymousAppID': self.client.anonymousAppID(), 
-			'anonymousTypeWorldUserID': self.client.user(),
-			'appVersion': VERSION,
-			'mothership': self.client.mothership,
-		}
-		if self.client.testScenario:
-			data['testScenario'] = self.client.testScenario
-		secretKey = self.getSecretKey()
-		if secretKey:
-			data['secretKey'] = secretKey
+        if responses["errors"]:
 
-		root, responses = readJSONResponse(self.connectURL(), [typeworld.api.EndpointResponse(), typeworld.api.InstallableFontsResponse()], typeworld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
-		api = root.installableFonts
+            if (
+                self.url.unsecretURL()
+                in self.subscription.parent._updatingSubscriptions
+            ):
+                self.subscription.parent._updatingSubscriptions.remove(
+                    self.url.unsecretURL()
+                )
+            self.subscription._updatingProblem = "\n".join(responses["errors"])
+            return False, self.subscription._updatingProblem, False
 
-		if responses['errors']:
-			
-			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
-			self.subscription._updatingProblem = '\n'.join(responses['errors'])
-			return False, self.subscription._updatingProblem, False
+        if api.response == "error":
+            if (
+                self.url.unsecretURL()
+                in self.subscription.parent._updatingSubscriptions
+            ):
+                self.subscription.parent._updatingSubscriptions.remove(
+                    self.url.unsecretURL()
+                )
+            self.subscription._updatingProblem = api.errorMessage
+            return False, self.subscription._updatingProblem, False
 
-		if api.response == 'error':
-			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
-			self.subscription._updatingProblem = api.errorMessage
-			return False, self.subscription._updatingProblem, False
+        if api.response in (
+            "temporarilyUnavailable",
+            "insufficientPermission",
+            "loginRequired",
+        ):
+            if (
+                self.url.unsecretURL()
+                in self.subscription.parent._updatingSubscriptions
+            ):
+                self.subscription.parent._updatingSubscriptions.remove(
+                    self.url.unsecretURL()
+                )
+            self.subscription._updatingProblem = [
+                f"#(response.{api.response})",
+                f"#(response.{api.response}.headline)",
+            ]
+            return (
+                False,
+                [f"#(response.{api.response})", f"#(response.{api.response}.headline)"],
+                False,
+            )
 
-		if api.response in ('temporarilyUnavailable', 'insufficientPermission', 'loginRequired'):
-			if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
-				self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
-			self.subscription._updatingProblem = [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
-			return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)'], False
+        # # Detect installed fonts now not available in subscription anymore and delete them
+        # hasFonts = False
+        # removeFonts = []
+        # if api.response == NOFONTSAVAILABLE:
+        # 	for foundry in self._installableFontsCommand.foundries:
+        # 		for family in foundry.families:
+        # 			for font in family.fonts:
+        # 				hasFonts = True
+        # 				removeFonts.append(font.uniqueID)
+        # 	if removeFonts:
+        # 		success, message = self.subscription.removeFonts(removeFonts)
+        # 		if not success:
+        # 			return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
 
+        # Previously available fonts
+        oldIDs = []
+        for foundry in self._installableFontsCommand.foundries:
+            for family in foundry.families:
+                for font in family.fonts:
+                    oldIDs.append(font.uniqueID)
 
-		# # Detect installed fonts now not available in subscription anymore and delete them
-		# hasFonts = False
-		# removeFonts = []
-		# if api.response == NOFONTSAVAILABLE:
-		# 	for foundry in self._installableFontsCommand.foundries:
-		# 		for family in foundry.families:
-		# 			for font in family.fonts:
-		# 				hasFonts = True
-		# 				removeFonts.append(font.uniqueID)
-		# 	if removeFonts:
-		# 		success, message = self.subscription.removeFonts(removeFonts)
-		# 		if not success:
-		# 			return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
+        # Newly available fonts
+        newIDs = []
+        for foundry in api.foundries:
+            for family in foundry.families:
+                for font in family.fonts:
+                    newIDs.append(font.uniqueID)
 
-		# Previously available fonts
-		oldIDs = []
-		for foundry in self._installableFontsCommand.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					oldIDs.append(font.uniqueID)
+        # These fonts are no longer available, so delete them.
+        # Shrink the list of deletable fonts to the ones actually installed.
+        deletedFonts = list(set(oldIDs) - set(newIDs))
+        deleteTheseFonts = []
+        if deletedFonts:
+            for fontID in deletedFonts:
+                for foundry in self._installableFontsCommand.foundries:
+                    for family in foundry.families:
+                        for font in family.fonts:
+                            if font.uniqueID == fontID:
+                                if self.subscription.installedFontVersion(
+                                    font.uniqueID
+                                ):
+                                    deleteTheseFonts.append(fontID)
 
-		# Newly available fonts
-		newIDs = []
-		for foundry in api.foundries:
-			for family in foundry.families:
-				for font in family.fonts:
-					newIDs.append(font.uniqueID)
+            success, message = self.subscription.removeFonts(
+                deleteTheseFonts, updateSubscription=False
+            )
+            if not success:
+                return (
+                    False,
+                    "Couldn’t uninstall previously installed fonts: %s" % message,
+                    True,
+                )
 
-		# These fonts are no longer available, so delete them.
-		# Shrink the list of deletable fonts to the ones actually installed.
-		deletedFonts = list( set(oldIDs) - set(newIDs) )
-		deleteTheseFonts = []
-		if deletedFonts:
-			for fontID in deletedFonts:
-				for foundry in self._installableFontsCommand.foundries:
-					for family in foundry.families:
-						for font in family.fonts:
-							if font.uniqueID == fontID:
-								if self.subscription.installedFontVersion(font.uniqueID):
-									deleteTheseFonts.append(fontID)
+        # Compare
+        identical = self._installableFontsCommand.sameContent(api)
+        self._installableFontsCommand = api
 
-			success, message = self.subscription.removeFonts(deleteTheseFonts, updateSubscription = False)
-			if not success: return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
+        # EndpointResponse
+        if root.endpoint:
+            self._rootCommand = root.endpoint
 
-		# Compare
-		identical = self._installableFontsCommand.sameContent(api)
-		self._installableFontsCommand = api
+        # InstallFontsResponse
+        if root.installFonts:
+            self._installFontsCommand = root.installFonts
+        else:
+            self._installFontsCommand = None
 
-		# EndpointResponse
-		if root.endpoint:
-			self._rootCommand = root.endpoint
+        self.save()
 
-		# InstallFontsResponse
-		if root.installFonts:
-			self._installFontsCommand = root.installFonts
-		else:
-			self._installFontsCommand = None
+        return True, None, not identical
 
-		self.save()
+    def setInstallableFontsCommand(self, command):
+        self._installableFontsCommand = command
 
-		return True, None, not identical
+    # 		self.client.delegate.subscriptionWasUpdated(self.subscription.parent, self.subscription)
 
-	def setInstallableFontsCommand(self, command):
-		self._installableFontsCommand = command
-#		self.client.delegate.subscriptionWasUpdated(self.subscription.parent, self.subscription)
+    def removeFonts(self, fonts, updateSubscription=False):
 
+        data = {
+            "fonts": ",".join(fonts),
+            "anonymousAppID": self.client.anonymousAppID(),
+            "anonymousTypeWorldUserID": self.client.user(),
+            "subscriptionID": self.url.subscriptionID,
+            "secretKey": self.getSecretKey(),
+            "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
+            "appVersion": VERSION,
+            "mothership": self.client.mothership,
+        }
+        if self.client.testScenario:
+            data["testScenario"] = self.client.testScenario
 
-	def removeFonts(self, fonts, updateSubscription = False):
+        commands = [typeworld.api.UninstallFontsResponse()]
+        if updateSubscription:
+            commands.append(typeworld.api.InstallableFontsResponse())
 
-		data = {
-			'fonts': ','.join(fonts),
-			'anonymousAppID': self.client.anonymousAppID(),
-			'anonymousTypeWorldUserID': self.client.user(),
-			'subscriptionID': self.url.subscriptionID,
-			'secretKey': self.getSecretKey(),
-			'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
-			'appVersion': VERSION,
-			'mothership': self.client.mothership,
-		}
-		if self.client.testScenario:
-			data['testScenario'] = self.client.testScenario
+        root, messages = readJSONResponse(
+            self.connectURL(),
+            commands,
+            typeworld.api.UNINSTALLFONTSCOMMAND["acceptableMimeTypes"],
+            data=data,
+        )
+        api = root.uninstallFonts
 
-		commands = [typeworld.api.UninstallFontsResponse()]
-		if updateSubscription:
-			commands.append(typeworld.api.InstallableFontsResponse())
+        if messages["errors"]:
+            return False, "\n\n".join(messages["errors"])
 
-		root, messages = readJSONResponse(self.connectURL(), commands, typeworld.api.UNINSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
-		api = root.uninstallFonts
+        if api.response == "error":
+            return False, api.errorMessage
 
+        if api.response != "success":
+            return (
+                False,
+                [f"#(response.{api.response})", f"#(response.{api.response}.headline)"],
+            )
 
-		if messages['errors']:
-			return False, '\n\n'.join(messages['errors'])
+        if (
+            updateSubscription
+            and root.installableFonts
+            and root.installableFonts.response == "success"
+        ):
+            self.setInstallableFontsCommand(root.installableFonts)
 
-		if api.response == 'error':
-			return False, api.errorMessage
+        return True, api
 
-		if api.response != 'success':
-			return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
+    def installFonts(self, fonts, updateSubscription=False):
 
-		if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
-			self.setInstallableFontsCommand(root.installableFonts)
+        # Build URL
 
-		return True, api
+        if self._installFontsCommand:
+            return True, self._installFontsCommand
 
+        else:
 
-	def installFonts(self, fonts, updateSubscription = False):
+            data = {
+                "fonts": ",".join([f"{x[0]}/{x[1]}" for x in fonts]),
+                "anonymousAppID": self.client.anonymousAppID(),
+                "anonymousTypeWorldUserID": self.client.user(),
+                "subscriptionID": self.url.subscriptionID,
+                "secretKey": self.getSecretKey(),
+                "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
+                "appVersion": VERSION,
+                "mothership": self.client.mothership,
+            }
+            if self.client.testScenario:
+                data["testScenario"] = self.client.testScenario
 
-		# Build URL
+            if self.subscription.get("revealIdentity") and self.client.userName():
+                data["userName"] = self.client.userName()
+            if self.subscription.get("revealIdentity") and self.client.userEmail():
+                data["userEmail"] = self.client.userEmail()
 
-		if self._installFontsCommand:
-			return True, self._installFontsCommand
+            commands = [typeworld.api.InstallFontsResponse()]
+            if updateSubscription:
+                commands.append(typeworld.api.InstallableFontsResponse())
 
-		else:
+            root, messages = readJSONResponse(
+                self.connectURL(),
+                commands,
+                typeworld.api.INSTALLFONTSCOMMAND["acceptableMimeTypes"],
+                data=data,
+            )
+            api = root.installFonts
 
-			data = {
-				'fonts': ','.join([f'{x[0]}/{x[1]}' for x in fonts]),
-				'anonymousAppID': self.client.anonymousAppID(),
-				'anonymousTypeWorldUserID': self.client.user(),
-				'subscriptionID': self.url.subscriptionID,
-				'secretKey': self.getSecretKey(),
-				'secretTypeWorldAPIKey': self.client.secretTypeWorldAPIKey,
-				'appVersion': VERSION,
-				'mothership': self.client.mothership,
-			}
-			if self.client.testScenario:
-				data['testScenario'] = self.client.testScenario
+            if messages["errors"]:
+                return False, "\n\n".join(messages["errors"])
 
-			if self.subscription.get('revealIdentity') and self.client.userName():
-				data['userName'] = self.client.userName()
-			if self.subscription.get('revealIdentity') and self.client.userEmail():
-				data['userEmail'] = self.client.userEmail()
+            if api.response == "error":
+                return False, api.errorMessage
 
-			commands = [typeworld.api.InstallFontsResponse()]
-			if updateSubscription:
-				commands.append(typeworld.api.InstallableFontsResponse())
+            if api.response != "success":
+                return (
+                    False,
+                    [
+                        f"#(response.{api.response})",
+                        f"#(response.{api.response}.headline)",
+                    ],
+                )
 
-			root, messages = readJSONResponse(self.connectURL(), commands, typeworld.api.INSTALLFONTSCOMMAND['acceptableMimeTypes'], data = data)
-			api = root.installFonts
+            if (
+                updateSubscription
+                and root.installableFonts
+                and root.installableFonts.response == "success"
+            ):
+                self.setInstallableFontsCommand(root.installableFonts)
 
-			if messages['errors']:
-				return False, '\n\n'.join(messages['errors'])
+            return True, api
 
-			if api.response == 'error':
-				return False, api.errorMessage
-
-			if api.response != 'success':
-				return False, [f'#(response.{api.response})', f'#(response.{api.response}.headline)']
-
-			if updateSubscription and root.installableFonts and root.installableFonts.response == 'success':
-				self.setInstallableFontsCommand(root.installableFonts)
-
-			return True, api
-
-
-	def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, accessToken, secretTypeWorldAPIKey, testScenario):
-		'''Overwrite this.
+    def aboutToAddSubscription(
+        self,
+        anonymousAppID,
+        anonymousTypeWorldUserID,
+        accessToken,
+        secretTypeWorldAPIKey,
+        testScenario,
+    ):
+        """Overwrite this.
 		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
-		Return False, 'message' in case of errors.'''
+		Return False, 'message' in case of errors."""
 
-		# Read response
-		data = {
-			'subscriptionID': self.url.subscriptionID, 
-			'secretKey': self.url.secretKey, 
-			'anonymousAppID': anonymousAppID, 
-			'anonymousTypeWorldUserID': anonymousTypeWorldUserID, 
-			'accessToken': accessToken, 
-			'appVersion': VERSION,
-			'mothership': self.client.mothership,
-		}
-		if testScenario:
-			data['testScenario'] = testScenario
+        # Read response
+        data = {
+            "subscriptionID": self.url.subscriptionID,
+            "secretKey": self.url.secretKey,
+            "anonymousAppID": anonymousAppID,
+            "anonymousTypeWorldUserID": anonymousTypeWorldUserID,
+            "accessToken": accessToken,
+            "appVersion": VERSION,
+            "mothership": self.client.mothership,
+        }
+        if testScenario:
+            data["testScenario"] = testScenario
 
-		root, responses = readJSONResponse(self.connectURL(), [typeworld.api.EndpointResponse(), typeworld.api.InstallableFontsResponse()], typeworld.api.INSTALLABLEFONTSCOMMAND['acceptableMimeTypes'], data = data)
+        root, responses = readJSONResponse(
+            self.connectURL(),
+            [
+                typeworld.api.EndpointResponse(),
+                typeworld.api.InstallableFontsResponse(),
+            ],
+            typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
+            data=data,
+        )
 
-		# InstallableFontsResponse
-		api = root.installableFonts
+        # InstallableFontsResponse
+        api = root.installableFonts
 
-		# EndpointResponse
-		self._rootCommand = root.endpoint
-		
-		# Errors
-		if responses['errors']: return False, responses['errors'][0]
+        # EndpointResponse
+        self._rootCommand = root.endpoint
 
-		if not 'installableFonts' in self._rootCommand.supportedCommands or not 'installFonts' in self._rootCommand.supportedCommands:
-			return False, 'API endpoint %s does not support the "installableFonts" or "installFonts" commands.' % self._rootCommand.canonicalURL
+        # Errors
+        if responses["errors"]:
+            return False, responses["errors"][0]
 
-		if api.response == 'error':
-			return False, api.errorMessage
+        if (
+            not "installableFonts" in self._rootCommand.supportedCommands
+            or not "installFonts" in self._rootCommand.supportedCommands
+        ):
+            return (
+                False,
+                'API endpoint %s does not support the "installableFonts" or "installFonts" commands.'
+                % self._rootCommand.canonicalURL,
+            )
 
-		# Predefined response messages
-		if api.response != 'error' and api.response != 'success':
-			return False, ['#(response.%s)' % api.response, '#(response.%s.headline)' % api.response]
+        if api.response == "error":
+            return False, api.errorMessage
 
-		# Success
-		self._installableFontsCommand = api
+        # Predefined response messages
+        if api.response != "error" and api.response != "success":
+            return (
+                False,
+                [
+                    "#(response.%s)" % api.response,
+                    "#(response.%s.headline)" % api.response,
+                ],
+            )
 
-		# InstallFontsResponse
-		if root.installFonts:
-			self._installFontsCommand = root.installFonts
-		else:
-			self._installFontsCommand = None
+        # Success
+        self._installableFontsCommand = api
 
-		if self.url.secretKey:
-			self.setSecretKey(self.url.secretKey)
+        # InstallFontsResponse
+        if root.installFonts:
+            self._installFontsCommand = root.installFonts
+        else:
+            self._installFontsCommand = None
 
-		return True, None
+        if self.url.secretKey:
+            self.setSecretKey(self.url.secretKey)
 
-	def save(self):
+        return True, None
 
-		assert self._rootCommand
-		self.set('endpoint', self._rootCommand.dumpJSON())
+    def save(self):
 
-		assert self._installableFontsCommand
-		self.set('installableFonts', self._installableFontsCommand.dumpJSON())
+        assert self._rootCommand
+        self.set("endpoint", self._rootCommand.dumpJSON())
 
-		if self._installFontsCommand:
-			self.set('installFonts', self._installFontsCommand.dumpJSON())
-		else:
-			self.set('installFonts', '')
+        assert self._installableFontsCommand
+        self.set("installableFonts", self._installableFontsCommand.dumpJSON())
 
+        if self._installFontsCommand:
+            self.set("installFonts", self._installFontsCommand.dumpJSON())
+        else:
+            self.set("installFonts", "")

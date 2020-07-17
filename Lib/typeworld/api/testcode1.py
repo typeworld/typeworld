@@ -6,10 +6,12 @@ root = typeworld.api.RootResponse()
 
 ### EndpointResponse
 endpoint = typeworld.api.EndpointResponse()
-endpoint.name.en = 'Font Publisher'
-endpoint.canonicalURL = 'http://fontpublisher.com/api/'
-endpoint.adminEmail = 'admin@fontpublisher.com'
-endpoint.supportedCommands = [x['keyword'] for x in typeworld.api.COMMANDS] # this API supports all commands
+endpoint.name.en = "Font Publisher"
+endpoint.canonicalURL = "http://fontpublisher.com/api/"
+endpoint.adminEmail = "admin@fontpublisher.com"
+endpoint.supportedCommands = [
+    x["keyword"] for x in typeworld.api.COMMANDS
+]  # this API supports all commands
 
 # Attach EndpointResponse to RootResponse
 root.endpoint = endpoint
