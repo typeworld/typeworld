@@ -198,7 +198,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.1.7-alpha"
+    "version": "0.2.1-alpha"
 }
 ```
 
@@ -346,7 +346,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.1.7-alpha"
+    "version": "0.2.1-alpha"
 }
 ```
 
@@ -406,7 +406,7 @@ This exists to speed up processes by reducing server calls. For instance, instal
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.1.7-alpha"
+    "version": "0.2.1-alpha"
 }
 ```
 
@@ -459,7 +459,7 @@ Version of "installFonts" response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.1.7-alpha
+__Default value:__ 0.2.1-alpha
 
 
 
