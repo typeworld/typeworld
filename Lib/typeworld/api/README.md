@@ -391,7 +391,7 @@ This exists to speed up processes by reducing server calls. For instance, instal
             "de": "Geile Schriften",
             "en": "Awesome Fonts"
         },
-        "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
+        "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
         "supportedCommands": [
             "endpoint",
@@ -399,7 +399,7 @@ This exists to speed up processes by reducing server calls. For instance, instal
             "installFonts",
             "uninstallFonts"
         ],
-        "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
+        "termsOfServiceURL": "https://awesomefonts.com/termsofservice.html"
     },
     "installableFonts": {
         "foundries": [],
@@ -484,7 +484,7 @@ This response contains some mandatory information about the API endpoint such as
         "de": "Geile Schriften",
         "en": "Awesome Fonts"
     },
-    "privacyPolicyURL": "https://awesomefonts.com/termsofservice.html",
+    "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
     "supportedCommands": [
         "endpoint",
@@ -492,7 +492,7 @@ This response contains some mandatory information about the API endpoint such as
         "installFonts",
         "uninstallFonts"
     ],
-    "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
+    "termsOfServiceURL": "https://awesomefonts.com/termsofservice.html"
 }
 ```
 
