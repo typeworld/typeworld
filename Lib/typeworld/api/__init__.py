@@ -1700,7 +1700,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         o.de = "Text auf Deutsch"
         return o
 
-    def getTextAndLocale(self, locale=["en"], format="plain"):
+    def getTextAndLocale(self, locale=["en"]):
         """Like getText(), but additionally returns the language of whatever text was found first."""
 
         if type(locale) in (str, str):
@@ -1723,10 +1723,10 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
         return None, None
 
-    def getText(self, locale=["en"], format="plain"):
+    def getText(self, locale=["en"]):
         """Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find."""
 
-        text, locale = self.getTextAndLocale(locale, format=format)
+        text, locale = self.getTextAndLocale(locale)
 
         return text
 
