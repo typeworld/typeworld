@@ -665,13 +665,13 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 <div id="class-multilanguagetext-method-gettext"></div>
 
-#### getText(locale = ['en'], format = plain)
+#### getText(locale = ['en'])
 
 Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
 
 <div id="class-multilanguagetext-method-gettextandlocale"></div>
 
-#### getTextAndLocale(locale = ['en'], format = plain)
+#### getTextAndLocale(locale = ['en'])
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
@@ -908,13 +908,13 @@ HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](
 
 <div id="class-multilanguagelongtext-method-gettext"></div>
 
-#### getText(locale = ['en'], format = plain)
+#### getText(locale = ['en'])
 
 Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
 
 <div id="class-multilanguagelongtext-method-gettextandlocale"></div>
 
-#### getTextAndLocale(locale = ['en'], format = plain)
+#### getTextAndLocale(locale = ['en'])
 
 Like getText(), but additionally returns the language of whatever text was found first.
 
