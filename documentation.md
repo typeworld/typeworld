@@ -8,8 +8,8 @@ Document last revised: %timestamp%
 
 Currently, we’re looking into the following timeline:
 
-* Spring/Early Summer 2020: Reaching **Beta** status, afterwards only casual development until September 2020, very limited support (because summer, only God can judge me)
-* September 2020: Return to full time development, full support
+* Summer 2020: Reaching **Beta** status, afterwards only casual development until September 2020, very limited support (because summer)
+* October 2020: Return to full time development, full support
 * March 2021: Release of final **Version 1.0**
 
 ### Development Status
