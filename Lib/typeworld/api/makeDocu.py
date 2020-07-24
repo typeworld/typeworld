@@ -6,10 +6,12 @@ import typeworld.api
 
 def Execute(command):
     """\
-	Execute system command, return output.
-	"""
+    Execute system command, return output.
+    """
 
-    import sys, os, platform
+    import sys
+    import os
+    import platform
 
     if sys.version.startswith("2.3") or platform.system() == "Windows":
 
@@ -44,7 +46,7 @@ docstring = open(os.path.join(os.path.dirname(__file__), "docu.md"), "r").read()
 
 handles = []
 for key in [x[0] for x in docstrings]:
-    if not key in handles:
+    if key not in handles:
         handles.append(key)
 
 classTOC = ""
@@ -75,7 +77,7 @@ for handle in handles:
             docstring += "\n\n"
             break
 
-if not "TRAVIS" in os.environ:
+if "TRAVIS" not in os.environ:
     f = open(os.path.join(os.path.dirname(__file__), "README.md"), "w")
     f.write(docstring)
     f.close()
