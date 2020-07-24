@@ -4,7 +4,7 @@ import typeworld.api
 # Root of Response
 root = typeworld.api.RootResponse()
 
-### EndpointResponse
+# EndpointResponse
 endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = "Font Publisher"
 endpoint.canonicalURL = "http://fontpublisher.com/api/"
