@@ -11,3 +11,11 @@ repos:
     rev: v3.1.0  # Use the ref you want to point at
     hooks:
     -   id: check-ast # Python syntax check
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: check-toml
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: mixed-line-ending
+    -   id: requirements-txt-fixer
