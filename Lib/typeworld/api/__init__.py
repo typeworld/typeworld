@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
 
-import json, copy, types, inspect, re, traceback, datetime, markdown2, semver, functools, platform
+import json
+import copy
+import types
+import inspect
+import re
+import traceback
+import datetime
+import markdown2
+import semver
+import functools
+import platform
 
 
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 #  Constants
 
@@ -34,18 +44,64 @@ LOGINREQUIRED = "loginRequired"
 
 PROTOCOLS = ["typeworld"]
 
+
 RESPONSES = {
     SUCCESS: "The request has been processed successfully.",
-    ERROR: "There request produced an error. You may add a custom error message in the `errorMessage` field.",
+    ERROR: (
+        "There request produced an error. You may add a custom error "
+        "message in the `errorMessage` field."
+    ),
     UNKNOWNFONT: "No font could be identified for the given `fontID`.",
-    INSUFFICIENTPERMISSION: "The Type.World user account credentials couldn’t be confirmed by the publisher (which are checked with the central server) and therefore access to the subscription is denied.",
-    SEATALLOWANCEREACHED: "The user has exhausted their seat allowances for this font. The app may take them to the publisher’s website as defined in ::LicenseUsage.upgradeURL:: to upgrade their font license.",
-    UNKNOWNINSTALLATION: "This font installation (combination of app instance and user credentials) is unknown. The response with this error message is crucial to remote de-authorization of app instances. When a user de-authorizes an entire app instance’s worth of font installations, such as when a computer got bricked and re-installed or is lost, the success of the remote de-authorization process is judged by either `success` responses (app actually had this font installed and its deletion has been recorded) or `unknownInstallation` responses (app didn’t have this font installed). All other reponses count as errors in the remote de-authorization process.",
-    NOFONTSAVAILABLE: "This subscription exists but carries no fonts at the moment.",
-    TEMPORARILYUNAVAILABLE: "The service is temporarily unavailable but should work again later on.",
-    VALIDTYPEWORLDUSERACCOUNTREQUIRED: "The access to this subscription requires a valid Type.World user account connected to an app.",
-    REVEALEDUSERIDENTITYREQUIRED: "The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).",
-    LOGINREQUIRED: "The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at ::EndpointResponse.loginURL::. After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.",
+    INSUFFICIENTPERMISSION: (
+        "The Type.World user account credentials "
+        "couldn’t be confirmed by the publisher (which are checked with the "
+        "central server) and therefore access to the subscription is denied."
+    ),
+    SEATALLOWANCEREACHED: (
+        "The user has exhausted their seat allowances for "
+        "this font. The app may take them to the publisher’s website as "
+        "defined in ::LicenseUsage.upgradeURL:: to upgrade their font license."
+    ),
+    UNKNOWNINSTALLATION: (
+        "This font installation (combination of app instance and user "
+        "credentials) is unknown. The response with this error message is "
+        "crucial to remote de-authorization of app instances. When a user "
+        "de-authorizes an entire app instance’s worth of font installations, "
+        "such as when a computer got bricked and re-installed or is lost, the "
+        "success of the remote de-authorization process is judged by either "
+        "`success` responses (app actually had this font installed and its "
+        "deletion has been recorded) or `unknownInstallation` responses "
+        "(app didn’t have this font installed). All other reponses count as "
+        "errors in the remote de-authorization process."
+    ),
+    NOFONTSAVAILABLE: (
+        "This subscription exists but carries " "no fonts at the moment."
+    ),
+    TEMPORARILYUNAVAILABLE: (
+        "The service is temporarily unavailable " "but should work again later on."
+    ),
+    VALIDTYPEWORLDUSERACCOUNTREQUIRED: (
+        "The access to this subscription requires a valid Type.World user "
+        "account connected to an app."
+    ),
+    REVEALEDUSERIDENTITYREQUIRED: (
+        "The access to this subscription requires a valid Type.World user "
+        "account and that the user agrees to having their identity "
+        "(name and email address) submitted to the publisher upon font "
+        "installation (closed workgroups only)."
+    ),
+    LOGINREQUIRED: (
+        "The access to this subscription requires that the user logs into "
+        "the publisher’s website again to authenticate themselves. "
+        "Normally, this happens after a subscription’s secret key has been "
+        "invalidated. The user will be taken to the publisher’s website "
+        "defined at ::EndpointResponse.loginURL::. After successful login, "
+        "a button should be presented to the user to reconnect to the same "
+        "subscription that they are trying to access. To identify the "
+        "subscription, the link that the user will be taken to will carry a "
+        "`subscriptionID` parameter with the subscriptionID as defined in "
+        "the subscription’s URL."
+    ),
 }
 
 # Commands
@@ -132,21 +188,26 @@ COMMANDS = [
 
 FONTPURPOSES = {
     "desktop": {
-        "acceptableMimeTypes": ["font/collection", "font/otf", "font/sfnt", "font/ttf"],
+        "acceptableMimeTypes": [
+            "font/collection",
+            "font/otf",
+            "font/sfnt",
+            "font/ttf",
+        ],
     },
-    "web": {"acceptableMimeTypes": ["application/zip"],},
-    "app": {"acceptableMimeTypes": ["application/zip"],},
+    "web": {"acceptableMimeTypes": ["application/zip"]},
+    "app": {"acceptableMimeTypes": ["application/zip"]},
 }
 
 # https://tools.ietf.org/html/rfc8081
 
 MIMETYPES = {
-    "font/sfnt": {"fileExtensions": ["otf", "ttf"],},
-    "font/ttf": {"fileExtensions": ["ttf"],},
-    "font/otf": {"fileExtensions": ["otf"],},
-    "font/collection": {"fileExtensions": ["ttc"],},
-    "font/woff": {"fileExtensions": ["woff"],},
-    "font/woff2": {"fileExtensions": ["woff2"],},
+    "font/sfnt": {"fileExtensions": ["otf", "ttf"]},
+    "font/ttf": {"fileExtensions": ["ttf"]},
+    "font/otf": {"fileExtensions": ["otf"]},
+    "font/collection": {"fileExtensions": ["ttc"]},
+    "font/woff": {"fileExtensions": ["woff"]},
+    "font/woff2": {"fileExtensions": ["woff2"]},
 }
 
 # Compile list of file extensions
@@ -526,18 +587,19 @@ PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ["active", "deleted", "revoked"]
 DEFAULT = "__default__"
 
 
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 #  Helper methods
 
 
 def makeSemVer(version):
-    "Turn simple float number (0.1) into semver-compatible number for comparison by adding .0(s): (0.1.0)"
+    """Turn simple float number (0.1) into semver-compatible number
+    for comparison by adding .0(s): (0.1.0)"""
 
     # Make string
     version = str(version)
@@ -564,12 +626,12 @@ def ResponsesDocu(responses):
     return text
 
 
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 #  Basic Data Types
 
@@ -588,7 +650,7 @@ class DataType(object):
         if issubclass(self.__class__, Proxy):
             return "<%s>" % (self.dataType.__name__)
         else:
-            return '<%s "%s">' % (self.__class__.__name__, self.get())
+            return "<%s '%s'>" % (self.__class__.__name__, self.get())
 
     def valid(self):
         if not self.value:
@@ -615,14 +677,14 @@ class DataType(object):
             object.__setattr__(self.value, "_parent", self)
 
         valid = self.valid()
-        if valid != True and valid != None:
+        if valid is not True and valid is not None:
             raise ValueError(valid)
 
     def shapeValue(self, value):
         return value
 
     def isEmpty(self):
-        return self.value == None or self.value == [] or self.value == ""
+        return self.value is None or self.value == [] or self.value == ""
 
     def isSet(self):
         return not self.isEmpty()
@@ -694,7 +756,7 @@ class VersionDataType(StringDataType):
         # Append .0 for semver comparison
         try:
             value = makeSemVer(self.value)
-        except:
+        except ValueError:
             return False
 
         try:
@@ -704,7 +766,10 @@ class VersionDataType(StringDataType):
         return True
 
     def formatHint(self):
-        return "Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)"
+        return (
+            "Simple float number (1 or 1.01) or semantic versioning "
+            "(2.0.0-rc.1) as per [semver.org](https://semver.org)"
+        )
 
 
 class TimestampDataType(IntegerDataType):
@@ -763,7 +828,13 @@ class TelephoneDataType(StringDataType):
 
 class WebResourceURLDataType(WebURLDataType):
     def formatHint(self):
-        return "This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062"
+        return (
+            "This resource may get downloaded and cached on the client "
+            "computer. To ensure up-to-date resources, append a unique ID "
+            "to the URL such as a timestamp of the resources’s upload on your "
+            "server, e.g. "
+            "https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062"
+        )
 
 
 class EmailDataType(StringDataType):
@@ -794,8 +865,8 @@ class HexColorDataType(StringDataType):
             return True
         else:
             return (
-                "Not a valid hex color of format RRGGBB (like FF0000 for red): %s"
-                % self.value
+                "Not a valid hex color of format RRGGBB "
+                "(like FF0000 for red): %s" % self.value
             )
 
     def formatHint(self):
@@ -805,8 +876,9 @@ class HexColorDataType(StringDataType):
 class ListProxy(DataType):
     initialData = []
 
-    ## Data type of each list member
-    ## Here commented out to enforce explicit setting of data type for each Proxy
+    # Data type of each list member
+    # Here commented out to enforce explicit setting of data type
+    # for each Proxy
     # dataType = str
 
     def __repr__(self):
@@ -912,7 +984,7 @@ class DictBasedObject(object):
         _list = []
 
         for keyword in self._structure.keys():
-            if not ListProxy in inspect.getmro(self._structure[keyword][0]):
+            if ListProxy not in inspect.getmro(self._structure[keyword][0]):
                 _list.append(keyword)
 
         _list.extend(self._deprecatedKeys)
@@ -944,13 +1016,13 @@ class DictBasedObject(object):
                     )
             else:
                 className = match
-                match = "[%s](#user-content-class-%s)" % (className, className.lower())
+                match = "[%s](#user-content-class-%s)" % (className, className.lower(),)
 
             return match
 
         try:
             text = re.sub(r"::.+?::", my_replace, text)
-        except:
+        except Exception:
             pass
 
         return text or ""
@@ -979,7 +1051,7 @@ class DictBasedObject(object):
 
         # Seems unused
 
-        # elif 'typeworld.api.' in ('%s' % class_.dataType):
+        # elif 'typeworld.api.' in ("%s" % class_.dataType):
         #     return self.linkDocuText('::%s::' % class_.dataType.__name__)
 
         # else:
@@ -1054,7 +1126,7 @@ class DictBasedObject(object):
             if hint:
                 attributes += "__Format:__ %s" % hint + "<br />\n"
 
-            if self._structure[key][2] != None:
+            if self._structure[key][2] is not None:
                 attributes += "__Default value:__ %s" % self._structure[key][2] + "\n\n"
 
             # Example Data
@@ -1096,7 +1168,7 @@ class DictBasedObject(object):
                                 "%s = %s" % (args.args[i + startPoint], defaultValue)
                             )
 
-                    methods += "#### %s(%s)\n\n" % (methodName, ", ".join(argList))
+                    methods += "#### %s(%s)\n\n" % (methodName, ", ".join(argList),)
                 else:
                     methods += "#### %s()\n\n" % methodName
                 methods += (
@@ -1160,7 +1232,9 @@ class DictBasedObject(object):
 
         object.__setattr__(self, "_content", {})
         object.__setattr__(
-            self, "_allowedKeys", set(self._structure.keys()) | set(self._possible_keys)
+            self,
+            "_allowedKeys",
+            set(self._structure.keys()) | set(self._possible_keys),
         )
 
         # Fill default values
@@ -1219,24 +1293,6 @@ class DictBasedObject(object):
     def get(self, key):
         return self.__getattr__(key)
 
-    # def validateData(self, key, data):
-    #     information = []
-    #     warnings = []
-    #     critical = []
-
-    #     if data != None and isinstance(data.valid, types.MethodType) and isinstance(data.get, types.MethodType):
-    #         if data.get() != None:
-
-    #             valid = data.valid()
-
-    #             if valid == True:
-    #                 pass
-
-    #             else:
-    #                 critical.append('%s.%s is invalid: %s' % (self, key, valid))
-
-    #     return information, warnings, critical
-
     def validate(self, strict=True):
 
         information = []
@@ -1268,7 +1324,7 @@ class DictBasedObject(object):
 
             self.initAttr(key)
 
-            if self.discardThisKey(key) == False:
+            if self.discardThisKey(key) is False:
 
                 if strict and self._structure[key][1] and self._content[key].isEmpty():
                     critical.append(
@@ -1280,8 +1336,8 @@ class DictBasedObject(object):
                     # recurse
                     if issubclass(self._content[key].__class__, (Proxy)):
 
-                        if self._content[key].isEmpty() == False:
-                            newInformation, newWarnings, newCritical = self._content[
+                        if self._content[key].isEmpty() is False:
+                            (newInformation, newWarnings, newCritical,) = self._content[
                                 key
                             ].value.validate(strict=strict)
                             information.extend(extendWithKey(newInformation, key))
@@ -1315,7 +1371,7 @@ class DictBasedObject(object):
                     # recurse
                     if issubclass(self._content[key].__class__, (ListProxy)):
 
-                        if self._content[key].isEmpty() == False:
+                        if self._content[key].isEmpty() is False:
                             for item in self._content[key]:
                                 if hasattr(item, "validate") and isinstance(
                                     item.validate, types.MethodType
@@ -1377,7 +1433,7 @@ class DictBasedObject(object):
 
         for key in list(self._content.keys()):
 
-            if self.discardThisKey(key) == False:
+            if self.discardThisKey(key) is False:
 
                 # if required or not empty
                 if (
@@ -1392,9 +1448,6 @@ class DictBasedObject(object):
                     if hasattr(getattr(self, key), "dumpDict"):
                         d[key] = getattr(self, key).dumpDict(strict=strict)
 
-                    # elif issubclass(getattr(self, key).__class__, (DictBasedObject)):
-                    #   d[key] = getattr(self, key).dumpDict()
-
                     elif issubclass(getattr(self, key).__class__, (ListProxy)):
                         d[key] = list(getattr(self, key))
 
@@ -1403,11 +1456,6 @@ class DictBasedObject(object):
 
                     else:
                         d[key] = getattr(self, key)
-
-                    # seems to be unnecessary because not-empty is checked 10 lines above
-                    # # delete empty sets that are not required
-                    # if (key in self._structure and self._structure[key][1] == False) and d[key] == None:
-                    #     del d[key]
 
         return d
 
@@ -1423,12 +1471,12 @@ class DictBasedObject(object):
                         try:
                             exec(
                                 "self.%s = typeworld.api.%s()"
-                                % (key, self._structure[key][0].dataType.__name__)
+                                % (key, self._structure[key][0].dataType.__name__,)
                             )
-                        except:
+                        except Exception:
                             exec(
                                 "self.%s = %s()"
-                                % (key, self._structure[key][0].dataType.__name__)
+                                % (key, self._structure[key][0].dataType.__name__,)
                             )
                         exec("self.%s.loadDict(d[key])" % (key))
                     elif issubclass(self._structure[key][0], (ListProxy)):
@@ -1456,32 +1504,40 @@ class DictBasedObject(object):
 class Proxy(DataType):
     pass
 
-    # def _validate(self):
-    #     if hasattr(self, 'value') and hasattr(object.__getattribute__(self, 'value'), 'valid') and isinstance(object.__getattribute__(self, 'value').valid, types.MethodType):
-    #         return object.__getattribute__(self, 'value').valid()
-    #     else:
-    #         return True
-
 
 class ResponseCommandDataType(StringDataType):
     def formatHint(self):
-        return "To ensure the proper function of the entire Type.World protocol, your API endpoint *must* return the proper responses as per [this flow chart](https://type.world/documentation/Type.World%20Request%20Flow%20Chart.pdf). In addition to ensure functionality, this enables the response messages displayed to the user to be translated into all the possible languages on our side."
+        return (
+            "To ensure the proper function of the entire Type.World protocol, "
+            "your API endpoint *must* return the proper responses as per "
+            "[this flow chart](https://type.world/documentation/Type.World%20"
+            "Request%20Flow%20Chart.pdf). "
+            "In addition to ensure functionality, this enables the response "
+            "messages displayed to the user to be translated into all the "
+            "possible languages on our side."
+        )
 
 
 class MultiLanguageText(DictBasedObject):
     """\
-Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
+Multi-language text. Attributes are language keys as per
+[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
-The GUI app will then calculate the language data to be displayed using ::MultiLanguageText.getText():: with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+The GUI app will then calculate the language data to be displayed using
+::MultiLanguageText.getText():: with a prioritized list of languages that
+the user can understand. They may be pulled from the operating system’s
+language preferences.
 
-These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+These classes are already initiated wherever they are used, and can be
+addresses instantly with the language attributes:
 
 ```python
 api.name.en = u'Font Publisher XYZ'
 api.name.de = u'Schriftenhaus XYZ'
 ```
 
-If you are loading language information from an external source, you may use the `.set()` method to enter data:
+If you are loading language information from an external source, you may use
+the `.set()` method to enter data:
 
 ```python
 # Simulating external data source
@@ -1701,7 +1757,8 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         return o
 
     def getTextAndLocale(self, locale=["en"]):
-        """Like getText(), but additionally returns the language of whatever text was found first."""
+        """Like getText(), but additionally returns the language of whatever
+        text was found first."""
 
         if type(locale) in (str, str):
             if self.get(locale):
@@ -1724,7 +1781,10 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         return None, None
 
     def getText(self, locale=["en"]):
-        """Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find."""
+        """Returns the text in the first language found from the specified
+        list of languages. If that language can’t be found, we’ll try English
+        as a standard. If that can’t be found either, return the first language
+        you can find."""
 
         text, locale = self.getTextAndLocale(locale)
 
@@ -1743,14 +1803,21 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                 string = self.get(langId)
                 if len(string) > self._length:
                     critical.append(
-                        'Language entry "%s" is too long. Allowed are %s characters.'
+                        (
+                            "Language entry '%s' is too long. "
+                            "Allowed are %s characters."
+                        )
                         % (langId, self._length)
                     )
 
                 if re.findall(r"(<.+?>)", string):
                     if self._markdownAllowed:
                         critical.append(
-                            "String contains HTML code, which is not allowed. You may use Markdown for text formatting."
+                            (
+                                "String contains HTML code, which is not "
+                                "allowed. You may use Markdown for text "
+                                "formatting."
+                            )
                         )
                     else:
                         critical.append(
@@ -1776,20 +1843,11 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         # Check for existence of languages
         hasAtLeastOneLanguage = False
         for langId in self._possible_keys:
-            if langId in self._content and self.getText([langId]) != None:
+            if langId in self._content and self.getText([langId]) is not None:
                 hasAtLeastOneLanguage = True
                 break
 
         return not hasAtLeastOneLanguage
-
-    # def valid(self):
-    #     # Check for text length
-    #     for langId in self._possible_keys:
-    #         if langId in self._content:
-    #             if len(getattr(self, langId)) > self._length:
-    #                 return '%s.%s is too long. Allowed are %s characters.' % (self, langId, self._length)
-
-    #     return True
 
     def loadDict(self, d):
         for key in d:
@@ -1821,23 +1879,29 @@ class MultiLanguageTextListProxy(ListProxy):
     dataType = MultiLanguageTextProxy
 
 
-####################################################################################################################################
+###############################################################################
 
 
 class MultiLanguageLongText(MultiLanguageText):
     """\
-Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
+Multi-language text. Attributes are language keys as per
+[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
-The GUI app will then calculate the language data to be displayed using ::MultiLanguageText.getText():: with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+The GUI app will then calculate the language data to be displayed using
+::MultiLanguageText.getText():: with a prioritized list of languages that
+the user can understand. They may be pulled from the operating system’s
+language preferences.
 
-These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+These classes are already initiated wherever they are used, and can be
+addresses instantly with the language attributes:
 
 ```python
 api.name.en = u'Font Publisher XYZ'
 api.name.de = u'Schriftenhaus XYZ'
 ```
 
-If you are loading language information from an external source, you may use the `.set()` method to enter data:
+If you are loading language information from an external source, you may use
+the `.set()` method to enter data:
 
 ```python
 # Simulating external data source
@@ -1848,7 +1912,7 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links.
+Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 """
 
     _length = 3000
@@ -1859,12 +1923,12 @@ class MultiLanguageLongTextProxy(MultiLanguageTextProxy):
     dataType = MultiLanguageLongText
 
 
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
-####################################################################################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
 
 #  Top-Level Data Types
 
@@ -1882,9 +1946,8 @@ class LanguageSupportDataType(DictionaryDataType):
             for language in self.value[script]:
                 if not len(language) == 3 or not language.isupper():
                     return (
-                        'Language tag "%s" needs to be a three-letter uppercase tag.'
-                        % (language)
-                    )
+                        "Language tag '%s' needs to be a " "three-letter uppercase tag."
+                    ) % (language)
 
         return True
 
@@ -1896,9 +1959,8 @@ class OpenTypeFeatureDataType(StringDataType):
 
         if not len(self.value) == 4 or not self.value.islower():
             return (
-                'OpenType feature tag "%s" needs to be a four-letter lowercase tag.'
-                % (self.value)
-            )
+                "OpenType feature tag '%s' needs to be a " "four-letter lowercase tag."
+            ) % (self.value)
 
         return True
 
@@ -1916,9 +1978,8 @@ class OpenSourceLicenseIdentifierDataType(StringDataType):
             return True
         else:
             return (
-                'Unknown license identifier: "%s". See https://spdx.org/licenses/'
-                % (self.value)
-            )
+                "Unknown license identifier: '%s'. " "See https://spdx.org/licenses/"
+            ) % (self.value)
 
 
 class SupportedAPICommandsDataType(StringDataType):
@@ -2009,19 +2070,22 @@ class FontExtensionDataType(StringDataType):
             )
 
 
-####################################################################################################################################
+###############################################################################
 
 #  LicenseDefinition
 
 
 class LicenseDefinition(DictBasedObject):
-    #   key:                    [data type, required, default value, description]
+    #   key:  [data type, required, default value, description]
     _structure = {
         "keyword": [
             StringDataType,
             True,
             None,
-            "Machine-readable keyword under which the license will be referenced from the individual fonts.",
+            (
+                "Machine-readable keyword under which the license will be "
+                "referenced from the individual fonts."
+            ),
         ],
         "name": [
             MultiLanguageTextProxy,
@@ -2038,7 +2102,7 @@ class LicenseDefinition(DictBasedObject):
     }
 
     def __repr__(self):
-        return '<LicenseDefinition "%s">' % self.name or self.keyword or "undefined"
+        return "<LicenseDefinition '%s'>" % self.name or self.keyword or "undefined"
 
     def sample(self):
         o = self.__class__()
@@ -2069,53 +2133,54 @@ class LicenseDefinitionListProxy(ListProxy):
     dataType = LicenseDefinitionProxy
 
 
-####################################################################################################################################
+###############################################################################
 
 #  FontPackage
 
 
 class FontPackage(DictBasedObject):
     """\
-    `FontPackages` are groups of fonts that serve a certain purpose to the user.
-    They can be defined at ::InstallableFontsReponse.packages::, ::Foundry.packages::, ::Family.packages::
+    `FontPackages` are groups of fonts that serve a certain purpose
+    to the user.
+    They can be defined at ::InstallableFontsReponse.packages::,
+    ::Foundry.packages::, ::Family.packages::
     and are referenced by their keywords in ::Font.packageKeywords::.
 
-    On a font family level, defined at ::Family.packages::, a typical example for defining a `FontPackage` would be the so called **Office Fonts**.
-    While they are technically identical to other OpenType fonts, they normally have a sightly different set of glyphs and OpenType features.
-    Linking them to a `FontPackage` allows the UI to display them clearly as a separate set of fonts that serve a different purpuse than the 
+    On a font family level, defined at ::Family.packages::, a typical example
+    for defining a `FontPackage` would be the so called **Office Fonts**.
+    While they are technically identical to other OpenType fonts, they normally
+    have a sightly different set of glyphs and OpenType features.
+    Linking them to a `FontPackage` allows the UI to display them clearly as a
+    separate set of fonts that serve a different purpuse than the
     regular fonts.
 
-    On a subscription-wide level, defined at ::InstallableFontsReponse.packages::, a `FontPackage` could represent a curated collection of
-    fonts of various foundries and families, for example **Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
+    On a subscription-wide level, defined at
+    ::InstallableFontsReponse.packages::, a `FontPackage` could represent a
+    curated collection of fonts of various foundries and families, for example
+    **Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
 
     Each font may be part of several `FontPackages`.
 
     For the time being, only family-level FontPackages are supported in the UI.
     """
 
-    #   key:                    [data type, required, default value, description]
+    #   key:  [data type, required, default value, description]
     _structure = {
         "keyword": [
             StringDataType,
             True,
             None,
-            "Keyword of font packages. This keyword must be referenced in ::Font.packageKeywords:: and must be unique to this subscription.",
+            (
+                "Keyword of font packages. This keyword must be referenced in "
+                "::Font.packageKeywords:: and must be unique to this subscription."
+            ),
         ],
         "name": [MultiLanguageTextProxy, True, None, "Name of package"],
         "description": [MultiLanguageTextProxy, False, None, "Description"],
     }
 
     def __repr__(self):
-        return '<FontPackage "%s">' % self.keyword or "undefined"
-
-    # def customValidation(self):
-    #     information, warnings, critical = [], [], []
-
-    #     # Checking for existing license
-    #     if self.keyword and not self.getLicense():
-    #         critical.append('%s has license "%s", but %s has no matching license.' % (self, self.keyword, self.parent.parent.parent))
-
-    #     return information, warnings, critical
+        return "<FontPackage '%s'>" % self.keyword or "undefined"
 
     def sample(self):
         o = self.__class__()
@@ -2123,16 +2188,20 @@ class FontPackage(DictBasedObject):
         o.name.en = "Office Fonts"
         o.name.de = "Office-Schriften"
         o.description.en = (
-            "These fonts are produced specifically to be used in Office applications."
+            "These fonts are produced specifically to be used in "
+            "Office applications."
         )
-        o.description.de = "Diese Schriftdateien sind für die Benutzung in Office-Applikationen vorgesehen."
+        o.description.de = (
+            "Diese Schriftdateien sind für die Benutzung in "
+            "Office-Applikationen vorgesehen."
+        )
         return o
 
     def getFormats(self):
         formats = []
         if hasattr(self, "fonts"):
             for font in self.fonts:
-                if not font.format in formats:
+                if font.format not in formats:
                     formats.append(font.format)
 
         return formats
@@ -2150,31 +2219,49 @@ class FontPackageReferencesListProxy(ListProxy):
     dataType = StringDataType
 
 
-####################################################################################################################################
+###############################################################################
 
 #  LicenseUsage
 
 
 class LicenseUsage(DictBasedObject):
-    #   key:                    [data type, required, default value, description]
+    #   key:  [data type, required, default value, description]
     _structure = {
         "keyword": [
             StringDataType,
             True,
             None,
-            "Keyword reference of font’s license. This license must be specified in ::Foundry.licenses::",
+            (
+                "Keyword reference of font’s license. This license must be "
+                "specified in ::Foundry.licenses::"
+            ),
         ],
         "seatsAllowed": [
             IntegerDataType,
             False,
             0,
-            "In case of desktop font (see ::Font.purpose::), number of installations permitted by the user’s license.",
+            (
+                "In case of desktop font (see ::Font.purpose::), number of "
+                "installations permitted by the user’s license."
+            ),
         ],
         "seatsInstalled": [
             IntegerDataType,
             False,
             0,
-            'In case of desktop font (see ::Font.purpose::), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "%s" and "%s" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "%s" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.'
+            (
+                "In case of desktop font (see ::Font.purpose::), number of "
+                "installations recorded by the API endpoint. This value will "
+                "need to be supplied dynamically by the API endpoint through "
+                "tracking all font installations through the `anonymousAppID` "
+                "parameter of the '%s' and '%s' command. Please note that the "
+                "Type.World client app is currently not designed to reject "
+                "installations of the fonts when the limits are exceeded. "
+                "Instead it is in the responsibility of the API endpoint to "
+                "reject font installations though the '%s' command when the "
+                "limits are exceeded. In that case the user will be presented "
+                "with one or more license upgrade links."
+            )
             % (
                 INSTALLFONTSCOMMAND["keyword"],
                 UNINSTALLFONTSCOMMAND["keyword"],
@@ -2185,19 +2272,36 @@ class LicenseUsage(DictBasedObject):
             MultiLanguageTextProxy,
             False,
             None,
-            'In case of non-desktop font (see ::Font.purpose::), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"',
+            (
+                "In case of non-desktop font (see ::Font.purpose::), custom "
+                "string for web fonts or app fonts reminding the user of the "
+                "license’s limits, e.g. '100.000 page views/month'"
+            ),
         ],
         "upgradeURL": [
             WebURLDataType,
             False,
             None,
-            "URL the user can be sent to to upgrade the license of the font, for instance at the foundry’s online shop. If possible, this link should be user-specific and guide him/her as far into the upgrade process as possible.",
+            (
+                "URL the user can be sent to to upgrade the license of the "
+                "font, for instance at the foundry’s online shop. If "
+                "possible, this link should be user-specific and guide "
+                "him/her as far into the upgrade process as possible."
+            ),
         ],
         "dateAddedForUser": [
             DateDataType,
             False,
             None,
-            "Date that the user has purchased this font or the font has become available to the user otherwise (like a new font within a foundry’s beta font repository). Will be used in the UI to signal which fonts have become newly available in addition to previously available fonts. This is not to be confused with the ::Version.releaseDate::, although they could be identical.",
+            (
+                "Date that the user has purchased this font or the font has "
+                "become available to the user otherwise (like a new font "
+                "within a foundry’s beta font repository). Will be used in "
+                "the UI to signal which fonts have become newly available "
+                "in addition to previously available fonts. This is not to "
+                "be confused with the ::Version.releaseDate::, although they "
+                "could be identical."
+            ),
         ],
     }
 
@@ -2210,7 +2314,7 @@ class LicenseUsage(DictBasedObject):
         return o
 
     def __repr__(self):
-        return '<LicenseUsage "%s">' % self.keyword or "undefined"
+        return "<LicenseUsage '%s'>" % self.keyword or "undefined"
 
     def customValidation(self):
         information, warnings, critical = [], [], []
@@ -2218,7 +2322,7 @@ class LicenseUsage(DictBasedObject):
         # Checking for existing license
         if self.keyword and not self.getLicense():
             critical.append(
-                'Has license "%s", but %s has no matching license.'
+                "Has license '%s', but %s has no matching license."
                 % (self.keyword, self.parent.parent.parent)
             )
 
@@ -2251,7 +2355,7 @@ class LicenseUsageListProxy(ListProxy):
     dataType = LicenseUsageProxy
 
 
-####################################################################################################################################
+#######################################################################################
 
 #  Designer
 
@@ -2263,9 +2367,17 @@ class Designer(DictBasedObject):
             StringDataType,
             True,
             None,
-            "Machine-readable keyword under which the designer will be referenced from the individual fonts or font families",
+            (
+                "Machine-readable keyword under which the designer will be referenced "
+                "from the individual fonts or font families"
+            ),
         ],
-        "name": [MultiLanguageTextProxy, True, None, "Human-readable name of designer"],
+        "name": [
+            MultiLanguageTextProxy,
+            True,
+            None,
+            "Human-readable name of designer",
+        ],
         "websiteURL": [WebURLDataType, False, None, "Designer’s web site"],
         "description": [
             MultiLanguageLongTextProxy,
@@ -2283,7 +2395,7 @@ class Designer(DictBasedObject):
         return o
 
     def __repr__(self):
-        return '<Designer "%s">' % self.name.getText() or self.keyword or "undefined"
+        return "<Designer '%s'>" % self.name.getText() or self.keyword or "undefined"
 
 
 def Designer_Parent(self):
@@ -2310,7 +2422,7 @@ class DesignersReferencesListProxy(ListProxy):
     dataType = StringDataType
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Font Family Version
 
@@ -2322,7 +2434,13 @@ class Version(DictBasedObject):
             VersionDataType,
             True,
             None,
-            "Font version number. This can be a simple float number (1.002) or a semver version string (see https://semver.org). For comparison, single-dot version numbers (or even integers) are appended with another .0 (1.0 to 1.0.0), then compared using the Python `semver` module.",
+            (
+                "Font version number. This can be a simple float number (1.002) or a "
+                "semver version string (see https://semver.org). For comparison, "
+                "single-dot version numbers (or even integers) are appended with "
+                "another .0 (1.0 to 1.0.0), then compared using the Python `semver` "
+                "module."
+            ),
         ],
         "description": [
             MultiLanguageLongTextProxy,
@@ -2349,7 +2467,8 @@ class Version(DictBasedObject):
 
     def isFontSpecific(self):
         """\
-        Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
+        Returns True if this version is defined at the font level.
+        Returns False if this version is defined at the family level.
         """
         return issubclass(self.parent.__class__, Font)
 
@@ -2374,7 +2493,7 @@ class VersionListProxy(ListProxy):
     dataType = VersionProxy
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Fonts
 
@@ -2386,13 +2505,24 @@ class Font(DictBasedObject):
             MultiLanguageTextProxy,
             True,
             None,
-            "Human-readable name of font. This may include any additions that you find useful to communicate to your users.",
+            (
+                "Human-readable name of font. This may include any additions that you "
+                "find useful to communicate to your users."
+            ),
         ],
         "uniqueID": [
             StringDataType,
             True,
             None,
-            "A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \\ : * | ^",
+            (
+                "A machine-readable string that uniquely identifies this font within "
+                "the publisher. It will be used to ask for un/installation of the "
+                "font from the server in the `installFonts` and `uninstallFonts` "
+                "commands. Also, it will be used for the file name of the font on "
+                "disk, together with the version string and the file extension. "
+                "Together, they must not be longer than 220 characters and must "
+                "not contain the following characters: / ? < > \\ : * | ^"
+            ),
         ],
         "postScriptName": [
             StringDataType,
@@ -2410,13 +2540,25 @@ class Font(DictBasedObject):
             VersionListProxy,
             False,
             None,
-            "List of ::Version:: objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under ::Family.versions::, which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.",
+            (
+                "List of ::Version:: objects. These are font-specific versions; they "
+                "may exist only for this font. You may define additional versions at "
+                "the family object under ::Family.versions::, which are then expected "
+                "to be available for the entire family. However, either the fonts or "
+                "the font family *must* carry version information and the validator "
+                "will complain when they don’t.\n\nPlease also read the section on "
+                "[versioning](#versioning) above."
+            ),
         ],
         "designerKeywords": [
             DesignersReferencesListProxy,
             False,
             None,
-            "List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. This attribute overrides the designer definitions at the family level at ::Family.designers::.",
+            (
+                "List of keywords referencing designers. These are defined at "
+                "::InstallableFontsResponse.designers::. This attribute overrides the "
+                "designer definitions at the family level at ::Family.designers::."
+            ),
         ],
         "free": [BooleanDataType, False, None, "Font is freeware. For UI signaling"],
         "status": [
@@ -2435,57 +2577,114 @@ class Font(DictBasedObject):
             FontPurposeDataType,
             True,
             None,
-            "Technical purpose of font. This influences how the app handles the font. For instance, it will only install desktop fonts on the system, and make other font types available though folders. Possible: %s"
-            % (list(FONTPURPOSES.keys())),
+            (
+                "Technical purpose of font. This influences how the app handles the "
+                "font. For instance, it will only install desktop fonts on the system, "
+                "and make other font types available though folders. Possible: %s"
+                % (list(FONTPURPOSES.keys()))
+            ),
         ],
         "format": [
             FontExtensionDataType,
             False,
             None,
-            "Font file format. Required value in case of `desktop` font (see ::Font.purpose::. Possible: %s"
-            % FILEEXTENSIONS,
+            (
+                "Font file format. Required value in case of `desktop` font "
+                "(see ::Font.purpose::. Possible: %s" % FILEEXTENSIONS
+            ),
         ],
         "protected": [
             BooleanDataType,
             False,
             False,
-            "Indication that the server requires a valid subscriptionID to be used for authentication. The server *may* limit the downloads of fonts. This may also be used for fonts that are free to download, but their installations want to be tracked/limited anyway. Most importantly, this indicates that the uninstall command needs to be called on the API endpoint when the font gets uninstalled.",
+            (
+                "Indication that the server requires a valid subscriptionID to be used "
+                "for authentication. The server *may* limit the downloads of fonts. "
+                "This may also be used for fonts that are free to download, but their "
+                "installations want to be tracked/limited anyway. Most importantly, "
+                "this indicates that the uninstall command needs to be called on the "
+                "API endpoint when the font gets uninstalled."
+            ),
         ],
         "dateFirstPublished": [
             DateDataType,
             False,
             None,
-            "Human readable date of the initial release of the font. May also be defined family-wide at ::Family.dateFirstPublished::.",
+            (
+                "Human readable date of the initial release of the font. May also be "
+                "defined family-wide at ::Family.dateFirstPublished::."
+            ),
         ],
         "usedLicenses": [
             LicenseUsageListProxy,
             True,
             None,
-            "List of ::LicenseUsage:: objects. These licenses represent the different ways in which a user has access to this font. At least one used license must be defined here, because a user needs to know under which legal circumstances he/she is using the font. Several used licenses may be defined for a single font in case a customer owns several licenses that cover the same font. For instance, a customer could have purchased a font license standalone, but also as part of the foundry’s entire catalogue. It’s important to keep these separate in order to provide the user with separate upgrade links where he/she needs to choose which of several owned licenses needs to be upgraded. Therefore, in case of a commercial retail foundry, used licenses correlate to a user’s purchase history.",
+            (
+                "List of ::LicenseUsage:: objects. These licenses represent the "
+                "different ways in which a user has access to this font. At least one "
+                "used license must be defined here, because a user needs to know under "
+                "which legal circumstances he/she is using the font. Several used "
+                "licenses may be defined for a single font in case a customer owns "
+                "several licenses that cover the same font. For instance, a customer "
+                "could have purchased a font license standalone, but also as part of "
+                "the foundry’s entire catalogue. It’s important to keep these separate "
+                "in order to provide the user with separate upgrade links where he/she "
+                "needs to choose which of several owned licenses needs to be upgraded. "
+                "Therefore, in case of a commercial retail foundry, used licenses "
+                "correlate to a user’s purchase history."
+            ),
         ],
         "pdfURL": [
             WebResourceURLDataType,
             False,
             None,
-            "URL of PDF file with type specimen and/or instructions for this particular font. (See also: ::Family.pdf::",
+            (
+                "URL of PDF file with type specimen and/or instructions for this "
+                "particular font. (See also: ::Family.pdf::"
+            ),
         ],
         "expiry": [
             TimestampDataType,
             False,
             None,
-            "Unix timestamp of font’s expiry. The font will be deleted on that moment. This could be set either upon initial installation of a trial font, or also before initial installation as a general expiry moment.",
+            (
+                "Unix timestamp of font’s expiry. The font will be deleted on that "
+                "moment. This could be set either upon initial installation of a trial "
+                "font, or also before initial installation as a general expiry moment."
+            ),
         ],
         "expiryDuration": [
             IntegerDataType,
             False,
             None,
-            "Minutes for which the user will be able to use the font after initial installation. This attribute is used only as a visual hint in the UI and should be set for trial fonts that expire a certain period after initial installation, such as 60 minutes. If the font is a trial font limited to a certain usage period after initial installation, it must also be marked as ::Font.protected::, with no ::Font.expiry:: timestamp set at first (because the expiry depends on the moment of initial installation). On initial font installation by the user, the publisher’s server needs to record that moment’s time, and from there onwards serve the subscription with ::Font.expiry:: attribute set in the future. Because the font is marked as ::Font.protected::, the app will update the subscription directly after font installation, upon when it will learn of the newly added ::Font.expiry:: attribute. Please note that you *have* to set ::Font.expiry:: after initial installation yourself. The Type.World app will not follow up on its own on installed fonts just with the ::Font.expiryDuration:: attribute, which is used only for display.",
+            (
+                "Minutes for which the user will be able to use the font after initial "
+                "installation. This attribute is used only as a visual hint in the UI "
+                "and should be set for trial fonts that expire a certain period after "
+                "initial installation, such as 60 minutes. If the font is a trial font "
+                "limited to a certain usage period after initial installation, it must "
+                "also be marked as ::Font.protected::, with no ::Font.expiry:: "
+                "timestamp set at first (because the expiry depends on the moment of "
+                "initial installation). On initial font installation by the user, the "
+                "publisher’s server needs to record that moment’s time, and from there "
+                "onwards serve the subscription with ::Font.expiry:: attribute set in "
+                "the future. Because the font is marked as ::Font.protected::, the app "
+                "will update the subscription directly after font installation, upon "
+                "when it will learn of the newly added ::Font.expiry:: attribute. "
+                "Please note that you *have* to set ::Font.expiry:: after initial "
+                "installation yourself. The Type.World app will not follow up on its "
+                "own on installed fonts just with the ::Font.expiryDuration:: "
+                "attribute, which is used only for display."
+            ),
         ],
         "features": [
             OpenTypeFeatureListProxy,
             False,
             None,
-            "List of supported OpenType features as per https://docs.microsoft.com/en-us/typography/opentype/spec/featuretags",
+            (
+                "List of supported OpenType features as per "
+                "https://docs.microsoft.com/en-us/typography/opentype/spec/featuretags"
+            ),
         ],
         "languageSupport": [
             LanguageSupportDataType,
@@ -2496,7 +2695,7 @@ class Font(DictBasedObject):
     }
 
     def __repr__(self):
-        return '<Font "%s">' % (
+        return "<Font '%s'>" % (
             self.postScriptName or self.name.getText() or "undefined"
         )
 
@@ -2513,7 +2712,8 @@ class Font(DictBasedObject):
         """\
         Returns the recommended font file name to be used to store the font on disk.
 
-        It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 220 characters.
+        It is composed of the font’s uniqueID, its version string and the file
+        extension. Together, they must not exceed 220 characters.
         """
 
         if not type(version) in (str, int, float):
@@ -2539,15 +2739,17 @@ class Font(DictBasedObject):
         # Checking version information
         if not self.hasVersionInformation():
             critical.append(
-                "Has no version information, and neither has its family %s. Either one needs to carry version information."
-                % (self.parent)
+                (
+                    "Has no version information, and neither has its family %s. "
+                    "Either one needs to carry version information." % (self.parent)
+                )
             )
 
         # Checking for designers
         for designerKeyword in self.designerKeywords:
             if not self.parent.parent.parent.getDesignerByKeyword(designerKeyword):
                 critical.append(
-                    'Has designer "%s", but %s.designers has no matching designer.'
+                    "Has designer '%s', but %s.designers has no matching designer."
                     % (designerKeyword, self.parent.parent.parent)
                 )
 
@@ -2556,8 +2758,10 @@ class Font(DictBasedObject):
         for char in forbidden:
             if self.uniqueID.count(char) > 0:
                 critical.append(
-                    '.uniqueID must not contain the character "%s" because it will be used for the font’s file name on disk.'
-                    % char
+                    (
+                        ".uniqueID must not contain the character '%s' because it will "
+                        "be used for the font’s file name on disk." % char
+                    )
                 )
 
         for version in self.getVersions():
@@ -2574,13 +2778,18 @@ class Font(DictBasedObject):
         """\
         Returns list of ::Version:: objects.
 
-        This is the final list based on the version information in this font object as well as in its parent ::Family:: object. Please read the section about [versioning](#versioning) above.
+        This is the final list based on the version information in this font object as
+        well as in its parent ::Family:: object. Please read the section about
+        [versioning](#versioning) above.
         """
 
         if not self.hasVersionInformation():
             raise ValueError(
-                "%s has no version information, and neither has its family %s. Either one needs to carry version information."
-                % (self, self.parent)
+                (
+                    "%s has no version information, and neither has its family %s. "
+                    "Either one needs to carry version information."
+                    % (self, self.parent)
+                )
             )
 
         def compare(a, b):
@@ -2592,7 +2801,7 @@ class Font(DictBasedObject):
             versions.append(version)
             haveVersionNumbers.append(makeSemVer(version.number))
         for version in self.parent.versions:
-            if not version.number in haveVersionNumbers:
+            if version.number not in haveVersionNumbers:
                 versions.append(version)
                 haveVersionNumbers.append(makeSemVer(version.number))
 
@@ -2602,7 +2811,10 @@ class Font(DictBasedObject):
 
     def getDesigners(self):
         """\
-        Returns a list of ::Designer:: objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
+        Returns a list of ::Designer:: objects that this font references.
+        These are the combination of family-level designers and font-level designers.
+        The same logic as for versioning applies.
+        Please read the section about [versioning](#versioning) above.
         """
         if not hasattr(self, "_designers"):
             self._designers = []
@@ -2670,7 +2882,10 @@ class Family(DictBasedObject):
             MultiLanguageTextProxy,
             True,
             None,
-            "Human-readable name of font family. This may include any additions that you find useful to communicate to your users.",
+            (
+                "Human-readable name of font family. This may include any additions "
+                "that you find useful to communicate to your users."
+            ),
         ],
         "description": [
             MultiLanguageLongTextProxy,
@@ -2682,19 +2897,34 @@ class Family(DictBasedObject):
             BillboardListProxy,
             False,
             None,
-            "List of URLs pointing at images to show for this typeface. These must be uncompressed SVG images. It is suggested to use square dimensions, but it’s not compulsory. It’s unclear at this point how pixel data in the SVG will be displayed in the app on the two different operating systems Mac and Windows.",
+            (
+                "List of URLs pointing at images to show for this typeface. These must "
+                "be uncompressed SVG images. It is suggested to use square dimensions, "
+                "but it’s not compulsory. It’s unclear at this point how pixel data in "
+                "the SVG will be displayed in the app on the two different operating "
+                "systems Mac and Windows."
+            ),
         ],
         "designerKeywords": [
             DesignersReferencesListProxy,
             False,
             None,
-            "List of keywords referencing designers. These are defined at ::InstallableFontsResponse.designers::. In case designers differ between fonts within the same family, they can also be defined at the font level at ::Font.designers::. The font-level references take precedence over the family-level references.",
+            (
+                "List of keywords referencing designers. These are defined at "
+                "::InstallableFontsResponse.designers::. In case designers differ "
+                "between fonts within the same family, they can also be defined at the "
+                "font level at ::Font.designers::. The font-level references take "
+                "precedence over the family-level references."
+            ),
         ],
         "packages": [
             FontPackageListProxy,
             False,
             None,
-            "Family-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::",
+            (
+                "Family-wide list of ::FontPackage:: objects. These will be "
+                "referenced by their keyword in ::Font.packageKeywords::"
+            ),
         ],
         "sourceURL": [
             WebURLDataType,
@@ -2706,37 +2936,61 @@ class Family(DictBasedObject):
             WebURLDataType,
             False,
             None,
-            "URL pointing to an issue tracker system, where users can debate about a typeface’s design or technicalities",
+            (
+                "URL pointing to an issue tracker system, where users can debate "
+                "about a typeface’s design or technicalities"
+            ),
         ],
         "galleryURL": [
             WebURLDataType,
             False,
             None,
-            "URL pointing to a web site that shows real world examples of the fonts in use or other types of galleries.",
+            (
+                "URL pointing to a web site that shows real world examples of the "
+                "fonts in use or other types of galleries."
+            ),
         ],
         "versions": [
             VersionListProxy,
             False,
             None,
-            "List of ::Version:: objects. Versions specified here are expected to be available for all fonts in the family, which is probably most common and efficient. You may define additional font-specific versions at the ::Font:: object. You may also rely entirely on font-specific versions and leave this field here empty. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.\n\nPlease also read the section on [versioning](#versioning) above.",
+            (
+                "List of ::Version:: objects. Versions specified here are expected to "
+                "be available for all fonts in the family, which is probably most "
+                "common and efficient. You may define additional font-specific "
+                "versions at the ::Font:: object. You may also rely entirely on "
+                "font-specific versions and leave this field here empty. However, "
+                "either the fonts or the font family *must* carry version information "
+                "and the validator will complain when they don’t.\n\nPlease also read "
+                "the section on [versioning](#versioning) above."
+            ),
         ],
         "fonts": [
             FontListProxy,
             True,
             None,
-            "List of ::Font:: objects. The order will be displayed unchanged in the UI, so it’s in your responsibility to order them correctly.",
+            (
+                "List of ::Font:: objects. The order will be displayed unchanged in "
+                "the UI, so it’s in your responsibility to order them correctly."
+            ),
         ],
         "dateFirstPublished": [
             DateDataType,
             False,
             None,
-            "Human readable date of the initial release of the family. May be overriden on font level at ::Font.dateFirstPublished::.",
+            (
+                "Human readable date of the initial release of the family. May be "
+                "overriden on font level at ::Font.dateFirstPublished::."
+            ),
         ],
         "pdfURL": [
             WebResourceURLDataType,
             False,
             None,
-            "URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at ::Font.pdf::.",
+            (
+                "URL of PDF file with type specimen and/or instructions for entire "
+                "family. May be overriden on font level at ::Font.pdf::."
+            ),
         ],
     }
 
@@ -2749,7 +3003,7 @@ class Family(DictBasedObject):
         return o
 
     def __repr__(self):
-        return '<Family "%s">' % self.name.getText() or "undefined"
+        return "<Family '%s'>" % self.name.getText() or "undefined"
 
     def customValidation(self):
         information, warnings, critical = [], [], []
@@ -2775,7 +3029,10 @@ class Family(DictBasedObject):
 
     def getAllDesigners(self):
         """\
-        Returns a list of ::Designer:: objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
+        Returns a list of ::Designer:: objects that represent all of the designers
+        referenced both at the family level as well as with all the family’s fonts,
+        in case the fonts carry specific designers. This could be used to give a
+        one-glance overview of all designers involved.
         """
         if not hasattr(self, "_allDesigners"):
             self._allDesigners = []
@@ -2787,7 +3044,7 @@ class Family(DictBasedObject):
                 self._allDesignersKeywords.append(designerKeyword)
             for font in self.fonts:
                 for designerKeyword in font.designerKeywords:
-                    if not designerKeyword in self._allDesignersKeywords:
+                    if designerKeyword not in self._allDesignersKeywords:
                         self._allDesigners.append(
                             self.parent.parent.getDesignerByKeyword(designerKeyword)
                         )
@@ -2803,7 +3060,7 @@ class Family(DictBasedObject):
         # Collect list of unique package keyword references in family's fonts
         for font in self.fonts:
             for keyword in font.getPackageKeywords():
-                if not keyword in packageKeywords:
+                if keyword not in packageKeywords:
                     packageKeywords.append(keyword)
 
         # Prepend a DEFAULT package
@@ -2852,7 +3109,7 @@ class FamiliesListProxy(ListProxy):
     dataType = FamilyProxy
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Web Links
 
@@ -2861,7 +3118,7 @@ class WebURLListProxy(ListProxy):
     dataType = WebURLDataType
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Font Foundry
 
@@ -2928,7 +3185,11 @@ class Foundry(DictBasedObject):
             StylingDataType,
             False,
             {"light": {}, "dark": {}},
-            "Dictionary of styling values, for light and dark theme. See example below. If you want to style your foundry here, please start with the light theme. You may omit the dark theme.",
+            (
+                "Dictionary of styling values, for light and dark theme. See example "
+                "below. If you want to style your foundry here, please start with the "
+                "light theme. You may omit the dark theme."
+            ),
         ],
         "email": [
             EmailDataType,
@@ -2959,7 +3220,10 @@ class Foundry(DictBasedObject):
             WebURLDataType,
             False,
             None,
-            "Support website for this foundry, such as a chat room, forum, online service desk.",
+            (
+                "Support website for this foundry, such as a chat room, forum, "
+                "online service desk."
+            ),
         ],
         "supportTelephone": [
             TelephoneDataType,
@@ -2972,14 +3236,23 @@ class Foundry(DictBasedObject):
             LicenseDefinitionListProxy,
             True,
             None,
-            "List of ::LicenseDefinition:: objects under which the fonts in this response are issued. For space efficiency, these licenses are defined at the foundry object and will be referenced in each font by their keyword. Keywords need to be unique for this foundry and may repeat across foundries.",
+            (
+                "List of ::LicenseDefinition:: objects under which the fonts in this "
+                "response are issued. For space efficiency, these licenses are defined "
+                "at the foundry object and will be referenced in each font by their "
+                "keyword. Keywords need to be unique for this foundry and may repeat "
+                "across foundries."
+            ),
         ],
         "families": [FamiliesListProxy, True, None, "List of ::Family:: objects."],
         "packages": [
             FontPackageListProxy,
             False,
             None,
-            "Foundry-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::",
+            (
+                "Foundry-wide list of ::FontPackage:: objects. These will be "
+                "referenced by their keyword in ::Font.packageKeywords::"
+            ),
         ],
     }
 
@@ -3010,7 +3283,7 @@ class Foundry(DictBasedObject):
         return o
 
     def __repr__(self):
-        return '<Foundry "%s">' % self.name.getText() or "undefined"
+        return "<Foundry '%s'>" % self.name.getText() or "undefined"
 
     def getLicenseByKeyword(self, keyword):
         if not hasattr(self, "_licensesDict"):
@@ -3040,16 +3313,16 @@ class Foundry(DictBasedObject):
                         c = HexColorDataType()
                         c.value = self.styling[theme][colorKey]
                         valid = c.valid()
-                        if valid != True:
+                        if valid is not True:
                             critical.append(
                                 '.styling color attribute "%s": %s' % (colorKey, valid)
                             )
 
                 if "logoURL" in self.styling[theme]:
-                    l = WebURLDataType()
-                    l.value = self.styling[theme]["logoURL"]
-                    valid = l.valid()
-                    if valid != True:
+                    logo = WebURLDataType()
+                    logo.value = self.styling[theme]["logoURL"]
+                    valid = logo.valid()
+                    if valid is not True:
                         critical.append('.styling "logoURL" attribute: %s' % (valid))
 
         return information, warnings, critical
@@ -3075,7 +3348,7 @@ class FoundryListProxy(ListProxy):
     dataType = FoundryProxy
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Base Response
 
@@ -3099,7 +3372,7 @@ class BaseResponse(DictBasedObject):
         return information, warnings, critical
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Available Fonts
 
@@ -3120,7 +3393,9 @@ class InstallableFontsResponseType(ResponseCommandDataType):
 
 class InstallableFontsResponse(BaseResponse):
     """\
-    This is the response expected to be returned when the API is invoked using the `?commands=installableFonts` parameter, and contains metadata about which fonts are available to install for a user.
+    This is the response expected to be returned when the API is invoked using the
+    `?commands=installableFonts` parameter, and contains metadata about which fonts
+    are available to install for a user.
     """
 
     _command = INSTALLABLEFONTSCOMMAND
@@ -3139,32 +3414,54 @@ class InstallableFontsResponse(BaseResponse):
             MultiLanguageTextProxy,
             False,
             None,
-            'Description of error in case of ::InstallableFontsResponse.response:: being "custom".',
+            (
+                "Description of error in case of ::InstallableFontsResponse.response:: "
+                "being 'custom'."
+            ),
         ],
         # Response-specific
         "designers": [
             DesignersListProxy,
             False,
             None,
-            "List of ::Designer:: objects, referenced in the fonts or font families by the keyword. These are defined at the root of the response for space efficiency, as one designer can be involved in the design of several typefaces across several foundries.",
+            (
+                "List of ::Designer:: objects, referenced in the fonts or font "
+                "families by the keyword. These are defined at the root of the "
+                "response for space efficiency, as one designer can be involved in "
+                "the design of several typefaces across several foundries."
+            ),
         ],
         "foundries": [
             FoundryListProxy,
             True,
             None,
-            "List of ::Foundry:: objects; foundries that this distributor supports. In most cases this will be only one, as many foundries are their own distributors.",
+            (
+                "List of ::Foundry:: objects; foundries that this distributor "
+                "supports. In most cases this will be only one, as many foundries "
+                "are their own distributors."
+            ),
         ],
         "packages": [
             FontPackageListProxy,
             False,
             None,
-            "Publisher-wide list of ::FontPackage:: objects. These will be referenced by their keyword in ::Font.packageKeywords::",
+            (
+                "Publisher-wide list of ::FontPackage:: objects. These will be "
+                "referenced by their keyword in ::Font.packageKeywords::"
+            ),
         ],
         "name": [
             MultiLanguageTextProxy,
             False,
             None,
-            'A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.',
+            (
+                "A name of this response and its contents. This is needed to manage "
+                "subscriptions in the UI. For instance 'Free Fonts' for all free and "
+                "non-restricted fonts, or 'Commercial Fonts' for all those fonts that "
+                "the use has commercially licensed, so their access is restricted. "
+                "In case of a free font website that offers individual subscriptions "
+                "for each typeface, this decription could be the name of the typeface."
+            ),
         ],
         "userName": [
             MultiLanguageTextProxy,
@@ -3182,7 +3479,12 @@ class InstallableFontsResponse(BaseResponse):
             BooleanDataType,
             True,
             False,
-            "Indicates that the publisher prefers to have the user reveal his/her identity to the publisher when installing fonts. In the app, the user will be asked via a dialog to turn the setting on, but is not required to do so.",
+            (
+                "Indicates that the publisher prefers to have the user reveal his/her "
+                "identity to the publisher when installing fonts. In the app, the user "
+                "will be asked via a dialog to turn the setting on, but is not "
+                "required to do so."
+            ),
         ],
     }
 
@@ -3224,7 +3526,13 @@ class InstallableFontsResponse(BaseResponse):
 
         if self.response == "success" and not self.name.getText():
             warnings.append(
-                'The response has no .name value. It is not required, but highly recommended, to describe the purpose of this subscription to the user (such as "Commercial Fonts", "Free Fonts", etc. This is especially useful if you offer several different subscriptions to the same user.'
+                (
+                    "The response has no .name value. It is not required, but highly "
+                    "recommended, to describe the purpose of this subscription to the "
+                    "user (such as 'Commercial Fonts', 'Free Fonts', etc. This is "
+                    "especially useful if you offer several different subscriptions "
+                    "to the same user."
+                )
             )
 
         # Check all uniqueIDs for duplicity
@@ -3275,7 +3583,7 @@ class InstallableFontsResponse(BaseResponse):
         return information, warnings, critical
 
 
-####################################################################################################################################
+########################################################################################
 
 #  InstallFonts
 
@@ -3296,7 +3604,8 @@ class InstallFontAssetResponseType(ResponseCommandDataType):
 
 class InstallFontAsset(BaseResponse):
     """\
-    This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter.
+    This is the response expected to be returned when the API is invoked using the
+    `?commands=installFonts` parameter.
     """
 
     #   key:                    [data type, required, default value, description]
@@ -3319,7 +3628,10 @@ class InstallFontAsset(BaseResponse):
             StringDataType,
             True,
             None,
-            "A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.",
+            (
+                "A machine-readable string that uniquely identifies this font within "
+                "the subscription. Must match the requested fonts."
+            ),
         ],
         "mimeType": [
             FontMimeType,
@@ -3332,20 +3644,34 @@ class InstallFontAsset(BaseResponse):
             WebURLDataType,
             False,
             None,
-            "HTTP link of font file resource. ::InstallFontAsset.data:: and ::InstallFontAsset.dataURL:: are mutually exclusive; only one can be specified. The HTTP resource must be served under the correct MIME type specified in ::InstallFontAsset.mimeType:: and is expected to be in raw binary encoding; ::InstallFontAsset.encoding:: is not regarded.",
+            (
+                "HTTP link of font file resource. ::InstallFontAsset.data:: and "
+                "::InstallFontAsset.dataURL:: are mutually exclusive; only one can be "
+                "specified. The HTTP resource must be served under the correct "
+                "MIME type specified in ::InstallFontAsset.mimeType:: and is expected "
+                "to be in raw binary encoding; ::InstallFontAsset.encoding:: "
+                "is not regarded."
+            ),
         ],
         "data": [
             FontDataType,
             False,
             None,
-            "Binary data as a string encoded as one of the following supported encodings: ::InstallFontResponse.encoding::. ::InstallFontAsset.data:: and ::InstallFontAsset.dataURL:: are mutually exclusive; only one can be specified.",
+            (
+                "Binary data as a string encoded as one of the following supported "
+                "encodings: ::InstallFontResponse.encoding::. "
+                "::InstallFontAsset.data:: and ::InstallFontAsset.dataURL:: are "
+                "mutually exclusive; only one can be specified."
+            ),
         ],
         "encoding": [
             FontEncodingDataType,
             False,
             None,
-            "Encoding type for font data in ::InstallFontResponse.data::. Currently supported: %s"
-            % (FONTENCODINGS),
+            (
+                "Encoding type for font data in ::InstallFontResponse.data::. "
+                "Currently supported: %s" % (FONTENCODINGS)
+            ),
         ],
     }
 
@@ -3419,7 +3745,9 @@ class InstallFontAssetListProxy(ListProxy):
 
 class InstallFontsResponse(BaseResponse):
     """\
-    This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter, and contains the requested binary fonts attached as ::InstallFontAsset:: obects.
+    This is the response expected to be returned when the API is invoked using the
+    `?commands=installFonts` parameter, and contains the requested binary fonts
+    attached as ::InstallFontAsset:: obects.
     """
 
     _command = INSTALLFONTSCOMMAND
@@ -3455,7 +3783,7 @@ class InstallFontsResponse(BaseResponse):
         return o
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Uninstall Fonts
 
@@ -3476,7 +3804,8 @@ class UninstallFontAssedResponseType(ResponseCommandDataType):
 
 class UninstallFontAsset(BaseResponse):
     """\
-    This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter.
+    This is the response expected to be returned when the API is invoked using the
+    `?commands=uninstallFonts` parameter.
     """
 
     #   key:                    [data type, required, default value, description]
@@ -3500,7 +3829,10 @@ class UninstallFontAsset(BaseResponse):
             StringDataType,
             True,
             None,
-            "A machine-readable string that uniquely identifies this font within the subscription. Must match the requested fonts.",
+            (
+                "A machine-readable string that uniquely identifies this font within "
+                "the subscription. Must match the requested fonts."
+            ),
         ],
         # Response-specific
     }
@@ -3536,8 +3868,12 @@ class UninstallFontAssetListProxy(ListProxy):
 
 class UninstallFontsResponse(BaseResponse):
     """\
-    This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter, and contains empty responses as ::UninstallFontAsset:: objects. 
-    While empty of data, these asset objects are still necessary because each font uninstallation request may return a different response, to which the GUI app needs to respond to accordingly.
+    This is the response expected to be returned when the API is invoked using the
+    `?commands=uninstallFonts` parameter, and contains empty responses as
+    ::UninstallFontAsset:: objects.
+    While empty of data, these asset objects are still necessary because each font
+    uninstallation request may return a different response, to which the GUI app needs
+    to respond to accordingly.
     """
 
     _command = UNINSTALLFONTSCOMMAND
@@ -3573,14 +3909,17 @@ class UninstallFontsResponse(BaseResponse):
         return o
 
 
-####################################################################################################################################
+########################################################################################
 
 
 class EndpointResponse(BaseResponse):
     """\
-This is the response expected to be returned when the API is invoked using the `?commands=endpoint` parameter.
+This is the response expected to be returned when the API is invoked using the
+`?commands=endpoint` parameter.
 
-This response contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+This response contains some mandatory information about the API endpoint such as its
+name and admin email, the copyright license under which the API endpoint issues its
+data, and whether or not this endpoint can be publicized about.
     """
 
     _command = ENDPOINTCOMMAND
@@ -3591,19 +3930,34 @@ This response contains some mandatory information about the API endpoint such as
             WebURLDataType,
             True,
             None,
-            "Official API endpoint URL, bare of ID keys and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.",
+            (
+                "Official API endpoint URL, bare of ID keys and other parameters. "
+                "Used for grouping of subscriptions. It is expected that this URL will "
+                "not change. When it does, it will be treated as a different publisher."
+            ),
         ],
         "adminEmail": [
             EmailDataType,
             True,
             None,
-            "API endpoint Administrator. This email needs to be reachable for various information around the Type.World protocol as well as technical problems.",
+            (
+                "API endpoint Administrator. This email needs to be reachable for "
+                "various information around the Type.World protocol as well as "
+                "technical problems."
+            ),
         ],
         "licenseIdentifier": [
             OpenSourceLicenseIdentifierDataType,
             True,
             "CC-BY-NC-ND-4.0",
-            "Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.",
+            (
+                "Identifier of license under which the API endpoint publishes its "
+                "data, as per [https://spdx.org/licenses/](). This license will not "
+                "be presented to the user. The software client needs to be aware of "
+                "the license and proceed only if allowed, otherwise decline the usage "
+                "of this API endpoint. Licenses of the individual responses can be "
+                "fine-tuned in the respective responses."
+            ),
         ],
         "supportedCommands": [
             SupportedAPICommandsListProxy,
@@ -3622,7 +3976,10 @@ This response contains some mandatory information about the API endpoint such as
             BooleanDataType,
             True,
             False,
-            "API endpoint is meant to be publicly visible and its existence may be publicized within the project",
+            (
+                "API endpoint is meant to be publicly visible and its existence may "
+                "be publicized within the project"
+            ),
         ],
         "logoURL": [
             WebResourceURLDataType,
@@ -3634,7 +3991,10 @@ This response contains some mandatory information about the API endpoint such as
             HexColorDataType,
             False,
             None,
-            "Publisher’s preferred background color. This is meant to go as a background color to the logo at ::APIRoot.logoURL::",
+            (
+                "Publisher’s preferred background color. This is meant to go as a "
+                "background color to the logo at ::APIRoot.logoURL::"
+            ),
         ],
         "websiteURL": [
             WebURLDataType,
@@ -3646,19 +4006,43 @@ This response contains some mandatory information about the API endpoint such as
             WebURLDataType,
             True,
             "https://type.world/legal/default/PrivacyPolicy.html",
-            "URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.",
+            (
+                "URL of human-readable Privacy Policy of API endpoint. This will be "
+                "displayed to the user for consent when adding a subscription. "
+                "The default URL points to a document edited by Type.World that you "
+                "can use (at your own risk) instead of having to write your own.\n\n"
+                "The link will open with a `locales` parameter containing a "
+                "comma-separated list of the user’s preferred UI languages and a "
+                "`canonicalURL` parameter containing the subscription’s canonical URL "
+                "and a `subscriptionID` parameter containing the anonymous "
+                "subscription ID."
+            ),
         ],
         "termsOfServiceURL": [
             WebURLDataType,
             True,
             "https://type.world/legal/default/TermsOfService.html",
-            "URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.\n\nThe link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.",
+            (
+                "URL of human-readable Terms of Service Agreement of API endpoint. "
+                "This will be displayed to the user for consent when adding a "
+                "subscription. The default URL points to a document edited by "
+                "Type.World that you can use (at your own risk) instead of having to "
+                "write your own.\n\nThe link will open with a `locales` parameter "
+                "containing a comma-separated list of the user’s preferred UI "
+                "languages and a `canonicalURL` parameter containing the "
+                "subscription’s canonical URL and a `subscriptionID` parameter "
+                "containing the anonymous subscription ID."
+            ),
         ],
         "loginURL": [
             WebURLDataType,
             False,
             None,
-            "URL for user to log in to publisher’s account in case a validation is required. This normally work in combination with the `loginRequired` response.",
+            (
+                "URL for user to log in to publisher’s account in case a validation "
+                "is required. This normally work in combination with the "
+                "`loginRequired` response."
+            ),
         ],
     }
 
@@ -3684,13 +4068,16 @@ This response contains some mandatory information about the API endpoint such as
 
         if self.canonicalURL and not self.canonicalURL.startswith("https://"):
             warnings.append(
-                ".canonicalURL is not using SSL (https://). Consider using SSL to protect your data."
+                (
+                    ".canonicalURL is not using SSL (https://). Consider using SSL "
+                    "to protect your data."
+                )
             )
 
         return information, warnings, critical
 
 
-####################################################################################################################################
+########################################################################################
 
 #  Root Response
 
@@ -3713,9 +4100,15 @@ class UninstallFontsResponseProxy(Proxy):
 
 class RootResponse(BaseResponse):
     """\
-    This is the root object for each response, and contains one or more individual response objects as requested in the `commands` parameter of API endpoint calls.
+    This is the root object for each response, and contains one or more individual
+    response objects as requested in the `commands` parameter of API endpoint calls.
 
-    This exists to speed up processes by reducing server calls. For instance, installing a protected fonts and afterwards asking for a refreshed installableFonts command requires two separate calls to the publisher’s API endpoint, which in turns needs to verify the requester’s identy with the central type.world server. By requesting `installFonts,installableFonts` commands in one go, a lot of time is saved.
+    This exists to speed up processes by reducing server calls. For instance,
+    installing a protected fonts and afterwards asking for a refreshed
+    `installableFonts` command requires two separate calls to the publisher’s API
+    endpoint, which in turns needs to verify the requester’s identy with the central
+    type.world server. By requesting `installFonts,installableFonts` commands in one go,
+    a lot of time is saved.
     """
 
     #   key:                    [data type, required, default value, description]
