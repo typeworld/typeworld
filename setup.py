@@ -1,4 +1,20 @@
 from setuptools import setup, find_packages
+import platform
+
+WIN = platform.system() == "Windows"
+MAC = platform.system() == "Darwin"
+LINUX = platform.system() == "Linux"
+
+install_requires = [  # I get to this in a second
+    "markdown2",
+    "semver",
+    "certifi",
+    "keyring",
+    "deepdiff",
+]
+
+if MAC:
+    install_requires.append("pyobjc")
 
 setup(
     name="typeworld",  # How you named your package folder (MyLib)
@@ -13,14 +29,7 @@ as well as various tools.""",  # Give a short description about your library
     url="https://github.com/typeworld/typeworld",
     # Provide either the link to your github or to your website
     keywords=["fonts"],  # Keywords that define your package best
-    install_requires=[  # I get to this in a second
-        "markdown2",
-        "semver",
-        "certifi",
-        "keyring",
-        "deepdiff",
-        "pyobjc",
-    ],
+    install_requires=install_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
         # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable"
