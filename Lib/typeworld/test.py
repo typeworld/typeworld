@@ -2661,6 +2661,7 @@ class TestStringMethods(unittest.TestCase):
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
         )
+        print(success, response)
         self.assertEqual(success, True)
         response = json.loads(response.read().decode())
         print(response)
