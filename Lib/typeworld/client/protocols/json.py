@@ -14,7 +14,7 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
 
     request = urllib.request.Request(url)
 
-    if not "source" in data:
+    if "source" not in data:
         data["source"] = "typeworldApp"
 
     # gather commands
@@ -25,13 +25,14 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
     data = data.encode("ascii")
 
     try:
-        import ssl, certifi
+        import ssl
+        import certifi
 
         sslcontext = ssl.create_default_context(cafile=certifi.where())
         response = urllib.request.urlopen(request, data, context=sslcontext)
 
         incomingMIMEType = response.headers["content-type"].split(";")[0]
-        if not incomingMIMEType in acceptableMimeTypes:
+        if incomingMIMEType not in acceptableMimeTypes:
             d["errors"].append(
                 'Resource headers returned wrong MIME type: "%s". Expected is "%s".'
                 % (response.headers["content-type"], acceptableMimeTypes)
@@ -196,7 +197,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 False,
             )
 
-        # # Detect installed fonts now not available in subscription anymore and delete them
+        # # Detect installed fonts now not available in subscription anymore and delete
+        # them
         # hasFonts = False
         # removeFonts = []
         # if api.response == NOFONTSAVAILABLE:
@@ -208,7 +210,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         # 	if removeFonts:
         # 		success, message = self.subscription.removeFonts(removeFonts)
         # 		if not success:
-        # 			return False, 'Couldn’t uninstall previously installed fonts: %s' % message, True
+        # 			return False, 'Couldn’t uninstall previously installed fonts: %s' %
+        # message, True
 
         # Previously available fonts
         oldIDs = []
@@ -270,7 +273,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
     def setInstallableFontsCommand(self, command):
         self._installableFontsCommand = command
 
-    # 		self.client.delegate.subscriptionWasUpdated(self.subscription.parent, self.subscription)
+    # 		self.client.delegate.subscriptionWasUpdated(self.subscription.parent,
+    # self.subscription)
 
     def removeFonts(self, fonts, updateSubscription=False):
 
@@ -392,8 +396,9 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         testScenario,
     ):
         """Overwrite this.
-		Put here an initial health check of the subscription. Check if URLs point to the right place etc.
-		Return False, 'message' in case of errors."""
+        Put here an initial health check of the subscription. Check if URLs point to the
+        right place etc.
+        Return False, 'message' in case of errors."""
 
         # Read response
         data = {
@@ -429,12 +434,15 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             return False, responses["errors"][0]
 
         if (
-            not "installableFonts" in self._rootCommand.supportedCommands
-            or not "installFonts" in self._rootCommand.supportedCommands
+            "installableFonts" not in self._rootCommand.supportedCommands
+            or "installFonts" not in self._rootCommand.supportedCommands
         ):
             return (
                 False,
-                'API endpoint %s does not support the "installableFonts" or "installFonts" commands.'
+                (
+                    "API endpoint %s does not support the 'installableFonts' or "
+                    "'installFonts' commands."
+                )
                 % self._rootCommand.canonicalURL,
             )
 

@@ -1,7 +1,23 @@
 # -*- coding: utf-8 -*-
 
-import os, sys, json, platform, urllib.request, urllib.error, urllib.parse, traceback, time, base64, threading, ssl, certifi, logging, inspect, re
-from time import gmtime, strftime
+import os
+import sys
+import json
+import platform
+import urllib.request
+import urllib.error
+import urllib.parse
+import traceback
+import time
+import base64
+import threading
+import ssl
+import certifi
+import logging
+import inspect
+import re
+from time import gmtime
+import strftime
 
 import typeworld.api
 from typeworld.api import VERSION
@@ -97,7 +113,10 @@ def urlIsValid(url):
     if url.count("://") > 1:
         return (
             False,
-            "URL contains more than one :// combination, so don’t know how to parse it.",
+            (
+                "URL contains more than one :// combination, "
+                "so don’t know how to parse it."
+            ),
         )
 
     return True, None
@@ -217,7 +236,8 @@ def getProtocol(url):
 
 
 def performRequest(url, parameters, sslcontext):
-    """Perform request in a loop 10 times, because the central server’s instance might shut down unexpectedly during a request, especially longer running ones."""
+    """Perform request in a loop 10 times, because the central server’s instance might
+    shut down unexpectedly during a request, especially longer running ones."""
 
     success = False
     message = None
@@ -227,7 +247,7 @@ def performRequest(url, parameters, sslcontext):
         try:
             response = urllib.request.urlopen(url, data, context=sslcontext)
             return True, response
-        except:
+        except Exception:
             message = (
                 f"Response from {url} with parameters {parameters} after {i+1} tries: "
                 + traceback.format_exc().splitlines()[-1]
@@ -293,9 +313,9 @@ def splitJSONURL(url):
 
 class Preferences(object):
     def __init__(self):
-        self._dict = (
-            {}
-        )  # nocoverage (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults, not the plain class here)
+        self._dict = {}  # nocoverage
+        # (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults,
+        # not the plain class here)
 
     def get(self, key):
         if key in self._dict:
@@ -313,9 +333,9 @@ class Preferences(object):
         pass
 
     def dictionary(self):
-        return (
-            self._dict
-        )  # nocoverage (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults, not the plain class here)
+        return self._dict  # nocoverage
+        # (In tests, preferences are loaded either as JSON or as AppKitNSUserDefaults,
+        # not the plain class here)
 
 
 class JSON(Preferences):
@@ -414,7 +434,7 @@ class TypeWorldClientDelegate(object):
     def _fontWillInstall(self, font):
         try:
             self.fontWillInstall(font)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -425,7 +445,7 @@ class TypeWorldClientDelegate(object):
     def _fontHasInstalled(self, success, message, font):
         try:
             self.fontHasInstalled(success, message, font)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -436,7 +456,7 @@ class TypeWorldClientDelegate(object):
     def _fontWillUninstall(self, font):
         try:
             self.fontWillUninstall(font)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -447,7 +467,7 @@ class TypeWorldClientDelegate(object):
     def _fontHasUninstalled(self, success, message, font):
         try:
             self.fontHasUninstalled(success, message, font)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -458,7 +478,7 @@ class TypeWorldClientDelegate(object):
     def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
         try:
             self.subscriptionUpdateNotificationHasBeenReceived(subscription)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -470,7 +490,7 @@ class TypeWorldClientDelegate(object):
     def _userAccountUpdateNotificationHasBeenReceived(self):
         try:
             self.userAccountUpdateNotificationHasBeenReceived()
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -481,7 +501,7 @@ class TypeWorldClientDelegate(object):
     def _subscriptionWasDeleted(self, subscription):
         try:
             self.subscriptionWasDeleted(subscription)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -492,7 +512,7 @@ class TypeWorldClientDelegate(object):
     def _publisherWasDeleted(self, publisher):
         try:
             self.publisherWasDeleted(publisher)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -503,7 +523,7 @@ class TypeWorldClientDelegate(object):
     def _subscriptionWasAdded(self, subscription):
         try:
             self.subscriptionWasAdded(subscription)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -514,7 +534,7 @@ class TypeWorldClientDelegate(object):
     def _subscriptionWasUpdated(self, subscription):
         try:
             self.subscriptionWasUpdated(subscription)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -525,7 +545,7 @@ class TypeWorldClientDelegate(object):
     def _clientPreferenceChanged(self, key, value):
         try:
             self.clientPreferenceChanged(key, value)
-        except:
+        except Exception:
             self.client.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -603,7 +623,7 @@ class APISentInvitation(APIInvitation):
 class PubSubClient(object):
     def executeCondition(self):
         return (
-            self.pubSubExecuteConditionMethod == None
+            self.pubSubExecuteConditionMethod is None
             or callable(self.pubSubExecuteConditionMethod)
             and self.pubSubExecuteConditionMethod()
         )
@@ -622,7 +642,8 @@ class PubSubClient(object):
 
             if not self.pubsubSubscription:
 
-                self.pubSubSubscriber = pubsub_v1.SubscriberClient.from_service_account_file(
+                psClient = pubsub_v1.SubscriberClient
+                self.pubSubSubscriber = psClient.from_service_account_file(
                     GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH
                 )
                 self.pubSubSubscriptionID = "%s-appInstance-%s" % (
@@ -641,7 +662,8 @@ class PubSubClient(object):
                         stillAliveThread = threading.Thread(
                             target=self.pubSubSetup_worker
                         )  # nocoverage (is not executed in headleass mode)
-                        stillAliveThread.start()  # nocoverage (is not executed in headleass mode)
+                        stillAliveThread.start()  # nocoverage
+                        # (is not executed in headleass mode)
                     elif client.mode == "headless":
                         self.pubSubSetup_worker()
 
@@ -667,7 +689,8 @@ class PubSubClient(object):
                 self.pubsubSubscription = self.pubSubSubscriber.subscribe(
                     self.subscriptionPath, self.pubSubCallback
                 )
-            # Topic doesn't yet exist. For instance, subscription topic are only created after the first `updateSubscription` call on the central server
+            # Topic doesn't yet exist. For instance, subscription topic are only
+            # created after the first `updateSubscription` call on the central server
             except google.api_core.exceptions.PermissionDenied:
                 pass  # nocoverage
 
@@ -695,14 +718,16 @@ class PubSubClient(object):
 
         try:
             self.pubSubSubscriber.delete_subscription(self.subscriptionPath)
-        except google.api_core.exceptions.NotFound:  # nocoverage (don't want to construct this error right now)
-            pass  # nocoverage (don't want to construct this error right now)
+        except google.api_core.exceptions.NotFound:  # nocoverage (don't want to
+            # construct this error right now) TODO
+            pass  # nocoverage (don't want to construct this error right now) TODO
 
 
 class APIClient(PubSubClient):
     """\
-	Main Type.World client app object. Use it to load repositories and install/uninstall fonts.
-	"""
+    Main Type.World client app object.
+    Use it to load repositories and install/uninstall fonts.
+    """
 
     def __init__(
         self,
@@ -760,7 +785,7 @@ class APIClient(PubSubClient):
 
     def tracebackTest(self):
         try:
-            assert abc
+            assert abc  # noqa: F821
 
         except Exception as e:
             self.handleTraceback(
@@ -769,9 +794,9 @@ class APIClient(PubSubClient):
 
     def tracebackTest2(self):
         try:
-            assert abc
+            assert abc  # noqa: F821
 
-        except:
+        except Exception:
             self.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
@@ -844,7 +869,8 @@ class APIClient(PubSubClient):
                 url = "https://api.type.worlddd/api"
             return performRequest(url, parameters, self.sslcontext)
             # else:
-            # 	return False, 'APIClient is set to work offline as set by: APIClient(online=False)'
+            # 	return False, 'APIClient is set to work offline as set by:
+            # APIClient(online=False)'
 
         except Exception as e:
             self.handleTraceback(
@@ -984,7 +1010,8 @@ class APIClient(PubSubClient):
 
             try:
                 urllib.request.urlopen(host, context=self.sslcontext)  # Python 3.x
-            # Do nothing if HTTP errors are returned, and let the subsequent methods handle the details
+            # Do nothing if HTTP errors are returned, and let the subsequent methods
+            # handle the details
             except urllib.error.HTTPError:
                 pass
 
@@ -1003,7 +1030,7 @@ class APIClient(PubSubClient):
             if not self.get("pendingOnlineCommands"):
                 commands = {}
             # Init empty
-            if not commandName in commands:
+            if commandName not in commands:
                 commands[commandName] = []
             if (
                 commandName in commands and len(commands[commandName]) == 0
@@ -1016,7 +1043,7 @@ class APIClient(PubSubClient):
             if type(commandsList) in (str, int):
                 commandsList = [commandsList]
             for commandListItem in commandsList:
-                if not commandListItem in commands[commandName]:
+                if commandListItem not in commands[commandName]:
                     commands[commandName] = list(commands[commandName])
                     commands[commandName].append(commandListItem)
             self.set("pendingOnlineCommands", commands)
@@ -1281,7 +1308,7 @@ class APIClient(PubSubClient):
 
             # Add new subscriptions
             for url in response["subscriptions"]:
-                if not url in oldURLs:
+                if url not in oldURLs:
                     success, message, publisher, subscription = self.addSubscription(
                         url, updateSubscriptionsOnServer=False
                     )
@@ -1360,7 +1387,7 @@ class APIClient(PubSubClient):
             for invitation in self.pendingInvitations():
                 for url in urls:
                     if invitation.url == url:
-                        if not invitation.ID in IDs:
+                        if invitation.ID not in IDs:
                             IDs.append(invitation.ID)
             assert len(IDs) == len(urls)
 
@@ -1422,7 +1449,7 @@ class APIClient(PubSubClient):
             for invitation in self.pendingInvitations():
                 for url in urls:
                     if invitation.url == url:
-                        if not invitation.ID in IDs:
+                        if invitation.ID not in IDs:
                             IDs.append(invitation.ID)
             assert len(IDs) == len(urls)
 
@@ -1510,7 +1537,7 @@ class APIClient(PubSubClient):
 
                 # Add new subscriptions
                 for url in response["subscriptions"]:
-                    if not url in oldURLs:
+                    if url not in oldURLs:
                         (
                             success,
                             message,
@@ -1939,9 +1966,11 @@ class APIClient(PubSubClient):
                                 if dryRun and font.protected:
                                     fontIDs.append(
                                         font.uniqueID
-                                    )  # nocoverage (This is executed only when the central server uninstalls *all* fonts)
+                                    )  # nocoverage (This is executed only when the
+                                    # central server uninstalls *all* fonts)
 
-                                # Run from local client, add only actually installed fonts
+                                # Run from local client, add only actually installed
+                                # fonts
                                 elif (
                                     not dryRun
                                     and font.protected
@@ -2044,8 +2073,8 @@ class APIClient(PubSubClient):
         try:
 
             """\
-			Reads user locale from OS
-			"""
+            Reads user locale from OS
+            """
 
             if self.get("localizationType") == "systemLocale":
                 _locale = [self.systemLocale()]
@@ -2054,7 +2083,7 @@ class APIClient(PubSubClient):
             else:
                 _locale = [self.systemLocale()]
 
-            if not "en" in _locale:
+            if "en" not in _locale:
                 _locale.append("en")
 
             return _locale
@@ -2123,7 +2152,7 @@ class APIClient(PubSubClient):
                             "keyring.backends.kwallet.DBusKeyring"
                         )
                     )
-                except:
+                except Exception:
                     keyring = dummyKeyRing
 
                 return keyring
@@ -2152,7 +2181,9 @@ Version: {typeworld.api.VERSION}
                 else:
                     return _payload
             else:
-                return _payload  # nocoverage (this seems to never get executed, because code always contains `File "..."` like it should. Leaving this here just in case)
+                return _payload  # nocoverage (this seems to never get executed,
+                # because code always contains `File "..."` like it should.
+                # Leaving this here just in case) TODO
 
         # Normalize file paths
         if WIN:
@@ -2182,11 +2213,13 @@ Version: {typeworld.api.VERSION}
                     + str(inspect.signature(sourceMethod))
                 )
             else:
-                supplementary["sourceMethodSignature"] = str(
-                    sourceMethod.__name__
-                ) + str(
-                    inspect.signature(sourceMethod)
-                )  # nocoverage (currently not testing for calling this method without a sourceMethod parameter)
+                supplementary["sourceMethodSignature"] = str(  # nocoverage
+                    sourceMethod.__name__  # nocoverage
+                ) + str(  # nocoverage
+                    inspect.signature(sourceMethod)  # nocoverage
+                )  # nocoverage
+                # (currently not testing for calling this method without
+                # a sourceMethod parameter)
 
         supplementary["traceback"] = payload
         supplementary["stack"] = []
@@ -2214,7 +2247,8 @@ Version: {typeworld.api.VERSION}
                 }
             )
 
-        # replace faulty line of code (some Python versions include the faulty code line in the traceback output, some not)
+        # replace faulty line of code (some Python versions include the faulty code
+        # line in the traceback output, some not)
         if supplementary["trace"] and supplementary["trace"][0]["code_context"]:
             payload = payload.replace(supplementary["trace"][0]["code_context"], "")
             payload = payload.replace("\n \n", "\n")
@@ -2254,9 +2288,9 @@ Version: {typeworld.api.VERSION}
                 + supplementary["sourceMethodSignature"]
             )
         else:
-            self.log(
-                payload
-            )  # nocoverage (currently not testing for calling this method without a sourceMethod parameter)
+            self.log(payload)  # nocoverage  # nocoverage  # nocoverage
+            # (currently not testing for calling this method without a sourceMethod
+            # parameter)
 
     def log(self, *arg):
         string = "Type.World: %s" % " ".join(map(str, arg))
@@ -2300,26 +2334,21 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def resourceByURL(
-        self, url, binary=False, update=False
-    ):  # , username = None, password = None
-        """Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string"""
+    def resourceByURL(self, url, binary=False, update=False):
+        """Caches and returns content of a HTTP resource. If binary is set to True,
+        content will be stored and return as a bas64-encoded string"""
         try:
             resources = self.get("resources") or {}
 
             key = f"{url},binary={binary}"
 
             # Load fresh
-            if not key in resources or update:
+            if key not in resources or update:
 
                 if self.testScenario:
                     url = addAttributeToURL(url, "testScenario=%s" % self.testScenario)
 
                 request = urllib.request.Request(url)
-                # if username and password:
-                # 	base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
-                # 	request.add_header("Authorization", "Basic %s" % base64string)
-
                 response = urllib.request.urlopen(request, context=self.sslcontext)
 
                 content = response.read()
@@ -2346,66 +2375,11 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    # def readGitHubResponse(self, url, username = None, password = None):
-
-    # 	d = {}
-    # 	d['errors'] = []
-    # 	d['warnings'] = []
-    # 	d['information'] = []
-
-    # 	json = ''
-
-    # 	try:
-
-    # 		request = urllib.request.Request(url)
-    # 		if username and password:
-    # 			base64string = base64.b64encode(b"%s:%s" % (username, password)).decode("ascii")
-    # 			request.add_header("Authorization", "Basic %s" % base64string)
-    # 		response = urllib.request.urlopen(request, context=self.sslcontext)
-
-    # 		if response.getcode() == 404:
-    # 			d['errors'].append('Server returned with error 404 (Not found).')
-    # 			return None, d
-
-    # 		if response.getcode() == 401:
-    # 			d['errors'].append('User authentication failed. Please review your username and password.')
-    # 			return None, d
-
-    # 		if response.getcode() != 200:
-    # 			d['errors'].append('Resource returned with HTTP code %s' % response.code)
-
-    # 		# if not response.headers['content-type'] in acceptableMimeTypes:
-    # 		# 	d['errors'].append('Resource headers returned wrong MIME type: "%s". Expected is %s.' % (response.headers['content-type'], acceptableMimeTypes))
-    # 		# 	self.log('Received this response with an unexpected MIME type for the URL %s:\n\n%s' % (url, response.read()))
-
-    # 		if response.getcode() == 200:
-
-    # 			json = response.read()
-
-    # 	except:
-    # 		exc_type, exc_value, exc_traceback = sys.exc_info()
-    # 		for line in traceback.format_exception_only(exc_type, exc_value):
-    # 			d['errors'].append(line)
-    # 		self.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name))
-
-    # 	return json, d
-
-    # def addAttributeToURL(self, url, key, value):
-    # 	if not key + '=' in url:
-    # 		if '?' in url:
-    # 			url += '&' + key + '=' + value
-    # 		else:
-    # 			url += '?' + key + '=' + value
-    # 	else:
-    # 		url = re.sub(key + '=(\w*)', key + '=' + value, url)
-
-    # 	return url
-
     def anonymousAppID(self):
         try:
             anonymousAppID = self.get("anonymousAppID")
 
-            if anonymousAppID == None or anonymousAppID == {}:
+            if anonymousAppID is None or anonymousAppID == {}:
                 import uuid
 
                 anonymousAppID = str(uuid.uuid1())
@@ -2444,8 +2418,9 @@ Version: {typeworld.api.VERSION}
         secretTypeWorldAPIKey=None,
     ):
         """
-		Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
-		"""
+        Because this also gets used by the central Type.World server, pass on the
+        secretTypeWorldAPIKey attribute to your web service as well.
+        """
         try:
             self._updatingProblem = None
 
@@ -2493,10 +2468,6 @@ Version: {typeworld.api.VERSION}
                         "#(response.loginRequired)",
                         "#(response.loginRequired.headline)",
                     ]
-                    # if type(response) == typeworld.api.MultiLanguageText or type(response) == list and response[0].startswith('#('):
-                    # else:
-                    # 	message = response # 'Response from protocol.aboutToAddSubscription(): %s' %
-                    # 	if message == ['#(response.loginRequired)', '#(response.loginRequired.headline)']:
                     return False, message, None, None
 
                 # rootCommand
@@ -2530,57 +2501,6 @@ Version: {typeworld.api.VERSION}
             self.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
-
-        # Outdated (for now)
-        # elif url.startswith('typeworldgithub://'):
-
-        # 	url = url.replace('typeworldgithub://', '')
-        # 	# remove trailing slash
-        # 	while url.endswith('/'):
-        # 		url = url[:-1]
-
-        # 	if not url.startswith('https://'):
-        # 		return False, 'GitHub-URL needs to start with https://', None, None
-
-        # 	canonicalURL = '/'.join(url.split('/')[:4])
-        # 	owner = url.split('/')[3]
-        # 	repo = url.split('/')[4]
-        # 	path = '/'.join(url.split('/')[7:])
-
-        # 	commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s' % (owner, repo, path)
-
-        # 	publisher = self.publisher(canonicalURL)
-        # 	publisher.set('type', 'GitHub')
-
-        # 	if username and password:
-        # 		publisher.set('username', username)
-        # 		publisher.setPassword(username, password)
-
-        # 	allowed, message = publisher.gitHubRateLimit()
-        # 	if not allowed:
-        # 		return False, message, None, None
-
-        # 	# Read response
-        # 	commits, responses = publisher.readGitHubResponse(commitsURL)
-
-        # 	# Errors
-        # 	if responses['errors']:
-        # 		return False, '\n'.join(responses['errors']), None, None
-
-        # 	success, message = publisher.addGitHubSubscription(url, commits), None
-        # 	publisher.save()
-
-        # 	return success, message, self.publisher(canonicalURL), None
-
-        # except:
-
-        # 	exc_type, exc_value, exc_traceback = sys.exc_info()
-        # 	return False, traceback.format_exc(), None, None
-
-    # def currentPublisher(self):
-    # 	if self.get('currentPublisher') and self.get('currentPublisher') != 'None' and self.get('currentPublisher') != 'pendingInvitations':
-    # 		publisher = self.publisher(self.get('currentPublisher'))
-    # 		return publisher
 
     def publisher(self, canonicalURL):
         try:
@@ -2617,8 +2537,9 @@ Version: {typeworld.api.VERSION}
 
 class APIPublisher(object):
     """\
-	Represents an API endpoint, identified and grouped by the canonical URL attribute of the API responses. This API endpoint class can then hold several repositories.
-	"""
+    Represents an API endpoint, identified and grouped by the canonical URL attribute
+    of the API responses. This API endpoint class can then hold several repositories.
+    """
 
     def __init__(self, parent, canonicalURL):
         self.parent = parent
@@ -2639,8 +2560,8 @@ class APIPublisher(object):
 
                 home = expanduser("~")
 
-                rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
-                title = rootCommand.name.getText()
+                # rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
+                # title = rootCommand.name.getText()
 
                 folder = os.path.join(home, "Library", "Fonts", "Type.World App")
 
@@ -2670,7 +2591,7 @@ class APIPublisher(object):
 
             for subscription in self.subscriptions():
                 problem = subscription.updatingProblem()
-                if problem and not problem in problems:
+                if problem and problem not in problems:
                     problems.append(problem)
 
             if problems:
@@ -2680,27 +2601,6 @@ class APIPublisher(object):
             self.parent.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
-
-    # def gitHubRateLimit(self):
-
-    # 	limits, responses = self.readGitHubResponse('https://api.github.com/rate_limit')
-
-    # 	if responses['errors']:
-    # 		return False, '\n'.join(responses['errors'])
-
-    # 	limits = json.loads(limits)
-
-    # 	if limits['rate']['remaining'] == 0:
-    # 		return False, 'Your GitHub API rate limit has been reached. The limit resets at %s.' % (datetime.datetime.fromtimestamp(limits['rate']['reset']).strftime('%Y-%m-%d %H:%M:%S'))
-
-    # 	return True, None
-
-    # def readGitHubResponse(self, url):
-
-    # 	if self.get('username') and self.getPassword(self.get('username')):
-    # 		return self.parent.readGitHubResponse(url, self.get('username'), self.getPassword(self.get('username')))
-    # 	else:
-    # 		return self.parent.readGitHubResponse(url)
 
     def name(self, locale=["en"]):
 
@@ -2713,28 +2613,6 @@ class APIPublisher(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    # def getPassword(self, username):
-    # 	keyring = self.parent.keyring()
-    # 	return keyring.get_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username)
-
-    # def setPassword(self, username, password):
-    # 	keyring = self.parent.keyring()
-    # 	keyring.set_password("Type.World GitHub Subscription %s (%s)" % (self.canonicalURL, username), username, password)
-
-    # def resourceByURL(self, url, binary = False, update = False):
-    # 	'''Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string'''
-
-    # 	# Save resource
-    # 	resourcesList = self.get('resources') or []
-    # 	if not url in resourcesList:
-    # 		resourcesList.append(url)
-    # 		self.set('resources', resourcesList)
-
-    # 	if self.get('username') and self.getPassword(self.get('username')):
-    # 		return self.parent.resourceByURL(url, binary = binary, update = update, username = self.get('username'), password = self.getPassword(self.get('username')))
-    # 	else:
-    # 		return self.parent.resourceByURL(url, binary = binary, update = update)
-
     def amountInstalledFonts(self):
         try:
             return len(self.installedFonts())
@@ -2745,14 +2623,14 @@ class APIPublisher(object):
 
     def installedFonts(self):
         try:
-            l = []
+            _list = []
 
             for subscription in self.subscriptions():
                 for font in subscription.installedFonts():
-                    if not font in l:
-                        l.append(font)
+                    if font not in _list:
+                        _list.append(font)
 
-            return l
+            return _list
         except Exception as e:
             self.parent.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -2768,14 +2646,14 @@ class APIPublisher(object):
 
     def outdatedFonts(self):
         try:
-            l = []
+            _list = []
 
             for subscription in self.subscriptions():
                 for font in subscription.outdatedFonts():
-                    if not font in l:
-                        l.append(font)
+                    if font not in _list:
+                        _list.append(font)
 
-            return l
+            return _list
         except Exception as e:
             self.parent.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -2861,7 +2739,7 @@ class APIPublisher(object):
             subscriptions = []
             if self.get("subscriptions"):
                 for url in self.get("subscriptions"):
-                    if urlIsValid(url)[0] == True:
+                    if urlIsValid(url)[0] is True:
                         subscriptions.append(self.subscription(url))
             return subscriptions
         except Exception as e:
@@ -2901,7 +2779,7 @@ class APIPublisher(object):
     def save(self):
         try:
             publishers = self.parent.get("publishers") or []
-            if not self.canonicalURL in publishers:
+            if self.canonicalURL not in publishers:
                 publishers.append(self.canonicalURL)
             self.parent.set("publishers", publishers)
         except Exception as e:
@@ -2910,15 +2788,16 @@ class APIPublisher(object):
             )
 
     def resourceByURL(self, url, binary=False, update=False):
-        """Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string"""
+        """Caches and returns content of a HTTP resource. If binary is set to True,
+        content will be stored and return as a bas64-encoded string"""
 
         try:
             success, response, mimeType = self.parent.resourceByURL(url, binary, update)
 
             # Save resource
-            if success == True:
+            if success is True:
                 resourcesList = self.get("resources") or []
-                if not url in resourcesList:
+                if url not in resourcesList:
                     resourcesList.append(url)
                     self.set("resources", resourcesList)
 
@@ -2954,8 +2833,9 @@ class APIPublisher(object):
 
 class APISubscription(PubSubClient):
     """\
-	Represents a subscription, identified and grouped by the canonical URL attribute of the API responses.
-	"""
+    Represents a subscription, identified and grouped by the canonical URL attribute of
+    the API responses.
+    """
 
     def __init__(self, parent, protocol):
         try:
@@ -2992,8 +2872,8 @@ class APISubscription(PubSubClient):
         try:
             uniqueID = self.get("uniqueID")
 
-            if uniqueID == None or uniqueID == {}:
-                import uuid
+            if uniqueID is None or uniqueID == {}:
+                # import uuid
 
                 uniqueID = Garbage(10)
                 self.set("uniqueID", uniqueID)
@@ -3017,7 +2897,8 @@ class APISubscription(PubSubClient):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    # TODO: Temporarily suspended because the central API updateSubscription requires an APIKey parameter, so is intended for publishers atm
+    # TODO: Temporarily suspended because the central API updateSubscription requires
+    # an APIKey parameter, so is intended for publishers atm
 
     # def announceChange(self):
     # 	try:
@@ -3034,19 +2915,22 @@ class APISubscription(PubSubClient):
     # 			'secretKey': self.parent.parent.secretKey(),
     # 		}
 
-    # 		success, response = self.parent.parent.performRequest(self.parent.parent.mothership, parameters)
+    # 		success, response = self.parent.parent.performRequest(self.parent.parent.
+    # mothership, parameters)
     # 		if not success:
     # 			return False, response
 
     # 		response = json.loads(response.read().decode())
 
     # 		if response['response'] != 'success':
-    # 			return False, ['#(response.%s)' % response['response'], '#(response.%s.headline)' % response['response']]
+    # 			return False, ['#(response.%s)' % response['response'], '#(response.%s.
+    # headline)' % response['response']]
 
     # 		# Success
     # 		return True, None
 
-    # 	except Exception as e: self.parent.parent.handleTraceback(sourceMethod = getattr(self, sys._getframe().f_code.co_name), e = e)
+    # 	except Exception as e: self.parent.parent.handleTraceback(sourceMethod =
+    # getattr(self, sys._getframe().f_code.co_name), e = e)
 
     def hasProtectedFonts(self):
         try:
@@ -3147,18 +3031,6 @@ class APISubscription(PubSubClient):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-        # if response['response'] == 'invalidSubscriptionURL':
-        # 	return False, 'The subscription URL %s is invalid.' % subscription.protocol.secretURL()
-
-        # elif response['response'] == 'unknownTargetEmail':
-        # 	return False, 'The invited user doesn’t have a valid Type.World user account as %s.' % email
-
-        # elif response['response'] == 'invalidSource':
-        # 	return False, 'The source user could not be identified or doesn’t hold this subscription.'
-
-        # elif response['response'] == 'success':
-        # 	return True, None
-
     def revokeUser(self, targetEmail):
         try:
 
@@ -3229,16 +3101,17 @@ class APISubscription(PubSubClient):
             )
 
     def resourceByURL(self, url, binary=False, update=False):
-        """Caches and returns content of a HTTP resource. If binary is set to True, content will be stored and return as a bas64-encoded string"""
+        """Caches and returns content of a HTTP resource. If binary is set to True,
+        content will be stored and return as a bas64-encoded string"""
         try:
             success, response, mimeType = self.parent.parent.resourceByURL(
                 url, binary, update
             )
 
             # Save resource
-            if success == True:
+            if success is True:
                 resourcesList = self.get("resources") or []
-                if not url in resourcesList:
+                if url not in resourcesList:
                     resourcesList.append(url)
                     self.set("resources", resourcesList)
 
@@ -3286,7 +3159,7 @@ class APISubscription(PubSubClient):
 
     def installedFonts(self):
         try:
-            l = []
+            _list = []
             # Get font
 
             success, installabeFontsCommand = self.protocol.installableFontsCommand()
@@ -3295,9 +3168,9 @@ class APISubscription(PubSubClient):
                 for family in foundry.families:
                     for font in family.fonts:
                         if self.installedFontVersion(font=font):
-                            if not font in l:
-                                l.append(font)
-            return l
+                            if font not in _list:
+                                _list.append(font)
+            return _list
         except Exception as e:
             self.parent.parent.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -3314,7 +3187,7 @@ class APISubscription(PubSubClient):
                 for family in foundry.families:
                     for font in family.fonts:
                         if self.installedFontVersion(font=font) and font.expiry:
-                            if not font in fonts:
+                            if font not in fonts:
                                 fonts.append(font)
             return fonts
         except Exception as e:
@@ -3332,7 +3205,7 @@ class APISubscription(PubSubClient):
 
     def outdatedFonts(self):
         try:
-            l = []
+            _list = []
 
             success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
@@ -3345,9 +3218,9 @@ class APISubscription(PubSubClient):
                             installedFontVersion
                             and installedFontVersion != font.getVersions()[-1].number
                         ):
-                            if not font in l:
-                                l.append(font.uniqueID)
-            return l
+                            if font not in _list:
+                                _list.append(font.uniqueID)
+            return _list
         except Exception as e:
             self.parent.parent.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -3439,7 +3312,7 @@ class APISubscription(PubSubClient):
                             )
                             return False, "Insufficient permission to uninstall font."
 
-                        assert os.path.exists(path + ".test") == False
+                        assert os.path.exists(path + ".test") is False
 
                     uninstallTheseProtectedFontIDs.append(fontID)
 
@@ -3461,13 +3334,18 @@ class APISubscription(PubSubClient):
                 if success:
 
                     # # Security check
-                    # if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-                    # 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
+                    # if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or
+                    # set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+                    # 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested
+                    #  font IDs.'
 
                     if len(payload.assets) == 0:
                         return (
                             False,
-                            f"No fonts to uninstall in .assets, expected {len(uninstallTheseProtectedFontIDs)} assets",
+                            (
+                                "No fonts to uninstall in .assets, expected "
+                                f"{len(uninstallTheseProtectedFontIDs)} assets"
+                            ),
                         )
 
                     # Process fonts
@@ -3518,7 +3396,10 @@ class APISubscription(PubSubClient):
                                 if not path and not dryRun:
                                     return (
                                         False,
-                                        "Font path couldn’t be determined (deleting unprotected fonts)",
+                                        (
+                                            "Font path couldn’t be determined "
+                                            "(deleting unprotected fonts)"
+                                        ),
                                     )
 
                                 if not dryRun:
@@ -3554,7 +3435,10 @@ class APISubscription(PubSubClient):
                     if not path and not dryRun:
                         return (
                             False,
-                            "Font path couldn’t be determined (deleting unprotected fonts)",
+                            (
+                                "Font path couldn’t be determined (deleting "
+                                "unprotected fonts)"
+                            ),
                         )
 
                     if not dryRun:
@@ -3573,7 +3457,7 @@ class APISubscription(PubSubClient):
         try:
 
             # Terms of Service
-            if self.get("acceptedTermsOfService") != True:
+            if self.get("acceptedTermsOfService") is not True:
                 return (
                     False,
                     [
@@ -3627,7 +3511,7 @@ class APISubscription(PubSubClient):
                     )
                     return False, "Insufficient permission to install font."
 
-                assert os.path.exists(path + ".test") == False
+                assert os.path.exists(path + ".test") is False
 
                 installTheseFontIDs.append(fontID)
 
@@ -3639,13 +3523,18 @@ class APISubscription(PubSubClient):
             if success:
 
                 # # Security check
-                # if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-                # 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested font IDs.'
+                # if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or
+                # set(fontIDs) - set([x.uniqueID for x in payload.assets]):
+                # 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested
+                # font IDs.'
 
                 if len(payload.assets) == 0:
                     return (
                         False,
-                        f"No fonts to install in .assets, expected {len(installTheseFontIDs)} assets",
+                        (
+                            "No fonts to install in .assets, expected "
+                            f"{len(installTheseFontIDs)} assets"
+                        ),
                     )
 
                 # Process fonts
@@ -3722,46 +3611,6 @@ class APISubscription(PubSubClient):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-        # elif self.parent.get('type') == 'GitHub':
-
-        # 	allowed, message = self.parent.gitHubRateLimit()
-        # 	if allowed:
-
-        # 		# Get font
-        # 		for foundry in self.foundries():
-        # 			for family in foundry.families():
-        # 				for font in family.fonts():
-        # 					if font.uniqueID == fontID:
-
-        # 						for commit in json.loads(self.get('commits')):
-        # 							if commit['commit']['message'].startswith('Version: %s' % version):
-
-        # 								owner = self.url.split('/')[3]
-        # 								repo = self.url.split('/')[4]
-        # 								urlpath = '/'.join(self.url.split('/')[7:]) + '/fonts/' + font.postScriptName + '.' + font.format
-
-        # 								url = 'https://api.github.com/repos/%s/%s/contents/%s?ref=%s' % (owner, repo, urlpath, commit['sha'])
-        # 								# print(url)
-        # 								response, responses = self.parent.readGitHubResponse(url)
-        # 								response = json.loads(response)
-
-        # 								# Write file
-        # 								path = font.path(version, folder)
-
-        # 								# Create folder if it doesn't exist
-        # 								if not os.path.exists(os.path.dirname(path)):
-        # 									os.makedirs(os.path.dirname(path))
-
-        # 								f = open(path, 'wb')
-        # 								f.write(base64.b64decode(response['content']))
-        # 								f.close()
-
-        # 								return True, None
-        # 	else:
-        # 		return False, message
-
-        # return False, 'No font was found to install.'
-
     def update(self):
         try:
             self.parent._updatingSubscriptions.append(self.url)
@@ -3771,18 +3620,6 @@ class APISubscription(PubSubClient):
                 self.stillAlive()
 
                 success, message, changes = self.protocol.update()
-
-                # elif self.parent.get('type') == 'GitHub':
-
-                # 	owner = self.url.split('/')[3]
-                # 	repo = self.url.split('/')[4]
-                # 	path = '/'.join(self.url.split('/')[7:])
-
-                # 	commitsURL = 'https://api.github.com/repos/%s/%s/commits?path=%s/fonts' % (owner, repo, path)
-
-                # 	# Read response
-                # 	commits, responses = self.parent.readGitHubResponse(commitsURL)
-                # 	self.set('commits', commits)
 
                 if not success:
                     return success, message, changes
@@ -3875,8 +3712,6 @@ class APISubscription(PubSubClient):
 
     def delete(self, calledFromParent=False, updateSubscriptionsOnServer=True):
         try:
-            # 			self.parent.parent.log('Deleting %s, updateSubscriptionsOnServer: %s' % (self, updateSubscriptionsOnServer))
-
             success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
             # Delete all fonts
@@ -3888,7 +3723,7 @@ class APISubscription(PubSubClient):
             # Key
             try:
                 self.protocol.deleteSecretKey()
-            except:
+            except Exception:
                 pass
 
             self.pubSubDelete()
@@ -3911,7 +3746,7 @@ class APISubscription(PubSubClient):
 
             self.parent._subscriptions = {}
 
-            if len(subscriptions) == 0 and calledFromParent == False:
+            if len(subscriptions) == 0 and calledFromParent is False:
                 self.parent.delete()
 
             self.parent.parent.delegate._subscriptionWasDeleted(self)

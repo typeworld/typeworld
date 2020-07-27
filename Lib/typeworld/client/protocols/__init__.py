@@ -34,10 +34,13 @@ class TypeWorldProtocolBase(object):
     # 	Return the root of the InstallableFonts command'''
     # 	pass
 
-    # def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID, secretTypeWorldAPIKey):
+    # def aboutToAddSubscription(self, anonymousAppID, anonymousTypeWorldUserID,
+    # secretTypeWorldAPIKey):
     # 	'''Overwrite this.
-    # 	Put here an initial health check of the subscription. Check if URLs point to the right place etc.
-    # 	Because this also gets used by the central Type.World server, pass on the secretTypeWorldAPIKey attribute to your web service as well.
+    # 	Put here an initial health check of the subscription. Check if URLs point to
+    # the right place etc.
+    # 	Because this also gets used by the central Type.World server, pass on the
+    # secretTypeWorldAPIKey attribute to your web service as well.
     # 	Return False, 'message' in case of errors.'''
     # 	return True, None
 

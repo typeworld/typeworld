@@ -1,11 +1,13 @@
-import platform, os
+import platform
+import os
 
 
 def ReadFromFile(path):
     """\
-	Return content of file
-	"""
-    import os, codecs
+    Return content of file
+    """
+    import os
+    import codecs
 
     if os.path.exists(path):
         f = codecs.open(path, encoding="utf-8", mode="r")
@@ -16,8 +18,8 @@ def ReadFromFile(path):
 
 def WriteToFile(path, string):
     """\
-	Write content to file
-	"""
+    Write content to file
+    """
     f = open(path, "wb")
     f.write(string.encode())
     f.close()
@@ -26,10 +28,11 @@ def WriteToFile(path, string):
 
 def Execute(command):
     """\
-	Execute system command, return output.
-	"""
+    Execute system command, return output.
+    """
 
-    import os, subprocess
+    import os
+    import subprocess
 
     process = subprocess.Popen(
         command, stdout=subprocess.PIPE, shell=True, close_fds=True
@@ -43,8 +46,8 @@ def Execute(command):
 
 def Garbage(length, uppercase=True, lowercase=True, numbers=True, punctuation=False):
     """\
-	Return string containing garbage.
-	"""
+    Return string containing garbage.
+    """
 
     import random
 
@@ -108,7 +111,7 @@ def MachineName():
         for line in procinfo.split("\n"):
             if ":" in line:
                 k, v = line.split(":")[:2]
-                if k.strip() == "model name" and not k in itemsUsed:
+                if k.strip() == "model name" and k not in itemsUsed:
                     cpu += v.strip()
                     itemsUsed.append(k)
 
@@ -212,10 +215,11 @@ LINUX = platform.system() == "Linux"
 
 # from https://gist.github.com/dgelessus/018681c297dfae22a06a3bc315d9e6e3:
 
-"""Allows logging Python :class:`str`s to the system log using Foundation's ``NSLog`` function.
-This module is meant to help with debugging the loading process of Rubicon on systems like iOS, where sometimes only
-NSLog output (but not stdout/stderr) is available to the developer.
-"""
+"""Allows logging Python :class:`str`s to the system log using Foundation's ``NSLog``
+function. This module is meant to help with debugging the loading process of Rubicon on
+systems like iOS, where sometimes only NSLog output (but not stdout/stderr) is available
+to the developer."""
+
 if MAC:
     import ctypes
     import sys
@@ -232,8 +236,10 @@ if MAC:
     else:
         raise AssertionError("Unknown byte order: " + sys.byteorder)  # nocoverage
 
-    # Note: Many of the following definitions are duplicated in other rubicon.objc submodules.
-    # However because this module is used to debug the early startup process of Rubicon, we can't use any of the other
+    # Note: Many of the following definitions are duplicated in other rubicon.objc
+    # submodules.
+    # However because this module is used to debug the early startup process of Rubicon,
+    # we can't use any of the other
     # definitions.
 
     class CFTypeRef(ctypes.c_void_p):
@@ -253,7 +259,8 @@ if MAC:
     CoreFoundation.CFRelease.restype = None
     CoreFoundation.CFRelease.argtypes = [CFTypeRef]
 
-    # CFStringRef CFStringCreateWithCharacters(CFAllocatorRef alloc, const UniChar *chars, CFIndex numChars)
+    # CFStringRef CFStringCreateWithCharacters(CFAllocatorRef alloc, const UniChar
+    # *chars, CFIndex numChars)
     CoreFoundation.CFStringCreateWithCharacters.restype = CFTypeRef
     CoreFoundation.CFStringCreateWithCharacters.argtypes = [
         CFTypeRef,

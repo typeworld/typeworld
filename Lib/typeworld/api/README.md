@@ -160,7 +160,7 @@ import typeworld.api
 # Root of Response
 root = typeworld.api.RootResponse()
 
-### EndpointResponse
+# EndpointResponse
 endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = "Font Publisher"
 endpoint.canonicalURL = "http://fontpublisher.com/api/"
@@ -376,9 +376,15 @@ True
 
 # _class_ RootResponse()
 
-This is the root object for each response, and contains one or more individual response objects as requested in the `commands` parameter of API endpoint calls.
+This is the root object for each response, and contains one or more individual
+response objects as requested in the `commands` parameter of API endpoint calls.
 
-This exists to speed up processes by reducing server calls. For instance, installing a protected fonts and afterwards asking for a refreshed installableFonts command requires two separate calls to the publisher’s API endpoint, which in turns needs to verify the requester’s identy with the central type.world server. By requesting `installFonts,installableFonts` commands in one go, a lot of time is saved.
+This exists to speed up processes by reducing server calls. For instance,
+installing a protected fonts and afterwards asking for a refreshed
+`installableFonts` command requires two separate calls to the publisher’s API
+endpoint, which in turns needs to verify the requester’s identy with the central
+type.world server. By requesting `installFonts,installableFonts` commands in one go,
+a lot of time is saved.
 
 *Example JSON data:*
 ```json
@@ -469,9 +475,12 @@ __Default value:__ 0.2.1-alpha
 
 # _class_ EndpointResponse()
 
-This is the response expected to be returned when the API is invoked using the `?commands=endpoint` parameter.
+This is the response expected to be returned when the API is invoked using the
+`?commands=endpoint` parameter.
 
-This response contains some mandatory information about the API endpoint such as its name and admin email, the copyright license under which the API endpoint issues its data, and whether or not this endpoint can be publicized about.
+This response contains some mandatory information about the API endpoint such as its
+name and admin email, the copyright license under which the API endpoint issues its
+data, and whether or not this endpoint can be publicized about.
     
 
 *Example JSON data:*
@@ -623,18 +632,24 @@ __Type:__ Str<br />
 
 # _class_ MultiLanguageText()
 
-Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
+Multi-language text. Attributes are language keys as per
+[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
-The GUI app will then calculate the language data to be displayed using [MultiLanguageText.getText()](#user-content-class-multilanguagetext-method-gettext) with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+The GUI app will then calculate the language data to be displayed using
+[MultiLanguageText.getText()](#user-content-class-multilanguagetext-method-gettext) with a prioritized list of languages that
+the user can understand. They may be pulled from the operating system’s
+language preferences.
 
-These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+These classes are already initiated wherever they are used, and can be
+addresses instantly with the language attributes:
 
 ```python
 api.name.en = u'Font Publisher XYZ'
 api.name.de = u'Schriftenhaus XYZ'
 ```
 
-If you are loading language information from an external source, you may use the `.set()` method to enter data:
+If you are loading language information from an external source, you may use
+the `.set()` method to enter data:
 
 ```python
 # Simulating external data source
@@ -667,13 +682,17 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 #### getText(locale = ['en'])
 
-Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
+Returns the text in the first language found from the specified
+list of languages. If that language can’t be found, we’ll try English
+as a standard. If that can’t be found either, return the first language
+you can find.
 
 <div id="class-multilanguagetext-method-gettextandlocale"></div>
 
 #### getTextAndLocale(locale = ['en'])
 
-Like getText(), but additionally returns the language of whatever text was found first.
+Like getText(), but additionally returns the language of whatever
+text was found first.
 
 
 
@@ -683,8 +702,9 @@ Like getText(), but additionally returns the language of whatever text was found
 
 # _class_ InstallableFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?commands=installableFonts` parameter, and contains metadata about which fonts are available to install for a user.
-    
+This is the response expected to be returned when the API is invoked using the
+`?commands=installableFonts` parameter, and contains metadata about which fonts
+are available to install for a user.
 
 *Example JSON data:*
 ```json
@@ -715,7 +735,7 @@ __Type:__ List of [Designer](#user-content-class-designer) objects<br />
 
 ### errorMessage
 
-Description of error in case of [InstallableFontsResponse.response](#user-content-class-installablefontsresponse-attribute-response) being "custom".
+Description of error in case of [InstallableFontsResponse.response](#user-content-class-installablefontsresponse-attribute-response) being 'custom'.
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
@@ -732,7 +752,7 @@ __Type:__ List of [Foundry](#user-content-class-foundry) objects<br />
 
 ### name
 
-A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance "Free Fonts" for all free and non-restricted fonts, or "Commercial Fonts" for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.
+A name of this response and its contents. This is needed to manage subscriptions in the UI. For instance 'Free Fonts' for all free and non-restricted fonts, or 'Commercial Fonts' for all those fonts that the use has commercially licensed, so their access is restricted. In case of a free font website that offers individual subscriptions for each typeface, this decription could be the name of the typeface.
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
@@ -866,18 +886,24 @@ __Type:__ Str<br />
 
 # _class_ MultiLanguageLongText()
 
-Multi-language text. Attributes are language keys as per [https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
+Multi-language text. Attributes are language keys as per
+[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]
 
-The GUI app will then calculate the language data to be displayed using [MultiLanguageText.getText()](#user-content-class-multilanguagetext-method-gettext) with a prioritized list of languages that the user can understand. They may be pulled from the operating system’s language preferences.
+The GUI app will then calculate the language data to be displayed using
+[MultiLanguageText.getText()](#user-content-class-multilanguagetext-method-gettext) with a prioritized list of languages that
+the user can understand. They may be pulled from the operating system’s
+language preferences.
 
-These classes are already initiated wherever they are used, and can be addresses instantly with the language attributes:
+These classes are already initiated wherever they are used, and can be
+addresses instantly with the language attributes:
 
 ```python
 api.name.en = u'Font Publisher XYZ'
 api.name.de = u'Schriftenhaus XYZ'
 ```
 
-If you are loading language information from an external source, you may use the `.set()` method to enter data:
+If you are loading language information from an external source, you may use
+the `.set()` method to enter data:
 
 ```python
 # Simulating external data source
@@ -888,7 +914,7 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](https://en.wikipedia.org/wiki/Markdown) to add formatting and links.
+Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
 *Example JSON data:*
 ```json
@@ -910,13 +936,17 @@ HTML code is not allowed in `MultiLanguageLongText`, but you may use [Markdown](
 
 #### getText(locale = ['en'])
 
-Returns the text in the first language found from the specified list of languages. If that language can’t be found, we’ll try English as a standard. If that can’t be found either, return the first language you can find.
+Returns the text in the first language found from the specified
+list of languages. If that language can’t be found, we’ll try English
+as a standard. If that can’t be found either, return the first language
+you can find.
 
 <div id="class-multilanguagelongtext-method-gettextandlocale"></div>
 
 #### getTextAndLocale(locale = ['en'])
 
-Like getText(), but additionally returns the language of whatever text was found first.
+Like getText(), but additionally returns the language of whatever
+text was found first.
 
 
 
@@ -1323,8 +1353,10 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 
 #### getAllDesigners()
 
-Returns a list of [Designer](#user-content-class-designer) objects that represent all of the designers referenced both at the family level as well as with all the family’s fonts, in case the fonts carry specific designers. This could be used to give a one-glance overview of all designers involved.
-        
+Returns a list of [Designer](#user-content-class-designer) objects that represent all of the designers
+referenced both at the family level as well as with all the family’s fonts,
+in case the fonts carry specific designers. This could be used to give a
+one-glance overview of all designers involved.
 
 
 
@@ -1334,17 +1366,24 @@ Returns a list of [Designer](#user-content-class-designer) objects that represen
 
 # _class_ FontPackage()
 
-`FontPackages` are groups of fonts that serve a certain purpose to the user.
-They can be defined at [InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages), [Foundry.packages](#user-content-class-foundry-attribute-packages), [Family.packages](#user-content-class-family-attribute-packages)
+`FontPackages` are groups of fonts that serve a certain purpose
+to the user.
+They can be defined at [InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages),
+[Foundry.packages](#user-content-class-foundry-attribute-packages), [Family.packages](#user-content-class-family-attribute-packages)
 and are referenced by their keywords in [Font.packageKeywords](#user-content-class-font-attribute-packagekeywords).
 
-On a font family level, defined at [Family.packages](#user-content-class-family-attribute-packages), a typical example for defining a `FontPackage` would be the so called **Office Fonts**.
-While they are technically identical to other OpenType fonts, they normally have a sightly different set of glyphs and OpenType features.
-Linking them to a `FontPackage` allows the UI to display them clearly as a separate set of fonts that serve a different purpuse than the 
+On a font family level, defined at [Family.packages](#user-content-class-family-attribute-packages), a typical example
+for defining a `FontPackage` would be the so called **Office Fonts**.
+While they are technically identical to other OpenType fonts, they normally
+have a sightly different set of glyphs and OpenType features.
+Linking them to a `FontPackage` allows the UI to display them clearly as a
+separate set of fonts that serve a different purpuse than the
 regular fonts.
 
-On a subscription-wide level, defined at [InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages), a `FontPackage` could represent a curated collection of
-fonts of various foundries and families, for example **Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
+On a subscription-wide level, defined at
+[InstallableFontsReponse.packages](#user-content-class-installablefontsreponse-attribute-packages), a `FontPackage` could represent a
+curated collection of fonts of various foundries and families, for example
+**Script Fonts** or **Brush Fonts** or **Corporate Fonts**.
 
 Each font may be part of several `FontPackages`.
 
@@ -1468,8 +1507,8 @@ __Format:__ YYYY-MM-DD<br />
 
 #### isFontSpecific()
 
-Returns True if this version is defined at the font level. Returns False if this version is defined at the family level.
-        
+Returns True if this version is defined at the font level.
+Returns False if this version is defined at the family level.
 
 
 
@@ -1553,7 +1592,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'otf', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'otf', 'ttc', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1679,14 +1718,17 @@ __Type:__ List of [Version](#user-content-class-version) objects<br />
 
 Returns the recommended font file name to be used to store the font on disk.
 
-It is composed of the font’s uniqueID, its version string and the file extension. Together, they must not exceed 220 characters.
+It is composed of the font’s uniqueID, its version string and the file
+extension. Together, they must not exceed 220 characters.
 
 <div id="class-font-method-getdesigners"></div>
 
 #### getDesigners()
 
-Returns a list of [Designer](#user-content-class-designer) objects that this font references. These are the combination of family-level designers and font-level designers. The same logic as for versioning applies. Please read the section about [versioning](#versioning) above.
-        
+Returns a list of [Designer](#user-content-class-designer) objects that this font references.
+These are the combination of family-level designers and font-level designers.
+The same logic as for versioning applies.
+Please read the section about [versioning](#versioning) above.
 
 <div id="class-font-method-getversions"></div>
 
@@ -1694,7 +1736,9 @@ Returns a list of [Designer](#user-content-class-designer) objects that this fon
 
 Returns list of [Version](#user-content-class-version) objects.
 
-This is the final list based on the version information in this font object as well as in its parent [Family](#user-content-class-family) object. Please read the section about [versioning](#versioning) above.
+This is the final list based on the version information in this font object as
+well as in its parent [Family](#user-content-class-family) object. Please read the section about
+[versioning](#versioning) above.
 
 
 
@@ -1732,7 +1776,7 @@ This is the final list based on the version information in this font object as w
 
 ### allowanceDescription
 
-In case of non-desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. "100.000 page views/month"
+In case of non-desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), custom string for web fonts or app fonts reminding the user of the license’s limits, e.g. '100.000 page views/month'
 
 __Required:__ False<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
@@ -1768,7 +1812,7 @@ __Default value:__ 0
 
 ### seatsInstalled
 
-In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the "anonymousAppID" parameter of the "installFonts" and "uninstallFonts" command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the "installFonts" command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
+In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-purpose)), number of installations recorded by the API endpoint. This value will need to be supplied dynamically by the API endpoint through tracking all font installations through the `anonymousAppID` parameter of the 'installFonts' and 'uninstallFonts' command. Please note that the Type.World client app is currently not designed to reject installations of the fonts when the limits are exceeded. Instead it is in the responsibility of the API endpoint to reject font installations though the 'installFonts' command when the limits are exceeded. In that case the user will be presented with one or more license upgrade links.
 
 __Required:__ False<br />
 __Type:__ Int<br />
@@ -1801,8 +1845,9 @@ Returns the [License](#user-content-class-license) object that this font referen
 
 # _class_ InstallFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter, and contains the requested binary fonts attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
-    
+This is the response expected to be returned when the API is invoked using the
+`?commands=installFonts` parameter, and contains the requested binary fonts
+attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
 
 *Example JSON data:*
 ```json
@@ -1861,7 +1906,7 @@ Type of response:
 
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the subscription’s URL.
 
 
 
@@ -1876,8 +1921,8 @@ __Format:__ To ensure the proper function of the entire Type.World protocol, you
 
 # _class_ InstallFontAsset()
 
-This is the response expected to be returned when the API is invoked using the `?commands=installFonts` parameter.
-    
+This is the response expected to be returned when the API is invoked using the
+`?commands=installFonts` parameter.
 
 *Example JSON data:*
 ```json
@@ -1957,7 +2002,7 @@ Type of response:
 
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the subscription’s URL.
 
 `revealedUserIdentityRequired`: The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).
 
@@ -1984,8 +2029,12 @@ __Type:__ Str<br />
 
 # _class_ UninstallFontsResponse()
 
-This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter, and contains empty responses as [UninstallFontAsset](#user-content-class-uninstallfontasset) objects. 
-While empty of data, these asset objects are still necessary because each font uninstallation request may return a different response, to which the GUI app needs to respond to accordingly.
+This is the response expected to be returned when the API is invoked using the
+`?commands=uninstallFonts` parameter, and contains empty responses as
+[UninstallFontAsset](#user-content-class-uninstallfontasset) objects.
+While empty of data, these asset objects are still necessary because each font
+uninstallation request may return a different response, to which the GUI app needs
+to respond to accordingly.
 
 *Example JSON data:*
 ```json
@@ -2041,7 +2090,7 @@ Type of response:
 
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the subscription’s URL.
 
 
 
@@ -2056,8 +2105,8 @@ __Format:__ To ensure the proper function of the entire Type.World protocol, you
 
 # _class_ UninstallFontAsset()
 
-This is the response expected to be returned when the API is invoked using the `?commands=uninstallFonts` parameter.
-    
+This is the response expected to be returned when the API is invoked using the
+`?commands=uninstallFonts` parameter.
 
 *Example JSON data:*
 ```json
@@ -2102,7 +2151,7 @@ Type of response:
 
 `validTypeWorldUserAccountRequired`: The access to this subscription requires a valid Type.World user account connected to an app.
 
-`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the the subscription’s URL.
+`loginRequired`: The access to this subscription requires that the user logs into the publisher’s website again to authenticate themselves. Normally, this happens after a subscription’s secret key has been invalidated. The user will be taken to the publisher’s website defined at [EndpointResponse.loginURL](#user-content-class-endpointresponse-attribute-loginurl). After successful login, a button should be presented to the user to reconnect to the same subscription that they are trying to access. To identify the subscription, the link that the user will be taken to will carry a `subscriptionID` parameter with the subscriptionID as defined in the subscription’s URL.
 
 `unknownInstallation`: This font installation (combination of app instance and user credentials) is unknown. The response with this error message is crucial to remote de-authorization of app instances. When a user de-authorizes an entire app instance’s worth of font installations, such as when a computer got bricked and re-installed or is lost, the success of the remote de-authorization process is judged by either `success` responses (app actually had this font installed and its deletion has been recorded) or `unknownInstallation` responses (app didn’t have this font installed). All other reponses count as errors in the remote de-authorization process.
 
@@ -2119,7 +2168,3 @@ A machine-readable string that uniquely identifies this font within the subscrip
 
 __Required:__ True<br />
 __Type:__ Str<br />
-
-
-
-
