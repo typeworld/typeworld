@@ -59,6 +59,21 @@ from typeworld.api import (  # noqa: E402
     FontPackage,
 )
 
+from typeworld.api import (  # noqa: E402
+    LanguageSupportDataType,
+    OpenTypeFeatureDataType,
+    OpenSourceLicenseIdentifierDataType,
+    SupportedAPICommandsDataType,
+    FontPurposeDataType,
+    FontMimeType,
+    FontStatusDataType,
+    InstallableFontsResponseType,
+    InstallFontAssetResponseType,
+    InstallFontResponseType,
+    UninstallFontAssedResponseType,
+    UninstallFontResponseType,
+)
+
 # Constants
 from typeworld.api import COMMANDS, MAC  # noqa: E402
 
@@ -476,6 +491,34 @@ class TestStringMethods(unittest.TestCase):
     currentResult = None
     maxDiff = None
 
+    def test_emptyValues(self):
+
+        print("test_emptyValues() started...")
+
+        self.assertTrue(HexColorDataType().valid())
+        self.assertTrue(FontEncodingDataType().valid())
+        self.assertTrue(EmailDataType().valid())
+        self.assertTrue(BooleanDataType().valid())
+        self.assertTrue(WebURLDataType().valid())
+        self.assertTrue(IntegerDataType().valid())
+        self.assertTrue(FloatDataType().valid())
+        self.assertTrue(DateDataType().valid())
+        self.assertTrue(VersionDataType().valid())
+
+        self.assertTrue(LanguageSupportDataType().valid())
+        self.assertTrue(OpenTypeFeatureDataType().valid())
+        self.assertTrue(OpenSourceLicenseIdentifierDataType().valid())
+        self.assertTrue(SupportedAPICommandsDataType().valid())
+        self.assertTrue(FontPurposeDataType().valid())
+        self.assertTrue(FontMimeType().valid())
+        self.assertTrue(FontStatusDataType().valid())
+
+        self.assertTrue(InstallableFontsResponseType().valid())
+        self.assertTrue(InstallFontAssetResponseType().valid())
+        self.assertTrue(InstallFontResponseType().valid())
+        self.assertTrue(UninstallFontAssedResponseType().valid())
+        self.assertTrue(UninstallFontResponseType().valid())
+
     def test_EndpointResponse(self):
 
         print("test_EndpointResponse() started...")
@@ -651,8 +694,7 @@ class TestStringMethods(unittest.TestCase):
         i2 = copy.deepcopy(installableFonts)
         i2.response = "error"
         try:
-            data = i2.dumpDict()
-            assert data is not None
+            data = i2.dumpDict()  # noqa: F841
         except ValueError as e:
             self.assertEqual(
                 str(e),
@@ -1831,9 +1873,6 @@ class TestStringMethods(unittest.TestCase):
 
     def test_otherStuff(self):
 
-        if not ONLINE:
-            return
-
         print("test_otherStuff()")
 
         # __repr__
@@ -1862,7 +1901,7 @@ class TestStringMethods(unittest.TestCase):
         user1.client.testScenario = "simulateFaultyAPIJSONResponse"
         success, message = user1.client.rootCommand(protectedSubscription)
         self.assertFalse(success)
-        print(message)
+        print(message)  # nocoverage
         self.assertTrue(
             "Invalid control character at: line 6 column 47 (char 225)" in message
         )
@@ -2077,6 +2116,7 @@ class TestStringMethods(unittest.TestCase):
         except ValueError:
             pass
 
+        FontEncodingDataType().valid()
         try:
             FontEncodingDataType().put("abc")
         except ValueError:
@@ -2115,6 +2155,9 @@ class TestStringMethods(unittest.TestCase):
             pass
 
         text = MultiLanguageText()
+        self.assertEqual(
+            text.customValidation()[2], ["Needs to contain at least one language field"]
+        )
         self.assertEqual(bool(text), False)
         text.en = "Hello"
         self.assertEqual(bool(text), True)
@@ -2320,9 +2363,6 @@ class TestStringMethods(unittest.TestCase):
 
     def test_simulateExternalScenarios(self):
 
-        if not ONLINE:
-            return
-
         print("test_simulateExternalScenarios()")
 
         user0.takeDown()
@@ -2433,9 +2473,6 @@ class TestStringMethods(unittest.TestCase):
 
     def test_normalSubscription(self):
 
-        if not ONLINE:
-            return
-
         print("test_normalSubscription() started...")
 
         # Reset Test Conditions
@@ -2531,7 +2568,7 @@ class TestStringMethods(unittest.TestCase):
         result = user0.client.addSubscription(flatFreeSubscription)
         success, message, publisher, subscription = result
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
 
         data = user0.client.get(f"subscription({flatFreeSubscription})")["data"]
@@ -2556,7 +2593,7 @@ class TestStringMethods(unittest.TestCase):
             user0.client.publishers()[0].subscriptions()[0].installFonts(fonts)
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(
             user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 4
@@ -2570,7 +2607,7 @@ class TestStringMethods(unittest.TestCase):
             .removeFonts([user0.testFont().uniqueID])
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -2582,7 +2619,7 @@ class TestStringMethods(unittest.TestCase):
             user0.client.publishers()[0].subscriptions()[0].removeFonts(fonts)
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(
             user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0
@@ -2944,7 +2981,7 @@ class TestStringMethods(unittest.TestCase):
             .removeFonts([user1.testFont().uniqueID])
         )
         if success is False:
-            print("Uninstall font:", message)
+            print("Uninstall font:", message)  # nocoverage
         self.assertEqual(success, True)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -2959,7 +2996,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if success is False:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
         self.assertEqual(
             message, ["#(response.loginRequired)", "#(response.loginRequired.headline)"]
@@ -2975,7 +3012,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulatePermissionError"
@@ -2987,7 +3024,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -3001,7 +3038,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
 
@@ -3015,7 +3052,7 @@ class TestStringMethods(unittest.TestCase):
             [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, False)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -3030,7 +3067,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
         self.assertEqual(
@@ -3163,7 +3200,7 @@ class TestStringMethods(unittest.TestCase):
             )
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
         self.assertEqual(
@@ -3362,7 +3399,7 @@ class TestStringMethods(unittest.TestCase):
             .subscriptions()[-1]
             .removeFonts([user1.testFont().uniqueID])
         )
-        print(message)
+        print(message)  # nocoverage
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
 
@@ -3372,7 +3409,7 @@ class TestStringMethods(unittest.TestCase):
             .subscriptions()[-1]
             .removeFonts([user1.testFont().uniqueID])
         )
-        print(message)
+        print(message)  # nocoverage
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateProgrammingError"
@@ -3670,7 +3707,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(success, False)
         user2.client.testScenario = None
         success, message = user2.client.pendingInvitations()[0].accept()
-        print(message)
+        print(message)  # nocoverage
         self.assertEqual(success, True)
 
         print("STATUS: -10")
@@ -3776,7 +3813,7 @@ class TestStringMethods(unittest.TestCase):
             .revokeUser("test3@type.world")
         )
         if not success:
-            print(message)
+            print(message)  # nocoverage
         self.assertEqual(success, True)
 
         print("STATUS: -6")
@@ -3919,16 +3956,8 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(user1.client.expiringInstalledFonts()), 1)
 
         # Traceback Test
-        try:
-            user1.client.tracebackTest()
-        except Exception:
-            pass
-
-        # Traceback Test
-        try:
-            user1.client.tracebackTest2()
-        except Exception:
-            pass
+        user1.client.tracebackTest()
+        user1.client.tracebackTest2()
 
         # Delete subscription from first user. Subsequent invitation must
         # then be taken down as well.
@@ -3960,9 +3989,6 @@ class TestStringMethods(unittest.TestCase):
     # 	print('test_APIValidator() finished...')
 
     def test_UserAccounts(self):
-
-        if not ONLINE:
-            return
 
         print("test_UserAccounts() started...")
 
@@ -4101,7 +4127,7 @@ def tearDown():
 
     # Local
     if "TRAVIS" not in os.environ:
-        os.rmdir(tempFolder)
+        os.rmdir(tempFolder)  # nocoverage
 
     print("tearDown() finished...")
 
@@ -4117,6 +4143,6 @@ if __name__ == "__main__":
         tearDown()
 
     if errors:
-        raise ValueError()
+        raise ValueError()  # nocoverage
     if failures:
-        raise ValueError()
+        raise ValueError()  # nocoverage
