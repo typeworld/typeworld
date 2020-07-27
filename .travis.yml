@@ -7,6 +7,16 @@ jobs:
   include:
 
 
+    - stage: linting
+      os: linux
+      python: 3.7           # this works for Linux but is ignored on macOS or Windows
+      env: 
+        - BADGE=linux
+      install:
+        - pip install -r requirements.txt
+      script: tox
+
+
     - stage: linux
       os: linux
       python: 3.7           # this works for Linux but is ignored on macOS or Windows
