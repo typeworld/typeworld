@@ -10,12 +10,22 @@ import ssl
 import certifi
 import json
 import unittest
-import typeworld.client
 import tempfile
-from typeworld.client import APIClient, JSON, AppKitNSUserDefaults, performRequest
+
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(path)
+
+import typeworld.client  # noqa: E402
+
+from typeworld.client import (  # noqa: E402
+    APIClient,
+    JSON,
+    AppKitNSUserDefaults,
+    performRequest,
+)
 
 # Data Types
-from typeworld.api import (
+from typeworld.api import (  # noqa: E402
     HexColorDataType,
     FontEncodingDataType,
     EmailDataType,
@@ -30,7 +40,7 @@ from typeworld.api import (
 )
 
 # Classes
-from typeworld.api import (
+from typeworld.api import (  # noqa: E402
     InstallFontAsset,
     UninstallFontAsset,
     FontListProxy,
@@ -50,21 +60,17 @@ from typeworld.api import (
 )
 
 # Constants
-from typeworld.api import COMMANDS, MAC
+from typeworld.api import COMMANDS, MAC  # noqa: E402
 
 # Methods
-from typeworld.api import makeSemVer
+from typeworld.api import makeSemVer  # noqa: E402
 
-from inspect import currentframe, getframeinfo
+from inspect import currentframe, getframeinfo  # noqa: E402
 
 
 ONLINE = True
 
 print("Started...")
-
-# if 'TRAVIS' in os.environ:
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 
 sslcontext = ssl.create_default_context(cafile=certifi.where())
 

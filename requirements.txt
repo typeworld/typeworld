@@ -1,8 +1,8 @@
-deepdiff
-semver
-codecov
 certifi
-keyring
-markdown2
+codecov
+deepdiff
 google-cloud-ndb
 google-cloud-pubsub
+keyring
+markdown2
+semver
