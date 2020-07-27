@@ -7,3 +7,4 @@ markdown2
 google-cloud-ndb
 google-cloud-pubsub
 pre-commit
+tox
