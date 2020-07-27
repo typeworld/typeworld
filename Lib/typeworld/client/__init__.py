@@ -281,7 +281,7 @@ def splitJSONURL(url):
     secretKey = ""
     accessToken = ""
 
-    # With credentials
+    # With credentials #######################################################################
     if "@" in urlRest:
 
         credentials, domain = urlRest.split("@")

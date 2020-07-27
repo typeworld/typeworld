@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/typeWorld/typeWorld.svg?branch=master)](https://travis-ci.org/typeWorld/typeWorld)
 [![codecov](https://codecov.io/gh/typeWorld/typeWorld/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/typeWorld)
 [![PyPI version](https://badge.fury.io/py/typeworld.svg)](https://badge.fury.io/py/typeworld)
+[![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # Installation
 
