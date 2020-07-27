@@ -16,8 +16,7 @@ import certifi
 import logging
 import inspect
 import re
-from time import gmtime
-import strftime
+from time import gmtime, strftime
 
 import typeworld.api
 from typeworld.api import VERSION

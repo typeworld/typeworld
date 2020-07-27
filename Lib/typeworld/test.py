@@ -520,7 +520,7 @@ class TestStringMethods(unittest.TestCase):
             self.assertEqual(
                 str(e),
                 (
-                    'Unknown API command: "unsupportedCommand". '
+                    "Unknown API command: 'unsupportedCommand'. "
                     "Possible: ['endpoint', 'installableFonts', 'installFonts', "
                     "'uninstallFonts']"
                 ),
@@ -687,7 +687,7 @@ class TestStringMethods(unittest.TestCase):
             self.assertEqual(
                 str(e),
                 (
-                    "Unknown response type: \"abc\". Possible: ['success', 'error', "
+                    "Unknown response type: 'abc'. Possible: ['success', 'error', "
                     "'noFontsAvailable', 'insufficientPermission', "
                     "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired']"
                 ),
@@ -1070,7 +1070,7 @@ class TestStringMethods(unittest.TestCase):
         try:
             i2.foundries[0].families[0].fonts[0].format = "abc"
         except ValueError as e:
-            self.assertTrue('Unknown font extension: "abc".' in str(e))
+            self.assertTrue("Unknown font extension: 'abc'." in str(e))
 
         # free
         i2 = copy.deepcopy(installableFonts)
@@ -1133,7 +1133,7 @@ class TestStringMethods(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                "Unknown font type: \"anything\". Possible: ['desktop', 'web', 'app']",
+                "Unknown font type: 'anything'. Possible: ['desktop', 'web', 'app']",
             )
 
         # status
@@ -1298,14 +1298,14 @@ class TestStringMethods(unittest.TestCase):
             i2.foundries[0].families[0].fonts[0].languageSupport = {"LATN": ["DEU"]}
         except ValueError as e:
             self.assertEqual(
-                str(e), 'Script tag "LATN" needs to be a four-letter lowercase tag.'
+                str(e), "Script tag 'LATN' needs to be a four-letter lowercase tag."
             )
         i2 = copy.deepcopy(installableFonts)
         try:
             i2.foundries[0].families[0].fonts[0].languageSupport = {"latn": ["de"]}
         except ValueError as e:
             self.assertEqual(
-                str(e), 'Language tag "de" needs to be a three-letter uppercase tag.'
+                str(e), "Language tag 'de' needs to be a three-letter uppercase tag."
             )
 
         # features
@@ -1315,7 +1315,7 @@ class TestStringMethods(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                'OpenType feature tag "aal" needs to be a four-letter lowercase tag.',
+                "OpenType feature tag 'aal' needs to be a four-letter lowercase tag.",
             )
 
     def test_Family(self):
@@ -1823,7 +1823,7 @@ class TestStringMethods(unittest.TestCase):
                     "Duplicate unique family IDs: ['yanone-yanonekaffeesatz']"
                 ),
                 (
-                    "<InstallableFontsResponse> --> Duplicate unique family IDs:"
+                    "<InstallableFontsResponse> --> Duplicate unique family IDs: "
                     "['yanone-kaffeesatz-regular', 'yanone-kaffeesatz-bold']"
                 ),
             ],
@@ -1839,7 +1839,7 @@ class TestStringMethods(unittest.TestCase):
         # __repr__
         s = typeworld.api.StringDataType()
         s.value = "a"
-        self.assertEqual(str(s), '<StringDataType "a">')
+        self.assertEqual(str(s), "<StringDataType 'a'>")
 
         assert type(root.supportedCommands.index("installableFonts")) == int
         assert installableFonts.designers[0].parent == installableFonts
@@ -1856,7 +1856,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertFalse(success)
         self.assertEqual(
             message,
-            'Unknown license identifier: "mefowefbhrf". See https://spdx.org/licenses/',
+            "Unknown license identifier: 'mefowefbhrf'. See https://spdx.org/licenses/",
         )
 
         user1.client.testScenario = "simulateFaultyAPIJSONResponse"
@@ -2562,8 +2562,6 @@ class TestStringMethods(unittest.TestCase):
             user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 4
         )
 
-        print("\nLine %s" % getframeinfo(currentframe()).lineno)
-
         # Remove Font
         user0.client.testScenario = "simulateNoPath"
         success, message = (
@@ -3259,7 +3257,7 @@ class TestStringMethods(unittest.TestCase):
             message,
             (
                 "Resource headers returned wrong MIME type: 'text/html'. "
-                "Expected is ['application/json']."
+                "Expected is '['application/json']'."
             ),
         )
         user2.client.testScenario = "simulateNotHTTP200"

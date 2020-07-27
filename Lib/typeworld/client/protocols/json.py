@@ -34,7 +34,7 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
         incomingMIMEType = response.headers["content-type"].split(";")[0]
         if incomingMIMEType not in acceptableMimeTypes:
             d["errors"].append(
-                'Resource headers returned wrong MIME type: "%s". Expected is "%s".'
+                "Resource headers returned wrong MIME type: '%s'. Expected is '%s'."
                 % (response.headers["content-type"], acceptableMimeTypes)
             )
 

@@ -738,7 +738,7 @@ class FontEncodingDataType(StringDataType):
             return True
 
         if self.value not in FONTENCODINGS:
-            return 'Encoding "%s" is unknown. Known are: %s' % (
+            return "Encoding '%s' is unknown. Known are: %s" % (
                 self.value,
                 FONTENCODINGS,
             )
@@ -1939,7 +1939,7 @@ class LanguageSupportDataType(DictionaryDataType):
             return True
         for script in self.value:
             if not len(script) == 4 or not script.islower():
-                return 'Script tag "%s" needs to be a four-letter lowercase tag.' % (
+                return "Script tag '%s' needs to be a four-letter lowercase tag." % (
                     script
                 )
 
@@ -1993,7 +1993,7 @@ class SupportedAPICommandsDataType(StringDataType):
         if self.value in self.commands:
             return True
         else:
-            return 'Unknown API command: "%s". Possible: %s' % (
+            return "Unknown API command: '%s'. Possible: %s" % (
                 self.value,
                 self.commands,
             )
@@ -2011,7 +2011,7 @@ class FontPurposeDataType(StringDataType):
         if self.value in list(FONTPURPOSES.keys()):
             return True
         else:
-            return 'Unknown font type: "%s". Possible: %s' % (
+            return "Unknown font type: '%s'. Possible: %s" % (
                 self.value,
                 list(FONTPURPOSES.keys()),
             )
@@ -2025,7 +2025,7 @@ class FontMimeType(StringDataType):
         if self.value in list(FONTPURPOSES["desktop"]["acceptableMimeTypes"]):
             return True
         else:
-            return 'Unknown font MIME Type: "%s". Possible: %s' % (
+            return "Unknown font MIME Type: '%s'. Possible: %s" % (
                 self.value,
                 list(FONTPURPOSES["desktop"]["acceptableMimeTypes"]),
             )
@@ -2042,7 +2042,7 @@ class FontStatusDataType(StringDataType):
         if self.value in self.statuses:
             return True
         else:
-            return 'Unknown Font Status: "%s". Possible: %s' % (
+            return "Unknown Font Status: '%s'. Possible: %s" % (
                 self.value,
                 self.statuses,
             )
@@ -2064,7 +2064,7 @@ class FontExtensionDataType(StringDataType):
             return True
         else:
 
-            return 'Unknown font extension: "%s". Possible: %s' % (
+            return "Unknown font extension: '%s'. Possible: %s" % (
                 self.value,
                 FILEEXTENSIONS,
             )
@@ -3012,7 +3012,7 @@ class Family(DictBasedObject):
         for designerKeyword in self.designerKeywords:
             if not self.parent.parent.getDesignerByKeyword(designerKeyword):
                 critical.append(
-                    'Has designer "%s", but %s.designers has no matching designer.'
+                    "Has designer '%s', but %s.designers has no matching designer."
                     % (designerKeyword, self.parent.parent)
                 )
 
@@ -3303,7 +3303,7 @@ class Foundry(DictBasedObject):
             for theme in self.styling:
                 if theme not in themes:
                     critical.append(
-                        'Styling keyword "%s" is unknown. Known are %s.'
+                        "Styling keyword '%s' is unknown. Known are %s."
                         % (theme, themes)
                     )
 
@@ -3315,7 +3315,7 @@ class Foundry(DictBasedObject):
                         valid = c.valid()
                         if valid is not True:
                             critical.append(
-                                '.styling color attribute "%s": %s' % (colorKey, valid)
+                                ".styling color attribute '%s': %s" % (colorKey, valid)
                             )
 
                 if "logoURL" in self.styling[theme]:
@@ -3323,7 +3323,7 @@ class Foundry(DictBasedObject):
                     logo.value = self.styling[theme]["logoURL"]
                     valid = logo.valid()
                     if valid is not True:
-                        critical.append('.styling "logoURL" attribute: %s' % (valid))
+                        critical.append(".styling 'logoURL' attribute: %s" % (valid))
 
         return information, warnings, critical
 
@@ -3365,9 +3365,7 @@ class BaseResponse(DictBasedObject):
             and self.response == ERROR
             and self.errorMessage.isEmpty()
         ):
-            critical.append(
-                '.response is "%s", but .errorMessage is missing.' % (ERROR)
-            )
+            critical.append(f".response is '{ERROR}', but .errorMessage is missing.")
 
         return information, warnings, critical
 
@@ -3385,7 +3383,7 @@ class InstallableFontsResponseType(ResponseCommandDataType):
         if self.value in INSTALLABLEFONTSCOMMAND["responseTypes"]:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (
+            return "Unknown response type: '%s'. Possible: %s" % (
                 self.value,
                 INSTALLABLEFONTSCOMMAND["responseTypes"],
             )
@@ -3520,9 +3518,7 @@ class InstallableFontsResponse(BaseResponse):
             and self.response == ERROR
             and self.errorMessage.isEmpty()
         ):
-            critical.append(
-                '.response is "%s", but .errorMessage is missing.' % (ERROR)
-            )
+            critical.append(f".response is '{ERROR}', but .errorMessage is missing.")
 
         if self.response == "success" and not self.name.getText():
             warnings.append(
@@ -3596,7 +3592,7 @@ class InstallFontAssetResponseType(ResponseCommandDataType):
         if self.value in INSTALLFONTASSETCOMMAND["responseTypes"]:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (
+            return "Unknown response type: '%s'. Possible: %s" % (
                 self.value,
                 INSTALLFONTASSETCOMMAND["responseTypes"],
             )
@@ -3707,7 +3703,7 @@ class InstallFontAsset(BaseResponse):
 
         if self.response == ERROR and self.errorMessage.isEmpty():
             critical.append(
-                '.response is "%s", but .errorMessage is missing.' % (ERROR)
+                ".response is '%s', but .errorMessage is missing." % (ERROR)
             )
 
         newInformation, newWarnings, newCritical = super().customValidation()
@@ -3729,7 +3725,7 @@ class InstallFontResponseType(ResponseCommandDataType):
         if self.value in INSTALLFONTSCOMMAND["responseTypes"]:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (
+            return "Unknown response type: '%s'. Possible: %s" % (
                 self.value,
                 INSTALLFONTSCOMMAND["responseTypes"],
             )
@@ -3796,7 +3792,7 @@ class UninstallFontAssedResponseType(ResponseCommandDataType):
         if self.value in UNINSTALLFONTASSETCOMMAND["responseTypes"]:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (
+            return "Unknown response type: '%s'. Possible: %s" % (
                 self.value,
                 UNINSTALLFONTASSETCOMMAND["responseTypes"],
             )
@@ -3852,7 +3848,7 @@ class UninstallFontResponseType(ResponseCommandDataType):
         if self.value in UNINSTALLFONTSCOMMAND["responseTypes"]:
             return True
         else:
-            return 'Unknown response type: "%s". Possible: %s' % (
+            return "Unknown response type: '%s'. Possible: %s" % (
                 self.value,
                 UNINSTALLFONTSCOMMAND["responseTypes"],
             )
@@ -4142,7 +4138,7 @@ class RootResponse(BaseResponse):
             VersionDataType,
             True,
             INSTALLFONTSCOMMAND["currentVersion"],
-            'Version of "%s" response' % INSTALLFONTSCOMMAND["keyword"],
+            "Version of '%s' response" % INSTALLFONTSCOMMAND["keyword"],
         ],
     }
 
