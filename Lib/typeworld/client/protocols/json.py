@@ -1,4 +1,5 @@
 import urllib
+import urllib.error
 import typeworld.client.protocols
 import typeworld.api
 from typeworld.api import VERSION
@@ -29,7 +30,15 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
         import certifi
 
         sslcontext = ssl.create_default_context(cafile=certifi.where())
-        response = urllib.request.urlopen(request, data, context=sslcontext)
+
+        try:
+            response = urllib.request.urlopen(request, data, context=sslcontext)
+        except ConnectionRefusedError:
+            d["errors"].append(f"Connection refused: {url}")
+            return root, d
+        except urllib.error.URLError:
+            d["errors"].append(f"Connection refused: {url}")
+            return root, d
 
         incomingMIMEType = response.headers["content-type"].split(";")[0]
         if incomingMIMEType not in acceptableMimeTypes:
