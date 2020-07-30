@@ -2402,8 +2402,8 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(
             message,
             (
-                "Error retrieving https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                ": HTTP Error 500: Internal Server Error"
+                "Connection refused: "
+                "https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             ),
         )
 
