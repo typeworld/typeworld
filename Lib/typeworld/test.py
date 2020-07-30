@@ -480,6 +480,7 @@ class User(object):
             mothership=MOTHERSHIP,
             pubSubSubscriptions=True,
             online=self.online,
+            testing=True,
         )
 
 
@@ -2493,6 +2494,7 @@ class TestStringMethods(unittest.TestCase):
             "anonymousAppID": user2.client.anonymousAppID(),
             "anonymousTypeWorldUserID": user2.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2657,6 +2659,7 @@ class TestStringMethods(unittest.TestCase):
             "anonymousTypeWorldUserID": user1.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2694,6 +2697,7 @@ class TestStringMethods(unittest.TestCase):
             "anonymousTypeWorldUserID": user1.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2711,6 +2715,7 @@ class TestStringMethods(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken.replace(
                 "@", "a@"
             ),  # change URL slightly
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2729,6 +2734,7 @@ class TestStringMethods(unittest.TestCase):
             "anonymousTypeWorldUserID": user1.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2749,6 +2755,7 @@ class TestStringMethods(unittest.TestCase):
             "anonymousTypeWorldUserID": user1.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
@@ -2762,6 +2769,7 @@ class TestStringMethods(unittest.TestCase):
         parameters = {
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
         }
         success, response = performRequest(
             MOTHERSHIP + "/updateSubscription", parameters, sslcontext

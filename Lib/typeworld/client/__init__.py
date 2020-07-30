@@ -737,6 +737,7 @@ class APIClient(PubSubClient):
         mode="headless",
         pubSubSubscriptions=False,
         online=True,
+        testing=False,
     ):
 
         try:
@@ -754,6 +755,7 @@ class APIClient(PubSubClient):
             self.mode = mode  # gui or headless
             self.pubSubSubscriptions = pubSubSubscriptions
             self._isSetOnline = online
+            self.testing = testing
 
             if self._isSetOnline:
                 self.sslcontext = ssl.create_default_context(cafile=certifi.where())
@@ -860,6 +862,9 @@ class APIClient(PubSubClient):
                 parameters["clientVersion"] = "abc"
             elif self.testScenario == "simulateNoClientVersion":
                 del parameters["clientVersion"]
+
+            if self.testing:
+                parameters["testing"] = "true"
 
             # if self._isSetOnline:
             if self.testScenario:

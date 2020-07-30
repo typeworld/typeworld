@@ -149,6 +149,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         secretKey = self.getSecretKey()
         if secretKey:
             data["secretKey"] = secretKey
+        if self.client.testing:
+            data["testing"] = "true"
 
         root, responses = readJSONResponse(
             self.connectURL(),
@@ -299,6 +301,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         }
         if self.client.testScenario:
             data["testScenario"] = self.client.testScenario
+        if self.client.testing:
+            data["testing"] = "true"
 
         commands = [typeworld.api.UninstallFontsResponse()]
         if updateSubscription:
@@ -354,6 +358,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             }
             if self.client.testScenario:
                 data["testScenario"] = self.client.testScenario
+            if self.client.testing:
+                data["testing"] = "true"
 
             if self.subscription.get("revealIdentity") and self.client.userName():
                 data["userName"] = self.client.userName()
@@ -421,6 +427,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         }
         if testScenario:
             data["testScenario"] = testScenario
+        if self.client.testing:
+            data["testing"] = "true"
 
         root, responses = readJSONResponse(
             self.connectURL(),
