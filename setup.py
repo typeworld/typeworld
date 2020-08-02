@@ -11,6 +11,8 @@ install_requires = [  # I get to this in a second
     "certifi",
     "keyring",
     "deepdiff",
+    "google-cloud-ndb",
+    "google-cloud-pubsub",
 ]
 
 if MAC:
