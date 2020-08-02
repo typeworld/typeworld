@@ -36,23 +36,24 @@ LINUX = platform.system() == "Linux"
 
 MOTHERSHIP = "https://api.type.world/v1"
 
-# Google App Engine stuff
+# # Google App Engine stuff
+# GOOGLE_PROJECT_ID = "typeworld2"
+# if "/Contents/Resources" in __file__:
+#     GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
+#         os.path.join(
+#             os.path.dirname(__file__),
+#             "..",
+#             "..",
+#             "..",
+#             "..",
+#             "typeworld2-cfd080814f09.json",
+#         )
+#     )  # nocoverage (This line is executed only on compiled Mac app)
+# else:
 GOOGLE_PROJECT_ID = "typeworld2"
-if "/Contents/Resources" in __file__:
-    GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "..",
-            "..",
-            "..",
-            "typeworld2-cfd080814f09.json",
-        )
-    )  # nocoverage (This line is executed only on compiled Mac app)
-else:
-    GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "typeworld2-cfd080814f09.json")
-    )
+GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "typeworld2-cfd080814f09.json")
+)
 
 if MAC:
     from AppKit import NSUserDefaults
