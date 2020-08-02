@@ -1,5 +1,4 @@
 certifi
-codecov
 deepdiff
 google-cloud-ndb
 google-cloud-pubsub
