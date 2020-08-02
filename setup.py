@@ -50,4 +50,5 @@ as well as various tools.""",  # Give a short description about your library
     },
     package_dir={"": "Lib"},
     packages=find_packages("Lib"),
+    include_package_data=True,
 )
