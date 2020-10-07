@@ -1,3 +1,4 @@
+black
 pep8
 pre-commit
 tox
