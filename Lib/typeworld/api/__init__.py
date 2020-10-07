@@ -1017,7 +1017,10 @@ class DictBasedObject(object):
                     )
             else:
                 className = match
-                match = "[%s](#user-content-class-%s)" % (className, className.lower(),)
+                match = "[%s](#user-content-class-%s)" % (
+                    className,
+                    className.lower(),
+                )
 
             return match
 
@@ -1169,7 +1172,10 @@ class DictBasedObject(object):
                                 "%s = %s" % (args.args[i + startPoint], defaultValue)
                             )
 
-                    methods += "#### %s(%s)\n\n" % (methodName, ", ".join(argList),)
+                    methods += "#### %s(%s)\n\n" % (
+                        methodName,
+                        ", ".join(argList),
+                    )
                 else:
                     methods += "#### %s()\n\n" % methodName
                 methods += (
@@ -1472,12 +1478,18 @@ class DictBasedObject(object):
                         try:
                             exec(
                                 "self.%s = typeworld.api.%s()"
-                                % (key, self._structure[key][0].dataType.__name__,)
+                                % (
+                                    key,
+                                    self._structure[key][0].dataType.__name__,
+                                )
                             )
                         except Exception:
                             exec(
                                 "self.%s = %s()"
-                                % (key, self._structure[key][0].dataType.__name__,)
+                                % (
+                                    key,
+                                    self._structure[key][0].dataType.__name__,
+                                )
                             )
                         exec("self.%s.loadDict(d[key])" % (key))
                     elif issubclass(self._structure[key][0], (ListProxy)):

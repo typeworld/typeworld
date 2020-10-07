@@ -652,11 +652,13 @@ class PubSubClient(object):
                     client.anonymousAppID(),
                 )
                 self.topicPath = "projects/{project_id}/topics/{topic}".format(
-                    project_id=GOOGLE_PROJECT_ID, topic=self.pubSubTopicID,
+                    project_id=GOOGLE_PROJECT_ID,
+                    topic=self.pubSubTopicID,
                 )
 
                 self.subscriptionPath = "projects/{pid}/subscriptions/{topic}".format(
-                    pid=GOOGLE_PROJECT_ID, topic=self.pubSubSubscriptionID,
+                    pid=GOOGLE_PROJECT_ID,
+                    topic=self.pubSubSubscriptionID,
                 )
 
                 if self.executeCondition():
