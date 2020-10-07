@@ -3383,7 +3383,7 @@ class APISubscription(PubSubClient):
                             if incomingFont.response == "success":
 
                                 path = None
-                                font = self.fontByID(fontID)
+                                font = self.fontByID(incomingFont.uniqueID)
                                 installedFontVersion = self.installedFontVersion(
                                     font=font
                                 )
