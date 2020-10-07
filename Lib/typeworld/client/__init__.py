@@ -650,18 +650,20 @@ class PubSubClient(object):
                     self.pubSubTopicID,
                     client.anonymousAppID(),
                 )
-                self.topicPath = self.pubSubSubscriber.topic_path(
-                    GOOGLE_PROJECT_ID, self.pubSubTopicID
+                self.topicPath = "projects/{project_id}/topics/{topic}".format(
+                    project_id=GOOGLE_PROJECT_ID, topic=self.pubSubTopicID,
                 )
-                self.subscriptionPath = self.pubSubSubscriber.subscription_path(
-                    GOOGLE_PROJECT_ID, self.pubSubSubscriptionID
+
+                self.subscriptionPath = "projects/{pid}/subscriptions/{topic}".format(
+                    pid=GOOGLE_PROJECT_ID, topic=self.pubSubSubscriptionID,
                 )
 
                 if self.executeCondition():
-                    if client.mode == "gui" or direct:
-                        stillAliveThread = threading.Thread(
-                            target=self.pubSubSetup_worker
-                        )  # nocoverage (is not executed in headleass mode)
+                    # Set up PubSub Client in background for speed
+                    if client.mode == "gui" or direct:  # nocoverage
+                        stillAliveThread = threading.Thread(  # nocoverage
+                            target=self.pubSubSetup_worker  # nocoverage
+                        )  # nocoverage
                         stillAliveThread.start()  # nocoverage
                         # (is not executed in headleass mode)
                     elif client.mode == "headless":
@@ -717,7 +719,9 @@ class PubSubClient(object):
         import google.api_core
 
         try:
-            self.pubSubSubscriber.delete_subscription(self.subscriptionPath)
+            self.pubSubSubscriber.delete_subscription(
+                subscription=self.subscriptionPath
+            )
         except google.api_core.exceptions.NotFound:  # nocoverage (don't want to
             # construct this error right now) TODO
             pass  # nocoverage (don't want to construct this error right now) TODO
