@@ -3650,9 +3650,10 @@ class APISubscription(PubSubClient):
                 return False, self._updatingProblem, False
 
         except Exception as e:  # nocoverage
-            self.parent.parent.handleTraceback(  # nocoverage
+            success, message = self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+            return False, message, False
 
     def updatingProblem(self):
         try:
