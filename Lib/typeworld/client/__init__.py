@@ -785,7 +785,7 @@ class APIClient(PubSubClient):
                 self.pubSubSetup()
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
+            self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
