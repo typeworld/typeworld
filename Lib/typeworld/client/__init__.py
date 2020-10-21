@@ -2130,7 +2130,7 @@ class APIClient(PubSubClient):
 
             elif WIN:
 
-                if "TRAVIS" in os.environ:
+                if os.getenv("CI", "false").lower() == "true":
                     keyring = dummyKeyRing
                     return keyring
 
