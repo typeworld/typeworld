@@ -1589,10 +1589,9 @@ class APIClient(PubSubClient):
     def secretKey(self, userID=None):
         try:
             keyring = self.keyring()
-            if keyring:
-                return keyring.get_password(
-                    self.userKeychainKey(userID or self.user()), "secretKey"
-                )
+            return keyring.get_password(
+                self.userKeychainKey(userID or self.user()), "secretKey"
+            )
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -1601,10 +1600,7 @@ class APIClient(PubSubClient):
     def userName(self):
         try:
             keyring = self.keyring()
-            if keyring:
-                return keyring.get_password(
-                    self.userKeychainKey(self.user()), "userName"
-                )
+            return keyring.get_password(self.userKeychainKey(self.user()), "userName")
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -1613,10 +1609,7 @@ class APIClient(PubSubClient):
     def userEmail(self):
         try:
             keyring = self.keyring()
-            if keyring:
-                return keyring.get_password(
-                    self.userKeychainKey(self.user()), "userEmail"
-                )
+            return keyring.get_password(self.userKeychainKey(self.user()), "userEmail")
 
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
@@ -1759,11 +1752,8 @@ class APIClient(PubSubClient):
         try:
             # Set secret key now, so it doesn't show up in preferences when offline
             keyring = self.keyring()
-            if keyring:
-                keyring.set_password(
-                    self.userKeychainKey(userID), "secretKey", secretKey
-                )
-                assert self.secretKey(userID) == secretKey
+            keyring.set_password(self.userKeychainKey(userID), "secretKey", secretKey)
+            assert self.secretKey(userID) == secretKey
 
             self.appendCommands("linkUser", userID)
             self.syncSubscriptions(performCommands=False)
@@ -1812,15 +1802,14 @@ class APIClient(PubSubClient):
             self.pubSubSetup()
 
             keyring = self.keyring()
-            if keyring:
-                if "userEmail" in response:
-                    keyring.set_password(
-                        self.userKeychainKey(userID), "userEmail", response["userEmail"]
-                    )
-                if "userName" in response:
-                    keyring.set_password(
-                        self.userKeychainKey(userID), "userName", response["userName"]
-                    )
+            if "userEmail" in response:
+                keyring.set_password(
+                    self.userKeychainKey(userID), "userEmail", response["userEmail"]
+                )
+            if "userName" in response:
+                keyring.set_password(
+                    self.userKeychainKey(userID), "userName", response["userName"]
+                )
 
             return True, None
 
