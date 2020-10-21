@@ -12,8 +12,10 @@ import json
 import unittest
 import tempfile
 
-# path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# sys.path.append(path)
+# Use local code for local testing, and rely on system-installed module for CI-testing
+if os.getenv("CI", "false").lower() == "false":
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    sys.path.append(path)
 
 import typeworld.client  # noqa: E402
 
