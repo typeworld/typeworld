@@ -2806,7 +2806,10 @@ class Font(DictBasedObject):
             )
 
         def compare(a, b):
-            return semver.compare(makeSemVer(a.number), makeSemVer(b.number))
+            return semver.VersionInfo.parse(makeSemVer(a.number)).compare(
+                makeSemVer(b.number)
+            )
+            # return semver.compare(makeSemVer(a.number), makeSemVer(b.number))
 
         versions = []
         haveVersionNumbers = []
