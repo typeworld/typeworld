@@ -10,7 +10,7 @@ install_requires = [  # I get to this in a second
     "semver",
     "certifi",
     "keyring",
-    "deepdiff==5.0.1",
+    "deepdiff",
     "google-cloud-pubsub",
 ]
 
