@@ -785,7 +785,7 @@ class APIClient(PubSubClient):
                 self.pubSubSetup()
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -819,7 +819,7 @@ class APIClient(PubSubClient):
                 self.set("lastPubSubMessage", int(time.time()))
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -840,7 +840,7 @@ class APIClient(PubSubClient):
                 "world.type.guiapp." + key
             ) or self._preferences.get(key)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -849,7 +849,7 @@ class APIClient(PubSubClient):
             self._preferences.set("world.type.guiapp." + key, value)
             self.delegate._clientPreferenceChanged(key, value)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -858,7 +858,7 @@ class APIClient(PubSubClient):
             self._preferences.remove("world.type.guiapp." + key)
             self._preferences.remove(key)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -885,7 +885,7 @@ class APIClient(PubSubClient):
             # APIClient(online=False)'
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -899,7 +899,7 @@ class APIClient(PubSubClient):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -913,7 +913,7 @@ class APIClient(PubSubClient):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -927,7 +927,7 @@ class APIClient(PubSubClient):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -943,7 +943,7 @@ class APIClient(PubSubClient):
             return _list
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -957,7 +957,7 @@ class APIClient(PubSubClient):
 
             return _list
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -965,7 +965,7 @@ class APIClient(PubSubClient):
         try:
             return strftime("%z", gmtime())
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1000,7 +1000,7 @@ class APIClient(PubSubClient):
             return parameters
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1030,7 +1030,7 @@ class APIClient(PubSubClient):
             return True
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1061,7 +1061,7 @@ class APIClient(PubSubClient):
             self.set("pendingOnlineCommands", commands)
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1187,7 +1187,7 @@ class APIClient(PubSubClient):
                 )
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1205,7 +1205,7 @@ class APIClient(PubSubClient):
             return success, message
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1248,7 +1248,7 @@ class APIClient(PubSubClient):
             # Success
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1264,7 +1264,7 @@ class APIClient(PubSubClient):
                 return True, None
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1304,7 +1304,7 @@ class APIClient(PubSubClient):
 
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1374,7 +1374,7 @@ class APIClient(PubSubClient):
 
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1386,7 +1386,7 @@ class APIClient(PubSubClient):
 
             return self.performCommands()
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1434,7 +1434,7 @@ class APIClient(PubSubClient):
                 # Success
                 return self.executeDownloadSubscriptions(response)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1448,7 +1448,7 @@ class APIClient(PubSubClient):
             return self.performCommands()
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1496,7 +1496,7 @@ class APIClient(PubSubClient):
                 # Success
                 return self.executeDownloadSubscriptions(response)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1511,7 +1511,7 @@ class APIClient(PubSubClient):
             else:
                 return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1566,7 +1566,7 @@ class APIClient(PubSubClient):
             return True, None
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1574,7 +1574,7 @@ class APIClient(PubSubClient):
         try:
             return self.get("typeworldUserAccount") or ""
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1582,7 +1582,7 @@ class APIClient(PubSubClient):
         try:
             return "https://%s@%s.type.world" % (ID, self.anonymousAppID())
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1593,7 +1593,7 @@ class APIClient(PubSubClient):
                 self.userKeychainKey(userID or self.user()), "secretKey"
             )
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1602,7 +1602,7 @@ class APIClient(PubSubClient):
             keyring = self.keyring()
             return keyring.get_password(self.userKeychainKey(self.user()), "userName")
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1612,7 +1612,7 @@ class APIClient(PubSubClient):
             return keyring.get_password(self.userKeychainKey(self.user()), "userEmail")
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1659,7 +1659,7 @@ class APIClient(PubSubClient):
                 )
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1710,7 +1710,7 @@ class APIClient(PubSubClient):
                     ["#(response.notOnline)", "#(response.notOnline.headline)"],
                 )
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1744,7 +1744,7 @@ class APIClient(PubSubClient):
             # success
             return self.linkUser(response["anonymousUserID"], response["secretKey"])
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1761,7 +1761,7 @@ class APIClient(PubSubClient):
 
             return self.performCommands()
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1814,7 +1814,7 @@ class APIClient(PubSubClient):
             return True, None
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1863,7 +1863,7 @@ class APIClient(PubSubClient):
 
             return True, instances
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1897,7 +1897,7 @@ class APIClient(PubSubClient):
 
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1932,7 +1932,7 @@ class APIClient(PubSubClient):
 
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1941,7 +1941,7 @@ class APIClient(PubSubClient):
             self.appendCommands("unlinkUser")
             return self.performCommands()
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -1988,7 +1988,7 @@ class APIClient(PubSubClient):
 
             return True, None
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2045,7 +2045,7 @@ class APIClient(PubSubClient):
             return True, None
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2066,7 +2066,7 @@ class APIClient(PubSubClient):
 
             return self._systemLocale
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2089,7 +2089,7 @@ class APIClient(PubSubClient):
 
             return _locale
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2101,7 +2101,7 @@ class APIClient(PubSubClient):
                     fonts.extend(subscription.expiringInstalledFonts())
             return fonts
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2112,7 +2112,7 @@ class APIClient(PubSubClient):
                 amount += publisher.amountOutdatedFonts()
             return amount
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2158,7 +2158,7 @@ class APIClient(PubSubClient):
 
                 return keyring
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2293,6 +2293,8 @@ Version: {typeworld.api.VERSION}
             # (currently not testing for calling this method without a sourceMethod
             # parameter)
 
+        return False, payload
+
     def log(self, *arg):
         string = "Type.World: %s" % " ".join(map(str, arg))
         if MAC:
@@ -2313,7 +2315,7 @@ Version: {typeworld.api.VERSION}
 
             return True
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2331,7 +2333,7 @@ Version: {typeworld.api.VERSION}
             self.set("resources", resources)
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2372,7 +2374,7 @@ Version: {typeworld.api.VERSION}
 
                 return True, content, mimeType
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2388,7 +2390,7 @@ Version: {typeworld.api.VERSION}
 
             return anonymousAppID
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2405,7 +2407,7 @@ Version: {typeworld.api.VERSION}
             # Get Root Command
             return protocol.rootCommand(testScenario=self.testScenario)
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2499,7 +2501,7 @@ Version: {typeworld.api.VERSION}
             return True, None, publisher, subscription
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2514,7 +2516,7 @@ Version: {typeworld.api.VERSION}
 
             return self._publishers[canonicalURL]
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
@@ -2531,7 +2533,7 @@ Version: {typeworld.api.VERSION}
             else:
                 return []
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
+            return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
