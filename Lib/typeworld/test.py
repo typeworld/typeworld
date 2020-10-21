@@ -12,8 +12,8 @@ import json
 import unittest
 import tempfile
 
-path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(path)
+# path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+# sys.path.append(path)
 
 import typeworld.client  # noqa: E402
 
