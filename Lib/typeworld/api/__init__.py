@@ -11,6 +11,7 @@ import markdown2
 import semver
 import functools
 import platform
+from deepdiff import DeepDiff
 
 
 ###############################################################################
@@ -976,8 +977,6 @@ class DictBasedObject(object):
         return self.difference(other) == {}
 
     def difference(self, other):
-        from deepdiff import DeepDiff
-
         return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
 
     def nonListProxyBasedKeys(self):
