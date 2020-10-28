@@ -761,7 +761,7 @@ class VersionDataType(StringDataType):
             return False
 
         try:
-            semver.parse(value)
+            semver.VersionInfo.parse(value)
         except ValueError as e:
             return str(e)
         return True
