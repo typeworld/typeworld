@@ -393,11 +393,12 @@ installableFonts.foundries.append(foundry)
 
 
 class User(object):
-    def __init__(self, login=None, online=True):
+    def __init__(self, login=None, online=True, delegate=None):
         self.login = login
         self.prefFile = os.path.join(tempFolder, str(id(self)) + ".json")
         self.online = online
         self.credentials = ()
+        self.delegate = delegate
 
         self.loadClient()
 
@@ -483,6 +484,7 @@ class User(object):
             pubSubSubscriptions=True,
             online=self.online,
             testing=True,
+            delegate=self.delegate,
         )
 
 
