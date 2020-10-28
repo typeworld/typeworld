@@ -583,7 +583,7 @@ class TestStringMethods(unittest.TestCase):
         loop = 0
         while (
             subscription not in user1.client.delegate._subscriptionsUpdated
-            and loop < 20  # wait
+            and loop < 60  # wait
         ):
             print(f"Waiting for subscription to be updated... {loop}s")
             time.sleep(1)
