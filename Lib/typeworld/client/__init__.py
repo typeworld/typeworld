@@ -2907,7 +2907,9 @@ class APISubscription(PubSubClient):
             )
 
     # TODO: Temporarily suspended because the central API updateSubscription requires
-    # an APIKey parameter, so is intended for publishers atm
+    # an APIKey parameter, so is intended only for publishers atm.
+    # Here, this should be called after a protected font has been installed,
+    # as it should update the used seats for that font
 
     # def announceChange(self):
     # 	try:
