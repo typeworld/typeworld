@@ -517,11 +517,11 @@ class TestStringMethods(unittest.TestCase):
             def __init__(self):
                 self.client = None
                 self._subscriptionsUpdated = []
-                self._userAccountUpdateNotificationHasBeenReceivedCheck = False
+                self._accountUpdateCheck = False
 
             def reset(self):
                 self._subscriptionsUpdated = []
-                self._userAccountUpdateNotificationHasBeenReceivedCheck = False
+                self._accountUpdateCheck = False
 
             def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
                 assert type(subscription) == typeworld.client.APISubscription
@@ -531,7 +531,7 @@ class TestStringMethods(unittest.TestCase):
 
             def userAccountUpdateNotificationHasBeenReceived(self):
                 print("userAccountUpdateNotificationHasBeenReceived")
-                self._userAccountUpdateNotificationHasBeenReceivedCheck = True
+                self._accountUpdateCheck = True
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
@@ -542,6 +542,9 @@ class TestStringMethods(unittest.TestCase):
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
+        # Reset
+        user1.client.delegate.reset()
+
         # Add protected subscription
         result = user1.client.addSubscription(protectedSubscription)
         success, message, publisher, subscription = result
@@ -550,10 +553,18 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(success, True)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
-        time.sleep(10)
 
-        # Reset
-        user1.client.delegate.reset()
+        loop = 0
+        while user4.client.delegate._accountUpdateCheck is False and loop < 60:  # wait
+            print(
+                f"Waiting for user account to be updated... {loop}s",
+                user1.client.delegate._accountUpdateCheck,
+            )
+            time.sleep(1)
+            loop += 1
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
         # Send Update Subscription Notification
         parameters = {
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
@@ -580,15 +591,11 @@ class TestStringMethods(unittest.TestCase):
 
         # User1 hasn't been notified to pull user account updates
         # Because it's the origin user account of the subbscription addition
-        self.assertFalse(
-            user1.client.delegate._userAccountUpdateNotificationHasBeenReceivedCheck
-        )
+        self.assertFalse(user1.client.delegate._accountUpdateCheck)
 
         # User4 has been notified to pull user account updates
         # because it's the same user account but on another machine
-        self.assertTrue(
-            user4.client.delegate._userAccountUpdateNotificationHasBeenReceivedCheck
-        )
+        self.assertTrue(user4.client.delegate._accountUpdateCheck)
 
         # This subscription has received an update notification
         self.assertIn(subscription, user1.client.delegate._subscriptionsUpdated)
