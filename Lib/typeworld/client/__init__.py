@@ -814,9 +814,14 @@ class APIClient(PubSubClient):
         try:
 
             if message:
-                self.delegate._userAccountUpdateNotificationHasBeenReceived()
-                message.ack()
+                data = json.loads(message.data.decode())
+                if (
+                    data["command"] == "pullUpdates"
+                    and data["sourceAnonymousAppID"] != self.anonymousAppID()
+                ):
+                    self.delegate._userAccountUpdateNotificationHasBeenReceived()
                 self.set("lastPubSubMessage", int(time.time()))
+                message.ack()
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
@@ -865,6 +870,7 @@ class APIClient(PubSubClient):
     def performRequest(self, url, parameters={}):
 
         try:
+            parameters["sourceAnonymousAppID"] = self.anonymousAppID()
             parameters["clientVersion"] = VERSION
             if self.testScenario == "simulateFaultyClientVersion":
                 parameters["clientVersion"] = "abc"
@@ -2890,6 +2896,7 @@ class APISubscription(PubSubClient):
     def pubSubCallback(self, message):
         try:
             if message:
+                # data = json.loads(message.data.decode())
                 delegate = self.parent.parent.delegate
                 delegate._subscriptionUpdateNotificationHasBeenReceived(self)
                 message.ack()

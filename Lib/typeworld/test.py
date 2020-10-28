@@ -393,28 +393,41 @@ installableFonts.foundries.append(foundry)
 
 
 class User(object):
-    def __init__(self, login=None, online=True, delegate=None):
+    def __init__(self, login=None, online=True, delegate=None, createUserAccount=True):
         self.login = login
         self.prefFile = os.path.join(tempFolder, str(id(self)) + ".json")
         self.online = online
         self.credentials = ()
         self.delegate = delegate
+        self.createUserAccount = createUserAccount
 
         self.loadClient()
 
         if self.login:
-            success, message = self.client.deleteUserAccount(*self.login)
-            if not success and message != [
-                "#(response.userUnknown)",
-                "#(response.userUnknown.headline)",
-            ]:
-                raise ValueError(message)
-            # print('Creating user account for %s' % self.login[0])
-            success, message = self.client.createUserAccount(
-                "Test User", self.login[0], self.login[1], self.login[1]
-            )
-            if not success:
-                raise ValueError(message)
+
+            if self.createUserAccount:
+                success, message = self.client.deleteUserAccount(*self.login)
+                if not success and message != [
+                    "#(response.userUnknown)",
+                    "#(response.userUnknown.headline)",
+                ]:
+                    raise ValueError(message)
+                # print('Creating user account for %s' % self.login[0])
+                success, message = self.client.createUserAccount(
+                    "Test User", self.login[0], self.login[1], self.login[1]
+                )
+                if not success:
+                    raise ValueError(message)
+                else:
+                    print(
+                        "Successfully created user account for",
+                        self.login[0],
+                        "/",
+                        self.client.user(),
+                    )
+            else:
+                self.client.logInUserAccount(self.login[0], self.login[1])
+
             self.credentials = (self.client.user(), self.client.secretKey())
 
             self.clearInvitations()
@@ -466,7 +479,7 @@ class User(object):
         self.client.testScenario = None
         self.clearInvitations()
         self.clearSubscriptions()
-        if self.login:
+        if self.login and self.createUserAccount:
             self.client.deleteUserAccount(*self.login)
 
     # def unlinkUser(self):
@@ -495,6 +508,93 @@ class TestStringMethods(unittest.TestCase):
 
     currentResult = None
     maxDiff = None
+
+    def test_updateNotifications(self):
+
+        print("test_updateNotifications() started...")
+
+        class TestDelegate(typeworld.client.TypeWorldClientDelegate):
+            def __init__(self):
+                self.client = None
+                self._subscriptionsUpdated = []
+                self._userAccountUpdateNotificationHasBeenReceivedCheck = False
+
+            def reset(self):
+                self._subscriptionsUpdated = []
+                self._userAccountUpdateNotificationHasBeenReceivedCheck = False
+
+            def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
+                assert type(subscription) == typeworld.client.APISubscription
+                subscription.update()
+                self._subscriptionsUpdated.append(subscription)
+                print("subscriptionUpdateNotificationHasBeenReceived", subscription)
+
+            def userAccountUpdateNotificationHasBeenReceived(self):
+                print("userAccountUpdateNotificationHasBeenReceived")
+                self._userAccountUpdateNotificationHasBeenReceivedCheck = True
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        user1.client.delegate = TestDelegate()
+        user1.clearInvitations()
+        user1.clearSubscriptions()
+        user4.client.delegate = TestDelegate()
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        # Add protected subscription
+        result = user1.client.addSubscription(protectedSubscription)
+        success, message, publisher, subscription = result
+        if not success:
+            print(message)
+        self.assertEqual(success, True)
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+        time.sleep(10)
+
+        # Reset
+        user1.client.delegate.reset()
+        # Send Update Subscription Notification
+        parameters = {
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
+        }
+        success, response = performRequest(
+            MOTHERSHIP + "/updateSubscription", parameters, sslcontext
+        )
+        self.assertEqual(success, True)
+        response = json.loads(response.read().decode())
+        self.assertEqual(response["response"], "success")
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        loop = 0
+        while (
+            subscription not in user1.client.delegate._subscriptionsUpdated
+            and loop < 20  # wait
+        ):
+            print(f"Waiting for subscription to be updated... {loop}s")
+            time.sleep(1)
+            loop += 1
+
+        # User1 hasn't been notified to pull user account updates
+        # Because it's the origin user account of the subbscription addition
+        self.assertFalse(
+            user1.client.delegate._userAccountUpdateNotificationHasBeenReceivedCheck
+        )
+
+        # User4 has been notified to pull user account updates
+        # because it's the same user account but on another machine
+        self.assertTrue(
+            user4.client.delegate._userAccountUpdateNotificationHasBeenReceivedCheck
+        )
+
+        # This subscription has received an update notification
+        self.assertIn(subscription, user1.client.delegate._subscriptionsUpdated)
+
+        user1.clearSubscriptions()
+        user2.clearSubscriptions()
 
     def test_emptyValues(self):
 
@@ -2769,7 +2869,6 @@ class TestStringMethods(unittest.TestCase):
         print(response)
         self.assertEqual(response["response"], "success")
 
-        # verifyCredentials without subscriptionURL
         parameters = {
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
@@ -3982,7 +4081,7 @@ class TestStringMethods(unittest.TestCase):
 
         print("test_normalSubscription() finished...")
 
-    # def _test_APIValidator(self):
+    # def test_APIValidator(self):
 
     # 	print('test_APIValidator() started...')
 
@@ -4118,12 +4217,13 @@ def setUp():
 
     print("setUp() started...")
 
-    global user0, user1, user2, user3, tempFolder
+    global user0, user1, user2, user3, user4, tempFolder
     tempFolder = tempfile.mkdtemp()
     user0 = User()
     user1 = User(testUser1)
     user2 = User(testUser2)
     user3 = User(testUser3)
+    user4 = User(testUser1, createUserAccount=False)
 
     print("setUp() finished...")
 
@@ -4132,11 +4232,12 @@ def tearDown():
 
     print("tearDown() started...")
 
-    global user0, user1, user2, user3, tempFolder
+    global user0, user1, user2, user3, user4, tempFolder
     user0.takeDown()
     user1.takeDown()
     user2.takeDown()
     user3.takeDown()
+    user4.takeDown()
 
     # Local
     if "TRAVIS" not in os.environ:
