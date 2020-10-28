@@ -812,9 +812,9 @@ class APIClient(PubSubClient):
 
     def pubSubCallback(self, message):
         try:
-            self.delegate._userAccountUpdateNotificationHasBeenReceived()
 
             if message:
+                self.delegate._userAccountUpdateNotificationHasBeenReceived()
                 message.ack()
                 self.set("lastPubSubMessage", int(time.time()))
 
@@ -2889,10 +2889,9 @@ class APISubscription(PubSubClient):
 
     def pubSubCallback(self, message):
         try:
-            self.parent.parent.delegate._subscriptionUpdateNotificationHasBeenReceived(
-                self
-            )
             if message:
+                delegate = self.parent.parent.delegate
+                delegate._subscriptionUpdateNotificationHasBeenReceived(self)
                 message.ack()
                 self.set("lastPubSubMessage", int(time.time()))
         except Exception as e:  # nocoverage
