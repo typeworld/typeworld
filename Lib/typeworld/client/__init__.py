@@ -2949,9 +2949,14 @@ class APISubscription(PubSubClient):
     def pubSubCallback(self, message):
         try:
             if message:
-                # data = json.loads(message.data.decode())
-                delegate = self.parent.parent.delegate
-                delegate._subscriptionUpdateNotificationHasBeenReceived(self)
+                data = json.loads(message.data.decode())
+                if (
+                    data["command"] == "pullUpdates"
+                    and data["sourceAnonymousAppID"]
+                    != self.parent.parent.anonymousAppID()
+                ):
+                    delegate = self.parent.parent.delegate
+                    delegate._subscriptionUpdateNotificationHasBeenReceived(self)
                 message.ack()
                 self.set("lastPubSubMessage", int(time.time()))
         except Exception as e:  # nocoverage
