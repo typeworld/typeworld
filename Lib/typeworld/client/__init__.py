@@ -16,8 +16,8 @@ import certifi
 import logging
 import inspect
 import re
+import zmq
 from time import gmtime, strftime
-
 
 import typeworld.api
 from typeworld.api import VERSION
@@ -36,25 +36,6 @@ MAC = platform.system() == "Darwin"
 LINUX = platform.system() == "Linux"
 
 MOTHERSHIP = "https://api.type.world/v1"
-
-# # Google App Engine stuff
-# GOOGLE_PROJECT_ID = "typeworld2"
-# if "/Contents/Resources" in __file__:
-#     GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
-#         os.path.join(
-#             os.path.dirname(__file__),
-#             "..",
-#             "..",
-#             "..",
-#             "..",
-#             "typeworld2-cfd080814f09.json",
-#         )
-#     )  # nocoverage (This line is executed only on compiled Mac app)
-# else:
-GOOGLE_PROJECT_ID = "typeworld2"
-GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "typeworld2-cfd080814f09.json")
-)
 
 if MAC:
     from AppKit import NSUserDefaults
@@ -621,116 +602,7 @@ class APISentInvitation(APIInvitation):
     )
 
 
-class PubSubClient(object):
-    def executeCondition(self):
-        return (
-            self.pubSubExecuteConditionMethod is None
-            or callable(self.pubSubExecuteConditionMethod)
-            and self.pubSubExecuteConditionMethod()
-        )
-
-    def pubSubSetup(self, direct=False):
-        # direct=True is called from executeDownloadSubscriptions, not sure why atm
-
-        from google.cloud import pubsub_v1
-
-        if self.__class__ == APIClient:
-            client = self
-        else:
-            client = self.parent.parent
-
-        if client.pubSubSubscriptions:
-
-            if not self.pubsubSubscription:
-
-                psClient = pubsub_v1.SubscriberClient
-                self.pubSubSubscriber = psClient.from_service_account_file(
-                    GOOGLE_APPLICATION_CREDENTIALS_JSON_PATH
-                )
-                self.pubSubSubscriptionID = "%s-appInstance-%s" % (
-                    self.pubSubTopicID,
-                    client.anonymousAppID(),
-                )
-                self.topicPath = "projects/{project_id}/topics/{topic}".format(
-                    project_id=GOOGLE_PROJECT_ID,
-                    topic=self.pubSubTopicID,
-                )
-
-                self.subscriptionPath = "projects/{pid}/subscriptions/{topic}".format(
-                    pid=GOOGLE_PROJECT_ID,
-                    topic=self.pubSubSubscriptionID,
-                )
-
-                if self.executeCondition():
-                    # Set up PubSub Client in background for speed
-                    if client.mode == "gui" or direct:  # nocoverage
-                        stillAliveThread = threading.Thread(  # nocoverage
-                            target=self.pubSubSetup_worker  # nocoverage
-                        )  # nocoverage
-                        stillAliveThread.start()  # nocoverage
-                        # (is not executed in headleass mode)
-                    elif client.mode == "headless":
-                        self.pubSubSetup_worker()
-
-    def pubSubSetup_worker(self):
-
-        import google.api_core
-
-        if self.executeCondition():
-
-            try:
-                self.pubSubSubscriber.create_subscription(
-                    name=self.subscriptionPath, topic=self.topicPath
-                )
-                self.pubsubSubscription = self.pubSubSubscriber.subscribe(
-                    self.subscriptionPath, self.pubSubCallback
-                )
-                self.pubSubCallback(None)
-            except google.api_core.exceptions.NotFound:
-                pass  # nocoverage
-            except google.api_core.exceptions.DeadlineExceeded:
-                pass  # nocoverage
-            except google.api_core.exceptions.AlreadyExists:
-                self.pubsubSubscription = self.pubSubSubscriber.subscribe(
-                    self.subscriptionPath, self.pubSubCallback
-                )
-            # Topic doesn't yet exist. For instance, subscription topic are only
-            # created after the first `updateSubscription` call on the central server
-            except google.api_core.exceptions.PermissionDenied:  # nocoverage
-                pass  # nocoverage
-
-            if self.pubsubSubscription:
-                pass
-
-    def pubSubDelete(self):
-
-        if self.__class__ == APIClient:
-            client = self
-        else:
-            client = self.parent.parent
-
-        if client.pubSubSubscriptions:
-            if self.executeCondition():
-
-                if client.mode == "gui":
-                    threading.Thread(target=self.pubSubDelete_worker).start()
-                elif client.mode == "headless":
-                    self.pubSubDelete_worker()
-
-    def pubSubDelete_worker(self):
-
-        import google.api_core
-
-        try:
-            self.pubSubSubscriber.delete_subscription(
-                subscription=self.subscriptionPath
-            )
-        except google.api_core.exceptions.NotFound:  # nocoverage (don't want to
-            # construct this error right now) TODO
-            pass  # nocoverage (don't want to construct this error right now) TODO
-
-
-class APIClient(PubSubClient):
+class APIClient(object):
     """\
     Main Type.World client app object.
     Use it to load repositories and install/uninstall fonts.
@@ -741,9 +613,9 @@ class APIClient(PubSubClient):
         preferences=None,
         secretTypeWorldAPIKey=None,
         delegate=None,
-        mothership=MOTHERSHIP,
+        mothership=None,
         mode="headless",
-        pubSubSubscriptions=False,
+        zmqSubscriptions=False,
         online=True,
         testing=False,
     ):
@@ -759,9 +631,9 @@ class APIClient(PubSubClient):
             self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
             self.delegate = delegate or TypeWorldClientDelegate()
             self.delegate.client = self
-            self.mothership = mothership
+            self.mothership = mothership or MOTHERSHIP
             self.mode = mode  # gui or headless
-            self.pubSubSubscriptions = pubSubSubscriptions
+            self.zmqSubscriptions = zmqSubscriptions
             self._isSetOnline = online
             self.testing = testing
 
@@ -775,22 +647,19 @@ class APIClient(PubSubClient):
             self._online = {}
 
             # Pull settings
-            if self.online:
+            if self._isSetOnline:
                 success, message = self.downloadSettings()
                 assert success
                 assert self.get("downloadedSettings")["messagingQueue"].startswith(
                     "tcp://"
                 )
 
-            # Pub/Sub
-            self.pubSubExecuteConditionMethod = None
-            if self.pubSubSubscriptions:
-
-                # In App
-                self.pubsubSubscription = None
-                self.pubSubTopicID = "user-%s" % self.user()
-                self.pubSubExecuteConditionMethod = self.user
-                self.pubSubSetup()
+            # ZMQ
+            if self._isSetOnline and self.zmqSubscriptions:
+                self.zmqSetup()
+                if self.user():
+                    topicID = "user-%s" % self.user()
+                    self.registerZMQCallback(topicID, self.zmqCallback)
 
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
@@ -818,18 +687,93 @@ class APIClient(PubSubClient):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def pubSubCallback(self, message):
+    def zmqSetup(self):
+        self._zmqctx = zmq.Context.instance()
+        # self._zmqctx = zmq.asyncio.Context.instance()
+        self.zmqSocket = self._zmqctx.socket(zmq.SUB)
+        self._zmqCallbacks = {}
+
+        # https://github.com/zeromq/libzmq/issues/2882
+        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE, 1)
+        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 10)
+        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, 30)
+        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, 30)
+
+        target = self.get("downloadedSettings")["messagingQueue"]
+        self.zmqSocket.connect(target)
+        print(f"connected to {target}")
+
+        self._zmqRunning = True
+        # asyncio.run(self.asyncZmqListener())
+        self.zmqListenerThread = threading.Thread(target=self.zmqListener)
+        self.zmqListenerThread.start()
+
+    async def asyncZmqListener(self):
+        try:
+            topic, msg = await self.zmqSocket.recv_multipart(flags=zmq.NOBLOCK)
+            print(f"received {topic} {msg}")
+
+            if topic in self._zmqCallbacks:
+                await self._zmqCallbacks[topic](msg)
+
+        except zmq.Again:
+            time.sleep(1)
+
+    def zmqListener(self):
+        while self._zmqRunning:
+            try:
+                topic, msg = self.zmqSocket.recv_multipart()
+                topic = topic.decode()
+                msg = msg.decode()
+                print(f"received {topic} {msg}")
+
+                if topic in self._zmqCallbacks:
+                    self._zmqCallbacks[topic](msg)
+            except zmq.Again:
+                pass
+            time.sleep(1)
+
+    def quit(self):
+        self.zmqQuit()
+
+    def zmqQuit(self):
+        if self._zmqRunning:
+            for topic in self._zmqCallbacks:
+                self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
+            self.zmqSocket.close()
+        self._zmqRunning = False
+        self._zmqctx.term()
+
+    #        self.zmqListenerThread.join()
+
+    def registerZMQCallback(self, topic, method):
+        if self._isSetOnline and self.zmqSubscriptions:
+            print(f"registering {topic}")
+            if topic not in self._zmqCallbacks:
+                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+            self._zmqCallbacks[topic] = method
+
+    def unregisterZMQCallback(self, topic):
+        if self._isSetOnline and self.zmqSubscriptions:
+            if topic in self._zmqCallbacks:
+                print(f"unregistering {topic}")
+                self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
+                del self._zmqCallbacks[topic]
+
+    def zmqCallback(self, message):
         try:
 
             if message:
-                data = json.loads(message.data.decode())
+                data = json.loads(message)
                 if (
                     data["command"] == "pullUpdates"
-                    and data["sourceAnonymousAppID"] != self.anonymousAppID()
+                    and "sourceAnonymousAppID" not in data
+                    or (
+                        "sourceAnonymousAppID" in data
+                        and data["sourceAnonymousAppID"] != self.anonymousAppID()
+                    )
                 ):
                     self.delegate._userAccountUpdateNotificationHasBeenReceived()
-                self.set("lastPubSubMessage", int(time.time()))
-                message.ack()
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
@@ -1378,10 +1322,6 @@ class APIClient(PubSubClient):
                     ):
                         subscription.delete(updateSubscriptionsOnServer=False)
 
-            # Success
-
-            self.pubSubSetup(direct=True)
-
             return True, None
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
@@ -1520,6 +1460,7 @@ class APIClient(PubSubClient):
                 return self.performCommands()
             else:
                 return True, None
+
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -1587,6 +1528,8 @@ class APIClient(PubSubClient):
 
             if performCommands:
                 return self.performCommands()
+
+            return True, None
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
@@ -1856,9 +1799,9 @@ class APIClient(PubSubClient):
             self.set("typeworldUserAccount", userID)
             assert userID == self.user()
 
-            # Pub/Sub
-            self.pubSubTopicID = "user-%s" % self.user()
-            self.pubSubSetup()
+            # ZMQ
+            topicID = "user-%s" % self.user()
+            self.registerZMQCallback(topicID, self.zmqCallback)
 
             keyring = self.keyring()
             if "userEmail" in response:
@@ -2091,9 +2034,9 @@ class APIClient(PubSubClient):
             self.remove("pendingInvitations")
             self.remove("sentInvitations")
 
-            # Success
-            self.pubSubTopicID = "user-%s" % self.user()
-            self.pubSubDelete()
+            # ZMQ
+            topicID = "user-%s" % userID
+            self.unregisterZMQCallback(topicID)
 
             keyring = self.keyring()
             keyring.delete_password(self.userKeychainKey(userID), "secretKey")
@@ -2893,7 +2836,7 @@ class APIPublisher(object):
             )
 
 
-class APISubscription(PubSubClient):
+class APISubscription(object):
     """\
     Represents a subscription, identified and grouped by the canonical URL attribute of
     the API responses.
@@ -2912,20 +2855,19 @@ class APISubscription(PubSubClient):
             self.stillAliveTouched = None
             self._updatingProblem = None
 
-            # Pub/Sub
-            self.pubSubExecuteConditionMethod = None
-            if self.parent.parent.pubSubSubscriptions:
-                self.pubsubSubscription = None
-                self.pubSubTopicID = "subscription-%s" % urllib.parse.quote_plus(
-                    self.protocol.unsecretURL()
+            # ZMQ
+            if self.parent.parent._isSetOnline and self.parent.parent.zmqSubscriptions:
+                self.parent.parent.registerZMQCallback(
+                    self.zmqTopic(), self.zmqCallback
                 )
-                self.pubSubExecuteConditionMethod = None
-                self.pubSubSetup()
 
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+
+    def zmqTopic(self):
+        return "subscription-%s" % urllib.parse.quote_plus(self.protocol.unsecretURL())
 
     def __repr__(self):
         return f'<APISubscription url="{self.url}">'
@@ -2946,19 +2888,22 @@ class APISubscription(PubSubClient):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def pubSubCallback(self, message):
+    def zmqCallback(self, message):
         try:
             if message:
-                data = json.loads(message.data.decode())
+                data = json.loads(message)
                 if (
                     data["command"] == "pullUpdates"
-                    and data["sourceAnonymousAppID"]
-                    != self.parent.parent.anonymousAppID()
+                    and "sourceAnonymousAppID" not in data
+                    or (
+                        "sourceAnonymousAppID" in data
+                        and data["sourceAnonymousAppID"]
+                        != self.parent.parent.anonymousAppID()
+                    )
                 ):
                     delegate = self.parent.parent.delegate
                     delegate._subscriptionUpdateNotificationHasBeenReceived(self)
-                message.ack()
-                self.set("lastPubSubMessage", int(time.time()))
+
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -3796,7 +3741,8 @@ class APISubscription(PubSubClient):
             except Exception:
                 pass
 
-            self.pubSubDelete()
+            # ZMQ
+            self.parent.parent.unregisterZMQCallback(self.zmqTopic())
 
             # Resources
             self.parent.parent.deleteResources(self.get("resources") or [])

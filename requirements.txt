@@ -1,7 +1,6 @@
 certifi
 deepdiff
-google-cloud-ndb
-google-cloud-pubsub
 keyring
 markdown2
+pyzmq
 semver

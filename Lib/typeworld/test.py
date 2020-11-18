@@ -491,7 +491,7 @@ class User(object):
             if MAC
             else JSON(self.prefFile),
             mothership=MOTHERSHIP,
-            pubSubSubscriptions=True,
+            zmqSubscriptions=True,
             online=self.online,
             testing=True,
             delegate=self.delegate,
@@ -501,7 +501,7 @@ class User(object):
 print("setting up objects finished...")
 
 
-class TestStringMethods(unittest.TestCase):
+class TestTypeWorld(unittest.TestCase):
 
     currentResult = None
     maxDiff = None
@@ -2881,6 +2881,8 @@ class TestStringMethods(unittest.TestCase):
         success, response = performRequest(
             MOTHERSHIP + "/updateSubscription", parameters, sslcontext
         )
+        if not success:
+            print(response)
         self.assertEqual(success, True)
         response = json.loads(response.read().decode())
         self.assertEqual(response["response"], "success")
@@ -4238,10 +4240,15 @@ def tearDown():
 
     global user0, user1, user2, user3, user4, tempFolder
     user0.takeDown()
+    user0.client.quit()
     user1.takeDown()
+    user1.client.quit()
     user2.takeDown()
+    user2.client.quit()
     user3.takeDown()
+    user3.client.quit()
     user4.takeDown()
+    user4.client.quit()
 
     # Local
     if "TRAVIS" not in os.environ:
@@ -4255,7 +4262,7 @@ if __name__ == "__main__":
     if ONLINE:
         setUp()
 
-    result = unittest.main(exit=False, failfast=True)
+    result = unittest.main(argv=["first-arg-is-ignored"], exit=False, failfast=True)
 
     if ONLINE:
         tearDown()
