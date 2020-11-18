@@ -128,14 +128,11 @@ else:
     MOTHERSHIP = "https://api.type.world/v1"  # nocoverage (for local testing only)
 
     # Testing specific version
-    if len(sys.argv) >= 2:  # nocoverage (for local testing only)
-        MOTHERSHIP = sys.argv[
-            1
-        ]  # .replace('-dot-', '.') #nocoverage (for local testing only)
-        del sys.argv[1:]  # nocoverage (for local testing only)
-
-        if not MOTHERSHIP.endswith("/v1"):  # nocoverage (for local testing only)
-            MOTHERSHIP += "/v1"  # nocoverage (for local testing only)
+    for arg in sys.argv:  # nocoverage (for local testing only)
+        if arg.startswith("http"):  # nocoverage (for local testing only)
+            MOTHERSHIP = arg  # nocoverage (for local testing only)
+            if not MOTHERSHIP.endswith("/v1"):  # nocoverage (for local testing only)
+                MOTHERSHIP += "/v1"  # nocoverage (for local testing only)
 
 
 print("Testing on %s" % MOTHERSHIP)

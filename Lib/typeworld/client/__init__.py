@@ -776,7 +776,8 @@ class APIClient(PubSubClient):
 
             # Pull settings
             if self.online:
-                self.downloadSettings()
+                success, message = self.downloadSettings()
+                assert success
                 assert self.get("downloadedSettings")["messagingQueue"].startswith(
                     "tcp://"
                 )
