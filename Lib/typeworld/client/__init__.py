@@ -1266,8 +1266,6 @@ class APIClient(PubSubClient):
 
             if userID:
 
-                self.set("lastServerSync", int(time.time()))
-
                 parameters = {
                     "anonymousAppID": self.anonymousAppID(),
                     "anonymousUserID": userID,
@@ -1291,6 +1289,8 @@ class APIClient(PubSubClient):
                             "#(response.%s.headline)" % response["response"],
                         ],
                     )
+
+                self.set("lastServerSync", int(time.time()))
 
                 return self.executeDownloadSubscriptions(response)
 
