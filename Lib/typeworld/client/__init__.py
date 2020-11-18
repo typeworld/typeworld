@@ -774,6 +774,13 @@ class APIClient(PubSubClient):
             self._systemLocale = None
             self._online = {}
 
+            # Pull settings
+            if self.online:
+                self.downloadSettings()
+                assert self.get("downloadedSettings")["messagingQueue"].startswith(
+                    "tcp://"
+                )
+
             # Pub/Sub
             self.pubSubExecuteConditionMethod = None
             if self.pubSubSubscriptions:
@@ -1160,6 +1167,16 @@ class APIClient(PubSubClient):
 
                     if success:
                         commands["downloadSubscriptions"] = []
+                        self.set("pendingOnlineCommands", commands)
+
+                    else:
+                        self._syncProblems.append(message)
+
+                if "downloadSettings" in commands and commands["downloadSettings"]:
+                    success, message = self.performDownloadSettings()
+
+                    if success:
+                        commands["downloadSettings"] = []
                         self.set("pendingOnlineCommands", commands)
 
                     else:
@@ -1554,6 +1571,55 @@ class APIClient(PubSubClient):
 
                 # Success
                 return True, len(response["subscriptions"]) - len(oldURLs)
+
+            return True, None
+
+        except Exception as e:  # nocoverage
+            return self.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+            )
+
+    def downloadSettings(self, performCommands=True):
+
+        try:
+            self.appendCommands("downloadSettings")
+
+            if performCommands:
+                return self.performCommands()
+
+        except Exception as e:  # nocoverage
+            return self.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+            )
+
+    def performDownloadSettings(self):
+        try:
+
+            parameters = {}
+
+            if self.user():
+                parameters["anonymousUserID"] = self.user()
+                parameters["secretKey"] = self.secretKey()
+
+            success, response = self.performRequest(
+                self.mothership + "/downloadSettings", parameters
+            )
+            if not success:
+                return False, response
+
+            response = json.loads(response.read().decode())
+
+            if response["response"] != "success":
+                return (
+                    False,
+                    [
+                        "#(response.%s)" % response["response"],
+                        "#(response.%s.headline)" % response["response"],
+                    ],
+                )
+
+            self.set("downloadedSettings", response["settings"])
+            self.set("lastSettingsDownloaded", int(time.time()))
 
             return True, None
 
