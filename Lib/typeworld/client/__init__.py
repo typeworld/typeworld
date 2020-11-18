@@ -1087,10 +1087,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["unlinkUser"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('unlinkUser finished successfully')
 
                     else:
-                        # 						self.log('unlinkUser failure:', message)
                         self._syncProblems.append(message)
 
                 if "linkUser" in commands and commands["linkUser"]:
@@ -1099,10 +1097,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["linkUser"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('linkUser finished successfully')
 
                     else:
-                        # 						self.log('linkUser failure:', message)
                         self._syncProblems.append(message)
 
                 if "syncSubscriptions" in commands and commands["syncSubscriptions"]:
@@ -1113,10 +1109,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["syncSubscriptions"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('syncSubscriptions finished successfully')
 
                     else:
-                        # 						self.log('syncSubscriptions failure:', message)
                         self._syncProblems.append(message)
 
                 if (
@@ -1130,10 +1124,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["uploadSubscriptions"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('uploadSubscriptions finished successfully')
 
                     else:
-                        # 						self.log('uploadSubscriptions failure:', message)
                         self._syncProblems.append(message)
 
                 if "acceptInvitation" in commands and commands["acceptInvitation"]:
@@ -1144,10 +1136,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["acceptInvitation"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('acceptInvitation finished successfully')
 
                     else:
-                        # 						self.log('acceptInvitation failure:', message)
                         self._syncProblems.append(message)
 
                 if "declineInvitation" in commands and commands["declineInvitation"]:
@@ -1158,10 +1148,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["declineInvitation"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 						self.log('declineInvitation finished successfully')
 
                     else:
-                        # 						self.log('declineInvitation failure:', message)
                         self._syncProblems.append(message)
 
                 if (
@@ -1173,10 +1161,8 @@ class APIClient(PubSubClient):
                     if success:
                         commands["downloadSubscriptions"] = []
                         self.set("pendingOnlineCommands", commands)
-                    # 					self.log('downloadSubscriptions finished successfully')
 
                     else:
-                        # 						self.log('downloadSubscriptions failure:', message)
                         self._syncProblems.append(message)
 
                 if self._syncProblems:
