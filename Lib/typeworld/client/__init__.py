@@ -713,17 +713,6 @@ class APIClient(object):
         self.zmqListenerThread = threading.Thread(target=self.zmqListener)
         self.zmqListenerThread.start()
 
-    async def asyncZmqListener(self):
-        try:
-            topic, msg = await self.zmqSocket.recv_multipart(flags=zmq.NOBLOCK)
-            print(f"received {topic} {msg}")
-
-            if topic in self._zmqCallbacks:
-                await self._zmqCallbacks[topic](msg)
-
-        except zmq.Again:
-            time.sleep(1)
-
     def zmqListener(self):
         while self._zmqRunning:
             time.sleep(0.1)
