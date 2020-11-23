@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import copy
 import platform
 import urllib.request
 import urllib.error
@@ -230,6 +231,10 @@ def performRequest(url, parameters, sslcontext):
             response = urllib.request.urlopen(url, data, context=sslcontext)
             return True, response
         except Exception:
+            parameters = copy.copy(parameters)
+            for key in parameters:
+                if "key" in key.lower():
+                    parameters[key] = "*****"
             message = (
                 f"Response from {url} with parameters {parameters} after {i+1} tries: "
                 + traceback.format_exc().splitlines()[-1]

@@ -2611,12 +2611,21 @@ class TestTypeWorld(unittest.TestCase):
         response = json.loads(response.read().decode())
         self.assertEqual(response["response"], "success")
 
-        # # Load subscription with offline client
-        # userOffline = User(online = False)
-        # result = userOffline.client.addSubscription(freeSubscription)
-        # print(result)
-        # success, message, publisher, subscription = result
-        # self.assertEqual(success, True)
+        # test for key being hidden from reply in case of bad request
+        parameters = {
+            "anonymousAppID": user2.client.anonymousAppID(),
+            "anonymousTypeWorldUserID": user2.client.user(),
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
+        }
+        success, response = performRequest(
+            MOTHERSHIP.replace("://", "://1") + "/verifyCredentials",
+            parameters,
+            sslcontext,
+        )
+        print("hidden key test:", response)
+        self.assertEqual(success, False)
+        self.assertIn("'APIKey': '*****'", response)
 
         # General stuff
         self.assertEqual(type(user0.client.locale()), list)
