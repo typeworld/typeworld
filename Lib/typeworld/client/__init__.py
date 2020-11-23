@@ -236,6 +236,8 @@ def performRequest(url, parameters, sslcontext):
             for key in parameters:
                 if "key" in key.lower():
                     parameters[key] = "*****"
+                if "secret" in key.lower():
+                    parameters[key] = "*****"
             message = (
                 f"Response from {url} with parameters {parameters} after {i+1} tries: "
                 + traceback.format_exc().splitlines()[-1]
