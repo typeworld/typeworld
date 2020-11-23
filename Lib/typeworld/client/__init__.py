@@ -710,7 +710,7 @@ class APIClient(object):
 
         self._zmqRunning = True
         # asyncio.run(self.asyncZmqListener())
-        self.zmqListenerThread = threading.Thread(target=self.zmqListener)
+        self.zmqListenerThread = threading.Thread(target=self.zmqListener, daemon=True)
         self.zmqListenerThread.start()
 
     def zmqListener(self):
