@@ -18,6 +18,7 @@ import logging
 import inspect
 import re
 import zmq
+import zmq.error
 from time import gmtime, strftime
 
 import typeworld.api
@@ -706,7 +707,6 @@ class APIClient(object):
 
         target = self.get("downloadedSettings")["messagingQueue"]
         self.zmqSocket.connect(target)
-        print(f"connected to {target}")
 
         self._zmqRunning = True
         # asyncio.run(self.asyncZmqListener())
@@ -726,43 +726,43 @@ class APIClient(object):
 
     def zmqListener(self):
         while self._zmqRunning:
+            time.sleep(0.1)
             try:
-                topic, msg = self.zmqSocket.recv_multipart()
+                topic, msg = self.zmqSocket.recv_multipart(flags=zmq.NOBLOCK)
                 topic = topic.decode()
                 msg = msg.decode()
-                print(f"received {topic} {msg}")
 
                 if topic in self._zmqCallbacks:
                     self._zmqCallbacks[topic](msg)
             except zmq.Again:
                 pass
-            time.sleep(1)
+            except zmq.error.ZMQError:
+                pass
 
     def quit(self):
         self.zmqQuit()
 
     def zmqQuit(self):
         if self._zmqRunning:
-            for topic in self._zmqCallbacks:
-                self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
+            # for topic in self._zmqCallbacks:
+            #     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
+            self._zmqRunning = False
             self.zmqSocket.close()
-        self._zmqRunning = False
-        self._zmqctx.term()
-
-    #        self.zmqListenerThread.join()
+            self._zmqctx.destroy()
+            self.zmqListenerThread.join()
+        # self._zmqctx.term()
 
     def registerZMQCallback(self, topic, method):
         if self._isSetOnline and self.zmqSubscriptions:
-            print(f"registering {topic}")
             if topic not in self._zmqCallbacks:
                 self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
 
     def unregisterZMQCallback(self, topic):
-        if self._isSetOnline and self.zmqSubscriptions:
+        if self._isSetOnline and self.zmqSubscriptions and self._zmqRunning:
             if topic in self._zmqCallbacks:
-                print(f"unregistering {topic}")
-                self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
+                if not self.zmqSocket.closed:
+                    self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
                 del self._zmqCallbacks[topic]
 
     def zmqCallback(self, message):
