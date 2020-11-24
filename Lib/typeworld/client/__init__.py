@@ -644,6 +644,7 @@ class APIClient(object):
             self.mode = mode  # gui or headless
             self.zmqSubscriptions = zmqSubscriptions
             self._isSetOnline = online
+            self.lastOnlineCheck = {}
             self.testing = testing
             self.externallyControlled = externallyControlled
 
@@ -981,6 +982,13 @@ class APIClient(object):
             if not server.startswith("http"):
                 server = "http://" + server
 
+            if (
+                server in self.lastOnlineCheck
+                and type(self.lastOnlineCheck[server]) is float
+            ):
+                if time.time() - self.lastOnlineCheck[server] < 10:
+                    return True
+
             try:
                 urllib.request.urlopen(server, context=self.sslcontext)  # Python 3.x
             except urllib.error.URLError:
@@ -990,6 +998,7 @@ class APIClient(object):
             except urllib.error.HTTPError:
                 pass
 
+            self.lastOnlineCheck[server] = time.time()
             return True
 
         except Exception as e:  # nocoverage
