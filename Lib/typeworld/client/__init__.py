@@ -644,6 +644,8 @@ class APIClient(object):
             self.zmqSubscriptions = zmqSubscriptions
             self._isSetOnline = online
             self.testing = testing
+            self._zmqRunning = False
+            self._zmqCallbacks = {}
 
             if self._isSetOnline:
                 self.sslcontext = ssl.create_default_context(cafile=certifi.where())
@@ -699,7 +701,6 @@ class APIClient(object):
         self._zmqctx = zmq.Context.instance()
         # self._zmqctx = zmq.asyncio.Context.instance()
         self.zmqSocket = self._zmqctx.socket(zmq.SUB)
-        self._zmqCallbacks = {}
 
         # https://github.com/zeromq/libzmq/issues/2882
         self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE, 1)
@@ -2258,7 +2259,7 @@ Version: {typeworld.api.VERSION}
         }
 
         # Submit to central server
-        if True:
+        if self.online(self.mothership):
 
             def handleTracebackWorker(self):
 
