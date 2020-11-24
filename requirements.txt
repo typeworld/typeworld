@@ -1,6 +1,6 @@
-certifi
 deepdiff
 keyring
 markdown2
 pyzmq
+requests
 semver

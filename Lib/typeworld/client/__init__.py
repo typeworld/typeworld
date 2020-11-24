@@ -20,6 +20,8 @@ import re
 import zmq
 import zmq.error
 from time import gmtime, strftime
+import requests
+import requests.exceptions
 
 import typeworld.api
 from typeworld.api import VERSION
@@ -219,31 +221,49 @@ def getProtocol(url):
     return False, "Protocol %s doesn’t exist in this app (yet)." % protocolName
 
 
-def performRequest(url, parameters, sslcontext):
+def performRequest(url, parameters={}):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
-    success = False
     message = None
-    data = urllib.parse.urlencode(parameters).encode("ascii")
 
     for i in range(10):
         try:
-            response = urllib.request.urlopen(url, data, context=sslcontext)
-            return True, response
+            if parameters:
+                response = requests.post(url, parameters, timeout=20)
+            else:
+                response = requests.get(url, timeout=20)
+        # except requests.exceptions.ConnectionError:
+        #     message = f'Connection refused: {url}'
+        # except requests.exceptions.HTTPError:
+        #     message = f'HTTP Error: {url}'
+        # except requests.exceptions.Timeout:
+        #     message = f'Connection timed out: {url}'
+        # except requests.exceptions.TooManyRedirects:
+        #     message = f'Too many redirects: {url}'
         except Exception:
-            parameters = copy.copy(parameters)
-            for key in parameters:
-                if "key" in key.lower():
-                    parameters[key] = "*****"
-                if "secret" in key.lower():
-                    parameters[key] = "*****"
-            message = (
-                f"Response from {url} with parameters {parameters} after {i+1} tries: "
-                + traceback.format_exc().splitlines()[-1]
-            )
+            if parameters:
+                parameters = copy.copy(parameters)
+                for key in parameters:
+                    if "key" in key.lower():
+                        parameters[key] = "*****"
+                    if "secret" in key.lower():
+                        parameters[key] = "*****"
+                message = (
+                    f"Response from {url} with parameters "
+                    f"{parameters} after {i+1} tries: "
+                    + traceback.format_exc().splitlines()[-1]
+                )
+            else:
+                message = traceback.format_exc().splitlines()[-1]
+            return False, message
+        else:
+            # try:
+            if response.status_code != 200:
+                return False, f"HTTP Error {response.status_code}"
 
-    return success, message
+            else:
+                return True, response.content
 
 
 def splitJSONURL(url):
@@ -842,7 +862,7 @@ class APIClient(object):
                 parameters["testScenario"] = self.testScenario
             if self.testScenario == "simulateCentralServerNotReachable":
                 url = "https://api.type.worlddd/api"
-            return performRequest(url, parameters, self.sslcontext)
+            return performRequest(url, parameters)
             # else:
             # 	return False, 'APIClient is set to work offline as set by:
             # APIClient(online=False)'
@@ -1202,7 +1222,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1255,7 +1275,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1384,7 +1404,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1446,7 +1466,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1501,7 +1521,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1565,7 +1585,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -1654,7 +1674,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1705,7 +1725,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] != "success":
                     return (
@@ -1746,7 +1766,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -1798,7 +1818,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -1851,7 +1871,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -1900,7 +1920,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -1935,7 +1955,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             if response["response"] != "success":
                 return (
@@ -2028,7 +2048,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.read().decode())
+            response = json.loads(response.decode())
 
             continueFor = ["userUnknown"]
             if (
@@ -2284,7 +2304,7 @@ Version: {typeworld.api.VERSION}
                     self.mothership + "/handleTraceback", parameters
                 )
                 if success:
-                    response = json.loads(response.read().decode())
+                    response = json.loads(response.decode())
                     if response["response"] != "success":
                         self.log(
                             "handleTraceback() error on server, step 2: %s" % response
@@ -2948,7 +2968,7 @@ class APISubscription(object):
     # 		if not success:
     # 			return False, response
 
-    # 		response = json.loads(response.read().decode())
+    # 		response = json.loads(response.decode())
 
     # 		if response['response'] != 'success':
     # 			return False, ['#(response.%s)' % response['response'], '#(response.%s.
@@ -2998,7 +3018,7 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
             # Touch only once
             if not self.parent.parent.user():
@@ -3036,7 +3056,7 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] == "success":
                     return True, None
@@ -3077,7 +3097,7 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.read().decode())
+                response = json.loads(response.decode())
 
                 if response["response"] == "success":
                     return True, None
@@ -3618,7 +3638,7 @@ class APISubscription(object):
 
                                 else:
                                     f = open(path, "wb")
-                                    f.write(response.read())
+                                    f.write(response)
                                     f.close()
 
                             self.parent.parent.delegate._fontHasInstalled(

@@ -8,7 +8,7 @@ LINUX = platform.system() == "Linux"
 install_requires = [  # I get to this in a second
     "markdown2",
     "semver",
-    "certifi",
+    "requests",
     "keyring",
     "deepdiff",
     "pyzmq",

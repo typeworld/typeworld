@@ -569,10 +569,10 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/updateSubscription", parameters, sslcontext
+            MOTHERSHIP + "/updateSubscription", parameters
         )
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         self.assertEqual(response["response"], "success")
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -2508,13 +2508,7 @@ class TestTypeWorld(unittest.TestCase):
             freeSubscription
         )
         self.assertEqual(success, False)
-        self.assertEqual(
-            message,
-            (
-                "Connection refused: "
-                "https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            ),
-        )
+        self.assertEqual(message, "HTTP Error 500")
 
         success, message, publisher, subscription = user0.client.addSubscription(
             (
@@ -2605,10 +2599,11 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
+        print(response)
+        response = json.loads(response.decode())
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
         self.assertEqual(response["response"], "success")
 
         # test for key being hidden from reply in case of bad request
@@ -2619,9 +2614,7 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP.replace("://", "://1") + "/verifyCredentials",
-            parameters,
-            sslcontext,
+            MOTHERSHIP.replace("://", "://1") + "/verifyCredentials", parameters
         )
         print("hidden key test:", response)
         self.assertEqual(success, False)
@@ -2779,11 +2772,11 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
         print(success, response)
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -2817,10 +2810,10 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         print(response)
         self.assertEqual(response["response"], "success")
 
@@ -2835,10 +2828,10 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -2854,10 +2847,10 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -2875,10 +2868,10 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/verifyCredentials", parameters, sslcontext
+            MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         print(response)
         self.assertEqual(response["response"], "success")
 
@@ -2888,12 +2881,12 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response = performRequest(
-            MOTHERSHIP + "/updateSubscription", parameters, sslcontext
+            MOTHERSHIP + "/updateSubscription", parameters
         )
         if not success:
             print(response)
         self.assertEqual(success, True)
-        response = json.loads(response.read().decode())
+        response = json.loads(response.decode())
         self.assertEqual(response["response"], "success")
 
         time.sleep(5)
@@ -4105,10 +4098,10 @@ class TestTypeWorld(unittest.TestCase):
     # 				"subscriptionURL": protectedSubscription,
     # 				}
 
-    # 	success, response = performRequest(MOTHERSHIP, parameters, sslcontext)
+    # 	success, response = performRequest(MOTHERSHIP, parameters)
     # 	self.assertEqual(success, True)
 
-    # 	response = json.loads(response.read().decode())
+    # 	response = json.loads(response.decode())
     # 	print(response)
 
     # 	self.assertEqual(response['response'], 'success')
@@ -4136,13 +4129,14 @@ class TestTypeWorld(unittest.TestCase):
             "Test", "test0@type.world", "abc", "abc"
         )
         self.assertEqual(success, False)
-        self.assertTrue("urlopen error" in message)
+        self.assertTrue("Failed to establish a new connection" in message)
 
         user0.client.testScenario = "simulateCentralServerProgrammingError"
         success, message = user0.client.createUserAccount(
             "Test", "test0@type.world", "abc", "abc"
         )
         self.assertEqual(success, False)
+        print(message)
         self.assertTrue("HTTP Error 500" in message)
 
         user0.client.testScenario = "simulateCentralServerErrorInResponse"
