@@ -978,8 +978,6 @@ class APIClient(object):
             if not server:
                 server = "type.world"
 
-            import urllib.request
-
             if not server.startswith("http"):
                 server = "http://" + server
 
