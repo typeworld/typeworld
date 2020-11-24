@@ -626,6 +626,7 @@ class APIClient(object):
         zmqSubscriptions=False,
         online=True,
         testing=False,
+        externallyControlled=False,
     ):
 
         try:
@@ -644,6 +645,8 @@ class APIClient(object):
             self.zmqSubscriptions = zmqSubscriptions
             self._isSetOnline = online
             self.testing = testing
+            self.externallyControlled = externallyControlled
+
             self._zmqRunning = False
             self._zmqCallbacks = {}
 
@@ -656,13 +659,9 @@ class APIClient(object):
             self._systemLocale = None
             self._online = {}
 
-            # Pull settings
-            if self._isSetOnline:
-                success, message = self.downloadSettings()
-                assert success
-                assert self.get("downloadedSettings")["messagingQueue"].startswith(
-                    "tcp://"
-                )
+            # wentOnline()
+            if not self.externallyControlled and self._isSetOnline and self.online():
+                self.wentOnline()
 
             # ZMQ
             if self._isSetOnline and self.zmqSubscriptions:
@@ -696,6 +695,14 @@ class APIClient(object):
             self.handleTraceback(
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
+
+    def wentOnline(self):
+        success, message = self.downloadSettings()
+        assert success
+        assert self.get("downloadedSettings")["messagingQueue"].startswith("tcp://")
+
+    def wentOffline(self):
+        pass
 
     def zmqSetup(self):
         self._zmqctx = zmq.Context.instance()
