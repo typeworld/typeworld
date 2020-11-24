@@ -973,10 +973,13 @@ class APIClient(object):
 
             import urllib.request
 
-            host = "http://" + server
+            if not server.startswith("http"):
+                server = "http://" + server
 
             try:
-                urllib.request.urlopen(host, context=self.sslcontext)  # Python 3.x
+                urllib.request.urlopen(server, context=self.sslcontext)  # Python 3.x
+            except urllib.error.URLError:
+                return False
             # Do nothing if HTTP errors are returned, and let the subsequent methods
             # handle the details
             except urllib.error.HTTPError:
