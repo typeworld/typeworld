@@ -1,7 +1,7 @@
-import urllib
-import urllib.error
 import typeworld.client.protocols
 import typeworld.api
+import requests
+import requests.exceptions
 from typeworld.api import VERSION
 
 
@@ -13,8 +13,6 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
 
     root = typeworld.api.RootResponse()
 
-    request = urllib.request.Request(url)
-
     if "source" not in data:
         data["source"] = "typeworldApp"
 
@@ -22,23 +20,25 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
     commands = [response._command["keyword"] for response in responses]
     data["commands"] = ",".join(commands)
 
-    data = urllib.parse.urlencode(data)
-    data = data.encode("ascii")
-
     try:
-        import ssl
-        import certifi
+        response = requests.post(url, data, timeout=20)
+    except requests.exceptions.ConnectionError:
+        d["errors"].append(f"Connection refused: {url}")
+        return root, d
+    except requests.exceptions.HTTPError:
+        d["errors"].append(f"HTTP Error: {url}")
+        return root, d
+    except requests.exceptions.Timeout:
+        d["errors"].append(f"Connection timed out: {url}")
+        return root, d
+    except requests.exceptions.TooManyRedirects:
+        d["errors"].append(f"Too many redirects: {url}")
+        return root, d
 
-        sslcontext = ssl.create_default_context(cafile=certifi.where())
+    if response.status_code != 200:
+        d["errors"].append(f"HTTP Error {response.status_code}")
 
-        try:
-            response = urllib.request.urlopen(request, data, context=sslcontext)
-        except ConnectionRefusedError:
-            d["errors"].append(f"Connection refused: {url}")
-            return root, d
-        except urllib.error.URLError:
-            d["errors"].append(f"Connection refused: {url}")
-            return root, d
+    if response.status_code == 200:
 
         incomingMIMEType = response.headers["content-type"].split(";")[0]
         if incomingMIMEType not in acceptableMimeTypes:
@@ -47,26 +47,19 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
                 % (response.headers["content-type"], acceptableMimeTypes)
             )
 
-        if response.getcode() != 200:
-            d["errors"].append(str(response.info()))
+        # Catching ValueErrors
+        try:
+            root.loadJSON(response.text)
+            information, warnings, errors = root.validate()
 
-        if response.getcode() == 200:
-            # Catching ValueErrors
-            try:
-                root.loadJSON(response.read().decode())
-                information, warnings, errors = root.validate()
-
-                if information:
-                    d["information"].extend(information)
-                if warnings:
-                    d["warnings"].extend(warnings)
-                if errors:
-                    d["errors"].extend(errors)
-            except ValueError as e:
-                d["errors"].append(str(e))
-
-    except urllib.request.HTTPError as e:
-        d["errors"].append("Error retrieving %s: %s" % (url, e))
+            if information:
+                d["information"].extend(information)
+            if warnings:
+                d["warnings"].extend(warnings)
+            if errors:
+                d["errors"].extend(errors)
+        except ValueError as e:
+            d["errors"].append(str(e))
 
     return root, d
 
