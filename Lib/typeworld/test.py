@@ -23,7 +23,6 @@ from typeworld.client import (  # noqa: E402
     APIClient,
     JSON,
     AppKitNSUserDefaults,
-    performRequest,
 )
 
 # Data Types
@@ -568,7 +567,7 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/updateSubscription", parameters
         )
         self.assertEqual(success, True)
@@ -2598,7 +2597,7 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         print(response)
@@ -2613,7 +2612,7 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP.replace("://", "://1") + "/verifyCredentials", parameters
         )
         print("hidden key test:", response)
@@ -2771,7 +2770,7 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         print(success, response)
@@ -2809,7 +2808,7 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
@@ -2827,7 +2826,7 @@ class TestTypeWorld(unittest.TestCase):
             ),  # change URL slightly
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
@@ -2846,7 +2845,7 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
@@ -2867,7 +2866,7 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/verifyCredentials", parameters
         )
         self.assertEqual(success, True)
@@ -2880,7 +2879,7 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response = performRequest(
+        success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/updateSubscription", parameters
         )
         if not success:
@@ -3988,6 +3987,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(success, True)
         self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        self.assertEqual(mimeType, "image/svg+xml")
 
         # Get publisher's logo, second time (from cache in preferences)
         self.assertTrue(
@@ -4004,6 +4004,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(success, True)
         self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        self.assertEqual(mimeType, "image/svg+xml")
 
         logoURL = (
             user0.client.publishers()[0]
@@ -4098,7 +4099,9 @@ class TestTypeWorld(unittest.TestCase):
     # 				"subscriptionURL": protectedSubscription,
     # 				}
 
-    # 	success, response = performRequest(MOTHERSHIP, parameters)
+    # 	success, response, responseObject = typeworld.client.request(
+    #   MOTHERSHIP,
+    # parameters)
     # 	self.assertEqual(success, True)
 
     # 	response = json.loads(response.decode())

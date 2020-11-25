@@ -221,7 +221,7 @@ def getProtocol(url):
     return False, "Protocol %s doesn’t exist in this app (yet)." % protocolName
 
 
-def performRequest(url, parameters={}):
+def request(url, parameters={}):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
@@ -256,14 +256,14 @@ def performRequest(url, parameters={}):
                 )
             else:
                 message = traceback.format_exc().splitlines()[-1]
-            return False, message
+            return False, message, None
         else:
             # try:
             if response.status_code != 200:
-                return False, f"HTTP Error {response.status_code}"
+                return False, f"HTTP Error {response.status_code}", response
 
             else:
-                return True, response.content
+                return True, response.content, response
 
 
 def splitJSONURL(url):
@@ -862,15 +862,16 @@ class APIClient(object):
                 parameters["testScenario"] = self.testScenario
             if self.testScenario == "simulateCentralServerNotReachable":
                 url = "https://api.type.worlddd/api"
-            return performRequest(url, parameters)
+            return request(url, parameters)
             # else:
             # 	return False, 'APIClient is set to work offline as set by:
             # APIClient(online=False)'
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
+            success, message = self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+            return success, message, None
 
     def pendingInvitations(self):
         try:
@@ -1216,7 +1217,7 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/uploadUserSubscriptions", parameters
                 )
                 if not success:
@@ -1269,7 +1270,7 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/downloadUserSubscriptions", parameters
                 )
                 if not success:
@@ -1398,7 +1399,7 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/acceptInvitations", parameters
                 )
                 if not success:
@@ -1460,7 +1461,7 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/declineInvitations", parameters
                 )
                 if not success:
@@ -1515,7 +1516,7 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/syncUserSubscriptions", parameters
                 )
                 if not success:
@@ -1579,7 +1580,7 @@ class APIClient(object):
                 parameters["anonymousUserID"] = self.user()
                 parameters["secretKey"] = self.secretKey()
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/downloadSettings", parameters
             )
             if not success:
@@ -1668,7 +1669,7 @@ class APIClient(object):
                     "password": password1,
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/createUserAccount", parameters
                 )
                 if not success:
@@ -1719,7 +1720,7 @@ class APIClient(object):
                     "password": password,
                 }
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/deleteUserAccount", parameters
                 )
                 if not success:
@@ -1760,7 +1761,7 @@ class APIClient(object):
                 "password": password,
             }
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/logInUserAccount", parameters
             )
             if not success:
@@ -1812,7 +1813,7 @@ class APIClient(object):
 
             parameters = self.addMachineIDToParameters(parameters)
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/linkTypeWorldUserAccount", parameters
             )
             if not success:
@@ -1865,7 +1866,7 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/userAppInstances", parameters
             )
             if not success:
@@ -1914,7 +1915,7 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/revokeAppInstance", parameters
             )
             if not success:
@@ -1949,7 +1950,7 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/reactivateAppInstance", parameters
             )
             if not success:
@@ -2042,7 +2043,7 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response = self.performRequest(
+            success, response, responseObject = self.performRequest(
                 self.mothership + "/unlinkTypeWorldUserAccount", parameters
             )
             if not success:
@@ -2300,7 +2301,7 @@ Version: {typeworld.api.VERSION}
 
             def handleTracebackWorker(self):
 
-                success, response = self.performRequest(
+                success, response, responseObject = self.performRequest(
                     self.mothership + "/handleTraceback", parameters
                 )
                 if success:
@@ -2387,19 +2388,21 @@ Version: {typeworld.api.VERSION}
                 if self.testScenario:
                     url = addAttributeToURL(url, "testScenario=%s" % self.testScenario)
 
-                request = urllib.request.Request(url)
-                response = urllib.request.urlopen(request, context=self.sslcontext)
+                success, response, responseObject = request(url)
+                if not success:
+                    return False, response, responseObject.headers["content-type"]
 
-                content = response.read()
+                content = responseObject.content
+
                 if binary:
                     content = base64.b64encode(content).decode()
                 else:
                     content = content.decode()
 
-                resources[key] = response.headers["content-type"] + "," + content
+                resources[key] = responseObject.headers["content-type"] + "," + content
                 self.set("resources", resources)
 
-                return True, content, response.headers["content-type"]
+                return True, content, responseObject.headers["content-type"]
 
             # Serve from cache
             else:
@@ -2963,7 +2966,8 @@ class APISubscription(object):
     # 			'secretKey': self.parent.parent.secretKey(),
     # 		}
 
-    # 		success, response = self.parent.parent.performRequest(self.parent.parent.
+    # 		success, response, responseObject =
+    # self.parent.parent.performRequest(self.parent.parent.
     # mothership, parameters)
     # 		if not success:
     # 			return False, response
@@ -3012,7 +3016,7 @@ class APISubscription(object):
                     ),
                 }
 
-                success, response = self.parent.parent.performRequest(
+                success, response, responseObject = self.parent.parent.performRequest(
                     self.parent.parent.mothership + "/registerAPIEndpoint", parameters
                 )
                 if not success:
@@ -3049,7 +3053,7 @@ class APISubscription(object):
                     "subscriptionURL": self.protocol.secretURL(),
                 }
 
-                success, response = self.parent.parent.performRequest(
+                success, response, responseObject = self.parent.parent.performRequest(
                     self.parent.parent.mothership + "/inviteUserToSubscription",
                     parameters,
                 )
@@ -3090,7 +3094,7 @@ class APISubscription(object):
                     "subscriptionURL": self.protocol.secretURL(),
                 }
 
-                success, response = self.parent.parent.performRequest(
+                success, response, responseObject = self.parent.parent.performRequest(
                     self.parent.parent.mothership + "/revokeSubscriptionInvitation",
                     parameters,
                 )
@@ -3629,7 +3633,11 @@ class APISubscription(object):
 
                             elif incomingFont.dataURL:
 
-                                success, response = self.parent.parent.performRequest(
+                                (
+                                    success,
+                                    response,
+                                    responseObject,
+                                ) = self.parent.parent.performRequest(
                                     incomingFont.dataURL
                                 )
 
