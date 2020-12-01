@@ -13,7 +13,8 @@ import unittest
 import tempfile
 
 # Use local code for local testing, and rely on system-installed module for CI-testing
-if os.getenv("CI", "false").lower() == "false":
+CI = os.getenv("CI", "false").lower() != "false"
+if not CI:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.append(path)
 
@@ -24,6 +25,17 @@ from typeworld.client import (  # noqa: E402
     JSON,
     AppKitNSUserDefaults,
 )
+
+if CI:
+    SECRETKEY = os.getenv("revokeAppInstance")
+else:
+    import keyring
+
+    SECRETKEY = keyring.get_password("http://127.0.0.1:8080/api", "revokeAppInstance")
+    print("SECRETKEY", SECRETKEY)
+
+assert SECRETKEY
+
 
 # Data Types
 from typeworld.api import (  # noqa: E402
@@ -494,6 +506,7 @@ class User(object):
             online=self.online,
             testing=True,
             delegate=self.delegate,
+            secretServerAuthKey=SECRETKEY,
         )
 
 

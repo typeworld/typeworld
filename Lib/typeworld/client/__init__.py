@@ -658,6 +658,7 @@ class APIClient(object):
         online=True,
         testing=False,
         externallyControlled=False,
+        secretServerAuthKey=None,
     ):
 
         try:
@@ -678,6 +679,7 @@ class APIClient(object):
             self.lastOnlineCheck = {}
             self.testing = testing
             self.externallyControlled = externallyControlled
+            self.secretServerAuthKey = secretServerAuthKey
 
             self._zmqRunning = False
             self._zmqCallbacks = {}
@@ -1681,6 +1683,8 @@ class APIClient(object):
                     "email": email,
                     "password": password1,
                 }
+                if self.secretServerAuthKey:
+                    parameters["SECRETKEY"] = self.secretServerAuthKey
 
                 success, response, responseObject = self.performRequest(
                     self.mothership + "/createUserAccount", parameters
