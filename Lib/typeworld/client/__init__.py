@@ -2523,10 +2523,10 @@ Version: {typeworld.api.VERSION}
                 )
                 if not success:
                     message = response
-                    self._updatingProblem = [
-                        "#(response.loginRequired)",
-                        "#(response.loginRequired.headline)",
-                    ]
+                    # self._updatingProblem = [
+                    #     "#(response.loginRequired)",
+                    #     "#(response.loginRequired.headline)",
+                    # ]
                     return False, message, None, None
 
                 # rootCommand
