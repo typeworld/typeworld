@@ -27,14 +27,12 @@ from typeworld.client import (  # noqa: E402
 )
 
 if CI:
-    SECRETKEY = os.getenv("revokeAppInstance")
+    SECRETKEY = os.getenv("REVOKEAPPINSTANCEAUTHKEY")
 else:
     import keyring
 
     SECRETKEY = keyring.get_password("http://127.0.0.1:8080/api", "revokeAppInstance")
 
-print("SECRETKEY", SECRETKEY)
-print("os.environ", os.environ)
 assert SECRETKEY
 
 
