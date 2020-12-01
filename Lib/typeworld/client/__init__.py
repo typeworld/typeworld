@@ -1321,10 +1321,10 @@ class APIClient(object):
                     return False, message
 
             # Add new subscriptions
-            for url in response["subscriptions"]:
-                if url not in oldURLs:
+            for incomingSubscription in response["heldSubscriptions"]:
+                if incomingSubscription["url"] not in oldURLs:
                     success, message, publisher, subscription = self.addSubscription(
-                        url, updateSubscriptionsOnServer=False
+                        incomingSubscription["url"], updateSubscriptionsOnServer=False
                     )
 
                     if success:
@@ -1334,7 +1334,7 @@ class APIClient(object):
                         return (
                             False,
                             "Received from self.addSubscription() for %s: %s"
-                            % (url, message),
+                            % (incomingSubscription["url"], message),
                         )
 
             def replace_item(obj, key, replace_value):
@@ -1364,10 +1364,9 @@ class APIClient(object):
             # Delete subscriptions
             for publisher in self.publishers():
                 for subscription in publisher.subscriptions():
-                    if (
-                        not subscription.protocol.secretURL()
-                        in response["subscriptions"]
-                    ):
+                    if not subscription.protocol.secretURL() in [
+                        x["url"] for x in response["heldSubscriptions"]
+                    ]:
                         subscription.delete(updateSubscriptionsOnServer=False)
 
             self.delegate._userAccountHasBeenUpdated()
