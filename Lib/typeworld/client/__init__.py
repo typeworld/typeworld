@@ -1320,6 +1320,12 @@ class APIClient(object):
                 if not success:
                     return False, message
 
+            # Verified Email Address
+            if "userAccountEmailIsVerified" in response:
+                self.set(
+                    "userAccountEmailIsVerified", response["userAccountEmailIsVerified"]
+                )
+
             # Add new subscriptions
             for incomingSubscription in response["heldSubscriptions"]:
                 if incomingSubscription["url"] not in oldURLs:
@@ -1768,6 +1774,38 @@ class APIClient(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
+    def resendEmailVerification(self):
+        try:
+            parameters = {
+                "email": self.userEmail(),
+            }
+
+            success, response, responseObject = self.performRequest(
+                self.mothership + "/resendEmailVerification", parameters
+            )
+
+            if not success:
+                return False, response
+
+            response = json.loads(response.decode())
+
+            if response["response"] != "success":
+                return (
+                    False,
+                    [
+                        "#(response.%s)" % response["response"],
+                        "#(response.%s.headline)" % response["response"],
+                    ],
+                )
+
+            # success
+            return True, None
+
+        except Exception as e:  # nocoverage
+            return self.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+            )
+
     def logInUserAccount(self, email, password):
         try:
             if not email or not password:
@@ -2082,6 +2120,7 @@ class APIClient(object):
                 )
 
             self.set("typeworldUserAccount", "")
+            self.set("userAccountEmailIsVerified", "")
             self.remove("acceptedInvitations")
             self.remove("pendingInvitations")
             self.remove("sentInvitations")
