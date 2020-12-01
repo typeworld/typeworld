@@ -2626,7 +2626,7 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
         }
         success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP.replace("://", "://1") + "/verifyCredentials", parameters
+            MOTHERSHIP.replace("://", ":/") + "/verifyCredentials", parameters
         )
         print("hidden key test:", response)
         self.assertEqual(success, False)
