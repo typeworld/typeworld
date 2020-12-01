@@ -508,6 +508,17 @@ class TypeWorldClientDelegate(object):
     def userAccountUpdateNotificationHasBeenReceived(self):
         pass
 
+    def _userAccountHasBeenUpdated(self):
+        try:
+            self.userAccountHasBeenUpdated()
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def userAccountHasBeenUpdated(self):
+        pass
+
     def _subscriptionWasDeleted(self, subscription):
         try:
             self.subscriptionWasDeleted(subscription)
@@ -1356,6 +1367,8 @@ class APIClient(object):
                         in response["subscriptions"]
                     ):
                         subscription.delete(updateSubscriptionsOnServer=False)
+
+            self.delegate._userAccountHasBeenUpdated()
 
             return True, None
         except Exception as e:  # nocoverage
