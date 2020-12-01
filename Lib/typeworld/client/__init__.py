@@ -731,7 +731,7 @@ class APIClient(object):
             )
 
     def wentOnline(self):
-        success, message = self.downloadSettings()
+        success, message = self.downloadSettings(performCommands=True)
         assert success
         assert self.get("downloadedSettings")["messagingQueue"].startswith("tcp://")
 
@@ -1574,10 +1574,11 @@ class APIClient(object):
     def downloadSettings(self, performCommands=True):
 
         try:
-            self.appendCommands("downloadSettings")
 
             if performCommands:
-                return self.performCommands()
+                return self.performDownloadSettings()
+            else:
+                self.appendCommands("downloadSettings")
 
             return True, None
 
