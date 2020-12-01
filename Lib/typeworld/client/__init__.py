@@ -803,11 +803,11 @@ class APIClient(object):
 
             if message:
                 data = json.loads(message)
-                if (
-                    data["command"] == "pullUpdates"
-                    and "sourceAnonymousAppID" not in data
+                if data["command"] == "pullUpdates" and (
+                    "sourceAnonymousAppID" not in data
                     or (
                         "sourceAnonymousAppID" in data
+                        and data["sourceAnonymousAppID"]
                         and data["sourceAnonymousAppID"] != self.anonymousAppID()
                     )
                 ):
