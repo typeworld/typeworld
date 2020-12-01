@@ -457,7 +457,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             )
 
         if api.response == "error":
-            return False, api.errorMessage
+            if api.errorMessage:
+                return False, api.errorMessage
+            else:
+                return False, "api.response is error, but no error message was given"
 
         # Predefined response messages
         if api.response != "error" and api.response != "success":
