@@ -94,8 +94,10 @@ class TypeWorldProtocolBase(object):
         return "%s, App:%s" % (self.unsecretURL(), self.client.anonymousAppID())
 
     def getSecretKey(self):
+        assert self.client
         if self.client:
             keyring = self.client.keyring()
+            assert keyring
             return keyring.get_password(self.keychainKey(), self.url.subscriptionID)
 
     def setSecretKey(self, secretKey):
@@ -111,6 +113,9 @@ class TypeWorldProtocolBase(object):
 
     def unsecretURL(self):
         return self.url.unsecretURL()
+
+    def shortUnsecretURL(self):
+        return self.url.shortUnsecretURL()
 
     def secretURL(self):
 

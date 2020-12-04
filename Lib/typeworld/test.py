@@ -533,7 +533,6 @@ class TestTypeWorld(unittest.TestCase):
 
             def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
                 assert type(subscription) == typeworld.client.APISubscription
-                subscription.update()
                 self._subscriptionsUpdated.append(subscription)
                 print("subscriptionUpdateNotificationHasBeenReceived", subscription)
 
@@ -597,19 +596,32 @@ class TestTypeWorld(unittest.TestCase):
             time.sleep(1)
             loop += 1
 
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
         # User1 hasn't been notified to pull user account updates
         # Because it's the origin user account of the subbscription addition
         self.assertFalse(user1.client.delegate._accountUpdateCheck)
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         # User4 has been notified to pull user account updates
         # because it's the same user account but on another machine
         self.assertTrue(user4.client.delegate._accountUpdateCheck)
 
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
         # This subscription has received an update notification
         self.assertIn(subscription, user1.client.delegate._subscriptionsUpdated)
 
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
         user1.clearSubscriptions()
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
         user2.clearSubscriptions()
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
     def test_emptyValues(self):
 
@@ -2048,6 +2060,15 @@ class TestTypeWorld(unittest.TestCase):
         success, protocol = typeworld.client.getProtocol(freeNamedSubscription)
         self.assertEqual(protocol.secretURL(), freeNamedSubscription)
         self.assertEqual(protocol.unsecretURL(), freeNamedSubscription)
+
+        self.assertEqual(
+            protocol.shortUnsecretURL(),
+            (
+                "typeworld://json+https//s9lWvayTEOaB9eIIMA67@"
+                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
+            ),
+        )
+
         self.assertEqual(
             typeworld.client.URL(freeNamedSubscription).HTTPURL(),
             "https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",

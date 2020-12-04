@@ -67,7 +67,7 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
 class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
     def initialize(self):
         self.versions = []
-        self._rootCommand = None
+        self._endpointCommand = None
         self._installableFontsCommand = None
         self._installFontsCommand = None
 
@@ -78,7 +78,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             api = typeworld.api.EndpointResponse()
             api.parent = self
             api.loadJSON(self.get("endpoint"))
-            self._rootCommand = api
+            self._endpointCommand = api
 
         if self.get("installableFonts"):
             api = typeworld.api.InstallableFontsResponse()
@@ -97,7 +97,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
     def returnRootCommand(self, testScenario):
 
-        if not self._rootCommand:
+        if not self._endpointCommand:
 
             # Read response
             data = {
@@ -117,10 +117,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             if responses["errors"]:
                 return False, responses["errors"][0]
 
-            self._rootCommand = root.endpoint
+            self._endpointCommand = root.endpoint
 
         # Success
-        return True, self._rootCommand
+        return True, self._endpointCommand
 
     def returnInstallableFontsCommand(self):
         return True, self.latestVersion()
@@ -262,7 +262,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
         # EndpointResponse
         if root.endpoint:
-            self._rootCommand = root.endpoint
+            self._endpointCommand = root.endpoint
 
         # InstallFontsResponse
         if root.installFonts:
@@ -437,15 +437,15 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         api = root.installableFonts
 
         # EndpointResponse
-        self._rootCommand = root.endpoint
+        self._endpointCommand = root.endpoint
 
         # Errors
         if responses["errors"]:
             return False, responses["errors"][0]
 
         if (
-            "installableFonts" not in self._rootCommand.supportedCommands
-            or "installFonts" not in self._rootCommand.supportedCommands
+            "installableFonts" not in self._endpointCommand.supportedCommands
+            or "installFonts" not in self._endpointCommand.supportedCommands
         ):
             return (
                 False,
@@ -453,7 +453,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     "API endpoint %s does not support the 'installableFonts' or "
                     "'installFonts' commands."
                 )
-                % self._rootCommand.canonicalURL,
+                % self._endpointCommand.canonicalURL,
             )
 
         if api.response == "error":
@@ -488,8 +488,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
     def save(self):
 
-        assert self._rootCommand
-        self.set("endpoint", self._rootCommand.dumpJSON())
+        assert self._endpointCommand
+        self.set("endpoint", self._endpointCommand.dumpJSON())
 
         assert self._installableFontsCommand
         self.set("installableFonts", self._installableFontsCommand.dumpJSON())

@@ -155,6 +155,28 @@ class URL(object):
                 + str(self.restDomain)
             )
 
+    def shortUnsecretURL(self):
+
+        if self.subscriptionID:
+            return (
+                str(self.customProtocol)
+                + str(self.protocol)
+                + "+"
+                + str(self.transportProtocol.replace("://", "//"))
+                + str(self.subscriptionID)
+                + "@"
+                + str(self.restDomain)
+            )
+
+        else:
+            return (
+                str(self.customProtocol)
+                + str(self.protocol)
+                + "+"
+                + str(self.transportProtocol.replace("://", "//"))
+                + str(self.restDomain)
+            )
+
     def secretURL(self):
 
         if self.subscriptionID and self.secretKey:
@@ -495,7 +517,18 @@ class TypeWorldClientDelegate(object):
 
     def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
         assert type(subscription) == typeworld.client.APISubscription
-        subscription.update()
+        pass
+
+    # def _subscriptionInvitationHasBeenReceived(self, invitation):
+    #     try:
+    #         self.subscriptionInvitationHasBeenReceived(invitation)
+    #     except Exception:  # nocoverage
+    #         self.client.handleTraceback(  # nocoverage
+    #             sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+    #         )
+
+    # def subscriptionInvitationHasBeenReceived(self, invitation):
+    #     pass
 
     def _userAccountUpdateNotificationHasBeenReceived(self):
         try:
@@ -519,48 +552,59 @@ class TypeWorldClientDelegate(object):
     def userAccountHasBeenUpdated(self):
         pass
 
-    def _subscriptionWasDeleted(self, subscription):
+    def _subscriptionHasBeenDeleted(self, subscription):
         try:
-            self.subscriptionWasDeleted(subscription)
+            self.subscriptionHasBeenDeleted(subscription)
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def subscriptionWasDeleted(self, subscription):
+    def subscriptionHasBeenDeleted(self, subscription):
         pass
 
-    def _publisherWasDeleted(self, publisher):
+    def _publisherHasBeenDeleted(self, publisher):
         try:
-            self.publisherWasDeleted(publisher)
+            self.publisherHasBeenDeleted(publisher)
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def publisherWasDeleted(self, publisher):
+    def publisherHasBeenDeleted(self, publisher):
         pass
 
-    def _subscriptionWasAdded(self, subscription):
+    def _subscriptionHasBeenAdded(self, subscription):
         try:
-            self.subscriptionWasAdded(subscription)
+            self.subscriptionHasBeenAdded(subscription)
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def subscriptionWasAdded(self, subscription):
+    def subscriptionHasBeenAdded(self, subscription):
         pass
 
-    def _subscriptionWasUpdated(self, subscription):
+    def _subscriptionWillUpdate(self, subscription):
         try:
-            self.subscriptionWasUpdated(subscription)
+            self.subscriptionWillUpdate(subscription)
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def subscriptionWasUpdated(self, subscription):
+    def subscriptionWillUpdate(self, subscription):
+        pass
+
+    def _subscriptionHasBeenUpdated(self, subscription, success, message, changes):
+        try:
+            self.subscriptionHasBeenUpdated(subscription, success, message, changes)
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def subscriptionHasBeenUpdated(self, subscription, success, message, changes):
         pass
 
     def _clientPreferenceChanged(self, key, value):
@@ -1328,26 +1372,69 @@ class APIClient(object):
 
             # Add new subscriptions
             for incomingSubscription in response["heldSubscriptions"]:
+
+                # Incoming server timestamp
+                incomingServerTimestamp = None
+                if (
+                    "serverTimestamp" in incomingSubscription
+                    and incomingSubscription["serverTimestamp"]
+                ):
+                    incomingServerTimestamp = incomingSubscription["serverTimestamp"]
+
+                # Add new subscription
                 if incomingSubscription["url"] not in oldURLs:
                     success, message, publisher, subscription = self.addSubscription(
                         incomingSubscription["url"], updateSubscriptionsOnServer=False
                     )
 
                     if success:
-                        self.delegate._subscriptionWasAdded(subscription)
 
-                    if not success:
+                        if incomingServerTimestamp:
+                            subscription.set("serverTimestamp", incomingServerTimestamp)
+
+                        self.delegate._subscriptionHasBeenAdded(subscription)
+
+                    else:
                         return (
                             False,
                             "Received from self.addSubscription() for %s: %s"
                             % (incomingSubscription["url"], message),
                         )
 
+                # Update subscription
+                else:
+                    subscription = None
+                    for publisher in self.publishers():
+                        for subscription in publisher.subscriptions():
+                            if (
+                                subscription.url
+                                == URL(incomingSubscription["url"]).unsecretURL()
+                            ):
+                                break
+
+                    if (
+                        incomingServerTimestamp
+                        and subscription.get("serverTimestamp")
+                        and int(incomingServerTimestamp)
+                        > int(subscription.get("serverTimestamp"))
+                    ) or (
+                        incomingServerTimestamp
+                        and not subscription.get("serverTimestamp")
+                    ):
+                        success, message, changes = subscription.update()
+
+                        if success:
+                            subscription.set(
+                                "serverTimestamp", int(incomingServerTimestamp)
+                            )
+
             def replace_item(obj, key, replace_value):
                 for k, v in obj.items():
                     if v == key:
                         obj[k] = replace_value
                 return obj
+
+            # oldPendingInvitations = self.pendingInvitations()
 
             # Invitations
             self.set(
@@ -1362,6 +1449,9 @@ class APIClient(object):
                 "sentInvitations",
                 [replace_item(x, None, "") for x in response["sentInvitations"]],
             )
+
+            # newPendingInvitations = self.pendingInvitations()
+            # TODO: trigger notification
 
             # import threading
             # preloadThread = threading.Thread(target=self.preloadLogos)
@@ -2920,7 +3010,7 @@ class APIPublisher(object):
             self.parent.set("publishers", publishers)
             # self.parent.set('currentPublisher', '')
 
-            self.parent.delegate._publisherWasDeleted(self)
+            self.parent.delegate._publisherHasBeenDeleted(self)
 
             self.parent._publishers = {}
         except Exception as e:  # nocoverage
@@ -2960,7 +3050,9 @@ class APISubscription(object):
             )
 
     def zmqTopic(self):
-        return "subscription-%s" % urllib.parse.quote_plus(self.protocol.unsecretURL())
+        return "subscription-%s" % urllib.parse.quote_plus(
+            self.protocol.shortUnsecretURL()
+        )
 
     def __repr__(self):
         return f'<APISubscription url="{self.url}">'
@@ -2994,8 +3086,14 @@ class APISubscription(object):
                         != self.parent.parent.anonymousAppID()
                     )
                 ):
+
                     delegate = self.parent.parent.delegate
                     delegate._subscriptionUpdateNotificationHasBeenReceived(self)
+
+                    success, message, changes = self.update()
+                    if success:
+                        if "serverTimestamp" in data and data["serverTimestamp"]:
+                            self.set("serverTimestamp", data["serverTimestamp"])
 
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
@@ -3439,6 +3537,7 @@ class APISubscription(object):
                     updateSubscription=updateSubscription,
                 )
 
+                font = None
                 if success:
 
                     # # Security check
@@ -3628,6 +3727,7 @@ class APISubscription(object):
                 fonts, updateSubscription=protectedFonts
             )
 
+            font = None
             if success:
 
                 # # Security check
@@ -3729,24 +3829,30 @@ class APISubscription(object):
 
             if self.parent.parent.online(self.protocol.url.restDomain.split("/")[0]):
 
+                self.parent.parent.delegate._subscriptionWillUpdate(self)
+
                 self.stillAlive()
 
                 success, message, changes = self.protocol.update()
-
-                if not success:
-                    return success, message, changes
 
                 if self.url in self.parent._updatingSubscriptions:
                     self.parent._updatingSubscriptions.remove(self.url)
                 self._updatingProblem = None
                 self.parent.parent._subscriptionsUpdated.append(self.url)
 
+                if not success:
+                    self.parent.parent.delegate._subscriptionHasBeenUpdated(
+                        self, success, message, changes
+                    )
+                    return success, message, changes
+
                 if changes:
                     self.save()
 
                 # Success
-                self.parent.parent.delegate._subscriptionWasUpdated(self)
-
+                self.parent.parent.delegate._subscriptionHasBeenUpdated(
+                    self, True, None, changes
+                )
                 return True, None, changes
 
             else:
@@ -3756,6 +3862,11 @@ class APISubscription(object):
                     "#(response.serverNotReachable)",
                     "#(response.serverNotReachable.headline)",
                 ]
+
+                self.parent.parent.delegate._subscriptionHasBeenUpdated(
+                    self, False, self._updatingProblem, False
+                )
+
                 return False, self._updatingProblem, False
 
         except Exception as e:  # nocoverage
@@ -3863,7 +3974,7 @@ class APISubscription(object):
             if len(subscriptions) == 0 and calledFromParent is False:
                 self.parent.delete()
 
-            self.parent.parent.delegate._subscriptionWasDeleted(self)
+            self.parent.parent.delegate._subscriptionHasBeenDeleted(self)
 
             if updateSubscriptionsOnServer:
                 self.parent.parent.uploadSubscriptions()
