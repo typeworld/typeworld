@@ -1938,8 +1938,8 @@ class APIClient(object):
             assert self.secretKey(userID) == secretKey
 
             self.appendCommands("linkUser", userID)
-            self.syncSubscriptions(performCommands=False)
-            self.downloadSubscriptions(performCommands=False)
+            self.appendCommands("syncSubscriptions")
+            self.appendCommands("downloadSubscriptions")
 
             return self.performCommands()
         except Exception as e:  # nocoverage
