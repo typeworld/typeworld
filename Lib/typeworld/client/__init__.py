@@ -801,6 +801,8 @@ class APIClient(object):
         self.zmqListenerThread = threading.Thread(target=self.zmqListener, daemon=True)
         self.zmqListenerThread.start()
 
+        print(f"Started zmq listener at {target}")
+
     def zmqListener(self):
         while self._zmqRunning:
             time.sleep(0.1)
@@ -830,17 +832,19 @@ class APIClient(object):
         # self._zmqctx.term()
 
     def registerZMQCallback(self, topic, method):
-        if self._isSetOnline and self.zmqSubscriptions:
+        if self.zmqSubscriptions:
             if topic not in self._zmqCallbacks:
                 self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
+            print(f"Registered callback for {topic}")
 
     def unregisterZMQCallback(self, topic):
-        if self._isSetOnline and self.zmqSubscriptions and self._zmqRunning:
+        if self.zmqSubscriptions and self._zmqRunning:
             if topic in self._zmqCallbacks:
                 if not self.zmqSocket.closed:
                     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
                 del self._zmqCallbacks[topic]
+            print(f"Unregistered callback for {topic}")
 
     def zmqCallback(self, message):
         try:
