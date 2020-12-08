@@ -1267,6 +1267,9 @@ class APIClient(object):
 
             if userID:
 
+                if oldURLs == ["pending"]:
+                    oldURLs = ["empty"]
+
                 self.set("lastServerSync", int(time.time()))
 
                 # 				self.log('Uploading subscriptions: %s' % oldURLs)
@@ -1620,6 +1623,9 @@ class APIClient(object):
             userID = self.user()
 
             if userID:
+
+                if oldURLs == ["pending"]:
+                    oldURLs = ["empty"]
 
                 self.set("lastServerSync", int(time.time()))
 
