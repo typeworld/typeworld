@@ -522,8 +522,7 @@ class TestTypeWorld(unittest.TestCase):
         print("test_updateNotifications() started...")
 
         class TestDelegate(typeworld.client.TypeWorldClientDelegate):
-            def __init__(self):
-                self.client = None
+            def initialize(self):
                 self._subscriptionsUpdated = []
                 self._accountUpdateCheck = False
 

@@ -462,6 +462,10 @@ class AppKitNSUserDefaults(Preferences):
 class TypeWorldClientDelegate(object):
     def __init__(self):
         self.client = None
+        self.initialize()
+
+    def initialize(self):
+        pass
 
     def _fontWillInstall(self, font):
         try:
