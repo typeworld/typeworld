@@ -738,7 +738,7 @@ class APIClient(object):
             self._online = {}
 
             # wentOnline()
-            if not self.externallyControlled and self._isSetOnline and self.online():
+            if self._isSetOnline:
                 self.wentOnline()
 
             # ZMQ
