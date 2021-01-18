@@ -250,9 +250,9 @@ def request(url, parameters={}):
     for i in range(10):
         try:
             if parameters:
-                response = requests.post(url, parameters, timeout=20)
+                response = requests.post(url, parameters, timeout=30)
             else:
-                response = requests.get(url, timeout=20)
+                response = requests.get(url, timeout=30)
         # except requests.exceptions.ConnectionError:
         #     message = f'Connection refused: {url}'
         # except requests.exceptions.HTTPError:
