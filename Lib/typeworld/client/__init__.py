@@ -241,7 +241,7 @@ def getProtocol(url):
     return False, "Protocol %s doesn’t exist in this app (yet)." % protocolName
 
 
-def request(url, parameters={}):
+def request(url, parameters={}, method="POST"):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
@@ -249,9 +249,9 @@ def request(url, parameters={}):
 
     for i in range(10):
         try:
-            if parameters:
+            if method == "POST":
                 response = requests.post(url, parameters, timeout=30)
-            else:
+            elif method == "GET":
                 response = requests.get(url, timeout=30)
         # except requests.exceptions.ConnectionError:
         #     message = f'Connection refused: {url}'
@@ -916,7 +916,7 @@ class APIClient(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def performRequest(self, url, parameters={}):
+    def performRequest(self, url, parameters={}, method="POST"):
 
         try:
             parameters["sourceAnonymousAppID"] = self.anonymousAppID()
@@ -934,7 +934,7 @@ class APIClient(object):
                 parameters["testScenario"] = self.testScenario
             if self.testScenario == "simulateCentralServerNotReachable":
                 url = "https://api.type.worlddd/api"
-            return request(url, parameters)
+            return request(url, parameters, method)
             # else:
             # 	return False, 'APIClient is set to work offline as set by:
             # APIClient(online=False)'
@@ -3825,7 +3825,7 @@ class APISubscription(object):
                                     response,
                                     responseObject,
                                 ) = self.parent.parent.performRequest(
-                                    incomingFont.dataURL
+                                    incomingFont.dataURL, method="GET"
                                 )
 
                                 if not success:
