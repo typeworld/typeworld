@@ -17,6 +17,7 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 ## Contents
 
+1. [Protocol Changes](#user-content-protocolchanges)
 1. [List of Classes](#user-content-classtoc)
 1. [Object model](#user-content-objectmodel)
 1. [Versioning](#user-content-versioning)
@@ -24,6 +25,26 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 1. [Example Code](#user-content-example)
 1. [Class Reference](#user-content-classreference)
 
+
+<div id="protocolchanges"></div>
+
+## API Changes
+
+This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
+
+### Changes in `0.2.4-beta`
+
+* After a rewrite to use Python’s `requests` library for calls to the internet, the method 
+  `type.client.performRequest()` has been renamed to `type.client.request()` and is also
+  missing the `sslContext` parameter. This interface is now `type.client.performRequest(url, parameters={})` and
+  the return values are `success, response.content, response`
+* Added mandatory [InstallFontAsset.version](#user-content-class-installfontasset-attribute-version) attribute.
+  Dynamically created responses to the `installFonts` command didn’t need it as its content was expected
+  to match the requested font IDs and versions, but static subscription need it as all available fonts need to be defined
+  in all available versions here.
+
+
+<div id="classtoc"></div>
 
 ## List of Classes
 
@@ -198,7 +219,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.1-alpha"
+    "version": "0.2.4-beta"
 }
 ```
 
@@ -346,7 +367,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.1-alpha"
+    "version": "0.2.4-beta"
 }
 ```
 
@@ -372,7 +393,8 @@ True
 
 <div id="classreference"></div>
 
-## Class Reference<div id="class-rootresponse"></div>
+## Class Reference
+<div id="class-rootresponse"></div>
 
 # _class_ RootResponse()
 
@@ -412,7 +434,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.1-alpha"
+    "version": "0.2.4-beta"
 }
 ```
 
@@ -460,12 +482,12 @@ __Type:__ [UninstallFontsResponse](#user-content-class-uninstallfontsresponse)<b
 
 ### version
 
-Version of "installFonts" response
+Version of 'installFonts' response
 
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.1-alpha
+__Default value:__ 0.2.4-beta
 
 
 
@@ -1592,7 +1614,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'otf', 'ttc', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1858,7 +1880,8 @@ attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
             "encoding": "base64",
             "mimeType": "font/otf",
             "response": "success",
-            "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+            "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
+            "version": null
         }
     ],
     "response": "success"
@@ -1931,7 +1954,8 @@ This is the response expected to be returned when the API is invoked using the
     "encoding": "base64",
     "mimeType": "font/otf",
     "response": "success",
-    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
+    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
+    "version": null
 }
 ```
 
@@ -1939,7 +1963,7 @@ This is the response expected to be returned when the API is invoked using the
 
 ### Attributes
 
-[data](#class-installfontasset-attribute-data)<br />[dataURL](#class-installfontasset-attribute-dataurl)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />
+[data](#class-installfontasset-attribute-data)<br />[dataURL](#class-installfontasset-attribute-dataurl)<br />[encoding](#class-installfontasset-attribute-encoding)<br />[errorMessage](#class-installfontasset-attribute-errormessage)<br />[mimeType](#class-installfontasset-attribute-mimetype)<br />[response](#class-installfontasset-attribute-response)<br />[uniqueID](#class-installfontasset-attribute-uniqueid)<br />[version](#class-installfontasset-attribute-version)<br />
 
 ## Attributes
 
@@ -2021,6 +2045,15 @@ A machine-readable string that uniquely identifies this font within the subscrip
 
 __Required:__ True<br />
 __Type:__ Str<br />
+<div id="class-installfontasset-attribute-version"></div>
+
+### version
+
+Font version. Must match the requested fonts.
+
+__Required:__ True<br />
+__Type:__ Str<br />
+__Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
 
 
 
