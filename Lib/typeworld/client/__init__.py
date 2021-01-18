@@ -17,8 +17,6 @@ import certifi
 import logging
 import inspect
 import re
-import zmq
-import zmq.error
 from time import gmtime, strftime
 import requests
 import requests.exceptions
@@ -787,6 +785,8 @@ class APIClient(object):
         pass
 
     def zmqSetup(self):
+        import zmq
+        import zmq.error
 
         if not self._zmqRunning:
             self._zmqctx = zmq.Context.instance()
@@ -808,6 +808,9 @@ class APIClient(object):
             self.zmqListenerThread.start()
 
     def zmqListener(self):
+        import zmq
+        import zmq.error
+
         while self._zmqRunning:
             time.sleep(0.1)
             try:
@@ -836,12 +839,18 @@ class APIClient(object):
         # self._zmqctx.term()
 
     def registerZMQCallback(self, topic, method):
+        import zmq
+        import zmq.error
+
         if self.zmqSubscriptions:
             if topic not in self._zmqCallbacks:
                 self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
 
     def unregisterZMQCallback(self, topic):
+        import zmq
+        import zmq.error
+
         if self.zmqSubscriptions and self._zmqRunning:
             if topic in self._zmqCallbacks:
                 if not self.zmqSocket.closed:
