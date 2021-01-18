@@ -265,9 +265,9 @@ def request(url, parameters={}):
             if parameters:
                 parameters = copy.copy(parameters)
                 for key in parameters:
-                    if "key" in key.lower():
+                    if key.lower().endswith("key"):
                         parameters[key] = "*****"
-                    if "secret" in key.lower():
+                    if key.lower().endswith("secret"):
                         parameters[key] = "*****"
                 message = (
                     f"Response from {url} with parameters "
