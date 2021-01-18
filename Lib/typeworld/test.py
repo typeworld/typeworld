@@ -2087,6 +2087,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.uniqueID = "abc"
         asset.response = "success"
         asset.mimeType = "font/otf"
+        asset.version = "1.0"
         # 		asset.encoding = 'base64' # missing
         asset.data = b"ABC"
         validate = asset.validate()
@@ -2102,6 +2103,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.uniqueID = "abc"
         asset.response = "success"
         asset.encoding = "base64"
+        asset.version = "1.0"
         # 		asset.mimeType = 'font/otf' # missing
         asset.data = b"ABC"
         validate = asset.validate()
@@ -2117,6 +2119,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.uniqueID = "abc"
         asset.response = "success"
         asset.encoding = "base64"
+        asset.version = "1.0"
         # 		asset.mimeType = 'font/otf' # missing
         asset.dataURL = "https://awesomefonts.com/font.otf"
         validate = asset.validate()
@@ -2132,6 +2135,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.uniqueID = "abc"
         asset.response = "success"
         asset.encoding = "base64"
+        asset.version = "1.0"
         asset.mimeType = "font/otf"  # missing
         asset.dataURL = "https://awesomefonts.com/font.otf"
         asset.data = b"ABC"
@@ -2154,6 +2158,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.response = "success"
         asset.mimeType = "font/otf"
         asset.encoding = "base64"
+        asset.version = "1.0"
         # 		asset.data = b'ABC' # missing
         validate = asset.validate()
         print(validate[2])
@@ -2173,6 +2178,7 @@ class TestTypeWorld(unittest.TestCase):
         asset.uniqueID = "abc"
         asset.mimeType = "font/otf"
         asset.response = "error"
+        asset.version = "1.0"
         validate = asset.validate()
         print(validate[2])
         self.assertEqual(
@@ -3205,6 +3211,52 @@ class TestTypeWorld(unittest.TestCase):
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, False)
+
+        print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        # Repeat font installation
+        user1.client.testScenario = "simulateWrongAssetVersion"
+        success, message = (
+            user1.client.publishers()[0]
+            .subscriptions()[-1]
+            .installFonts(
+                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
+            )
+        )
+        if success is False:
+            print(message)  # nocoverage
+        self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            (
+                "Font Test_Foundry-Runya-Runya-Regular-otf-StandardSet "
+                "with version 1.1 not found in assets"
+            ),
+        )
+        # Uninstall (because server has recorded successful installation here, as the
+        # asset version number is set to a non-matching number, but still a correct
+        # formatting as far as the server is concerned)
+        # We're using the protocol’s removeFonts() method here and not the client’s
+        # one because the actual font file is missing from disk and that causes a
+        # whole bag of problems in testing
+        success, payload = (
+            user1.client.publishers()[0]
+            .subscriptions()[-1]
+            .protocol.removeFonts(
+                ["Test_Foundry-Runya-Runya-Regular-otf-StandardSet"],
+                updateSubscription=True,
+            )
+        )
+        self.assertEqual(success, True)
+
+        # success, message = (
+        #     user1.client.publishers()[0]
+        #     .subscriptions()[-1]
+        #     .removeFonts([user1.testFont().uniqueID])
+        # )
+        # if not success:
+        #     print(message)
+        # self.assertEqual(success, True)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 

@@ -17,6 +17,7 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 ## Contents
 
+1. [Protocol Changes](#user-content-protocolchanges)
 1. [List of Classes](#user-content-classtoc)
 1. [Object model](#user-content-objectmodel)
 1. [Versioning](#user-content-versioning)
@@ -24,6 +25,26 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 1. [Example Code](#user-content-example)
 1. [Class Reference](#user-content-classreference)
 
+
+<div id="protocolchanges"></div>
+
+## API Changes
+
+This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
+
+### Changes in `0.2.4-beta`
+
+* After a rewrite to use Python’s `requests` library for calls to the internet, the method 
+  `type.client.performRequest()` has been renamed to `type.client.request()` and is also
+  missing the `sslContext` parameter. This interface is now `type.client.performRequest(url, parameters={})` and
+  the return values are `success, response.content, response`
+* Added mandatory [InstallFontAsset.version](#user-content-class-installfontasset-attribute-version) attribute.
+  Dynamically created responses to the `installFonts` command didn’t need it as its content was expected
+  to match the requested font IDs and versions, but static subscription need it as all available fonts need to be defined
+  in all available versions here.
+
+
+<div id="classtoc"></div>
 
 ## List of Classes
 

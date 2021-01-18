@@ -3752,6 +3752,7 @@ class APISubscription(object):
             font = None
             if success:
 
+                # Check for empty assets
                 if len(payload.assets) == 0:
                     return (
                         False,
@@ -3760,6 +3761,20 @@ class APISubscription(object):
                             f"{len(installTheseFontIDs)} assets"
                         ),
                     )
+
+                # Check if all requested fonts and fontVersions
+                # are present in the assets
+                for fontID, version in fonts:
+                    if not [fontID, version] in [
+                        [x.uniqueID, x.version] for x in payload.assets
+                    ]:
+                        return (
+                            False,
+                            (
+                                f"Font {fontID} with version {version} "
+                                "not found in assets"
+                            ),
+                        )
 
                 # Process fonts
                 for incomingFont in payload.assets:

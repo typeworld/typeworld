@@ -3645,6 +3645,12 @@ class InstallFontAsset(BaseResponse):
                 "the subscription. Must match the requested fonts."
             ),
         ],
+        "version": [
+            VersionDataType,
+            True,
+            None,
+            ("Font version. Must match the requested fonts."),
+        ],
         "mimeType": [
             FontMimeType,
             False,
