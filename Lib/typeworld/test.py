@@ -2823,7 +2823,6 @@ class TestTypeWorld(unittest.TestCase):
         result = user1.client.addSubscription(protectedSubscription)
         print("Scenario 3:", result)
         success, message, publisher, subscription = result
-        print("Message:", message)
 
         self.assertEqual(success, True)
         self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
