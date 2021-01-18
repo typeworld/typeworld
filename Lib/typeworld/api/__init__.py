@@ -75,11 +75,9 @@ RESPONSES = {
         "(app didn’t have this font installed). All other reponses count as "
         "errors in the remote de-authorization process."
     ),
-    NOFONTSAVAILABLE: (
-        "This subscription exists but carries " "no fonts at the moment."
-    ),
+    NOFONTSAVAILABLE: ("This subscription exists but carries no fonts at the moment."),
     TEMPORARILYUNAVAILABLE: (
-        "The service is temporarily unavailable " "but should work again later on."
+        "The service is temporarily unavailable but should work again later on."
     ),
     VALIDTYPEWORLDUSERACCOUNTREQUIRED: (
         "The access to this subscription requires a valid Type.World user "
