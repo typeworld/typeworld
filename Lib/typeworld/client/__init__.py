@@ -3752,12 +3752,6 @@ class APISubscription(object):
             font = None
             if success:
 
-                # # Security check
-                # if set([x.uniqueID for x in payload.assets]) - set(fontIDs) or
-                # set(fontIDs) - set([x.uniqueID for x in payload.assets]):
-                # 	return False, 'Incoming fonts’ uniqueIDs mismatch with requested
-                # font IDs.'
-
                 if len(payload.assets) == 0:
                     return (
                         False,
