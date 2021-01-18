@@ -3698,6 +3698,7 @@ class InstallFontAsset(BaseResponse):
         o.mimeType = "font/otf"
         o.data = "emplNXpqdGpoNXdqdHp3enRq..."
         o.encoding = "base64"
+        o.version = "1.1"
         return o
 
     def customValidation(self):

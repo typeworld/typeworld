@@ -1614,7 +1614,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttc', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1881,7 +1881,7 @@ attached as [InstallFontAsset](#user-content-class-installfontasset) obects.
             "mimeType": "font/otf",
             "response": "success",
             "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
-            "version": null
+            "version": "1.1"
         }
     ],
     "response": "success"
@@ -1955,7 +1955,7 @@ This is the response expected to be returned when the API is invoked using the
     "mimeType": "font/otf",
     "response": "success",
     "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
-    "version": null
+    "version": "1.1"
 }
 ```
 
