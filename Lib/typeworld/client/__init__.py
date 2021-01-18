@@ -787,23 +787,25 @@ class APIClient(object):
         pass
 
     def zmqSetup(self):
-        self._zmqctx = zmq.Context.instance()
-        # self._zmqctx = zmq.asyncio.Context.instance()
-        self.zmqSocket = self._zmqctx.socket(zmq.SUB)
 
-        # https://github.com/zeromq/libzmq/issues/2882
-        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE, 1)
-        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 10)
-        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, 30)
-        self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, 30)
+        if not self._zmqRunning:
+            self._zmqctx = zmq.Context.instance()
+            self.zmqSocket = self._zmqctx.socket(zmq.SUB)
 
-        target = self.get("downloadedSettings")["messagingQueue"]
-        self.zmqSocket.connect(target)
+            # https://github.com/zeromq/libzmq/issues/2882
+            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE, 1)
+            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 10)
+            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, 30)
+            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, 30)
 
-        self._zmqRunning = True
-        # asyncio.run(self.asyncZmqListener())
-        self.zmqListenerThread = threading.Thread(target=self.zmqListener, daemon=True)
-        self.zmqListenerThread.start()
+            target = self.get("downloadedSettings")["messagingQueue"]
+            self.zmqSocket.connect(target)
+
+            self._zmqRunning = True
+            self.zmqListenerThread = threading.Thread(
+                target=self.zmqListener, daemon=True
+            )
+            self.zmqListenerThread.start()
 
     def zmqListener(self):
         while self._zmqRunning:
@@ -3050,6 +3052,7 @@ class APISubscription(object):
 
             # ZMQ
             if self.parent.parent._isSetOnline and self.parent.parent.zmqSubscriptions:
+                self.parent.parent.zmqSetup()
                 self.parent.parent.registerZMQCallback(
                     self.zmqTopic(), self.zmqCallback
                 )
