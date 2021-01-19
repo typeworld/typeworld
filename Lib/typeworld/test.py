@@ -576,6 +576,20 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
+            "testScenario": "simulateUpdateSubscriptionQuotaReached",
+        }
+        success, response, responseObject = typeworld.client.request(
+            MOTHERSHIP + "/updateSubscription", parameters
+        )
+        self.assertEqual(success, True)
+        response = json.loads(response.decode())
+        self.assertEqual(response["response"], "quotaReached")
+
+        # Send Update Subscription Notification
+        parameters = {
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
         }
         success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/updateSubscription", parameters
