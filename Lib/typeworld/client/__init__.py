@@ -2555,7 +2555,7 @@ Version: {typeworld.api.VERSION}
                 if self.testScenario:
                     url = addAttributeToURL(url, "testScenario=%s" % self.testScenario)
 
-                success, response, responseObject = request(url)
+                success, response, responseObject = request(url, method="GET")
                 if not success:
                     return False, response, responseObject.headers["content-type"]
 
