@@ -3968,12 +3968,16 @@ data, and whether or not this endpoint can be publicized about.
             True,
             "CC-BY-NC-ND-4.0",
             (
-                "Identifier of license under which the API endpoint publishes its "
-                "data, as per [https://spdx.org/licenses/](). This license will not "
-                "be presented to the user. The software client needs to be aware of "
+                "Machine-readable identifier of license under which the API Endpoint "
+                "publishes its (metda)data, "
+                "as per [https://spdx.org/licenses/](). This license will not "
+                "be presented to the user. Instead, the software client that accesses "
+                "your API Endpoint needs to be aware of "
                 "the license and proceed only if allowed, otherwise decline the usage "
-                "of this API endpoint. Licenses of the individual responses can be "
-                "fine-tuned in the respective responses."
+                "of this API endpoint. In other words, the non-commercial "
+                "CC-BY-NC-ND-4.0 license that is the default here forbids a commercial "
+                "software from accessing your API Endpoint unless they have a separate "
+                "legal agreememt with you."
             ),
         ],
         "supportedCommands": [
