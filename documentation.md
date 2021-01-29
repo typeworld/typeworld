@@ -115,6 +115,52 @@ Optionally, publishers may request the transmission of end users identities (nam
 * **API Endpoint** describes an endpoint on a publisher’s web server that exists particularly to serve fonts to the Type.World App. This endpoint can coexist with a publisher’s normal web site on the same server, but under a different URL, like `https://awesomefonts.com` for the public web site and `https://awesomefonts.com/typeworldapi/` for the API Endpoint.
 * **Third party service** describes a turn-key solution for hosting fonts to be served under the Type.World JSON Protocol, the *first party* being Type.World itself, *second party* being you implementing your own *API Endpoint*, and *third party* being an external service implemented by someone other than Type.World or yourself that you can use to serve fonts. I’m referring mostly to services here that implement serving *custom fonts* because serving *retail fonts* requires the knowledge of which customer bought which fonts, and only online shops have that knowledge. Unless, of course, such a third party also operates an online shop, like [Fontdue](https://www.fontdue.com/) does.
 
+# System Design
+
+![Type.World System Design](/static/images/SystemDesign.svg)
+
+## Open Source
+
+All code in the Type.World project, such as the GUI App, is released as **Free and Open-Source Software (FOSS)** under the Apache 2.0 License on Type.World’s [Github profile](https://github.com/typeworld).
+
+Each publisher’s API Endpoint will be implemented based on the open-source *Type.World JSON Protocol*.
+
+The only part that’s currently not open-sourced yet is the so called *central server* that handles the user accounts and instant update notifications. They are actually several servers. More work needs to be put into those server’s source code so that it can be published openly, to be expected later in 2021 after the project’s initial release.
+
+## Free vs. Paid
+
+The most basic usage of the Type.World system is free. Neither publishers nor users are required to pay Type.World for using it.
+
+However, Type.World chooses to charge both publishers and end users for certain convenience features that causes Type.World [real-world costs](#costs).
+
+### For Publishers
+
+**Free:**
+
+* Offering fonts to install through the Type.World app
+
+**Paid:**
+
+* Instant subscription update notifications to end users
+
+Publishers will be charged per usage of the system as detailed in the [Price Calculator](/developer/prices)
+
+### For End Users
+
+**Free:**
+
+* Downloading and using the app
+* Opening a Type.World user account and backing up subscriptions into the account
+* Receive invitations to share subscriptions by email
+
+**Paid:**
+
+* Synchronizing a Type.World user account between several Type.World apps on several computers
+* Inviting other users to share font subscriptions
+* Receive invitations to share subscriptions instantly by the app itself
+
+End users will be charged 1€/month (billed yearly).
+
 
 # Serving Fonts
 
@@ -358,22 +404,26 @@ If you’re building your own API endpoint under the Type.World JSON protocol, w
 
 # Finances
 
-The Type.World project aims to be a non-profit service to the type industry.
-However, there are costs, and those costs are expected to be shouldered by those factions in the industry that use the Type.World system in commercial work for themselves, be it custom fonts or selling commercial fonts. Even free font offerings don’t exist in a vacuum. They’re making money from ads, for instance, and therefore need to support the project.
+The Type.World project aims to be a service to the type industry.
+While the software itself is created under libre/open source licenses, there are costs. These costs are to be shouldered by those factions in the industry that use the Type.World system in commercial work for themselves, be it custom fonts or selling commercial fonts, or, to a certain extend, by users.
+
+The system is designed in a way that, on an entry level, both publishers and users may use the system free of charge. 
 
 ## Costs
 
-* *Server Costs:* The central server that handles the Type.World user accounts is running on Google App Engine and billed per use. As of this writing we’re still in the free introductory phase that Google offers to all new projects. For later, server costs can’t be foreseen because they highly depend on the server usage, which depends on how widely the type industry adopts this projects. All we can assume for now is that Google’s cloud computing prices are very competitive and are expected to be bearable.
+* *Database:* The central server that handles the Type.World user accounts is running on Google App Engine and billed per use. Server costs can’t be calculated for the future because they highly depend on the server usage, which depends on how widely the type industry adopts this projects. 
+* *Messaging Servers:* The messaging servers handle the instant update notifications that are Type.World’s most important convenience feature. They are costly to maintain for very large user numbers.
 * *Sending emails* from the server via [Mailgun](https://www.mailgun.com) costs money
 * *Code Signing Certificates* are necessary separately for both Windows and macOS to sign the GUI App in order to make it installable and usable safely in the operating systems. Costs are currently $129/year for the Windows Certificate and €99/year for membership in the Apple Developer Program; the certificate itself is free for macOS.
-* *Legal Costs:* Some parts of this project requires legal aid (Terms & Conditions etc.). I was planning for this work to be done between September 2020 and March 2021, so I haven’t looked into costs yet.
-* *Development Costs:* Developing this system costs a lot of time. That development time needs to be paid for, because the developer needs to pay rent, social security, organic food, and wants to be able to put aside money for the future. In other words, the developer wants to be paid a decent salary. Currently, this project is developed by one person (Yanone), but that could and should change in the future. Please not that salaries are distinctively different from *profit* as senselessly accumulating money. As of this writing, Google Fonts is sponsoring the development costs for the system to be published in its first stable version 1.0, until March 2021, with Windows and macOS versions of the GUI app.
+* *Legal Costs:* Some parts of this project requires legal aid (Terms & Conditions etc.)
+* *Development Costs:* Developing this system costs a lot of time. That development time needs to be paid for, because the developer needs to pay rent, social security, wants to eat organic food, and wants to be able to put aside money for the future. In other words, the developer wants to be paid a salary. Currently, this project is developed by one person (Yanone), but that could and should change in the future. Please not that *salaries* are distinctively different from *profit* as meaninglessly accumulating money. As of this writing, Google Fonts is sponsoring the development costs for the system to be published in its first stable version 1.0, until March 2021, with Windows and macOS versions of the GUI app.
 
 ## Sources of Income
 
 * *Donations:* Type.World operates a Patreon page for monthly recurring donations. You should donate: [patreon.com/typeWorld](https://www.patreon.com/typeWorld)
 * *Sponsoring:* For sponsoring outside of the Patreon donations, please get in touch at [hello@type.world](mailto:hello@type.world)
-* *Affiliate Commissions:* The project will try to enter into affiliate commission agreements with commercial type foundries that offer the system to their users. All web traffic to type foundry websites that originates from the Type.World system will be identified by the foundry by a special key that is appended to the website links, such as: `https://awesomefonts.com/familyxyz/?affiliateID=hb6di3kes`. In this example, the string `hb6di3kes` identifies Type.World as the origin. The foundry sets a cookie in the user’s browser for Type.World being the origin, and pays out a commission to Type.World for each sale that is generated thereafter that originated from Type.World. Type.World will be asking for a minimum commission of 5% for sales that originated from itself.
+* *Billing Professional Usage:* While many features of Type.World are free for everyone to use, some other features will be billed to font publishers and end users. Please refer to the [Price Calculator](/developer/prices/) for details.
+
 
 ## Future Outlook
 
