@@ -2325,6 +2325,10 @@ class APIClient(object):
 
             if MAC:
 
+                if os.getenv("CI", "false").lower() == "true":
+                    keyring = dummyKeyRing
+                    return keyring
+
                 import keyring
 
                 # keyring.core.set_keyring(
@@ -2349,16 +2353,22 @@ class APIClient(object):
 
             elif LINUX:
 
-                try:
-                    import keyring
-
-                    # keyring.core.set_keyring(
-                    #     keyring.core.load_keyring(
-                    #         "keyring.backends.kwallet.DBusKeyring"
-                    #     )
-                    # )
-                except Exception:
+                if os.getenv("CI", "false").lower() == "true":
                     keyring = dummyKeyRing
+                    return keyring
+
+                # try:
+                #     import keyring
+
+                #     # keyring.core.set_keyring(
+                #     #     keyring.core.load_keyring(
+                #     #         "keyring.backends.kwallet.DBusKeyring"
+                #     #     )
+                #     # )
+                # except Exception:
+                #     keyring = dummyKeyRing
+
+                import keyring  # nocoverage (Fails on Travis CI)
 
                 return keyring
 
