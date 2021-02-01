@@ -2208,6 +2208,25 @@ class FontPackage(DictBasedObject):
         )
         return o
 
+    def getFonts(self, filterByFontFormat=[], variableFont=None):
+        """
+        Calculate list of fonts of this package by applying filters for
+        font.format and font.variableFont (possibly more in the future)
+        """
+
+        def passedFilter(font):
+            # font.format filter
+            passed1 = not filterByFontFormat or (
+                filterByFontFormat and font.format in filterByFontFormat
+            )
+            # font.variableFont filter
+            passed2 = variableFont is None or (
+                variableFont is not None and font.variableFont == variableFont
+            )
+            return passed1 and passed2
+
+        return [x for x in self.fonts if passedFilter(x)]
+
     def getFormats(self):
         formats = []
         if hasattr(self, "fonts"):
