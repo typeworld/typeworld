@@ -2327,9 +2327,9 @@ class APIClient(object):
 
                 import keyring
 
-                keyring.core.set_keyring(
-                    keyring.core.load_keyring("keyring.backends.OS_X.Keyring")
-                )
+                # keyring.core.set_keyring(
+                #     keyring.core.load_keyring("keyring.backends.OS_X.Keyring")
+                # )
                 return keyring
 
             elif WIN:
@@ -2340,11 +2340,11 @@ class APIClient(object):
 
                 import keyring  # nocoverage (Fails on Travis CI)
 
-                keyring.core.set_keyring(
-                    keyring.core.load_keyring(
-                        "keyring.backends.Windows.WinVaultKeyring"
-                    )
-                )  # nocoverage (Fails on Travis CI)
+                # keyring.core.set_keyring(
+                #     keyring.core.load_keyring(
+                #         "keyring.backends.Windows.WinVaultKeyring"
+                #     )
+                # )  # nocoverage (Fails on Travis CI)
                 return keyring  # nocoverage (Fails on Travis CI)
 
             elif LINUX:
@@ -2352,15 +2352,16 @@ class APIClient(object):
                 try:
                     import keyring
 
-                    keyring.core.set_keyring(
-                        keyring.core.load_keyring(
-                            "keyring.backends.kwallet.DBusKeyring"
-                        )
-                    )
+                    # keyring.core.set_keyring(
+                    #     keyring.core.load_keyring(
+                    #         "keyring.backends.kwallet.DBusKeyring"
+                    #     )
+                    # )
                 except Exception:
                     keyring = dummyKeyRing
 
                 return keyring
+
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
