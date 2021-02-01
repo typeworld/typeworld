@@ -2581,7 +2581,7 @@ class Font(DictBasedObject):
         "variableFont": [
             BooleanDataType,
             False,
-            None,
+            False,
             "Font is an OpenType Variable Font. For UI signaling",
         ],
         "purpose": [
