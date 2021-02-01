@@ -2332,9 +2332,9 @@ class APIClient(object):
                 keyring = dummyKeyRing
                 return keyring
 
-            import keyring
+            import keyring  # nocoverage
 
-            return keyring
+            return keyring  # nocoverage
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
