@@ -3065,17 +3065,22 @@ class Family(DictBasedObject):
                         self._allDesignersKeywords.append(designerKeyword)
         return self._allDesigners
 
-    def getPackages(self):
+    def getPackages(self, filterByFontPurpose=[]):
 
         packageKeywords = []
         packages = []
         packageByKeyword = {}
 
+        def passedFilter(font):
+            # Apply font.purpose filter
+            return not filterByFontPurpose or font.purpose in filterByFontPurpose
+
         # Collect list of unique package keyword references in family's fonts
         for font in self.fonts:
-            for keyword in font.getPackageKeywords():
-                if keyword not in packageKeywords:
-                    packageKeywords.append(keyword)
+            if passedFilter(font):
+                for keyword in font.getPackageKeywords():
+                    if keyword not in packageKeywords:
+                        packageKeywords.append(keyword)
 
         # Prepend a DEFAULT package
         if DEFAULT in packageKeywords:
@@ -3097,8 +3102,9 @@ class Family(DictBasedObject):
 
         # Attach fonts to packages
         for font in self.fonts:
-            for keyword in font.getPackageKeywords():
-                packageByKeyword[keyword].fonts.append(font)
+            if passedFilter(font):
+                for keyword in font.getPackageKeywords():
+                    packageByKeyword[keyword].fonts.append(font)
 
         return packages
 
