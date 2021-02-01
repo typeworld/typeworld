@@ -36,6 +36,7 @@ from typeworld.client.helpers import (
 WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
 LINUX = platform.system() == "Linux"
+CI = os.getenv("CI", "false").lower() == "true"
 
 MOTHERSHIP = "https://api.type.world/v1"
 
@@ -2323,54 +2324,17 @@ class APIClient(object):
     def keyring(self):
         try:
 
-            if MAC:
-
-                if os.getenv("CI", "false").lower() == "true":
-                    keyring = dummyKeyRing
-                    return keyring
-
-                import keyring
-
-                # keyring.core.set_keyring(
-                #     keyring.core.load_keyring("keyring.backends.OS_X.Keyring")
-                # )
+            # Using keyring causes problems an all three MAC/WIN/LINUX
+            # when used headlessly in a CI environment,
+            # so we’re using the dummy for CI, which sucks because
+            # then you can’t self-test thoroughly it during app build
+            if CI:
+                keyring = dummyKeyRing
                 return keyring
 
-            elif WIN:
+            import keyring
 
-                if os.getenv("CI", "false").lower() == "true":
-                    keyring = dummyKeyRing
-                    return keyring
-
-                import keyring  # nocoverage (Fails on Travis CI)
-
-                # keyring.core.set_keyring(
-                #     keyring.core.load_keyring(
-                #         "keyring.backends.Windows.WinVaultKeyring"
-                #     )
-                # )  # nocoverage (Fails on Travis CI)
-                return keyring  # nocoverage (Fails on Travis CI)
-
-            elif LINUX:
-
-                if os.getenv("CI", "false").lower() == "true":
-                    keyring = dummyKeyRing
-                    return keyring
-
-                # try:
-                #     import keyring
-
-                #     # keyring.core.set_keyring(
-                #     #     keyring.core.load_keyring(
-                #     #         "keyring.backends.kwallet.DBusKeyring"
-                #     #     )
-                #     # )
-                # except Exception:
-                #     keyring = dummyKeyRing
-
-                import keyring  # nocoverage (Fails on Travis CI)
-
-                return keyring
+            return keyring
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
