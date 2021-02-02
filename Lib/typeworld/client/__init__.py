@@ -2324,7 +2324,7 @@ class APIClient(object):
     def keyring(self):
         try:
 
-            # Using keyring causes problems an all three MAC/WIN/LINUX
+            # Using keyring causes problems on all three MAC/WIN/LINUX
             # when used headlessly in a CI environment,
             # so we’re using the dummy for CI, which sucks because
             # then you can’t self-test thoroughly it during app build
