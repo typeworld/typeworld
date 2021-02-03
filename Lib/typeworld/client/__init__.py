@@ -3010,6 +3010,9 @@ class APIPublisher(object):
             self.parent.delegate._publisherHasBeenDeleted(self)
 
             self.parent._publishers = {}
+
+            return True, None
+
         except Exception as e:  # nocoverage
             self.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -3985,6 +3988,8 @@ class APISubscription(object):
 
             if updateSubscriptionsOnServer:
                 self.parent.parent.uploadSubscriptions()
+
+            return True, None
 
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
