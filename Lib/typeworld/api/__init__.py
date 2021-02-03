@@ -2822,7 +2822,7 @@ class Font(DictBasedObject):
 
     def getBillboardURLs(self):
         """\
-        Returns llist billboardURLs compiled from ::Font.billboardURLs::
+        Returns list billboardURLs compiled from ::Font.billboardURLs::
         and ::Family.billboardURLs::, giving the font-level definitions priority
         over family-level definitions.
         """
