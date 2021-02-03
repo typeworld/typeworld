@@ -487,7 +487,8 @@ class TypeWorldClientDelegate(object):
             )
 
     def fontHasInstalled(self, success, message, font):
-        assert type(font) == typeworld.api.Font
+        if success:
+            assert type(font) == typeworld.api.Font
 
     def _fontWillUninstall(self, font):
         try:
@@ -509,7 +510,8 @@ class TypeWorldClientDelegate(object):
             )
 
     def fontHasUninstalled(self, success, message, font):
-        assert type(font) == typeworld.api.Font
+        if success:
+            assert type(font) == typeworld.api.Font
 
     def _subscriptionUpdateNotificationHasBeenReceived(self, subscription):
         try:
