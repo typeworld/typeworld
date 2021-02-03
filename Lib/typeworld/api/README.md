@@ -219,7 +219,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.4-beta"
+    "version": "0.2.5-beta"
 }
 ```
 
@@ -367,7 +367,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.4-beta"
+    "version": "0.2.5-beta"
 }
 ```
 
@@ -434,7 +434,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.4-beta"
+    "version": "0.2.5-beta"
 }
 ```
 
@@ -487,7 +487,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.4-beta
+__Default value:__ 0.2.5-beta
 
 
 
@@ -564,7 +564,7 @@ __Type:__ Str<br />
 
 ### licenseIdentifier
 
-Identifier of license under which the API endpoint publishes its data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. The software client needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. Licenses of the individual responses can be fine-tuned in the respective responses.
+Machine-readable identifier of license under which the API Endpoint publishes its (metda)data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. Instead, the software client that accesses your API Endpoint needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. In other words, the non-commercial CC-BY-NC-ND-4.0 license that is the default here forbids a commercial software from accessing your API Endpoint unless they have a separate legal agreememt with you.
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1261,7 +1261,7 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 ### billboardURLs
 
-List of URLs pointing at images to show for this typeface. These must be uncompressed SVG images. It is suggested to use square dimensions, but it’s not compulsory. It’s unclear at this point how pixel data in the SVG will be displayed in the app on the two different operating systems Mac and Windows.
+List of URLs pointing at images to show for this typeface. We suggest to use square dimensions and uncompressed SVG images because they scale to all sizes smoothly, but ultimately any size or HTML-compatible image type is possible.
 
 __Required:__ False<br />
 __Type:__ List of Str objects<br />
@@ -1432,6 +1432,10 @@ For the time being, only family-level FontPackages are supported in the UI.
 
 [description](#class-fontpackage-attribute-description)<br />[keyword](#class-fontpackage-attribute-keyword)<br />[name](#class-fontpackage-attribute-name)<br />
 
+### Methods
+
+[getFonts()](#class-fontpackage-method-getfonts)<br />
+
 ## Attributes
 
 <div id="class-fontpackage-attribute-description"></div>
@@ -1460,6 +1464,17 @@ Name of package
 __Required:__ True<br />
 __Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
 __Format:__ Maximum allowed characters: 100.<br />
+
+
+## Methods
+
+<div id="class-fontpackage-method-getfonts"></div>
+
+#### getFonts(filterByFontFormat = [], variableFont = None)
+
+Calculate list of fonts of this package by applying filters for
+font.format and font.variableFont (possibly more in the future)
+
 
 
 
@@ -1561,14 +1576,22 @@ Returns False if this version is defined at the family level.
 
 ### Attributes
 
-[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[billboardURLs](#class-font-attribute-billboardurls)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
-[filename()](#class-font-method-filename)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
+[filename()](#class-font-method-filename)<br />[getBillboardURLs()](#class-font-method-getbillboardurls)<br />[getDesigners()](#class-font-method-getdesigners)<br />[getVersions()](#class-font-method-getversions)<br />
 
 ## Attributes
 
+<div id="class-font-attribute-billboardURLs"></div>
+
+### billboardURLs
+
+List of URLs pointing at images to show for this typeface. We suggest to use square dimensions and uncompressed SVG images because they scale to all sizes smoothly, but ultimately any size or HTML-compatible image type is possible.
+
+__Required:__ False<br />
+__Type:__ List of Str objects<br />
 <div id="class-font-attribute-dateFirstPublished"></div>
 
 ### dateFirstPublished
@@ -1614,7 +1637,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff', 'ttf', 'otf', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'otf', 'woff', 'ttc', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1720,6 +1743,8 @@ Font is an OpenType Variable Font. For UI signaling
 
 __Required:__ False<br />
 __Type:__ Bool<br />
+__Default value:__ False
+
 <div id="class-font-attribute-versions"></div>
 
 ### versions
@@ -1742,6 +1767,14 @@ Returns the recommended font file name to be used to store the font on disk.
 
 It is composed of the font’s uniqueID, its version string and the file
 extension. Together, they must not exceed 220 characters.
+
+<div id="class-font-method-getbillboardurls"></div>
+
+#### getBillboardURLs()
+
+Returns list billboardURLs compiled from [Font.billboardURLs](#user-content-class-font-attribute-billboardurls)
+and [Family.billboardURLs](#user-content-class-family-attribute-billboardurls), giving the font-level definitions priority
+over family-level definitions.
 
 <div id="class-font-method-getdesigners"></div>
 

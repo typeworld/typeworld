@@ -65,6 +65,7 @@ for handle in handles:
             docstring += string
             docstring += "\n\n"
             break
+docstring += "\n"
 
 if "TRAVIS" not in os.environ:
     f = open(os.path.join(os.path.dirname(__file__), "README.md"), "w")
