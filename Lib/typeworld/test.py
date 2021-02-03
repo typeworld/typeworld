@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Usage: python test.py [TestTypeWorld.test_name] [mothershipURL]
 
 import sys
 import os
@@ -244,6 +245,18 @@ font.features = ["aalt", "liga"]
 
 # Font 2
 font2 = Font()
+font2.billboardURLs = [
+    (
+        "https://typeworldserver.com/?page=outputDataBaseFile&"
+        "className=TWFS_FamilyBillboards&ID=2&field=image"
+    )
+]
+font2.billboardURLs.append(
+    (
+        "https://typeworldserver.com/?page=outputDataBaseFile&"
+        "className=TWFS_FamilyBillboards&ID=6&field=image"
+    )
+)
 font2.dateFirstPublished = "2004-10-10"
 font2.designerKeywords.append("yanone")
 font2.designerKeywords = ["yanone"]
@@ -311,6 +324,13 @@ family.fonts = [font, font2]
 assert len(family.fonts) == 2
 family.packages.append(desktopFontsPackage)
 assert len(family.packages) == 1
+
+print(family.billboardURLs)
+print(font2.billboardURLs)
+print(font2.getBillboardURLs())
+assert font2.getBillboardURLs() == font2.billboardURLs
+# str because objects are not identical, only content:
+assert str(font2.getBillboardURLs()) == str(family.billboardURLs)
 
 # Foundry
 foundry = Foundry()
@@ -475,7 +495,8 @@ class User(object):
     def clearSubscriptions(self):
         self.client.testScenario = None
         for publisher in self.client.publishers():
-            publisher.delete()
+            success, message = publisher.delete()
+            assert success
 
     def clearInvitations(self):
         self.client.testScenario = None
@@ -1224,6 +1245,16 @@ class TestTypeWorld(unittest.TestCase):
     def test_Font(self):
 
         print("test_Font()")
+
+        # billboardURLs
+        i2 = copy.deepcopy(installableFonts)
+        try:
+            i2.foundries[0].families[0].fonts[1].billboardURLs[0] = (
+                "typeworldserver.com/?page=outputDataBaseFile&"
+                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            )
+        except ValueError as e:
+            self.assertEqual(str(e), "Needs to start with http:// or https://")
 
         # dateAddedForUser
         i2 = copy.deepcopy(installableFonts)
@@ -3736,8 +3767,13 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         # Clear
+        print("user2.clearSubscriptions()")
         user2.clearSubscriptions()
+        success, message = user2.client.downloadSubscriptions()
+        self.assertTrue(success)
         self.assertEqual(len(user2.client.publishers()), 0)
+
+        print("STATUS: -15")
 
         # Uninstallation of fonts when they aren't present in the subscription anymore
         user0.client.addSubscription(freeSubscription)
@@ -3866,6 +3902,14 @@ class TestTypeWorld(unittest.TestCase):
             .inviteUser("test2@type.world")
         )
         self.assertEqual(result[0], False)
+
+        # Update user2
+        self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
+        self.assertEqual(len(user2.client.pendingInvitations()), 0)
+
+        print("STATUS: -12")
+
+        # Supposed to pass invitation
         user1.client.testScenario = None
         result = (
             user1.client.publishers()[0]
@@ -3875,21 +3919,18 @@ class TestTypeWorld(unittest.TestCase):
         print(result)
         self.assertEqual(result[0], True)
 
-        print("STATUS: -12")
-
-        # Update user2
-        self.assertEqual(len(user2.client.pendingInvitations()), 0)
-
         print("STATUS: -11.8")
 
         self.assertEqual(len(user2.client.publishers()), 0)
 
         print("STATUS: -11.7")
 
+        print("pendingInvitations", user2.client.get("pendingInvitations"))
         self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
 
         print("STATUS: -11.6")
 
+        print("pendingInvitations", user2.client.get("pendingInvitations"))
         self.assertEqual(len(user2.client.pendingInvitations()), 1)
 
         print("STATUS: -11.5")
