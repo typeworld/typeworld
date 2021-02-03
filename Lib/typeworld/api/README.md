@@ -1,5 +1,4 @@
-# Type.World JSON Protocol
-
+# Type.World JSON Protocol (Version 0.2.5-beta)
 
 ## Preamble
 
@@ -1637,7 +1636,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff2', 'woff', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -2238,8 +2237,7 @@ __Type:__ Str<br />
 
 
 
-# Type.World JSON Protocol
-
+# Type.World JSON Protocol (Version 0.2.5-beta)
 
 ## Preamble
 
@@ -3877,7 +3875,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff2', 'woff', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
