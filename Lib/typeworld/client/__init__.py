@@ -3009,6 +3009,9 @@ class APIPublisher(object):
             self.parent.set("publishers", publishers)
             # self.parent.set('currentPublisher', '')
 
+            # Sync to server
+            self.parent.uploadSubscriptions()
+
             self.parent.delegate._publisherHasBeenDeleted(self)
 
             self.parent._publishers = {}
