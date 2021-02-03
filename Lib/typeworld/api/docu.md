@@ -33,7 +33,7 @@ This section lists changes to the protocol since it reached Beta status with ver
 
 ### Changes in `0.2.5-beta`
 
-* Introduced font-level [Font.billboardURLs](#user-content-class-font-attribute-billboardurlss).
+* Introduced font-level [Font.billboardURLs](#user-content-class-font-attribute-billboardurls) similar to family-level URLs.
   The method [Font.getBillboardURLs()](#user-content-class-font-method-getbillboardurls) will compile them, 
   currently simply choosing one or the other, font-level over family-level.
 
