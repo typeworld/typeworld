@@ -2,7 +2,6 @@
 
 import os
 import sys
-import site
 
 # Use local code for local testing, and rely on system-installed module for CI-testing
 CI = os.getenv("CI", "false").lower() != "false"
@@ -10,9 +9,6 @@ if not CI:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     if path not in sys.path:
         sys.path.insert(0, path)
-    for dir in site.getsitepackages():
-        if dir not in path:
-            sys.path.insert(0, dir)
 
 import typeworld.api  # noqa: E402
 
@@ -78,7 +74,7 @@ for handle in handles:
             docstring += string
             docstring += "\n\n"
             break
-docstring += "\n"
+docstring += docstring.strip() + "\n"
 
 if "TRAVIS" not in os.environ:
     f = open(os.path.join(os.path.dirname(__file__), "README.md"), "w")
