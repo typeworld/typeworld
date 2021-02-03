@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import typeworld.api
+
+# Use local code for local testing, and rely on system-installed module for CI-testing
+CI = os.getenv("CI", "false").lower() != "false"
+if not CI:
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    sys.path.append(path)
 
 
 def Execute(command):
