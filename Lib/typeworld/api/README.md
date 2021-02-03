@@ -31,6 +31,12 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
+### Changes in `0.2.5-beta`
+
+* Introduced font-level [Font.billboardURLs](#user-content-class-font-attribute-billboardURLs).
+  The method [Font.getBillboardURLs()](#user-content-class-font-method-getbillboardurls) will compile them, 
+  currently simply choosing one or the other, font-level over family-level.
+
 ### Changes in `0.2.4-beta`
 
 * After a rewrite to use Python’s `requests` library for calls to the internet, the method 
@@ -1636,7 +1642,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff2', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff2', 'otf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -2270,6 +2276,12 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
+### Changes in `0.2.5-beta`
+
+* Introduced font-level [Font.billboardURLs](#user-content-class-font-attribute-billboardURLs).
+  The method [Font.getBillboardURLs()](#user-content-class-font-method-getbillboardurls) will compile them, 
+  currently simply choosing one or the other, font-level over family-level.
+
 ### Changes in `0.2.4-beta`
 
 * After a rewrite to use Python’s `requests` library for calls to the internet, the method 
@@ -3875,7 +3887,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'woff2', 'woff', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff2', 'otf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
