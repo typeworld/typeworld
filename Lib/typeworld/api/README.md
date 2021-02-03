@@ -1637,7 +1637,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'otf', 'ttf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -3877,7 +3877,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'otf', 'ttf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'otf', 'woff', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
