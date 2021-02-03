@@ -37,6 +37,7 @@ WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
 LINUX = platform.system() == "Linux"
 CI = os.getenv("CI", "false").lower() == "true"
+GAE = os.getenv("GAE_ENV", "").startswith("standard")
 
 MOTHERSHIP = "https://api.type.world/v1"
 
@@ -2328,7 +2329,7 @@ class APIClient(object):
             # when used headlessly in a CI environment,
             # so we’re using the dummy for CI, which sucks because
             # then you can’t self-test thoroughly it during app build
-            if CI:
+            if CI or GAE:
                 keyring = dummyKeyRing
                 return keyring
 
