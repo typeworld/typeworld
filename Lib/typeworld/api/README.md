@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 0.2.5-beta)
+# Type.World JSON Protocol (Version 0.2.6-beta)
 
 ## Preamble
 
@@ -27,7 +27,7 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 <div id="protocolchanges"></div>
 
-## API Changes
+## Protocol Changes
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
@@ -224,7 +224,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -372,7 +372,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -439,7 +439,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -492,7 +492,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.5-beta
+__Default value:__ 0.2.6-beta
 
 
 
@@ -1642,7 +1642,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttf', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'ttc', 'woff2', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -2243,7 +2243,7 @@ __Type:__ Str<br />
 
 
 
-# Type.World JSON Protocol (Version 0.2.5-beta)
+# Type.World JSON Protocol (Version 0.2.6-beta)
 
 ## Preamble
 
@@ -2272,7 +2272,7 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 <div id="protocolchanges"></div>
 
-## API Changes
+## Protocol Changes
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
@@ -2469,7 +2469,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -2617,7 +2617,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -2684,7 +2684,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.5-beta"
+    "version": "0.2.6-beta"
 }
 ```
 
@@ -2737,7 +2737,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.5-beta
+__Default value:__ 0.2.6-beta
 
 
 
@@ -3887,7 +3887,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'ttf', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'ttc', 'woff2', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
