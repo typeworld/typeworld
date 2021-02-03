@@ -27,7 +27,7 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 <div id="protocolchanges"></div>
 
-## API Changes
+## Protocol Changes
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
