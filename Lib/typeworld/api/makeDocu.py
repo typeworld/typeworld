@@ -53,6 +53,7 @@ for handle in handles:
 classTOC += "\n\n"
 
 docstring = docstring.replace("__classTOC__", classTOC)
+docstring = docstring.replace("__version__", typeworld.api.VERSION)
 
 # Test code
 testCode1Path = os.path.join(os.path.dirname(__file__), "testcode1.py")

@@ -1,5 +1,4 @@
-# Type.World JSON Protocol
-
+# Type.World JSON Protocol (Version __version__)
 
 ## Preamble
 
