@@ -2,13 +2,16 @@
 
 import os
 import sys
+import site
 
 # Use local code for local testing, and rely on system-installed module for CI-testing
 CI = os.getenv("CI", "false").lower() != "false"
 if not CI:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     if path not in sys.path:
-        sys.path.append(path)
+        sys.path.insert(0, path)
+    if site.getsitepackages() not in path:
+        sys.path.insert(0, site.getsitepackages())
 
 import typeworld.api  # noqa: E402
 
