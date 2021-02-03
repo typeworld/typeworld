@@ -2998,7 +2998,11 @@ class APIPublisher(object):
     def delete(self):
         try:
             for subscription in self.subscriptions():
-                subscription.delete(calledFromParent=True)
+                success, message = subscription.delete(
+                    calledFromParent=True, updateSubscriptionsOnServer=False
+                )
+                if not success:
+                    return False, message
 
             # Resources
             self.parent.deleteResources(self.get("resources") or [])
