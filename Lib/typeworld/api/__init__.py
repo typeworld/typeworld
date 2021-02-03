@@ -2528,6 +2528,10 @@ class VersionListProxy(ListProxy):
 #  Fonts
 
 
+class BillboardListProxy(ListProxy):
+    dataType = WebResourceURLDataType
+
+
 class Font(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
@@ -2591,6 +2595,18 @@ class Font(DictBasedObject):
             ),
         ],
         "free": [BooleanDataType, False, None, "Font is freeware. For UI signaling"],
+        "billboardURLs": [
+            BillboardListProxy,
+            False,
+            None,
+            (
+                "List of URLs pointing at images to show for this typeface. "
+                "We suggest to use square dimensions and uncompressed SVG "
+                "images because they scale to all sizes smoothly, "
+                "but ultimately any size or HTML-compatible image type "
+                "is possible."
+            ),
+        ],
         "status": [
             FontStatusDataType,
             True,
@@ -2804,6 +2820,14 @@ class Font(DictBasedObject):
 
         return information, warnings, critical
 
+    def getBillboardURLs(self):
+        """\
+        Returns list billboardURLs compiled from ::Font.billboardURLs::
+        and ::Family.billboardURLs::, giving the font-level definitions priority
+        over family-level definitions.
+        """
+        return self.billboardURLs or self.parent.billboardURLs
+
     def getVersions(self):
         """\
         Returns list of ::Version:: objects.
@@ -2898,10 +2922,6 @@ class FontListProxy(ListProxy):
 # Font Family
 
 
-class BillboardListProxy(ListProxy):
-    dataType = WebResourceURLDataType
-
-
 class Family(DictBasedObject):
     #   key:                    [data type, required, default value, description]
     _structure = {
@@ -2931,11 +2951,11 @@ class Family(DictBasedObject):
             False,
             None,
             (
-                "List of URLs pointing at images to show for this typeface. These must "
-                "be uncompressed SVG images. It is suggested to use square dimensions, "
-                "but it’s not compulsory. It’s unclear at this point how pixel data in "
-                "the SVG will be displayed in the app on the two different operating "
-                "systems Mac and Windows."
+                "List of URLs pointing at images to show for this typeface. "
+                "We suggest to use square dimensions and uncompressed SVG "
+                "images because they scale to all sizes smoothly, "
+                "but ultimately any size or HTML-compatible image type "
+                "is possible."
             ),
         ],
         "designerKeywords": [
