@@ -591,7 +591,7 @@ URL of logo of API endpoint, for publication. Specifications to follow.
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-endpointresponse-attribute-name"></div>
 
 ### name
@@ -1345,7 +1345,7 @@ URL of PDF file with type specimen and/or instructions for entire family. May be
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-family-attribute-sourceURL"></div>
 
 ### sourceURL
@@ -1642,7 +1642,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff2', 'woff', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'ttf', 'woff2', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1687,7 +1687,7 @@ URL of PDF file with type specimen and/or instructions for this particular font.
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-font-attribute-postScriptName"></div>
 
 ### postScriptName
@@ -2836,7 +2836,7 @@ URL of logo of API endpoint, for publication. Specifications to follow.
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-endpointresponse-attribute-name"></div>
 
 ### name
@@ -3590,7 +3590,7 @@ URL of PDF file with type specimen and/or instructions for entire family. May be
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-family-attribute-sourceURL"></div>
 
 ### sourceURL
@@ -3887,7 +3887,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'ttf', 'woff2', 'woff', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'ttf', 'woff2', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -3932,7 +3932,7 @@ URL of PDF file with type specimen and/or instructions for this particular font.
 
 __Required:__ False<br />
 __Type:__ Str<br />
-__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of the resources’s upload on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062<br />
+__Format:__ This resource may get downloaded and cached on the client computer. To ensure up-to-date resources, append a unique ID to the URL such as a timestamp of when the resources changed on your server, e.g. https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. Don’t use the current time for a timestamp, as this will mean constant reloading the resource when it actually hasn’t changed. Instead use the resource’s server-side change timestamp.<br />
 <div id="class-font-attribute-postScriptName"></div>
 
 ### postScriptName
