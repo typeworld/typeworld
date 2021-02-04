@@ -830,9 +830,12 @@ class WebResourceURLDataType(WebURLDataType):
         return (
             "This resource may get downloaded and cached on the client "
             "computer. To ensure up-to-date resources, append a unique ID "
-            "to the URL such as a timestamp of the resources’s upload on your "
+            "to the URL such as a timestamp of when the resources changed on your "
             "server, e.g. "
-            "https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062"
+            "https://awesomefonts.com/xyz/regular/specimen.pdf?t=1548239062. "
+            "Don’t use the current time for a timestamp, as this will mean constant "
+            "reloading the resource when it actually hasn’t changed. Instead use "
+            "the resource’s server-side change timestamp."
         )
 
 
