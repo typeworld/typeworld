@@ -23,7 +23,7 @@ import platform
 
 #  Constants
 
-VERSION = "0.2.6-beta"
+VERSION = "0.2.7-beta"
 
 WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
