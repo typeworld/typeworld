@@ -2337,6 +2337,23 @@ class APIClient(object):
 
             import keyring  # nocoverage
 
+            if MAC:  # nocoverage
+                keyring.core.set_keyring(
+                    keyring.core.load_keyring("keyring.backends.OS_X.Keyring")
+                )  # nocoverage
+
+            elif WIN:  # nocoverage
+                keyring.core.set_keyring(
+                    keyring.core.load_keyring(
+                        "keyring.backends.Windows.WinVaultKeyring"
+                    )
+                )  # nocoverage
+
+            elif LINUX:  # nocoverage
+                keyring.core.set_keyring(
+                    keyring.core.load_keyring("keyring.backends.kwallet.DBusKeyring")
+                )  # nocoverage
+
             return keyring  # nocoverage
 
         except Exception as e:  # nocoverage
