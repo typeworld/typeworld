@@ -112,7 +112,7 @@ Optionally, publishers may request the transmission of end users identities (nam
 
 * **Publisher** describes a publisher of fonts under a Type.World JSON API Endpoint. This can be a free font publisher serving free fonts, an independent type publisher serving their own designs, a custom type shop, or a font retailer selling and serving fonts of several different foundries to a customer. Regardless the font’s origins, as long as they serve them to the Type.World App, we call them *Publisher*.
 * **Subscription** describes a collection of fonts served by a *Publisher* designated for use by a Type.World user. Like a newspaper subscription which is served by one publisher and designated for one customer, so are our font subscriptions. A Type.World user may accumulate and access one or several subscriptions by one or several publishers in their app.
-* **API Endpoint** describes an endpoint on a publisher’s web server that exists particularly to serve fonts to the Type.World App. This endpoint can coexist with a publisher’s normal web site on the same server, but under a different URL, like `https://awesomefonts.com` for the public web site and `https://awesomefonts.com/typeworldapi/` for the API Endpoint.
+* **API Endpoint/Canonical URL** describes an endpoint on a publisher’s web server that exists particularly to serve fonts to the Type.World App. This endpoint can coexist with a publisher’s normal web site on the same server, but under a different URL, like `https://awesomefonts.com` for the public web site and `https://awesomefonts.com/typeworldapi.php` for the API Endpoint.
 * **Third party service** describes a turn-key solution for hosting fonts to be served under the Type.World JSON Protocol, the *first party* being Type.World itself, *second party* being you implementing your own *API Endpoint*, and *third party* being an external service implemented by someone other than Type.World or yourself that you can use to serve fonts. I’m referring mostly to services here that implement serving *custom fonts* because serving *retail fonts* requires the knowledge of which customer bought which fonts, and only online shops have that knowledge. Unless, of course, such a third party also operates an online shop, like [Fontdue](https://www.fontdue.com/) does.
 
 # System Design
@@ -195,8 +195,6 @@ This is the link that would be served to the app: [`typeworld://json+https//type
 To directly view the same subscription as raw JSON code in the browser, click here: [`https://typeworldserver.com/flatapi/bZA2JbWHEAkFjako0Mtz/`](https://typeworldserver.com/flatapi/bZA2JbWHEAkFjako0Mtz/)
 
 
-
-
 ## The Subscription URL
 
 By clicking the *Install in Type.World App* button on your SSL-encrypted website, a URL of the following scheme gets handed off to the locally installed app through the custom protocol handler `typeworld://` that the app has registered with the operating system.
@@ -232,6 +230,22 @@ Example for a protected subscription:
 
 Example for a protected subscription with access token:
 `typeworld://json+https//subscriptionID:secretKey:accessToken@awesomefonts.com/api/`
+
+
+## API Endpoint URL and Canonical URL
+
+The **API Endpoint URL** and the **Canonical URL** can be the same (and should be in many cases), but don’t need to be. The *API Endpoint URL* is used to actually access data on your web server, while the *Canonical URL* is used for grouping subscriptions together in the GUI App and a few other purposes.
+
+Choose your *API Endpoint URL* wisely. For a *dynamic* API Endpoint, choose a URL that is agnostic of subscription users or content, such as `https://awesomefonts.com/typeworldapi.php` and determine the content dynamically by the incoming `subscriptionID` parameter.
+
+Only for free fonts served *statically* it makes sense to have the *API Endpoint URL* reflect the content, such as `https://awesomefonts.com/family_xyz.json`. However, keep in mind that in the GUI App, subscriptions are grouped by the *Canonical URL*. So if you are indeed using different URLs for your *API Endpoint* for different content, at least make sure they all contain the same *Canonical URL*.
+
+Unless you **want** to have the subscriptions show up as different publishers in the GUI App. Then you consciously set different *Canonical URLs*.
+
+From the [JSON API Protocol Docs on *Canonical URL*](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#canonicalurl):
+
+> Same as the API Endpoint URL, bare of IDs and other parameters. Used for grouping of subscriptions. It is expected that this URL will not change. When it does, it will be treated as a different publisher.<br />The *API Endpoint URL* must begin with the *Canonical URL* (if you indeed choose the two to be different) or otherwise subscriptions could impersonate another publisher by displaying their name and using their Canonical URL. In other words, both must be located on the same server.
+
 
 
 ## Serving JSON Responses

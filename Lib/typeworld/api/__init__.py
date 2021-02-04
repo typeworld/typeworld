@@ -3996,9 +3996,16 @@ data, and whether or not this endpoint can be publicized about.
             True,
             None,
             (
-                "Official API endpoint URL, bare of ID keys and other parameters. "
-                "Used for grouping of subscriptions. It is expected that this URL will "
-                "not change. When it does, it will be treated as a different publisher."
+                "Same as the API Endpoint URL, bare of IDs and other parameters. "
+                "Used for grouping of subscriptions. It is expected that this URL "
+                "will not change. When it does, it will be treated as a different "
+                "publisher.<br />"
+                "The *API Endpoint URL* must begin with the *Canonical URL* "
+                "(if you indeed choose the two to be different) or otherwise "
+                "subscriptions could impersonate another publisher by displaying "
+                "their name and using their Canonical URL. In other words, "
+                "both must be located on the same server."
+                # TODO: Actually implement the above security feature
             ),
         ],
         "adminEmail": [
