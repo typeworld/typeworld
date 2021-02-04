@@ -709,6 +709,7 @@ class APIClient(object):
         testing=False,
         externallyControlled=False,
         secretServerAuthKey=None,
+        inCompiledApp=False,
     ):
 
         try:
@@ -730,6 +731,7 @@ class APIClient(object):
             self.testing = testing
             self.externallyControlled = externallyControlled
             self.secretServerAuthKey = secretServerAuthKey
+            self.inCompiledApp = inCompiledApp
 
             self._zmqRunning = False
             self._zmqCallbacks = {}
@@ -2331,7 +2333,7 @@ class APIClient(object):
             # when used headlessly in a CI environment,
             # so we’re using the dummy for CI, which sucks because
             # then you can’t self-test thoroughly it during app build
-            if CI or GAE:
+            if (CI and not self.inCompiledApp) or GAE:
                 keyring = dummyKeyRing
                 return keyring
 
