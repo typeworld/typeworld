@@ -2341,7 +2341,7 @@ class APIClient(object):
 
             if MAC:  # nocoverage
                 keyring.core.set_keyring(
-                    keyring.core.load_keyring("keyring.backends.OS_X.Keyring")
+                    keyring.core.load_keyring("keyring.backends.macOS.Keyring")
                 )  # nocoverage
 
             elif WIN:  # nocoverage
