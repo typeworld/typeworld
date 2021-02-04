@@ -2340,9 +2340,10 @@ class APIClient(object):
             import keyring  # nocoverage
 
             if MAC:  # nocoverage
-                keyring.core.set_keyring(
-                    keyring.core.load_keyring("keyring.backends.macOS.Keyring")
-                )  # nocoverage
+                if self.inCompiledApp:
+                    keyring.core.set_keyring(
+                        keyring.core.load_keyring("keyring.backends.macOS.Keyring")
+                    )  # nocoverage
 
             elif WIN:  # nocoverage
                 keyring.core.set_keyring(
