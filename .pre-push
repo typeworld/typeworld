@@ -1,5 +1,7 @@
 #!/bin/sh
 
+MESSAGE="$(git log -1 --pretty=%B) (+ regenerated docs)"
+
 python Lib/typeworld/api/makeDocu.py
 git commit -a -m "auto-update docs on pre-push"
 
