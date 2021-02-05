@@ -3149,6 +3149,17 @@ class TestTypeWorld(unittest.TestCase):
             user1.client.publishers()[0].subscriptions()[0].update()
         )
         self.assertEqual(success, False)
+
+        user1.client.testScenario = "simulateImpersonatedCanonicalURL"
+        success, message, changes = user1.client.publishers()[0].update()
+        self.assertEqual(success, False)
+        self.assertEqual(message, "'url' must begin with 'canonicalURL'")
+        success, message, changes = (
+            user1.client.publishers()[0].subscriptions()[0].update()
+        )
+        self.assertEqual(success, False)
+        self.assertEqual(message, "'url' must begin with 'canonicalURL'")
+
         user1.client.testScenario = "simulateProgrammingError"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
@@ -3545,26 +3556,37 @@ class TestTypeWorld(unittest.TestCase):
                 "Expected is '['application/json']'."
             ),
         )
+        user2.client.testScenario = "simulateImpersonatedCanonicalURL"
+        success, message, publisher, subscription = user2.client.addSubscription(
+            protectedSubscription
+        )
+        self.assertEqual(success, False)
+        self.assertEqual(message, "'url' must begin with 'canonicalURL'")
+
         user2.client.testScenario = "simulateNotHTTP200"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
         )
         self.assertEqual(success, False)
+
         user2.client.testScenario = "simulateProgrammingError"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
         )
         self.assertEqual(success, False)
+
         user2.client.testScenario = "simulateInvalidAPIJSONResponse"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
         )
         self.assertEqual(success, False)
+
         user2.client.testScenario = "simulateFaultyAPIJSONResponse"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
         )
         self.assertEqual(success, False)
+
         user2.client.testScenario = "simulateCentralServerNotReachable"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription

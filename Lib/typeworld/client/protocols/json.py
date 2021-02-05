@@ -203,6 +203,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 False,
             )
 
+        # Security check: Does url begin with canonicalURL?
+        if not self.url.HTTPURL().startswith(root.endpoint.canonicalURL):
+            return False, "'url' must begin with 'canonicalURL'", None
+
         # # Detect installed fonts now not available in subscription anymore and delete
         # them
         # hasFonts = False
@@ -472,6 +476,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     "#(response.%s.headline)" % root.installableFonts.response,
                 ],
             )
+
+        # Security check: Does url begin with canonicalURL?
+        if not self.url.HTTPURL().startswith(root.endpoint.canonicalURL):
+            return False, "'url' must begin with 'canonicalURL'"
 
         # Success
         self._endpointCommand = root.endpoint
