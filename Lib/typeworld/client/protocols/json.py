@@ -154,7 +154,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
             data=data,
         )
-        api = root.installableFonts
 
         if responses["errors"]:
 
@@ -168,7 +167,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             self.subscription._updatingProblem = "\n".join(responses["errors"])
             return False, self.subscription._updatingProblem, False
 
-        if api.response == "error":
+        if root.installableFonts.response == "error":
             if (
                 self.url.unsecretURL()
                 in self.subscription.parent._updatingSubscriptions
@@ -176,10 +175,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 self.subscription.parent._updatingSubscriptions.remove(
                     self.url.unsecretURL()
                 )
-            self.subscription._updatingProblem = api.errorMessage
+            self.subscription._updatingProblem = root.installableFonts.errorMessage
             return False, self.subscription._updatingProblem, False
 
-        if api.response in (
+        if root.installableFonts.response in (
             "temporarilyUnavailable",
             "insufficientPermission",
             "loginRequired",
@@ -192,12 +191,15 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     self.url.unsecretURL()
                 )
             self.subscription._updatingProblem = [
-                f"#(response.{api.response})",
-                f"#(response.{api.response}.headline)",
+                f"#(response.{root.installableFonts.response})",
+                f"#(response.{root.installableFonts.response}.headline)",
             ]
             return (
                 False,
-                [f"#(response.{api.response})", f"#(response.{api.response}.headline)"],
+                [
+                    f"#(response.{root.installableFonts.response})",
+                    f"#(response.{root.installableFonts.response}.headline)",
+                ],
                 False,
             )
 
@@ -226,7 +228,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
         # Newly available fonts
         newIDs = []
-        for foundry in api.foundries:
+        for foundry in root.installableFonts.foundries:
             for family in foundry.families:
                 for font in family.fonts:
                     newIDs.append(font.uniqueID)
@@ -257,8 +259,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 )
 
         # Compare
-        identical = self._installableFontsCommand.sameContent(api)
-        self._installableFontsCommand = api
+        identical = self._installableFontsCommand.sameContent(root.installableFonts)
+
+        # Success
+        self._installableFontsCommand = root.installableFonts
 
         # EndpointResponse
         if root.endpoint:
@@ -433,19 +437,13 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             data=data,
         )
 
-        # InstallableFontsResponse
-        api = root.installableFonts
-
-        # EndpointResponse
-        self._endpointCommand = root.endpoint
-
         # Errors
         if responses["errors"]:
             return False, responses["errors"][0]
 
         if (
-            "installableFonts" not in self._endpointCommand.supportedCommands
-            or "installFonts" not in self._endpointCommand.supportedCommands
+            "installableFonts" not in root.endpoint.supportedCommands
+            or "installFonts" not in root.endpoint.supportedCommands
         ):
             return (
                 False,
@@ -453,27 +451,31 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     "API endpoint %s does not support the 'installableFonts' or "
                     "'installFonts' commands."
                 )
-                % self._endpointCommand.canonicalURL,
+                % root.endpoint.canonicalURL,
             )
 
-        if api.response == "error":
-            if api.errorMessage:
-                return False, api.errorMessage
+        if root.installableFonts.response == "error":
+            if root.installableFonts.errorMessage:
+                return False, root.installableFonts.errorMessage
             else:
                 return False, "api.response is error, but no error message was given"
 
         # Predefined response messages
-        if api.response != "error" and api.response != "success":
+        if (
+            root.installableFonts.response != "error"
+            and root.installableFonts.response != "success"
+        ):
             return (
                 False,
                 [
-                    "#(response.%s)" % api.response,
-                    "#(response.%s.headline)" % api.response,
+                    "#(response.%s)" % root.installableFonts.response,
+                    "#(response.%s.headline)" % root.installableFonts.response,
                 ],
             )
 
         # Success
-        self._installableFontsCommand = api
+        self._endpointCommand = root.endpoint
+        self._installableFontsCommand = root.installableFonts
 
         # InstallFontsResponse
         if root.installFonts:
