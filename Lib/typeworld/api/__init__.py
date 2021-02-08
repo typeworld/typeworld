@@ -804,6 +804,26 @@ class WebURLDataType(StringDataType):
             return True
 
 
+# # TODO: This is a stump. Expand.
+# class TypeWorldURLDataType(StringDataType):
+#     def valid(self):
+#         if not self.value:
+#             return True
+
+#         if not self.value.startswith("http://") and not self.value.startswith(
+#             "https://"
+#         ):
+#             return "Needs to start with http:// or https://"
+#         else:
+#             return True
+
+#     def formatHint(self):
+#         return (
+#             "Type.World Subscription URL as per "
+#             "[Developer Docs](https://type.world/developer#the-subscription-url)"
+#         )
+
+
 class TelephoneDataType(StringDataType):
     def valid(self):
         if not self.value:
