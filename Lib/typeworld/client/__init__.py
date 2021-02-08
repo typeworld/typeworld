@@ -700,7 +700,7 @@ class APIClient(object):
     def __init__(
         self,
         preferences=None,
-        secretTypeWorldAPIKey=None,
+        # secretTypeWorldAPIKey=None,
         delegate=None,
         mothership=None,
         mode="headless",
@@ -720,7 +720,7 @@ class APIClient(object):
             self._subscriptionsUpdated = []
             self.onlineCommandsQueue = []
             self._syncProblems = []
-            self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
+            # self.secretTypeWorldAPIKey = secretTypeWorldAPIKey
             self.delegate = delegate or TypeWorldClientDelegate()
             self.delegate.client = self
             self.mothership = mothership or MOTHERSHIP
@@ -2622,7 +2622,7 @@ Version: {typeworld.api.VERSION}
         password=None,
         updateSubscriptionsOnServer=True,
         JSON=None,
-        secretTypeWorldAPIKey=None,
+        # secretTypeWorldAPIKey=None,
     ):
         """
         Because this also gets used by the central Type.World server, pass on the
@@ -2665,8 +2665,8 @@ Version: {typeworld.api.VERSION}
                     anonymousAppID=self.anonymousAppID(),
                     anonymousTypeWorldUserID=self.user(),
                     accessToken=protocol.url.accessToken,
-                    secretTypeWorldAPIKey=secretTypeWorldAPIKey
-                    or self.secretTypeWorldAPIKey,
+                    # secretTypeWorldAPIKey=secretTypeWorldAPIKey
+                    # or self.secretTypeWorldAPIKey,
                     testScenario=self.testScenario,
                 )
                 if not success:

@@ -296,7 +296,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             "anonymousTypeWorldUserID": self.client.user(),
             "subscriptionID": self.url.subscriptionID,
             "secretKey": self.getSecretKey(),
-            "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
+            # "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
             "appVersion": VERSION,
             "mothership": self.client.mothership,
         }
@@ -353,7 +353,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 "anonymousTypeWorldUserID": self.client.user(),
                 "subscriptionID": self.url.subscriptionID,
                 "secretKey": self.getSecretKey(),
-                "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
+                # "secretTypeWorldAPIKey": self.client.secretTypeWorldAPIKey,
                 "appVersion": VERSION,
                 "mothership": self.client.mothership,
             }
@@ -408,7 +408,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         anonymousAppID,
         anonymousTypeWorldUserID,
         accessToken,
-        secretTypeWorldAPIKey,
+        # secretTypeWorldAPIKey,
         testScenario,
     ):
         """Overwrite this.
