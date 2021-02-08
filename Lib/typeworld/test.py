@@ -616,6 +616,8 @@ class TestTypeWorld(unittest.TestCase):
         success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/updateSubscription", parameters
         )
+        if not success:
+            print(response)
         self.assertEqual(success, True)
         response = json.loads(response.decode())
         self.assertEqual(response["response"], "success")

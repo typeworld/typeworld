@@ -1450,14 +1450,15 @@ class DictBasedObject(object):
     def discardThisKey(self, key):
         return False
 
-    def dumpDict(self, strict=True):
+    def dumpDict(self, strict=True, validate=True):
 
         d = {}
 
         # Auto-validate
-        information, warnings, critical = self.validate(strict=strict)
-        if critical:
-            raise ValueError(critical[0])
+        if validate:
+            information, warnings, critical = self.validate(strict=strict)
+            if critical:
+                raise ValueError(critical[0])
 
         for key in list(self._content.keys()):
 
@@ -1474,13 +1475,18 @@ class DictBasedObject(object):
                 ):
 
                     if hasattr(getattr(self, key), "dumpDict"):
-                        d[key] = getattr(self, key).dumpDict(strict=strict)
+                        d[key] = getattr(self, key).dumpDict(
+                            strict=strict, validate=validate
+                        )
 
                     elif issubclass(getattr(self, key).__class__, (ListProxy)):
                         d[key] = list(getattr(self, key))
 
                         if len(d[key]) > 0 and hasattr(d[key][0], "dumpDict"):
-                            d[key] = [x.dumpDict(strict=strict) for x in d[key]]
+                            d[key] = [
+                                x.dumpDict(strict=strict, validate=validate)
+                                for x in d[key]
+                            ]
 
                     else:
                         d[key] = getattr(self, key)
@@ -3575,7 +3581,7 @@ class InstallableFontsResponse(BaseResponse):
                     if font.uniqueID == ID:
                         return font
 
-    def getContentChanges(self, other):
+    def getContentChanges(self, other, calculateOverallChanges=True):
         comparison = {}
         oldFonts = []
         newFonts = []
@@ -3611,9 +3617,10 @@ class InstallableFontsResponse(BaseResponse):
             comparison["overallChanges"] = True
 
         # Other content changes (including the above ones)
-        identical = self.sameContent(other)
-        if not identical:
-            comparison["overallChanges"] = True
+        if calculateOverallChanges:
+            identical = self.sameContent(other)
+            if not identical:
+                comparison["overallChanges"] = True
 
         return comparison
 
