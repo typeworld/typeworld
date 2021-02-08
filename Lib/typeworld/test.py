@@ -3052,13 +3052,13 @@ class TestTypeWorld(unittest.TestCase):
         success, message, changes = user1.client.publishers()[0].update()
         print("Updating publisher:", success, message, changes)
         self.assertEqual(success, True)
-        self.assertEqual(changes, False)
+        self.assertFalse(changes)
         success, message, changes = (
             user1.client.publishers()[0].subscriptions()[0].update()
         )
         print("Updating subscription 1:", success, message, changes)
         self.assertEqual(success, True)
-        self.assertEqual(changes, False)
+        self.assertFalse(changes)
         self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
         self.assertEqual(
             user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False
@@ -3342,7 +3342,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         print("Updating subscription 2:", success, message, changes)
         self.assertEqual(success, True)
-        self.assertEqual(changes, True)
+        self.assertTrue(changes)
         self.assertEqual(
             user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0
         )
@@ -3827,10 +3827,67 @@ class TestTypeWorld(unittest.TestCase):
                 )
             )
         )
+
         user0.client.testScenario = "simulateFontNoLongerIncluded"
         self.assertEqual(
             user0.client.publishers()[0].subscriptions()[-1].update(),
-            (True, None, True),
+            (True, None, {"removedFonts": 1, "overallChanges": True}),
+        )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(
+                    user0.client.publishers()[0].folder(),
+                    font.filename(font.getVersions()[-1].number),
+                )
+            )
+        )
+
+        user0.client.testScenario = None
+        self.assertEqual(
+            user0.client.publishers()[0].subscriptions()[-1].update(),
+            (True, None, {"addedFonts": 1, "overallChanges": True}),
+        )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(
+                    user0.client.publishers()[0].folder(),
+                    font.filename(font.getVersions()[-1].number),
+                )
+            )
+        )
+
+        user0.client.testScenario = "simulateFontsAdded"
+        self.assertEqual(
+            user0.client.publishers()[0].subscriptions()[-1].update(),
+            (True, None, {"addedFonts": 2, "overallChanges": True}),
+        )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(
+                    user0.client.publishers()[0].folder(),
+                    font.filename(font.getVersions()[-1].number),
+                )
+            )
+        )
+
+        user0.client.testScenario = None
+        self.assertEqual(
+            user0.client.publishers()[0].subscriptions()[-1].update(),
+            (True, None, {"overallChanges": True, "removedFonts": 2}),
+        )
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(
+                    user0.client.publishers()[0].folder(),
+                    font.filename(font.getVersions()[-1].number),
+                )
+            )
+        )
+
+        user0.client.testScenario = "simulateVersionsAdded"
+        self.assertEqual(
+            user0.client.publishers()[0].subscriptions()[-1].update(),
+            (True, None, {"fontsWithAddedVersions": 4, "overallChanges": True}),
         )
         self.assertFalse(
             os.path.exists(

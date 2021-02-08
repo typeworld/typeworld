@@ -263,7 +263,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 )
 
         # Compare
-        identical = self._installableFontsCommand.sameContent(root.installableFonts)
+        changes = self._installableFontsCommand.getContentChanges(root.installableFonts)
 
         # Success
         self._installableFontsCommand = root.installableFonts
@@ -280,7 +280,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
         self.save()
 
-        return True, None, not identical
+        return True, None, changes
 
     def setInstallableFontsCommand(self, command):
         self._installableFontsCommand = command

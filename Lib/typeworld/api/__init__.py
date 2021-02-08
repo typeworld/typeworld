@@ -3568,6 +3568,55 @@ class InstallableFontsResponse(BaseResponse):
         ],
     }
 
+    def getFontByUniqueID(self, ID):
+        for foundry in self.foundries:
+            for family in foundry.families:
+                for font in family.fonts:
+                    if font.uniqueID == ID:
+                        return font
+
+    def getContentChanges(self, other):
+        comparison = {}
+        oldFonts = []
+        newFonts = []
+        newVersions = 0
+
+        # Accumulate old and new fonts
+        for foundry in self.foundries:
+            for family in foundry.families:
+                for font in family.fonts:
+                    oldFonts.append(font.uniqueID)
+        for foundry in other.foundries:
+            for family in foundry.families:
+                for font in family.fonts:
+                    newFonts.append(font.uniqueID)
+                    # Versions
+                    oldFont = self.getFontByUniqueID(font.uniqueID)
+                    if oldFont and len(font.getVersions()) > len(oldFont.getVersions()):
+                        newVersions += 1
+
+        # Added or removed fonts
+        addedFonts = set(newFonts) - set(oldFonts)
+        if addedFonts:
+            comparison["addedFonts"] = len(addedFonts)
+            comparison["overallChanges"] = True
+
+        removedFonts = set(oldFonts) - set(newFonts)
+        if removedFonts:
+            comparison["removedFonts"] = len(removedFonts)
+            comparison["overallChanges"] = True
+
+        if newVersions:
+            comparison["fontsWithAddedVersions"] = newVersions
+            comparison["overallChanges"] = True
+
+        # Other content changes (including the above ones)
+        identical = self.sameContent(other)
+        if not identical:
+            comparison["overallChanges"] = True
+
+        return comparison
+
     def sample(self):
         o = self.__class__()
         o.response = "success"
