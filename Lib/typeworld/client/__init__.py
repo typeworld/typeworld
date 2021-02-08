@@ -705,7 +705,7 @@ class APIClient(object):
         mothership=None,
         mode="headless",
         zmqSubscriptions=False,
-        online=True,
+        online=False,
         testing=False,
         externallyControlled=False,
         secretServerAuthKey=None,
