@@ -2671,7 +2671,9 @@ Version: {typeworld.api.VERSION}
                     return False, message, None, None
 
                 # rootCommand
-                success, rootCommand = self.rootCommand(url)
+                success, rootCommand = protocol.rootCommand(
+                    testScenario=self.testScenario
+                )
                 assert success
                 assert rootCommand
 
