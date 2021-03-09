@@ -1856,12 +1856,13 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
                             (
                                 "String contains HTML code, which is not "
                                 "allowed. You may use Markdown for text "
-                                "formatting."
+                                "formatting. String: " + string
                             )
                         )
                     else:
                         critical.append(
-                            "String contains HTML code, which is not allowed."
+                            "String contains HTML code, which is not allowed. String: "
+                            + string
                         )
 
                 if (
