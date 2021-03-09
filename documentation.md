@@ -16,11 +16,11 @@ Currently, we’re looking into the following timeline:
 
 As of this writing, the Type.World Project is in *Beta* phase.
 
-[![Build Status](https://travis-ci.org/typeWorld/typeWorld.svg?branch=master)](https://travis-ci.org/typeWorld/typeWorld)
+<!--[![Build Status](https://travis-ci.org/typeWorld/typeWorld.svg?branch=master)](https://travis-ci.org/typeWorld/typeWorld)
 [![codecov](https://codecov.io/gh/typeWorld/typeWorld/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/typeWorld)
 [![PyPI version](https://badge.fury.io/py/typeworld.svg)](https://badge.fury.io/py/typeworld)
 
-The **Beta** status applies mostly to the Type.World JSON Protocol and the [headless client module](https://github.com/typeworld/typeworld) which is used by the GUI App, as well as central server, including documentation. This is what developers of API endpoints need in order to implement the system on their servers.
+-->The **Beta** status applies mostly to the Type.World JSON Protocol and the [headless client module](https://github.com/typeworld/typeworld) which is used by the GUI App, as well as central server, including documentation. This is what developers of API endpoints need in order to implement the system on their servers.
 
 The GUI App is missing a small handful of features, but they are all about the user experience, and not related to the publisher’s side of work. The app is expected to develop significantly between October 2020 and March 2021.
 
@@ -129,9 +129,9 @@ The only part that’s currently not open-sourced yet is the so called *central 
 
 ## Free vs. Paid
 
-The most basic usage of the Type.World system is free. Neither publishers nor users are required to pay Type.World for using it.
+The most important and basic usage of the Type.World system is free. Neither publishers nor users are required to pay Type.World anything for using it.
 
-However, Type.World chooses to charge both publishers and end users for certain convenience features that causes Type.World [real-world costs](#costs).
+However, for financial stability and prosperous future development, Type.World chooses to charge both publishers and end users for certain professional convenience features that causes Type.World [real-world costs](#costs).
 
 ### For Publishers
 
@@ -142,6 +142,7 @@ However, Type.World chooses to charge both publishers and end users for certain 
 **Paid:**
 
 * Instant subscription update notifications to end users
+* Validation of your subscription data before it reaches the end users
 
 Publishers will be charged per usage of the system as detailed in the [Price Calculator](/developer/prices)
 
@@ -149,15 +150,15 @@ Publishers will be charged per usage of the system as detailed in the [Price Cal
 
 **Free:**
 
-* Downloading and using the app
+* Using the app
 * Opening a Type.World user account and backing up subscriptions into the account
-* Receive invitations to share subscriptions by email
+* Receiving invitations to share subscriptions by email
 
 **Paid:**
 
-* Synchronizing a Type.World user account between several Type.World apps on several computers
+* Synchronizing a Type.World user account between several Type.World apps on several personal computers
 * Inviting other users to share font subscriptions
-* Receive invitations to share subscriptions instantly by the app itself
+* Receiving invitations to share subscriptions instantly (notification in the app, as opposed to by email)
 
 End users will be charged 1€/month (billed yearly).
 
@@ -404,9 +405,9 @@ The central *type.world* server operates its own API that offers various interac
 
 ### WARNING: HTTP 500 or 503 response by central server
 
-The central Type.World server is hosted in Google’s cloud in a *Google App Engine*. Instances of this server are initiated and destroyed whenever the load balancer pleases. As a result, a server instance may disappear in the middle of your request, and the request therefore returned with either HTTP Code `500 Internal Server Error` or `503 Service Unavailable`. You need to be prepared for that, and repeat the request if necessary.
+The central Type.World server is hosted in Google’s cloud in a *Google App Engine*. Instances of this server are initiated and destroyed whenever the load balancer pleases. As a result, a server instance *may* disappear in the middle of your request, and the request therefore returned with either HTTP Code `500 Internal Server Error` or `503 Service Unavailable`. You need to be prepared for that, and repeat the request if necessary.
 
-Internally, the `typeworld.client` module uses a method called `performRequest()` that loops over the request up to 10 times, making sure that the central server can be reached even if a request is returned with either `500` or `503` once. If you implement your server in Python, you are invited to make use of that method as well, or otherwise create your implementation, as long as you are aware of sudden server disappearances.
+Internally, the `typeworld.client` module uses a method called `request()` that loops over the request up to 10 times, making sure that the central server can be reached even if a request is returned with either `500` or `503` once. If you implement your server in Python, you are invited to make use of that method as well, or otherwise create your implementation, as long as you are aware of sudden server disappearances.
 
 ## API Endpoint Validator
 
