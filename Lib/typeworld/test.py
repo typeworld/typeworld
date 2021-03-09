@@ -605,7 +605,30 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(success, True)
         response = json.loads(response.decode())
-        self.assertEqual(response["response"], "quotaReached")
+        self.assertEqual(response["response"], "paidSubscriptionRequired")
+
+        # Send Update Subscription Notification
+        parameters = {
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
+            "testScenario": "simulateAddedFontVersion",
+        }
+        success, response, responseObject = typeworld.client.request(
+            MOTHERSHIP + "/updateSubscription", parameters
+        )
+        self.assertEqual(success, True)
+
+        parameters = {
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken,
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "testing": "true",
+            "testScenario": "simulateAddedFont",
+        }
+        success, response, responseObject = typeworld.client.request(
+            MOTHERSHIP + "/updateSubscription", parameters
+        )
+        self.assertEqual(success, True)
 
         # Send Update Subscription Notification
         parameters = {
@@ -3054,12 +3077,14 @@ class TestTypeWorld(unittest.TestCase):
         success, message, changes = user1.client.publishers()[0].update()
         print("Updating publisher:", success, message, changes)
         self.assertEqual(success, True)
+        print("changes", changes)
         self.assertFalse(changes)
         success, message, changes = (
             user1.client.publishers()[0].subscriptions()[0].update()
         )
         print("Updating subscription 1:", success, message, changes)
         self.assertEqual(success, True)
+        print("changes", changes)
         self.assertFalse(changes)
         self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
         self.assertEqual(
@@ -3344,16 +3369,35 @@ class TestTypeWorld(unittest.TestCase):
         )
         print("Updating subscription 2:", success, message, changes)
         self.assertEqual(success, True)
-        self.assertTrue(changes)
+        self.assertEqual(changes, {"removedFonts": 2, "overallChanges": True})
         self.assertEqual(
             user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0
         )
+
+        # Return to normal subscription
         user1.client.testScenario = None
         success, message, changes = (
             user1.client.publishers()[0].subscriptions()[0].update()
         )
+        self.assertEqual(success, True)
+        self.assertEqual(changes, {"addedFonts": 2, "overallChanges": True})
+
+        # Simulated Added Version
+        user1.client.testScenario = "simulateAddedFontVersion"
+        success, message, changes = (
+            user1.client.publishers()[0].subscriptions()[0].update()
+        )
+        self.assertEqual(success, True)
+        self.assertEqual(changes, {"fontsWithAddedVersions": 2, "overallChanges": True})
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        # Return to normal subscription
+        user1.client.testScenario = None
+        success, message, changes = (
+            user1.client.publishers()[0].subscriptions()[0].update()
+        )
+        self.assertEqual(success, True)
 
         # Install font again
         user1.client.testScenario = None
@@ -4031,6 +4075,7 @@ class TestTypeWorld(unittest.TestCase):
 
         # Accept invitation
         self.assertEqual(user2.client.downloadSubscriptions(), (True, None))
+        self.assertEqual(len(user2.client.pendingInvitations()), 1)
 
         user2.client.testScenario = "simulateCentralServerNotReachable"
         success, message = user2.client.pendingInvitations()[0].accept()
