@@ -1394,6 +1394,10 @@ class APIClient(object):
                     "userAccountEmailIsVerified", response["userAccountEmailIsVerified"]
                 )
 
+            # USer Account Status
+            if "userAccountStatus" in response:
+                self.set("userAccountStatus", response["userAccountStatus"])
+
             # Add new subscriptions
             for incomingSubscription in response["heldSubscriptions"]:
 
