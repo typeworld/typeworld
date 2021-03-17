@@ -1398,6 +1398,15 @@ class APIClient(object):
             if "userAccountStatus" in response:
                 self.set("userAccountStatus", response["userAccountStatus"])
 
+            # Website Token
+            if "typeWorldWebsiteToken" in response:
+                keyring = self.keyring()
+                keyring.set_password(
+                    self.userKeychainKey(self.user()),
+                    "typeWorldWebsiteToken",
+                    response["typeWorldWebsiteToken"],
+                )
+
             # Add new subscriptions
             for incomingSubscription in response["heldSubscriptions"]:
 
