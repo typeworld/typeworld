@@ -31,6 +31,13 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
+
+
+### Changes in `0.2.9-beta`
+
+* Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
+  The app won’t start listening to live notifications unless a subscription holds this setting.
+
 ### Changes in `0.2.6-beta`
 
 * Introduced font-level [Font.billboardURLs](#user-content-class-font-attribute-billboardurls) similar to family-level URLs.

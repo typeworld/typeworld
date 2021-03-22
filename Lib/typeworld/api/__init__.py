@@ -4134,6 +4134,17 @@ data, and whether or not this endpoint can be publicized about.
                 "be publicized within the project"
             ),
         ],
+        "sendsLiveNotifications": [
+            BooleanDataType,
+            True,
+            False,
+            (
+                "API endpoint is sending live notifications through the central server,"
+                " namely through the `updateSubscription` command. "
+                "The app won’t start listening to live notifications unless a "
+                "subscription holds this setting."
+            ),
+        ],
         "logoURL": [
             WebResourceURLDataType,
             False,
