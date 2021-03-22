@@ -3102,7 +3102,7 @@ class APIPublisher(object):
             self.parent.uploadSubscriptions()
 
             self.parent.delegate._publisherHasBeenDeleted(self)
-            self.manageMessageQueueConnection()
+            self.parent.manageMessageQueueConnection()
 
             self.parent._publishers = {}
 
