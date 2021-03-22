@@ -624,6 +624,28 @@ class TypeWorldClientDelegate(object):
     def clientPreferenceChanged(self, key, value):
         pass
 
+    def _messageQueueConnected(self):
+        try:
+            self.messageQueueConnected()
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def messageQueueConnected(self):
+        pass
+
+    def _messageQueueDisconnected(self):
+        try:
+            self.messageQueueDisconnected()
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def messageQueueDisconnected(self):
+        pass
+
 
 class APIInvitation(object):
     keywords = ()
@@ -812,6 +834,7 @@ class APIClient(object):
                 target=self.zmqListener, daemon=True
             )
             self.zmqListenerThread.start()
+            self.delegate._messageQueueConnected()
 
     def zmqListener(self):
         import zmq
@@ -842,7 +865,8 @@ class APIClient(object):
             self.zmqSocket.close()
             self._zmqctx.destroy()
             self.zmqListenerThread.join()
-        # self._zmqctx.term()
+            # self._zmqctx.term()
+            self.delegate._messageQueueDisconnected()
 
     def registerZMQCallback(self, topic, method):
         import zmq
