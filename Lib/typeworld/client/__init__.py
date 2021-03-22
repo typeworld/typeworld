@@ -773,10 +773,10 @@ class APIClient(object):
 
             # ZMQ
             if self._isSetOnline and self.zmqSubscriptions:
-                self.zmqSetup()
                 if self.user():
                     topicID = "user-%s" % self.user()
                     self.registerZMQCallback(topicID, self.zmqCallback)
+                self.manageMessageQueueConnection()
 
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
@@ -873,17 +873,18 @@ class APIClient(object):
         import zmq.error
 
         if self.zmqSubscriptions:
-            if topic not in self._zmqCallbacks:
-                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+            if self._zmqRunning:
+                if topic not in self._zmqCallbacks:
+                    self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
 
     def unregisterZMQCallback(self, topic):
         import zmq
         import zmq.error
 
-        if self.zmqSubscriptions and self._zmqRunning:
+        if self.zmqSubscriptions:
             if topic in self._zmqCallbacks:
-                if not self.zmqSocket.closed:
+                if self._zmqRunning:
                     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
                 del self._zmqCallbacks[topic]
 
@@ -917,6 +918,37 @@ class APIClient(object):
     # 	commands['unlinkUser'] = []
     # 	commands['uploadSubscriptions'] = []
     # 	self.set('pendingOnlineCommands', commands)
+
+    def holdsSubscriptionWithLiveNotifcations(self):
+        for publisher in self.publishers():
+            for subscription in publisher.subscriptions():
+                success, command = subscription.protocol.rootCommand()
+                if success:
+                    if command.sendsLiveNotifications:
+                        return True
+        return False
+
+    def requiresMessageQueueConnection(self):
+        return (
+            self.user()
+            and self.get("userAccountStatus") == "pro"
+            or self.holdsSubscriptionWithLiveNotifcations()
+        )
+
+    def manageMessageQueueConnection(self):
+        import zmq
+        import zmq.error
+
+        if self._isSetOnline and self.zmqSubscriptions:
+            requiresMessageQueueConnection = self.requiresMessageQueueConnection()
+
+            if requiresMessageQueueConnection and not self._zmqRunning:
+                self.zmqSetup()
+                for topic in self._zmqCallbacks:
+                    self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+
+            elif not requiresMessageQueueConnection and self._zmqRunning:
+                self.zmqQuit()
 
     def get(self, key):
         try:
@@ -2721,6 +2753,7 @@ Version: {typeworld.api.VERSION}
                 subscription.save()
                 publisher.save()
                 subscription.stillAlive()
+                self.manageMessageQueueConnection()
 
             if updateSubscriptionsOnServer:
                 success, message = self.uploadSubscriptions()
@@ -3069,6 +3102,7 @@ class APIPublisher(object):
             self.parent.uploadSubscriptions()
 
             self.parent.delegate._publisherHasBeenDeleted(self)
+            self.manageMessageQueueConnection()
 
             self.parent._publishers = {}
 
@@ -4046,6 +4080,7 @@ class APISubscription(object):
                 self.parent.delete()
 
             self.parent.parent.delegate._subscriptionHasBeenDeleted(self)
+            self.parent.parent.manageMessageQueueConnection()
 
             if updateSubscriptionsOnServer:
                 self.parent.parent.uploadSubscriptions()
