@@ -874,8 +874,8 @@ class APIClient(object):
 
         if self.zmqSubscriptions:
             if self._zmqRunning:
-                if topic not in self._zmqCallbacks:
-                    self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+                # if topic not in self._zmqCallbacks:
+                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
 
     def unregisterZMQCallback(self, topic):
@@ -930,10 +930,10 @@ class APIClient(object):
 
     def requiresMessageQueueConnection(self):
         return (
-            self.user()
-            and self.get("userAccountStatus") == "pro"
+            (self.user() and self.get("userAccountStatus") == "pro")
             or self.holdsSubscriptionWithLiveNotifcations()
             or self.testing
+            # or self.testScenario == "simulateProAccount"
         )
 
     def manageMessageQueueConnection(self):
@@ -2022,6 +2022,7 @@ class APIClient(object):
 
             # success
             return self.linkUser(response["anonymousUserID"], response["secretKey"])
+
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e

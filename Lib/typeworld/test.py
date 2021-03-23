@@ -421,7 +421,14 @@ installableFonts.foundries.append(foundry)
 
 
 class User(object):
-    def __init__(self, login=None, online=True, delegate=None, createUserAccount=True):
+    def __init__(
+        self,
+        login=None,
+        online=True,
+        delegate=None,
+        createUserAccount=True,
+        testScenario=None,
+    ):
         self.login = login
         self.prefFile = os.path.join(tempFolder, str(id(self)) + ".json")
         self.online = online
@@ -429,7 +436,7 @@ class User(object):
         self.delegate = delegate
         self.createUserAccount = createUserAccount
 
-        self.loadClient()
+        self.loadClient(testScenario=testScenario)
 
         if self.login:
 
@@ -454,7 +461,10 @@ class User(object):
                         self.client.user(),
                     )
             else:
-                self.client.logInUserAccount(self.login[0], self.login[1])
+                success, message = self.client.logInUserAccount(
+                    self.login[0], self.login[1]
+                )
+                assert success
 
             self.credentials = (self.client.user(), self.client.secretKey())
 
@@ -517,7 +527,7 @@ class User(object):
     # 		if self.client.user():
     # 			self.client.unlinkUser()
 
-    def loadClient(self):
+    def loadClient(self, testScenario=None):
         self.client = APIClient(
             preferences=AppKitNSUserDefaults("world.type.test%s" % id(self))
             if MAC
@@ -529,6 +539,7 @@ class User(object):
             delegate=self.delegate,
             secretServerAuthKey=SECRETKEY,
         )
+        self.client.testScenario = testScenario
 
 
 print("setting up objects finished...")
@@ -566,7 +577,15 @@ class TestTypeWorld(unittest.TestCase):
         user1.client.delegate = TestDelegate()
         user1.clearInvitations()
         user1.clearSubscriptions()
+
+        global user4
+        user4 = User(
+            testUser1, createUserAccount=False, testScenario="simulateTestUser1IsPro"
+        )
+        self.assertEqual(user1.client.user(), user4.client.user())
         user4.client.delegate = TestDelegate()
+        self.assertTrue(user4.client.requiresMessageQueueConnection())
+        self.assertTrue(user4.client._zmqRunning)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
@@ -3979,6 +3998,27 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         # Invite same user
+        user1.client.testScenario = None
+        self.assertEqual(user1.client.userEmail(), "test1@type.world")
+        # self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
+        result = (
+            user1.client.publishers()[0]
+            .subscriptions()[-1]
+            .inviteUser("test1@type.world")
+        )
+        self.assertEqual(
+            result,
+            (
+                False,
+                [
+                    "#(response.invitationsRequireProAccount)",
+                    "#(response.invitationsRequireProAccount.headline)",
+                ],
+            ),
+        )
+
+        # Invite same user
+        user1.client.testScenario = "simulateTestUser1IsPro"
         self.assertEqual(user1.client.userEmail(), "test1@type.world")
         # self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
         result = (
@@ -4036,7 +4076,7 @@ class TestTypeWorld(unittest.TestCase):
         print("STATUS: -12")
 
         # Supposed to pass invitation
-        user1.client.testScenario = None
+        user1.client.testScenario = "simulateTestUser1IsPro"
         result = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
@@ -4101,6 +4141,18 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(len(user2.client.publishers()), 1)
 
         # Invite yet another user
+        user2.client.testScenario = None
+        self.assertEqual(len(user3.client.pendingInvitations()), 0)
+        self.assertEqual(len(user3.client.publishers()), 0)
+        success, message = (
+            user2.client.publishers()[0]
+            .subscriptions()[-1]
+            .inviteUser("test3@type.world")
+        )
+        self.assertEqual(success, False)
+
+        # Invite yet another user
+        user2.client.testScenario = "simulateTestUser2IsPro"
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
         result = (
@@ -4209,6 +4261,7 @@ class TestTypeWorld(unittest.TestCase):
         print("STATUS: -5")
 
         # Invite again
+        user2.client.testScenario = "simulateTestUser2IsPro"
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
         result = (
@@ -4471,6 +4524,17 @@ class TestTypeWorld(unittest.TestCase):
 
         user0.client.testScenario = None
         success, message = user0.client.logInUserAccount(*testUser1)
+        self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            [
+                "#(response.linkingMoreAppInstancesRequiresProUserAccount)",
+                "#(response.linkingMoreAppInstancesRequiresProUserAccount.headline)",
+            ],
+        )
+
+        user0.client.testScenario = "simulateTestUser1IsPro"
+        success, message = user0.client.logInUserAccount(*testUser1)
         self.assertEqual(success, True)
         success, message = user0.client.unlinkUser()
         self.assertEqual(success, True)
@@ -4500,7 +4564,7 @@ def setUp():
     user1 = User(testUser1)
     user2 = User(testUser2)
     user3 = User(testUser3)
-    user4 = User(testUser1, createUserAccount=False)
+    user4 = None
 
     print("setUp() finished...")
 
