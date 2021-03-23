@@ -884,7 +884,7 @@ class APIClient(object):
 
         if self.zmqSubscriptions:
             if topic in self._zmqCallbacks:
-                if self._zmqRunning:
+                if self._zmqRunning and not self.zmqSocket.closed:
                     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
                 del self._zmqCallbacks[topic]
 
