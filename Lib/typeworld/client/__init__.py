@@ -933,6 +933,7 @@ class APIClient(object):
             self.user()
             and self.get("userAccountStatus") == "pro"
             or self.holdsSubscriptionWithLiveNotifcations()
+            or self.testing
         )
 
     def manageMessageQueueConnection(self):
