@@ -417,6 +417,30 @@ If you’re building your own API endpoint under the Type.World JSON protocol, w
 * You may invoke the validator on directly this website: [Online API Endpoint Validator](/developer/validate)
 * You may also use this validator remotely with its own API: [Type.World API](/developer/api/#validateAPIEndpoint).
 
+# Contribute
+
+Type.World is looking for a number of voluntary contributions. At the moment, these are:
+
+## Translations
+
+If you would like to see the app translated into your language, please consider contributing your translation skills.
+
+We have a web-interface in place to assist with the translations. A one-click assistant can provide an auto-translation by Google and you may choose to use it as a basis for your manual translation. This saves a lot of work for widely spoken languages where Google Translate provides good results.
+
+The interface isn’t perfect, but it’s pretty good compared to editing text files.
+
+Please note that the app is currently not yet designed to handle right-to-left text gracefully. But given that full localization is built into the protocol from the beginning, the app is intended to support right-to-left text in the future. When the time has come to support right-to-left text, it would be great to do it with real translations rather than placeholder text.
+
+### Translation Process
+
+[Get in touch](mailto:hello@type.world?subject=Contribute%20translation%20for%20Type.World&body=Hello%20Type.World,%0D%0A%0D%0AI%20would%20like%20to%20contribute%20translations%20for%20*enter%20language%20here*.%0D%0AMy%20Type.World%20user%20account%20is%20*enter%20account%20email%20address%20here*.) if you want to become a translator. You need a Type.World user account for that.
+
+Your Type.World user account will be authorized for one or more languages and you will see a "Translate" link appear in the web site’s menu bar. Follow it to see the available datapoints. Be aware that initial page load may take longer than average.
+
+You agree that your name gets credited for the translations.
+
+Every once in a while you will receive an email notifying you of pending necessary translations, either because the original English wording has changed since you last edited it or because new datapoints have appeared in the meantime. This notification will normally be sent a week or two prior to a pending app release.
+
 # Finances
 
 The Type.World project aims to be a service to the type industry.
@@ -458,7 +482,5 @@ The following items aren’t yet implemented in the app, but planned:
 * Implement *Collections*. Like playlists in a music app, users can arrange arbitrary fonts into collections. The collections can also be shared with other Type.World users
 * When trial fonts expire while the computer is offline, the uninstallation calls won't reach the server and need to be recorded for later sending.
 * Unpixelated appearance on hi-resolution Windows screens. The awkward app appearance on hi-resolution Windows screens stems from a limitation in `wx`, a cross-platform Python GUI framework that the Type.World App uses. The limitation is expected to be lifted in `wx`’s upcoming 4.1 release and thus Type.World is expected to look crisp on hi-resolution screens. Sadly, the timeline for that `wx` update is not known. But it’s sure to happen, as `wx` is a very popular and actively developed framework.
-* Email verification after account creation
-* Look over client’s Pub/Sub implementation. For instance, topics for subscriptions may not yet exist, so when they exist later, the client needs to try to subscribe again
 * Decide on whether incoming font asset lists may contain mixed successfull/erroneous results for only successful. In latter case, first check all incoming assets for errors before proceeding with the installation. Further, when an incoming asset list contains both successful as well as erroneous data, abort installation, and then send uninstallation requests back to server, so that recorded installation from just now can be removed again.
 * After linking a user account to the app, the existing subscriptions aren’t uploaded/synched
