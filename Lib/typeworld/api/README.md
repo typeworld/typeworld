@@ -37,7 +37,7 @@ This section lists changes to the protocol since it reached Beta status with ver
 
 * Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
   The app won’t start listening to live notifications unless a subscription holds this setting.
-* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedCommercialApps).
+* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedcommercialapps).
   In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
   (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 
@@ -1684,7 +1684,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -2324,7 +2324,7 @@ This section lists changes to the protocol since it reached Beta status with ver
 
 * Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
   The app won’t start listening to live notifications unless a subscription holds this setting.
-* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedCommercialApps).
+* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedcommercialapps).
   In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
   (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 
@@ -3971,7 +3971,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'woff2', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
