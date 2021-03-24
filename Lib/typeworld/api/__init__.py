@@ -897,6 +897,7 @@ class HexColorDataType(StringDataType):
 
 class ListProxy(DataType):
     initialData = []
+    includeEmpty = False
 
     # Data type of each list member
     # Here commented out to enforce explicit setting of data type
@@ -965,6 +966,12 @@ class ListProxy(DataType):
         for i, value in enumerate(self.value):
             if self[i] == removeValue:
                 del self[i]
+
+    def isEmpty(self):
+        if self.includeEmpty:
+            return False
+        else:
+            return not bool(self.value)
 
     # def valid(self):
 
