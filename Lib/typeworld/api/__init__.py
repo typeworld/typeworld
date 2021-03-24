@@ -1502,10 +1502,10 @@ class DictBasedObject(object):
 
     def loadDict(self, d):
 
-        for key in list(d.keys()):
+        for key in d:
             if key in self._allowedKeys:
 
-                if key in list(self._structure.keys()):
+                if key in self._structure:
 
                     if issubclass(self._structure[key][0], (Proxy)):
 
