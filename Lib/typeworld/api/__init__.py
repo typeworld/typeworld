@@ -1471,10 +1471,12 @@ class DictBasedObject(object):
 
             if self.discardThisKey(key) is False:
 
-                # if required or not empty
                 if (
+                    # required
                     (key in self._structure and self._structure[key][1])
+                    # don't know
                     or getattr(self, key)
+                    # is set
                     or (
                         hasattr(getattr(self, key), "isSet")
                         and getattr(self, key).isSet()
