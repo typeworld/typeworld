@@ -538,6 +538,8 @@ class User(object):
             testing=True,
             delegate=self.delegate,
             secretServerAuthKey=SECRETKEY,
+            commercial=True,
+            appID="world.type.app",
         )
         self.client.testScenario = testScenario
 
@@ -578,7 +580,6 @@ class TestTypeWorld(unittest.TestCase):
         user1.clearInvitations()
         user1.clearSubscriptions()
 
-        global user4
         user4 = User(
             testUser1, createUserAccount=False, testScenario="simulateTestUser1IsPro"
         )
@@ -701,6 +702,9 @@ class TestTypeWorld(unittest.TestCase):
         user2.clearSubscriptions()
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
+
+        user4.takeDown()
+        user4.client.quit()
 
     def test_emptyValues(self):
 
@@ -2124,7 +2128,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertFalse(success)
         print(message)  # nocoverage
         self.assertTrue(
-            "Invalid control character at: line 6 column 47 (char 225)" in message
+            "Invalid control character at: line 9 column 47 (char 300)" in message
         )
 
         # TODO: Invite user to subscription with API endpoint as source
@@ -3657,6 +3661,7 @@ class TestTypeWorld(unittest.TestCase):
             protectedSubscription
         )
         self.assertEqual(success, False)
+
         user2.client.testScenario = "simulateCentralServerProgrammingError"
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
@@ -3672,12 +3677,27 @@ class TestTypeWorld(unittest.TestCase):
             protectedSubscription
         )
         self.assertEqual(success, False)
+
+        user2.client.publishers()[0].delete()
+        user2.client.testScenario = "simulateNoCommercialAppsAllowed"
+        success, message, publisher, subscription = user2.client.addSubscription(
+            protectedSubscription
+        )
+        print(message)
+        self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            [
+                "#(response.commercialAppNotAllowed)",
+                "#(response.commercialAppNotAllowed.headline)",
+            ],
+        )
+
         user2.client.testScenario = None
         success, message, publisher, subscription = user2.client.addSubscription(
             protectedSubscription
         )
         self.assertEqual(success, True)
-        print(success, message)
 
         # Two versions available
         self.assertEqual(
@@ -4582,8 +4602,6 @@ def tearDown():
     user2.client.quit()
     user3.takeDown()
     user3.client.quit()
-    user4.takeDown()
-    user4.client.quit()
 
     # Local
     if "TRAVIS" not in os.environ:

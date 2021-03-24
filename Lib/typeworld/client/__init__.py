@@ -732,6 +732,8 @@ class APIClient(object):
         externallyControlled=False,
         secretServerAuthKey=None,
         inCompiledApp=False,
+        commercial=False,
+        appID="world.type.headless",
     ):
 
         try:
@@ -754,6 +756,8 @@ class APIClient(object):
             self.externallyControlled = externallyControlled
             self.secretServerAuthKey = secretServerAuthKey
             self.inCompiledApp = inCompiledApp
+            self.commercial = commercial
+            self.appID = appID
 
             self._zmqRunning = False
             self._zmqCallbacks = {}
@@ -2747,6 +2751,21 @@ Version: {typeworld.api.VERSION}
                 )
                 assert success
                 assert rootCommand
+
+                # Commercial app check
+                if (
+                    self.commercial
+                    and self.appID not in rootCommand.allowedCommercialApps
+                ):
+                    return (
+                        False,
+                        [
+                            "#(response.commercialAppNotAllowed)",
+                            "#(response.commercialAppNotAllowed.headline)",
+                        ],
+                        None,
+                        None,
+                    )
 
                 publisher = self.publisher(rootCommand.canonicalURL)
                 subscription = publisher.subscription(protocol.unsecretURL(), protocol)

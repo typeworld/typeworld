@@ -3451,6 +3451,15 @@ class FoundryListProxy(ListProxy):
     dataType = FoundryProxy
 
 
+class CommercialAppsAllowedProxy(Proxy):
+    dataType = str
+
+
+class CommercialAppsAllowedListProxy(ListProxy):
+    dataType = CommercialAppsAllowedProxy
+    includeEmpty = True
+
+
 ########################################################################################
 
 #  Base Response
@@ -4121,7 +4130,7 @@ data, and whether or not this endpoint can be publicized about.
                 "your API Endpoint needs to be aware of "
                 "the license and proceed only if allowed, otherwise decline the usage "
                 "of this API endpoint. In other words, the non-commercial "
-                "CC-BY-NC-ND-4.0 license that is the default here forbids a commercial "
+                "`CC-BY-NC-ND-4.0` license that is the default here forbids commercial "
                 "software from accessing your API Endpoint unless they have a separate "
                 "legal agreememt with you."
             ),
@@ -4156,7 +4165,27 @@ data, and whether or not this endpoint can be publicized about.
                 "API endpoint is sending live notifications through the central server,"
                 " namely through the `updateSubscription` command. "
                 "The app won’t start listening to live notifications unless a "
-                "subscription holds this setting."
+                "subscription holds this setting. "
+            ),
+        ],
+        "allowedCommercialApps": [
+            CommercialAppsAllowedListProxy,
+            True,
+            ["world.type.app"],
+            (
+                "Machine-readable list of commercial apps that are allowed to "
+                "access this API Endpoint in case "
+                "::EndpointResponse.licenseIdentifier:: carries a non-commercial "
+                "copyright license such as the default `CC-BY-NC-ND-4.0`. "
+                "A reverse-domain notation for the app ID is recommended "
+                "but not required. "
+                "Note: As the originator of the entire technology, the Type.World App "
+                "is on this list by default, even though it is a commercial app. "
+                "This is for backwards-compatibility for endpoints that don’t "
+                "carry this attribute yet but are expected to allow access by "
+                "Type.World. If you don’t want the Type.World to access "
+                "your API Endpoint, you may explicitly unset this attribute to an "
+                "empty list: `endpoint.allowedCommercialApps = []`"
             ),
         ],
         "logoURL": [

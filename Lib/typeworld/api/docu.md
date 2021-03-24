@@ -37,6 +37,9 @@ This section lists changes to the protocol since it reached Beta status with ver
 
 * Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
   The app won’t start listening to live notifications unless a subscription holds this setting.
+* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedCommercialApps).
+  In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
+  (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 
 ### Changes in `0.2.6-beta`
 
