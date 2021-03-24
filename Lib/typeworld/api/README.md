@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 0.2.8-beta)
+# Type.World JSON Protocol (Version 0.2.9-beta)
 
 ## Preamble
 
@@ -30,6 +30,16 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 ## Protocol Changes
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
+
+
+
+### Changes in `0.2.9-beta`
+
+* Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
+  The app won’t start listening to live notifications unless a subscription holds this setting.
+* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedCommercialApps).
+  In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
+  (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 
 ### Changes in `0.2.6-beta`
 
@@ -209,6 +219,9 @@ Will output the following JSON code:
 {
     "endpoint": {
         "adminEmail": "admin@fontpublisher.com",
+        "allowedCommercialApps": [
+            "world.type.app"
+        ],
         "canonicalURL": "http://fontpublisher.com/api/",
         "licenseIdentifier": "CC-BY-NC-ND-4.0",
         "name": {
@@ -216,6 +229,7 @@ Will output the following JSON code:
         },
         "privacyPolicyURL": "https://type.world/legal/default/PrivacyPolicy.html",
         "public": false,
+        "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
             "installableFonts",
@@ -224,7 +238,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -372,7 +386,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -418,6 +432,9 @@ a lot of time is saved.
 {
     "endpoint": {
         "adminEmail": "admin@awesomefonts.com",
+        "allowedCommercialApps": [
+            "world.type.app"
+        ],
         "canonicalURL": "https://awesomefonts.com/api/",
         "licenseIdentifier": "CC-BY-NC-ND-4.0",
         "name": {
@@ -426,6 +443,7 @@ a lot of time is saved.
         },
         "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
+        "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
             "installableFonts",
@@ -439,7 +457,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -492,7 +510,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.8-beta
+__Default value:__ 0.2.9-beta
 
 
 
@@ -514,6 +532,9 @@ data, and whether or not this endpoint can be publicized about.
 ```json
 {
     "adminEmail": "admin@awesomefonts.com",
+    "allowedCommercialApps": [
+        "world.type.app"
+    ],
     "canonicalURL": "https://awesomefonts.com/api/",
     "licenseIdentifier": "CC-BY-NC-ND-4.0",
     "name": {
@@ -522,6 +543,7 @@ data, and whether or not this endpoint can be publicized about.
     },
     "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
+    "sendsLiveNotifications": false,
     "supportedCommands": [
         "endpoint",
         "installableFonts",
@@ -536,7 +558,7 @@ data, and whether or not this endpoint can be publicized about.
 
 ### Attributes
 
-[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
 
 ## Attributes
 
@@ -548,6 +570,16 @@ API endpoint Administrator. This email needs to be reachable for various informa
 
 __Required:__ True<br />
 __Type:__ Str<br />
+<div id="class-endpointresponse-attribute-allowedCommercialApps"></div>
+
+### allowedCommercialApps
+
+Machine-readable list of commercial apps that are allowed to access this API Endpoint in case [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseidentifier) carries a non-commercial copyright license such as the default `CC-BY-NC-ND-4.0`. A reverse-domain notation for the app ID is recommended but not required. Note: As the originator of the entire technology, the Type.World App is on this list by default, even though it is a commercial app. This is for backwards-compatibility for endpoints that don’t carry this attribute yet but are expected to allow access by Type.World. If you don’t want the Type.World to access your API Endpoint, you may explicitly unset this attribute to an empty list: `endpoint.allowedCommercialApps = []`
+
+__Required:__ True<br />
+__Type:__ List of Str objects<br />
+__Default value:__ ['world.type.app']
+
 <div id="class-endpointresponse-attribute-backgroundColor"></div>
 
 ### backgroundColor
@@ -569,7 +601,7 @@ __Type:__ Str<br />
 
 ### licenseIdentifier
 
-Machine-readable identifier of license under which the API Endpoint publishes its (metda)data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. Instead, the software client that accesses your API Endpoint needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. In other words, the non-commercial CC-BY-NC-ND-4.0 license that is the default here forbids a commercial software from accessing your API Endpoint unless they have a separate legal agreememt with you.
+Machine-readable identifier of license under which the API Endpoint publishes its (metda)data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. Instead, the software client that accesses your API Endpoint needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. In other words, the non-commercial `CC-BY-NC-ND-4.0` license that is the default here forbids commercial software from accessing your API Endpoint unless they have a separate legal agreememt with you.
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -618,6 +650,16 @@ __Default value:__ https://type.world/legal/default/PrivacyPolicy.html
 ### public
 
 API endpoint is meant to be publicly visible and its existence may be publicized within the project
+
+__Required:__ True<br />
+__Type:__ Bool<br />
+__Default value:__ False
+
+<div id="class-endpointresponse-attribute-sendsLiveNotifications"></div>
+
+### sendsLiveNotifications
+
+API endpoint is sending live notifications through the central server, namely through the `updateSubscription` command. The app won’t start listening to live notifications unless a subscription holds this setting. 
 
 __Required:__ True<br />
 __Type:__ Bool<br />
@@ -1642,7 +1684,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'ttc', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -2243,7 +2285,7 @@ __Type:__ Str<br />
 
 
 
-# Type.World JSON Protocol (Version 0.2.8-beta)
+# Type.World JSON Protocol (Version 0.2.9-beta)
 
 ## Preamble
 
@@ -2275,6 +2317,16 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 ## Protocol Changes
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
+
+
+
+### Changes in `0.2.9-beta`
+
+* Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
+  The app won’t start listening to live notifications unless a subscription holds this setting.
+* Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedCommercialApps).
+  In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
+  (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 
 ### Changes in `0.2.6-beta`
 
@@ -2454,6 +2506,9 @@ Will output the following JSON code:
 {
     "endpoint": {
         "adminEmail": "admin@fontpublisher.com",
+        "allowedCommercialApps": [
+            "world.type.app"
+        ],
         "canonicalURL": "http://fontpublisher.com/api/",
         "licenseIdentifier": "CC-BY-NC-ND-4.0",
         "name": {
@@ -2461,6 +2516,7 @@ Will output the following JSON code:
         },
         "privacyPolicyURL": "https://type.world/legal/default/PrivacyPolicy.html",
         "public": false,
+        "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
             "installableFonts",
@@ -2469,7 +2525,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -2617,7 +2673,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -2663,6 +2719,9 @@ a lot of time is saved.
 {
     "endpoint": {
         "adminEmail": "admin@awesomefonts.com",
+        "allowedCommercialApps": [
+            "world.type.app"
+        ],
         "canonicalURL": "https://awesomefonts.com/api/",
         "licenseIdentifier": "CC-BY-NC-ND-4.0",
         "name": {
@@ -2671,6 +2730,7 @@ a lot of time is saved.
         },
         "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
+        "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
             "installableFonts",
@@ -2684,7 +2744,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.8-beta"
+    "version": "0.2.9-beta"
 }
 ```
 
@@ -2737,7 +2797,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.8-beta
+__Default value:__ 0.2.9-beta
 
 
 
@@ -2759,6 +2819,9 @@ data, and whether or not this endpoint can be publicized about.
 ```json
 {
     "adminEmail": "admin@awesomefonts.com",
+    "allowedCommercialApps": [
+        "world.type.app"
+    ],
     "canonicalURL": "https://awesomefonts.com/api/",
     "licenseIdentifier": "CC-BY-NC-ND-4.0",
     "name": {
@@ -2767,6 +2830,7 @@ data, and whether or not this endpoint can be publicized about.
     },
     "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
+    "sendsLiveNotifications": false,
     "supportedCommands": [
         "endpoint",
         "installableFonts",
@@ -2781,7 +2845,7 @@ data, and whether or not this endpoint can be publicized about.
 
 ### Attributes
 
-[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
 
 ## Attributes
 
@@ -2793,6 +2857,16 @@ API endpoint Administrator. This email needs to be reachable for various informa
 
 __Required:__ True<br />
 __Type:__ Str<br />
+<div id="class-endpointresponse-attribute-allowedCommercialApps"></div>
+
+### allowedCommercialApps
+
+Machine-readable list of commercial apps that are allowed to access this API Endpoint in case [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseidentifier) carries a non-commercial copyright license such as the default `CC-BY-NC-ND-4.0`. A reverse-domain notation for the app ID is recommended but not required. Note: As the originator of the entire technology, the Type.World App is on this list by default, even though it is a commercial app. This is for backwards-compatibility for endpoints that don’t carry this attribute yet but are expected to allow access by Type.World. If you don’t want the Type.World to access your API Endpoint, you may explicitly unset this attribute to an empty list: `endpoint.allowedCommercialApps = []`
+
+__Required:__ True<br />
+__Type:__ List of Str objects<br />
+__Default value:__ ['world.type.app']
+
 <div id="class-endpointresponse-attribute-backgroundColor"></div>
 
 ### backgroundColor
@@ -2814,7 +2888,7 @@ __Type:__ Str<br />
 
 ### licenseIdentifier
 
-Machine-readable identifier of license under which the API Endpoint publishes its (metda)data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. Instead, the software client that accesses your API Endpoint needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. In other words, the non-commercial CC-BY-NC-ND-4.0 license that is the default here forbids a commercial software from accessing your API Endpoint unless they have a separate legal agreememt with you.
+Machine-readable identifier of license under which the API Endpoint publishes its (metda)data, as per [https://spdx.org/licenses/](). This license will not be presented to the user. Instead, the software client that accesses your API Endpoint needs to be aware of the license and proceed only if allowed, otherwise decline the usage of this API endpoint. In other words, the non-commercial `CC-BY-NC-ND-4.0` license that is the default here forbids commercial software from accessing your API Endpoint unless they have a separate legal agreememt with you.
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -2863,6 +2937,16 @@ __Default value:__ https://type.world/legal/default/PrivacyPolicy.html
 ### public
 
 API endpoint is meant to be publicly visible and its existence may be publicized within the project
+
+__Required:__ True<br />
+__Type:__ Bool<br />
+__Default value:__ False
+
+<div id="class-endpointresponse-attribute-sendsLiveNotifications"></div>
+
+### sendsLiveNotifications
+
+API endpoint is sending live notifications through the central server, namely through the `updateSubscription` command. The app won’t start listening to live notifications unless a subscription holds this setting. 
 
 __Required:__ True<br />
 __Type:__ Bool<br />
@@ -3887,7 +3971,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttc', 'woff2', 'woff', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff2', 'otf', 'ttc', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
