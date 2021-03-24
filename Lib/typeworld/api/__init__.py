@@ -1526,8 +1526,13 @@ class DictBasedObject(object):
                                 )
                             )
                         exec("self.%s.loadDict(d[key])" % (key))
+
                     elif issubclass(self._structure[key][0], (ListProxy)):
                         _list = self.__getattr__(key)
+                        _list.value = []
+                        # allow empty
+                        # if self._structure[key][0].includeEmpty:
+                        #     _list.value = []
                         for item in d[key]:
                             o = self._structure[key][0].dataType.dataType()
 
