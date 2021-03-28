@@ -468,7 +468,7 @@ The system is designed in a way that, on an entry level, both publishers and use
 
 ## Future Outlook
 
-Should the income be higher than all costs in the long term, it needs to be decided what to do with that money. Either the income is reduced (for example by lowering the commission percentage), or the excess money is spent on improving the system. Many ideas exist that could be supported by such excess money:
+Income generated for Type.World will support the livelihood of its developers and the following expansion plans:
 
 * iOS and Android versions of the Type.World App.
 * Creating a carefully curated set of font licenses, the *Type.World Licenses*, that are offered to type foundries to use to sell their fonts under, at least optionally. Like the well known *Creative Commons* set of licenses, font customers would learn and understand the implications of each *Type.World* license over time, greatly enhancing the font buying experience.
@@ -485,4 +485,3 @@ The following items aren’t yet implemented in the app, but planned:
 * When trial fonts expire while the computer is offline, the uninstallation calls won't reach the server and need to be recorded for later sending.
 * Unpixelated appearance on hi-resolution Windows screens. The awkward app appearance on hi-resolution Windows screens stems from a limitation in `wx`, a cross-platform Python GUI framework that the Type.World App uses. The limitation is expected to be lifted in `wx`’s upcoming 4.1 release and thus Type.World is expected to look crisp on hi-resolution screens. Sadly, the timeline for that `wx` update is not known. But it’s sure to happen, as `wx` is a very popular and actively developed framework.
 * Decide on whether incoming font asset lists may contain mixed successfull/erroneous results for only successful. In latter case, first check all incoming assets for errors before proceeding with the installation. Further, when an incoming asset list contains both successful as well as erroneous data, abort installation, and then send uninstallation requests back to server, so that recorded installation from just now can be removed again.
-* After linking a user account to the app, the existing subscriptions aren’t uploaded/synched
