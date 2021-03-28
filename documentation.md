@@ -45,9 +45,11 @@ To start developing your own API Endpoint for the Type.World App, you need to:
 In order to go online with your API Endpoint, consider the following check list:
 
 * I’ve obtained an `APIKey` for my API Endpoint through the user account section at [type.world/account](https://type.world/account)
-* I’ve made sure that calls to the central type.world server are looping for a certain number of times in case a server instance disappears mid-request (see [Type.World API](#typeworld-api))
+* I’ve made sure that calls to the central Type.World API are looping for a certain number of times in case a server instance disappears mid-request (see [Type.World API](#typeworld-api))
 * I’ve checked my API Endpoint with the API Endpoint Validator (see [API Endpoint Validator](#api-endpoint-validator))
-* I made sure the fonts in my subscription all have unique and unchanging `uniqueID` attributes
+* I made sure the fonts in my subscription all have unique and unchanging `uniqueID` attributes (see [API Docs](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#class-font-attribute-uniqueid))
+* I made sure that the canonical URL of my API Endpoint is unchanging (see [API Docs](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#class-endpointresponse-attribute-canonicalurl))
+* In case I’m planning to use Type.World’s professional services (live notifications), I am onboarding font subscriptions to Type.World for all my existing customer’s user accounts within the 180 day trial period, or otherwise I risk high initial onboarding costs (see [Price Calculator](/developer/prices/))
 
 
 
