@@ -2688,12 +2688,16 @@ class Font(DictBasedObject):
             False,
             False,
             (
-                "Indication that the server requires a valid subscriptionID to be used "
-                "for authentication. The server *may* limit the downloads of fonts. "
+                "Indication that font is (most likely) commercial and requires "
+                "a certain amount of special treatment over a free font: "
+                "1) The API Endpoint requires a valid subscriptionID to be used "
+                "for authentication. 2) The API Endpoint may limit the downloads "
+                "of fonts. "
+                "3) Most importantly, "
+                "the `uninstallFonts` command needs to be called on the "
+                "API Endpoint when the font gets uninstalled."
                 "This may also be used for fonts that are free to download, but their "
-                "installations want to be tracked/limited anyway. Most importantly, "
-                "this indicates that the uninstall command needs to be called on the "
-                "API endpoint when the font gets uninstalled."
+                "installations want to be monitored or limited anyway. "
             ),
         ],
         "dateFirstPublished": [
