@@ -51,7 +51,7 @@ __breakingAppVersions__
 * Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedcommercialapps).
   In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
   (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
-* Introduced [EndpointResponse.publisherType](#user-content-class-endpointresponse-attribute-publishertype).
+* Introduced [EndpointResponse.publisherTypes](#user-content-class-endpointresponse-attribute-publishertype).
   For publication purposes. ***THIS IS A BREAKING CHANGE!***
 
 ### Changes in `0.2.6-beta`

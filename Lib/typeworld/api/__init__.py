@@ -583,6 +583,7 @@ OPENSOURCELICENSES = [
 FONTSTATUSES = ["prerelease", "trial", "stable"]
 
 PUBLISHERTYPES = ["free", "retail", "custom", "undefined"]
+PUBLICPUBLISHERTYPES = ["free", "retail", "custom"]
 
 PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ["active", "deleted", "revoked"]
 
@@ -4163,7 +4164,7 @@ data, and whether or not this endpoint can be publicized about.
                 "legal agreememt with you."
             ),
         ],
-        "publisherType": [
+        "publisherTypes": [
             SupportedPublisherTypeListProxy,
             True,
             None,
@@ -4308,6 +4309,18 @@ data, and whether or not this endpoint can be publicized about.
                     "to protect your data."
                 )
             )
+
+        if self.public:
+            for publisherType in self.publisherTypes:
+                if publisherType not in PUBLICPUBLISHERTYPES:
+                    critical.append(
+                        (
+                            "When EndpointResponse.public is set to True, then only a "
+                            "restricted set of types is allowed for "
+                            f"EndpointResponse.publisherTypes: {PUBLICPUBLISHERTYPES}. "
+                            f"You have '{publisherType}'"
+                        )
+                    )
 
         return information, warnings, critical
 

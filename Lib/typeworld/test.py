@@ -164,7 +164,7 @@ root.adminEmail = "admin@fontpublisher.com"
 root.supportedCommands = [
     x["keyword"] for x in COMMANDS
 ]  # this API supports all commands
-root.publisherType = PUBLISHERTYPES
+root.publisherTypes = PUBLISHERTYPES
 root.backgroundColor = "AABBCC"
 root.licenseIdentifier = "CC-BY-NC-ND-4.0"
 root.logoURL = (
@@ -790,7 +790,35 @@ class TestTypeWorld(unittest.TestCase):
         # publisherTypes
         r2 = copy.deepcopy(root)
         try:
-            r2.publisherType = ["unsupportedCommand"]
+            r2.publisherTypes = ["unsupportedCommand"]
+        except ValueError as e:
+            self.assertEqual(
+                str(e),
+                (
+                    "Unknown publisher type: 'unsupportedCommand'. "
+                    "Possible: ['free', 'retail', 'custom', 'undefined']"
+                ),
+            )
+
+        # publisherTypes
+        r2 = copy.deepcopy(root)
+        try:
+            r2.publisherTypes = ["undefined"]
+            r2.public = True
+            validate = r2.validate()
+            print(validate[2])
+            self.assertEqual(
+                validate[2],
+                [
+                    (
+                        "<EndpointResponse> --> When EndpointResponse.public is set "
+                        "to True, then only a restricted set of types is allowed for "
+                        "EndpointResponse.publisherTypes: ['free', 'retail', 'custom']."
+                        " You have 'undefined'"
+                    )
+                ],
+            )
+
         except ValueError as e:
             self.assertEqual(
                 str(e),
