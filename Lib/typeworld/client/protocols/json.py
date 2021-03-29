@@ -95,33 +95,33 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
     def latestVersion(self):
         return self._installableFontsCommand
 
-    # def returnRootCommand(self, testScenario):
+    def returnRootCommand(self, testScenario):
 
-    #     if not self._rootCommand:
+        if not self._rootCommand:
 
-    #         # Read response
-    #         data = {
-    #             "subscriptionID": self.url.subscriptionID,
-    #             "appVersion": VERSION,
-    #         }
-    #         if testScenario:
-    #             data["testScenario"] = testScenario
-    #         root, responses = readJSONResponse(
-    #             self.connectURL(),
-    #             [typeworld.api.EndpointResponse()],
-    #             typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
-    #             data=data,
-    #         )
+            # Read response
+            data = {
+                "subscriptionID": self.url.subscriptionID,
+                "appVersion": VERSION,
+            }
+            if testScenario:
+                data["testScenario"] = testScenario
+            root, responses = readJSONResponse(
+                self.connectURL(),
+                [typeworld.api.EndpointResponse()],
+                typeworld.api.INSTALLABLEFONTSCOMMAND["acceptableMimeTypes"],
+                data=data,
+            )
 
-    #         # Errors
-    #         if responses["errors"]:
-    #             return False, responses["errors"][0]
+            # Errors
+            if responses["errors"]:
+                return False, responses["errors"][0]
 
-    #         self._endpointCommand = root.endpoint
-    #         self._rootCommand = root
+            self._endpointCommand = root.endpoint
+            self._rootCommand = root
 
-    #     # Success
-    #     return True, self._rootCommand
+        # Success
+        return True, self._rootCommand
 
     def returnEndpointCommand(self, testScenario):
 

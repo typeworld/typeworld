@@ -68,6 +68,12 @@ class TypeWorldProtocolBase(object):
     # 	'''Overwrite this'''
     # 	return True, None
 
+    def rootCommand(self, testScenario=None):
+        success, command = self.returnRootCommand(testScenario=testScenario)
+        if success:
+            command.parent = self
+        return success, command
+
     def endpointCommand(self, testScenario=None):
         success, command = self.returnEndpointCommand(testScenario=testScenario)
         if success:
