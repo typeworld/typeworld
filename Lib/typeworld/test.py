@@ -2629,6 +2629,19 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(success, False)
 
+        user0.client.testScenario = "simulateBreakingAPIVersion"
+        success, message, publisher, subscription = user0.client.addSubscription(
+            freeSubscription
+        )
+        self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            [
+                "#(response.appUpdateRequired)",
+                "#(response.appUpdateRequired.headline)",
+            ],
+        )
+
         user0.client.testScenario = (
             "simulateEndpointDoesntSupportInstallableFontsCommand"
         )

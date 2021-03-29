@@ -31,6 +31,17 @@ Any such mistakes will not pass. If you use your own routines to assemble your J
 
 This section lists changes to the protocol since it reached Beta status with version `0.2.2-beta`.
 
+### Breaking Changes
+
+Not all changes to the protocol are breaking changes. Often, a new attribute is added but it has a default value, so newer app versions will continue to work
+because they can fill the missing data. 
+
+However, sometimes changes break compatibility. When that happens, it’s important that your API Endpoint delivers the correct protocol version in 
+[RootResponse.version](#user-content-class-rootresponse-attribute-version) so that the app knows how to react.
+
+These are the breaking changes so far:
+
+__breakingAppVersions__
 
 
 ### Changes in `0.2.9-beta`
@@ -41,7 +52,7 @@ This section lists changes to the protocol since it reached Beta status with ver
   In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
   (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
 * Introduced [EndpointResponse.publisherType](#user-content-class-endpointresponse-attribute-publishertype).
-  For publication purposes.
+  For publication purposes. ***THIS IS A BREAKING CHANGE!***
 
 ### Changes in `0.2.6-beta`
 

@@ -14,6 +14,7 @@ import base64
 import threading
 import ssl
 import certifi
+import semver
 import logging
 import inspect
 import re
@@ -812,6 +813,7 @@ class APIClient(object):
         success, message = self.downloadSettings(performCommands=True)
         assert success
         assert self.get("downloadedSettings")["messagingQueue"].startswith("tcp://")
+        assert self.get("downloadedSettings")["breakingAPIVersions"]
 
     def wentOffline(self):
         pass
@@ -2537,26 +2539,24 @@ Version: {typeworld.api.VERSION}
         }
 
         # Submit to central server
-        if self.online(self.mothership):
+        # if self.online(self.mothership):
 
-            def handleTracebackWorker(self):
+        def handleTracebackWorker(self):
 
-                success, response, responseObject = self.performRequest(
-                    self.mothership + "/handleTraceback", parameters
-                )
-                if success:
-                    response = json.loads(response.decode())
-                    if response["response"] != "success":
-                        self.log(
-                            "handleTraceback() error on server, step 2: %s" % response
-                        )
-                if not success:
-                    self.log("handleTraceback() error on server, step 1: %s" % response)
-
-            handleTracebackThread = threading.Thread(
-                target=handleTracebackWorker, args=(self,)
+            success, response, responseObject = self.performRequest(
+                self.mothership + "/handleTraceback", parameters
             )
-            handleTracebackThread.start()
+            if success:
+                response = json.loads(response.decode())
+                if response["response"] != "success":
+                    self.log("handleTraceback() error on server, step 2: %s" % response)
+            if not success:
+                self.log("handleTraceback() error on server, step 1: %s" % response)
+
+        handleTracebackThread = threading.Thread(
+            target=handleTracebackWorker, args=(self,)
+        )
+        handleTracebackThread.start()
 
         # Log
         if sourceMethod:
@@ -2753,7 +2753,37 @@ Version: {typeworld.api.VERSION}
                 assert endpointCommand
 
                 # Breaking API Version Check
-                # for version in self.get("downloadedSettings")["breakingAPIVersions"]:
+                if "breakingAPIVersions" in self.get("downloadedSettings"):
+                    breakingVersions = self.get("downloadedSettings")[
+                        "breakingAPIVersions"
+                    ]
+                    if self.testScenario == "simulateBreakingAPIVersion":
+                        versionParts = breakingVersions[-1].split(".")
+                        versionParts[0] = str(int(versionParts[0]) + 1)
+                        breakingVersions.append(".".join(versionParts))
+
+                    success, rootCommand = protocol.rootCommand(
+                        testScenario=self.testScenario
+                    )
+                    assert success
+                    assert rootCommand
+                    incomingVersion = rootCommand.version
+                    for breakingVersion in breakingVersions:
+                        if (
+                            semver.VersionInfo.parse(breakingVersion).compare(
+                                incomingVersion
+                            )
+                            == 1
+                        ):
+                            return (
+                                False,
+                                [
+                                    "#(response.appUpdateRequired)",
+                                    "#(response.appUpdateRequired.headline)",
+                                ],
+                                None,
+                                None,
+                            )
 
                 # Commercial app check
                 if (

@@ -68,6 +68,10 @@ docstring = docstring.replace(
     "__testcode2result__", Execute("python3 " + testCode2Path).decode()
 )
 
+# Breaking changes
+changesList = [f"* `{x}`" for x in typeworld.api.BREAKINGVERSIONS]
+docstring = docstring.replace("__breakingAppVersions__", "\n".join(changesList))
+
 
 for handle in handles:
     for className, string in docstrings:

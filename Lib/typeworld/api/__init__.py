@@ -24,6 +24,7 @@ import platform
 #  Constants
 
 VERSION = "0.2.9-beta"
+BREAKINGVERSIONS = ["0.2.9-beta"]
 
 WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
