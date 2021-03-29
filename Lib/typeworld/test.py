@@ -2124,15 +2124,15 @@ class TestTypeWorld(unittest.TestCase):
         assert type(root.supportedCommands.index("installableFonts")) == int
         assert installableFonts.designers[0].parent == installableFonts
 
-        success, message = user1.client.rootCommand(protectedSubscription)
+        success, message = user1.client.endpointCommand(protectedSubscription)
         self.assertTrue(success)
 
-        success, message = user1.client.rootCommand(protectedSubscription[1:])
+        success, message = user1.client.endpointCommand(protectedSubscription[1:])
         self.assertFalse(success)
         self.assertEqual(message, "Unknown custom protocol, known are: ['typeworld']")
 
         user1.client.testScenario = "simulateInvalidAPIJSONResponse"
-        success, message = user1.client.rootCommand(protectedSubscription)
+        success, message = user1.client.endpointCommand(protectedSubscription)
         self.assertFalse(success)
         self.assertEqual(
             message,
@@ -2140,7 +2140,7 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         user1.client.testScenario = "simulateFaultyAPIJSONResponse"
-        success, message = user1.client.rootCommand(protectedSubscription)
+        success, message = user1.client.endpointCommand(protectedSubscription)
         self.assertFalse(success)
         print(message)  # nocoverage
         self.assertTrue(
@@ -4330,13 +4330,13 @@ class TestTypeWorld(unittest.TestCase):
         self.assertTrue(
             user0.client.publishers()[0]
             .subscriptions()[0]
-            .protocol.rootCommand()[1]
+            .protocol.endpointCommand()[1]
             .logoURL
         )
         success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
             user0.client.publishers()[0]
             .subscriptions()[0]
-            .protocol.rootCommand()[1]
+            .protocol.endpointCommand()[1]
             .logoURL
         )
         self.assertEqual(success, True)
@@ -4347,13 +4347,13 @@ class TestTypeWorld(unittest.TestCase):
         self.assertTrue(
             user0.client.publishers()[0]
             .subscriptions()[0]
-            .protocol.rootCommand()[1]
+            .protocol.endpointCommand()[1]
             .logoURL
         )
         success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
             user0.client.publishers()[0]
             .subscriptions()[0]
-            .protocol.rootCommand()[1]
+            .protocol.endpointCommand()[1]
             .logoURL
         )
         self.assertEqual(success, True)

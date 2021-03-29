@@ -152,7 +152,7 @@ def validateAPIEndpoint(
 
             # Check EndpointResponse
             check = Check("Loading `EndpointResponse`")
-            success, message = typeworldClient.rootCommand(subscriptionURL)
+            success, message = typeworldClient.endpointCommand(subscriptionURL)
 
             if type(message) == list:
                 message = message[0]

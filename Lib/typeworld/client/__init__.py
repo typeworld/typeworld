@@ -926,7 +926,7 @@ class APIClient(object):
     def holdsSubscriptionWithLiveNotifcations(self):
         for publisher in self.publishers():
             for subscription in publisher.subscriptions():
-                success, command = subscription.protocol.rootCommand()
+                success, command = subscription.protocol.endpointCommand()
                 if success:
                     if command.sendsLiveNotifications:
                         return True
@@ -2673,7 +2673,7 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def rootCommand(self, url):
+    def endpointCommand(self, url):
         try:
             # Check for URL validity
             success, response = urlIsValid(url)
@@ -2684,7 +2684,7 @@ Version: {typeworld.api.VERSION}
             success, protocol = getProtocol(url)
             protocol.client = self
             # Get Root Command
-            return protocol.rootCommand(testScenario=self.testScenario)
+            return protocol.endpointCommand(testScenario=self.testScenario)
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -2717,15 +2717,15 @@ Version: {typeworld.api.VERSION}
             # Change secret key
             if protocol.unsecretURL() in self.unsecretSubscriptionURLs():
 
-                # Initial rootCommand
-                success, message = self.rootCommand(url)
+                # Initial endpointCommand
+                success, message = self.endpointCommand(url)
                 if success:
-                    rootCommand = message
+                    endpointCommand = message
                 else:
                     return False, message, None, None
 
                 protocol.setSecretKey(protocol.url.secretKey)
-                publisher = self.publisher(rootCommand.canonicalURL)
+                publisher = self.publisher(endpointCommand.canonicalURL)
                 subscription = publisher.subscription(protocol.unsecretURL(), protocol)
 
             else:
@@ -2745,17 +2745,20 @@ Version: {typeworld.api.VERSION}
                     # ]
                     return False, message, None, None
 
-                # rootCommand
-                success, rootCommand = protocol.rootCommand(
+                # endpointCommand
+                success, endpointCommand = protocol.endpointCommand(
                     testScenario=self.testScenario
                 )
                 assert success
-                assert rootCommand
+                assert endpointCommand
+
+                # Breaking API Version Check
+                # for version in self.get("downloadedSettings")["breakingAPIVersions"]:
 
                 # Commercial app check
                 if (
                     self.commercial
-                    and self.appID not in rootCommand.allowedCommercialApps
+                    and self.appID not in endpointCommand.allowedCommercialApps
                 ):
                     return (
                         False,
@@ -2767,7 +2770,7 @@ Version: {typeworld.api.VERSION}
                         None,
                     )
 
-                publisher = self.publisher(rootCommand.canonicalURL)
+                publisher = self.publisher(endpointCommand.canonicalURL)
                 subscription = publisher.subscription(protocol.unsecretURL(), protocol)
 
                 # Success
@@ -2852,10 +2855,6 @@ class APIPublisher(object):
                 from os.path import expanduser
 
                 home = expanduser("~")
-
-                # rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
-                # title = rootCommand.name.getText()
-
                 folder = os.path.join(home, "Library", "Fonts", "Type.World App")
 
                 return folder
@@ -2898,9 +2897,9 @@ class APIPublisher(object):
     def name(self, locale=["en"]):
 
         try:
-            rootCommand = self.subscriptions()[0].protocol.rootCommand()[1]
-            if rootCommand:
-                return rootCommand.name.getTextAndLocale(locale=locale)
+            endpointCommand = self.subscriptions()[0].protocol.endpointCommand()[1]
+            if endpointCommand:
+                return endpointCommand.name.getTextAndLocale(locale=locale)
         except Exception as e:  # nocoverage
             self.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e

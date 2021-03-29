@@ -24,7 +24,7 @@ class TypeWorldProtocolBase(object):
     # 	Human readable name of protocol'''
     # 	return self.__class__.__name__
 
-    # def returnRootCommand(self):
+    # def returnEndpointCommand(self):
     # 	'''Overwrite this
     # 	Return the root of the API call'''
     # 	pass
@@ -60,7 +60,7 @@ class TypeWorldProtocolBase(object):
     # 	'''Overwrite this'''
     # 	pass
 
-    # def returnRootCommand(self, testScenario = None):
+    # def returnEndpointCommand(self, testScenario = None):
     # 	'''Overwrite this'''
     # 	return True, None
 
@@ -68,8 +68,8 @@ class TypeWorldProtocolBase(object):
     # 	'''Overwrite this'''
     # 	return True, None
 
-    def rootCommand(self, testScenario=None):
-        success, command = self.returnRootCommand(testScenario=testScenario)
+    def endpointCommand(self, testScenario=None):
+        success, command = self.returnEndpointCommand(testScenario=testScenario)
         if success:
             command.parent = self
         return success, command
