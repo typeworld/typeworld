@@ -50,6 +50,7 @@ In order to go online with your API Endpoint, consider the following check list:
 * I made sure the fonts in my subscription all have unique and unchanging `uniqueID` attributes (see [API Docs](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#class-font-attribute-uniqueid))
 * I made sure that the canonical URL of my API Endpoint is unchanging (see [API Docs](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#class-endpointresponse-attribute-canonicalurl))
 * In case I’m planning to use Type.World’s professional services (live notifications), I am onboarding font subscriptions to Type.World for all my existing customer’s user accounts within the 180 day trial period, or otherwise I risk high initial onboarding costs (see [Price Calculator](/developer/prices/))
+* My API Endpoint is sending the correct [API version number](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#class-rootresponse-attribute-version). Please follow the [Protocol Changes](https://github.com/typeworld/typeworld/tree/master/Lib/typeworld/api#user-content-protocolchanges) and adjust your data’s version number accordingly.
 
 
 
