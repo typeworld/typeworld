@@ -2754,9 +2754,9 @@ Version: {typeworld.api.VERSION}
 
                 # Breaking API Version Check
                 if "breakingAPIVersions" in self.get("downloadedSettings"):
-                    breakingVersions = self.get("downloadedSettings")[
-                        "breakingAPIVersions"
-                    ]
+                    breakingVersions = copy.copy(
+                        self.get("downloadedSettings")["breakingAPIVersions"]
+                    )
                     if self.testScenario == "simulateBreakingAPIVersion":
                         versionParts = breakingVersions[-1].split(".")
                         versionParts[0] = str(int(versionParts[0]) + 1)
@@ -2768,10 +2768,18 @@ Version: {typeworld.api.VERSION}
                     assert success
                     assert rootCommand
                     incomingVersion = rootCommand.version
+
                     for breakingVersion in breakingVersions:
+                        # Breaking version is higher than local API version
                         if (
                             semver.VersionInfo.parse(breakingVersion).compare(
-                                incomingVersion
+                                typeworld.api.VERSION
+                            )
+                            == 1
+                            # Incoming version is higher than breaking
+                        ) and (
+                            semver.VersionInfo.parse(incomingVersion).compare(
+                                breakingVersion
                             )
                             == 1
                         ):

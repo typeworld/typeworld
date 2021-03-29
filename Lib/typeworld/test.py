@@ -2642,6 +2642,16 @@ class TestTypeWorld(unittest.TestCase):
             ],
         )
 
+        # Supposed to pass
+        user0.client.testScenario = "simulateNonBreakingHigherAPIVersion"
+        success, message, publisher, subscription = user0.client.addSubscription(
+            freeSubscription
+        )
+        if not success:
+            print(message)
+        self.assertEqual(success, True)
+        user0.client.publishers()[0].delete()
+
         user0.client.testScenario = (
             "simulateEndpointDoesntSupportInstallableFontsCommand"
         )
