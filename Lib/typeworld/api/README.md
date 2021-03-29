@@ -40,6 +40,8 @@ This section lists changes to the protocol since it reached Beta status with ver
 * Introduced [EndpointResponse.allowedCommercialApps](#user-content-class-endpointresponse-attribute-allowedcommercialapps).
   In case a non-commercial copyright license is given in [EndpointResponse.licenseIdentifier](#user-content-class-endpointresponse-attribute-licenseIdentifier)
   (which defaults to `CC-BY-NC-ND-4.0`, a non-commercial license indeed), this list specifies which commercial apps are allowed to access an API Endpoint.
+* Introduced [EndpointResponse.publisherType](#user-content-class-endpointresponse-attribute-publishertype).
+  For publication purposes.
 
 ### Changes in `0.2.6-beta`
 
@@ -201,6 +203,7 @@ endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = "Font Publisher"
 endpoint.canonicalURL = "http://fontpublisher.com/api/"
 endpoint.adminEmail = "admin@fontpublisher.com"
+endpoint.publisherType = ["retail", "custom"]
 endpoint.supportedCommands = [
     x["keyword"] for x in typeworld.api.COMMANDS
 ]  # this API supports all commands
@@ -229,6 +232,10 @@ Will output the following JSON code:
         },
         "privacyPolicyURL": "https://type.world/legal/default/PrivacyPolicy.html",
         "public": false,
+        "publisherType": [
+            "retail",
+            "custom"
+        ],
         "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
@@ -443,6 +450,7 @@ a lot of time is saved.
         },
         "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
+        "publisherType": [],
         "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
@@ -543,6 +551,7 @@ data, and whether or not this endpoint can be publicized about.
     },
     "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
+    "publisherType": [],
     "sendsLiveNotifications": false,
     "supportedCommands": [
         "endpoint",
@@ -558,7 +567,7 @@ data, and whether or not this endpoint can be publicized about.
 
 ### Attributes
 
-[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[publisherType](#class-endpointresponse-attribute-publishertype)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
 
 ## Attributes
 
@@ -653,6 +662,14 @@ __Required:__ True<br />
 __Type:__ Bool<br />
 __Default value:__ False
 
+<div id="class-endpointresponse-attribute-publisherType"></div>
+
+### publisherType
+
+List of publisher types (for publicizing about your API Endpoint, in case it’s public): ['free', 'retail', 'custom', 'undefined']
+
+__Required:__ True<br />
+__Type:__ List of Str objects<br />
 <div id="class-endpointresponse-attribute-sendsLiveNotifications"></div>
 
 ### sendsLiveNotifications
@@ -1680,7 +1697,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'woff', 'ttc', 'otf', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttf', 'woff2', 'otf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />

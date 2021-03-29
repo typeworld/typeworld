@@ -89,7 +89,7 @@ from typeworld.api import (  # noqa: E402
 )
 
 # Constants
-from typeworld.api import COMMANDS, MAC  # noqa: E402
+from typeworld.api import COMMANDS, MAC, PUBLISHERTYPES  # noqa: E402
 
 # Methods
 from typeworld.api import makeSemVer  # noqa: E402
@@ -164,6 +164,7 @@ root.adminEmail = "admin@fontpublisher.com"
 root.supportedCommands = [
     x["keyword"] for x in COMMANDS
 ]  # this API supports all commands
+root.publisherType = PUBLISHERTYPES
 root.backgroundColor = "AABBCC"
 root.licenseIdentifier = "CC-BY-NC-ND-4.0"
 root.logoURL = (
@@ -623,6 +624,8 @@ class TestTypeWorld(unittest.TestCase):
         success, response, responseObject = typeworld.client.request(
             MOTHERSHIP + "/updateSubscription", parameters
         )
+        if not success:
+            print(response)
         self.assertEqual(success, True)
         response = json.loads(response.decode())
         self.assertEqual(response["response"], "paidSubscriptionRequired")
@@ -781,6 +784,19 @@ class TestTypeWorld(unittest.TestCase):
                     "Unknown API command: 'unsupportedCommand'. "
                     "Possible: ['endpoint', 'installableFonts', 'installFonts', "
                     "'uninstallFonts']"
+                ),
+            )
+
+        # publisherTypes
+        r2 = copy.deepcopy(root)
+        try:
+            r2.publisherType = ["unsupportedCommand"]
+        except ValueError as e:
+            self.assertEqual(
+                str(e),
+                (
+                    "Unknown publisher type: 'unsupportedCommand'. "
+                    "Possible: ['free', 'retail', 'custom', 'undefined']"
                 ),
             )
 

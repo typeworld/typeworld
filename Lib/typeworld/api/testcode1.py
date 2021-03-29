@@ -9,6 +9,7 @@ endpoint = typeworld.api.EndpointResponse()
 endpoint.name.en = "Font Publisher"
 endpoint.canonicalURL = "http://fontpublisher.com/api/"
 endpoint.adminEmail = "admin@fontpublisher.com"
+endpoint.publisherType = ["retail", "custom"]
 endpoint.supportedCommands = [
     x["keyword"] for x in typeworld.api.COMMANDS
 ]  # this API supports all commands

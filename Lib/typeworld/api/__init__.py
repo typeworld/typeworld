@@ -581,6 +581,8 @@ OPENSOURCELICENSES = [
 
 FONTSTATUSES = ["prerelease", "trial", "stable"]
 
+PUBLISHERTYPES = ["free", "retail", "custom", "undefined"]
+
 PUBLISHERSIDEAPPANDUSERCREDENTIALSTATUSES = ["active", "deleted", "revoked"]
 
 DEFAULT = "__default__"
@@ -2056,6 +2058,27 @@ class SupportedAPICommandsDataType(StringDataType):
 
 class SupportedAPICommandsListProxy(ListProxy):
     dataType = SupportedAPICommandsDataType
+
+
+class SupportedPublisherTypeDataType(StringDataType):
+
+    types = PUBLISHERTYPES
+
+    def valid(self):
+        if not self.value:
+            return True
+
+        if self.value in self.types:
+            return True
+        else:
+            return "Unknown publisher type: '%s'. Possible: %s" % (
+                self.value,
+                self.types,
+            )
+
+
+class SupportedPublisherTypeListProxy(ListProxy):
+    dataType = SupportedPublisherTypeDataType
 
 
 class FontPurposeDataType(StringDataType):
@@ -4137,6 +4160,15 @@ data, and whether or not this endpoint can be publicized about.
                 "`CC-BY-NC-ND-4.0` license that is the default here forbids commercial "
                 "software from accessing your API Endpoint unless they have a separate "
                 "legal agreememt with you."
+            ),
+        ],
+        "publisherType": [
+            SupportedPublisherTypeListProxy,
+            True,
+            None,
+            (
+                "List of publisher types (for publicizing about your API Endpoint, in "
+                "case it’s public): %s" % PUBLISHERTYPES
             ),
         ],
         "supportedCommands": [
