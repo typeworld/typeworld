@@ -639,8 +639,6 @@ __Format:__ Maximum allowed characters: 100.<br />
 
 URL of human-readable Privacy Policy of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
 
-The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
-
 __Required:__ True<br />
 __Type:__ Str<br />
 __Default value:__ https://type.world/legal/default/PrivacyPolicy.html
@@ -678,8 +676,6 @@ __Type:__ List of Str objects<br />
 ### termsOfServiceURL
 
 URL of human-readable Terms of Service Agreement of API endpoint. This will be displayed to the user for consent when adding a subscription. The default URL points to a document edited by Type.World that you can use (at your own risk) instead of having to write your own.
-
-The link will open with a `locales` parameter containing a comma-separated list of the user’s preferred UI languages and a `canonicalURL` parameter containing the subscription’s canonical URL and a `subscriptionID` parameter containing the anonymous subscription ID.
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1684,7 +1680,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'ttc', 'woff', 'ttf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff2', 'woff', 'ttc', 'otf', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />

@@ -4221,12 +4221,7 @@ data, and whether or not this endpoint can be publicized about.
                 "URL of human-readable Privacy Policy of API endpoint. This will be "
                 "displayed to the user for consent when adding a subscription. "
                 "The default URL points to a document edited by Type.World that you "
-                "can use (at your own risk) instead of having to write your own.\n\n"
-                "The link will open with a `locales` parameter containing a "
-                "comma-separated list of the user’s preferred UI languages and a "
-                "`canonicalURL` parameter containing the subscription’s canonical URL "
-                "and a `subscriptionID` parameter containing the anonymous "
-                "subscription ID."
+                "can use (at your own risk) instead of having to write your own."
             ),
         ],
         "termsOfServiceURL": [
@@ -4238,11 +4233,7 @@ data, and whether or not this endpoint can be publicized about.
                 "This will be displayed to the user for consent when adding a "
                 "subscription. The default URL points to a document edited by "
                 "Type.World that you can use (at your own risk) instead of having to "
-                "write your own.\n\nThe link will open with a `locales` parameter "
-                "containing a comma-separated list of the user’s preferred UI "
-                "languages and a `canonicalURL` parameter containing the "
-                "subscription’s canonical URL and a `subscriptionID` parameter "
-                "containing the anonymous subscription ID."
+                "write your own."
             ),
         ],
         "loginURL": [
