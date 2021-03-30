@@ -21,7 +21,7 @@ def readJSONResponse(url, responses, acceptableMimeTypes, data={}):
     data["commands"] = ",".join(commands)
 
     try:
-        response = requests.post(url, data, timeout=20)
+        response = requests.post(url, data, timeout=30)
     except requests.exceptions.ConnectionError:
         d["errors"].append(f"Connection refused: {url}")
         return root, d
