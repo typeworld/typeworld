@@ -578,7 +578,7 @@ data, and whether or not this endpoint can be publicized about.
 
 ### Attributes
 
-[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[publisherTypes](#class-endpointresponse-attribute-publishertype)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
+[adminEmail](#class-endpointresponse-attribute-adminemail)<br />[allowedCommercialApps](#class-endpointresponse-attribute-allowedcommercialapps)<br />[backgroundColor](#class-endpointresponse-attribute-backgroundcolor)<br />[canonicalURL](#class-endpointresponse-attribute-canonicalurl)<br />[licenseIdentifier](#class-endpointresponse-attribute-licenseidentifier)<br />[loginURL](#class-endpointresponse-attribute-loginurl)<br />[logoURL](#class-endpointresponse-attribute-logourl)<br />[name](#class-endpointresponse-attribute-name)<br />[privacyPolicyURL](#class-endpointresponse-attribute-privacypolicyurl)<br />[public](#class-endpointresponse-attribute-public)<br />[publisherTypes](#class-endpointresponse-attribute-publishertypes)<br />[sendsLiveNotifications](#class-endpointresponse-attribute-sendslivenotifications)<br />[supportedCommands](#class-endpointresponse-attribute-supportedcommands)<br />[termsOfServiceURL](#class-endpointresponse-attribute-termsofserviceurl)<br />[websiteURL](#class-endpointresponse-attribute-websiteurl)<br />
 
 ## Attributes
 
@@ -1708,7 +1708,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttf', 'ttc', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'ttf', 'woff2', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
