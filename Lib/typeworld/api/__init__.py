@@ -4169,8 +4169,9 @@ data, and whether or not this endpoint can be publicized about.
             True,
             None,
             (
-                "List of publisher types (for publicizing about your API Endpoint, in "
-                "case it’s public): %s" % PUBLISHERTYPES
+                f"List of publisher business types: {PUBLISHERTYPES}. "
+                "In case ::EndpointResponse.public:: is set to `True`, only the "
+                f"following types are allowed: {PUBLICPUBLISHERTYPES}"
             ),
         ],
         "supportedCommands": [

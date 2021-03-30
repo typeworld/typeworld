@@ -677,7 +677,7 @@ __Default value:__ False
 
 ### publisherTypes
 
-List of publisher types (for publicizing about your API Endpoint, in case it’s public): ['free', 'retail', 'custom', 'undefined']
+List of publisher business types: ['free', 'retail', 'custom', 'undefined']. In case [EndpointResponse.public](#user-content-class-endpointresponse-attribute-public) is set to `True`, only the following types are allowed: ['free', 'retail', 'custom']
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
@@ -1708,7 +1708,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff', 'ttf', 'woff2', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'woff2', 'ttf', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />
