@@ -879,8 +879,7 @@ class APIClient(object):
         import zmq.error
 
         if self.zmqSubscriptions:
-            if self._zmqRunning:
-                # if topic not in self._zmqCallbacks:
+            if self._zmqRunning and not self.zmqSocket.closed:
                 self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
             self._zmqCallbacks[topic] = method
 
