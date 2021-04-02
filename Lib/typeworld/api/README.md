@@ -262,7 +262,7 @@ Will output the following JSON code:
 
 ### Example 2: InstallableFonts Response
 
-Below you see the minimum possible object tree for a sucessful `installabefonts` response.
+Below you see the minimum possible object tree for a sucessful `installablefonts` response.
 
 ```python
 # Import module
