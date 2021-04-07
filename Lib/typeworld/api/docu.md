@@ -195,7 +195,7 @@ __testcode1result__
 
 ### Example 2: InstallableFonts Response
 
-Below you see the minimum possible object tree for a sucessful `installabefonts` response.
+Below you see the minimum possible object tree for a sucessful `installabeFonts` response.
 
 ```python
 __testcode2__
