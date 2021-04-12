@@ -262,7 +262,7 @@ Will output the following JSON code:
 
 ### Example 2: InstallableFonts Response
 
-Below you see the minimum possible object tree for a sucessful `installabefonts` response.
+Below you see the minimum possible object tree for a sucessful `installabeFonts` response.
 
 ```python
 # Import module
@@ -1708,7 +1708,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'woff2', 'ttf', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'ttc', 'otf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
