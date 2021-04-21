@@ -6,11 +6,11 @@ from typeworld.client.helpers import Garbage
 
 
 profiles = (
-    (
-        "all",
-        "All Profiles",
-        ("Runs all profiles"),
-    ),
+    # (
+    #     "all",
+    #     "All Profiles",
+    #     ("Runs all profiles"),
+    # ),
     (
         "setup",
         "Setup",
@@ -140,6 +140,9 @@ def validateAPIEndpoint(
             # Add previous stage to finished list
             d = {}
             d["name"] = self.description
+            for _k, _t, _d in profiles:
+                if _t == description:
+                    d["keyword"] = _k
             d["log"] = []
             d["result"] = "incomplete"
             responses["stages"].append(d)
