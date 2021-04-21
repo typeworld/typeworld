@@ -763,8 +763,7 @@ class APIClient(object):
             self._zmqRunning = False
             self._zmqCallbacks = {}
 
-            if self._isSetOnline:
-                self.sslcontext = ssl.create_default_context(cafile=certifi.where())
+            self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
             # For Unit Testing
             self.testScenario = None
@@ -3347,6 +3346,7 @@ class APISubscription(object):
             )
 
     def inviteUser(self, targetEmail):
+        print("inviteUser()")
         try:
 
             if self.parent.parent.online():
@@ -3368,6 +3368,7 @@ class APISubscription(object):
                     return False, response
 
                 response = json.loads(response.decode())
+                print(response)
 
                 if response["response"] == "success":
                     return True, None
