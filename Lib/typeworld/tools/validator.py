@@ -7,6 +7,11 @@ from typeworld.client.helpers import Garbage
 
 profiles = (
     (
+        "all",
+        "All Profiles",
+        ("Runs all profiles"),
+    ),
+    (
         "setup",
         "Setup",
         (
@@ -79,8 +84,12 @@ def validateAPIEndpoint(
     responses["warnings"] = []
     responses["errors"] = []
 
-    typeworldClient = typeworld.client.APIClient(mothership=endpointURL)
-    typeworldClient2 = typeworld.client.APIClient(mothership=endpointURL)
+    typeworldClient = typeworld.client.APIClient(
+        mothership=endpointURL, appID="world.type.app", online=True
+    )
+    typeworldClient2 = typeworld.client.APIClient(
+        mothership=endpointURL, appID="world.type.app", online=True
+    )
     testUser = (f"{Garbage(20)}@type.world", Garbage(20))
     testUser2 = (f"{Garbage(20)}@type.world", Garbage(20))
     check = None
