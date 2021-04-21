@@ -1045,6 +1045,9 @@ def main():
     if exitcode:
         sys.exit(exitcode)
 
+    if responses["errors"]:
+        sys.exit(666)
+
 
 if __name__ == "__main__":
     main()
