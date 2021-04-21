@@ -1,9 +1,11 @@
+import sys
 import typeworld.client
 import typeworld.api
 import traceback
 import json
 from typeworld.client.helpers import Garbage
 
+exitcode = 0
 
 profiles = (
     # (
@@ -128,6 +130,9 @@ def validateAPIEndpoint(
             responses["errors"].append(message)
             typeworldClient.deleteUserAccount(*testUser)
             typeworldClient2.deleteUserAccount(*testUser2)
+
+            global exitcode
+            exitcode += 1
 
     class Stage(object):
         def __init__(self, description):
@@ -1036,6 +1041,9 @@ def main():
     args = parser.parse_args()
     responses = validateAPIEndpoint(args.subscriptionURL, args.profiles)
     print(json.dumps(responses, indent=4))
+
+    if exitcode:
+        sys.exit(exitcode)
 
 
 if __name__ == "__main__":
