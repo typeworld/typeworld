@@ -2881,6 +2881,13 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
+    def files(self):
+        "Returns list of all resource URLs"
+        files = []
+        for publisher in self.publishers():
+            files = set(files) | set(publisher.files())
+        return list(set(files))
+
 
 class APIPublisher(object):
     """\
@@ -3184,6 +3191,13 @@ class APIPublisher(object):
             self.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+
+    def files(self):
+        "Returns list of all resource URLs that the publisher may have loaded"
+        files = []
+        for subscription in self.subscriptions():
+            files = set(files) | set(subscription.files())
+        return list(set(files))
 
 
 class APISubscription(object):
@@ -4182,3 +4196,32 @@ class APISubscription(object):
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+
+    def files(self):
+        "Returns list of all resource URLs that the subscription may have loaded"
+        files = []
+
+        # Endpoint
+        success, endpointCommand = self.protocol.endpointCommand()
+        if success:
+            if endpointCommand.logoURL:
+                files.append(endpointCommand.logoURL)
+
+        # Installable Fonts
+        success, installableFontsCommand = self.protocol.installableFontsCommand()
+        if success:
+            for foundry in installableFontsCommand.foundries:
+
+                # styling
+                for theme in foundry.styling:
+                    if "logoURL" in foundry.styling[theme]:
+                        files.append(foundry.styling[theme]["logoURL"])
+
+                for family in foundry.families:
+                    for url in family.billboardURLs:
+                        files.append(url)
+                    for font in family.fonts:
+                        for url in font.billboardURLs:
+                            files.append(url)
+
+        return list(set(files))
