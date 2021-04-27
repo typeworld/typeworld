@@ -23,7 +23,6 @@ import requests
 import requests.exceptions
 
 import typeworld.api
-from typeworld.api import VERSION
 
 from typeworld.client.helpers import (
     ReadFromFile,
@@ -782,6 +781,8 @@ class APIClient(object):
                     self.registerZMQCallback(topicID, self.zmqCallback)
                 self.manageMessageQueueConnection()
 
+            # Version-dependent startup procedures
+
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -987,7 +988,7 @@ class APIClient(object):
 
         try:
             parameters["sourceAnonymousAppID"] = self.anonymousAppID()
-            parameters["clientVersion"] = VERSION
+            parameters["clientVersion"] = typeworld.api.VERSION
             if self.testScenario == "simulateFaultyClientVersion":
                 parameters["clientVersion"] = "abc"
             elif self.testScenario == "simulateNoClientVersion":
