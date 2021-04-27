@@ -28,7 +28,6 @@ from typeworld.client.helpers import (
     ReadFromFile,
     WriteToFile,
     MachineName,
-    addAttributeToURL,
     OSName,
     Garbage,
 )
@@ -2595,66 +2594,68 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def deleteResources(self, urls):
+    # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
+    # def deleteResources(self, urls):
 
-        try:
-            resources = self.get("resources") or {}
+    #     try:
+    #         resources = self.get("resources") or {}
 
-            for url in urls:
-                for key in resources.keys():
-                    if key.startswith(url):
-                        del resources[key]
-                        break
+    #         for url in urls:
+    #             for key in resources.keys():
+    #                 if key.startswith(url):
+    #                     del resources[key]
+    #                     break
 
-            self.set("resources", resources)
+    #         self.set("resources", resources)
 
-        except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+    #     except Exception as e:  # nocoverage
+    #         return self.handleTraceback(  # nocoverage
+    #             sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+    #         )
 
-    def resourceByURL(self, url, binary=False, update=False):
-        """Caches and returns content of a HTTP resource. If binary is set to True,
-        content will be stored and return as a bas64-encoded string"""
-        try:
-            resources = self.get("resources") or {}
+    # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
+    # def resourceByURL(self, url, binary=False, update=False):
+    #     """Caches and returns content of a HTTP resource. If binary is set to True,
+    #     content will be stored and return as a bas64-encoded string"""
+    #     try:
+    #         resources = self.get("resources") or {}
 
-            key = f"{url},binary={binary}"
+    #         key = f"{url},binary={binary}"
 
-            # Load fresh
-            if key not in resources or update:
+    #         # Load fresh
+    #         if key not in resources or update:
 
-                if self.testScenario:
-                    url = addAttributeToURL(url, "testScenario=%s" % self.testScenario)
+    #             if self.testScenario:
+    #               url = addAttributeToURL(url, "testScenario=%s" % self.testScenario)
 
-                success, response, responseObject = request(url, method="GET")
-                if not success:
-                    return False, response, responseObject.headers["content-type"]
+    #             success, response, responseObject = request(url, method="GET")
+    #             if not success:
+    #                 return False, response, responseObject.headers["content-type"]
 
-                content = responseObject.content
+    #             content = responseObject.content
 
-                if binary:
-                    content = base64.b64encode(content).decode()
-                else:
-                    content = content.decode()
+    #             if binary:
+    #                 content = base64.b64encode(content).decode()
+    #             else:
+    #                 content = content.decode()
 
-                resources[key] = responseObject.headers["content-type"] + "," + content
-                self.set("resources", resources)
+    #           resources[key] = responseObject.headers["content-type"] + "," + content
+    #             self.set("resources", resources)
 
-                return True, content, responseObject.headers["content-type"]
+    #             return True, content, responseObject.headers["content-type"]
 
-            # Serve from cache
-            else:
+    #         # Serve from cache
+    #         else:
 
-                response = resources[key]
-                mimeType = response.split(",")[0]
-                content = response[len(mimeType) + 1 :]
+    #             response = resources[key]
+    #             mimeType = response.split(",")[0]
+    #             content = response[len(mimeType) + 1 :]
 
-                return True, content, mimeType
-        except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+    #             return True, content, mimeType
+    #     except Exception as e:  # nocoverage
+    #         return self.handleTraceback(  # nocoverage
+    #             sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+    #         )
 
     def anonymousAppID(self):
         try:
@@ -3116,26 +3117,27 @@ class APIPublisher(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def resourceByURL(self, url, binary=False, update=False):
-        """Caches and returns content of a HTTP resource. If binary is set to True,
-        content will be stored and return as a bas64-encoded string"""
+    # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
+    # def resourceByURL(self, url, binary=False, update=False):
+    #     """Caches and returns content of a HTTP resource. If binary is set to True,
+    #     content will be stored and return as a bas64-encoded string"""
 
-        try:
-            success, response, mimeType = self.parent.resourceByURL(url, binary, update)
+    #     try:
+    #       success, response, mimeType = self.parent.resourceByURL(url, binary, update)
 
-            # Save resource
-            if success is True:
-                resourcesList = self.get("resources") or []
-                if url not in resourcesList:
-                    resourcesList.append(url)
-                    self.set("resources", resourcesList)
+    #         # Save resource
+    #         if success is True:
+    #             resourcesList = self.get("resources") or []
+    #             if url not in resourcesList:
+    #                 resourcesList.append(url)
+    #                 self.set("resources", resourcesList)
 
-            return success, response, mimeType
+    #         return success, response, mimeType
 
-        except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+    #     except Exception as e:  # nocoverage
+    #         self.parent.handleTraceback(  # nocoverage
+    #             sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+    #         )
 
     def delete(self):
         try:
@@ -3461,27 +3463,28 @@ class APISubscription(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def resourceByURL(self, url, binary=False, update=False):
-        """Caches and returns content of a HTTP resource. If binary is set to True,
-        content will be stored and return as a bas64-encoded string"""
-        try:
-            success, response, mimeType = self.parent.parent.resourceByURL(
-                url, binary, update
-            )
+    # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
+    # def resourceByURL(self, url, binary=False, update=False):
+    #     """Caches and returns content of a HTTP resource. If binary is set to True,
+    #     content will be stored and return as a bas64-encoded string"""
+    #     try:
+    #         success, response, mimeType = self.parent.parent.resourceByURL(
+    #             url, binary, update
+    #         )
 
-            # Save resource
-            if success is True:
-                resourcesList = self.get("resources") or []
-                if url not in resourcesList:
-                    resourcesList.append(url)
-                    self.set("resources", resourcesList)
+    #         # Save resource
+    #         if success is True:
+    #             resourcesList = self.get("resources") or []
+    #             if url not in resourcesList:
+    #                 resourcesList.append(url)
+    #                 self.set("resources", resourcesList)
 
-            return success, response, mimeType
+    #         return success, response, mimeType
 
-        except Exception as e:  # nocoverage
-            self.parent.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+    #     except Exception as e:  # nocoverage
+    #         self.parent.parent.handleTraceback(  # nocoverage
+    #             sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+    #         )
 
     def familyByID(self, ID):
         try:
