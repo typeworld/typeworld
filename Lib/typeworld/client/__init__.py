@@ -359,6 +359,7 @@ class Preferences(object):
     def remove(self, key):
         if key in self._dict:
             del self._dict[key]
+        self.save()
 
     def save(self):
         pass
