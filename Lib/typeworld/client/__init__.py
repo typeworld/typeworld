@@ -780,7 +780,20 @@ class APIClient(object):
                     self.registerZMQCallback(topicID, self.zmqCallback)
                 self.manageMessageQueueConnection()
 
+            #
             # Version-dependent startup procedures
+            #
+
+            # 0.2.10 or newer
+            if (
+                semver.VersionInfo.parse(typeworld.api.VERSION).compare("0.2.10-beta")
+                >= 0
+            ):
+                # Delete all resources
+                for publisher in self.publishers():
+                    for subscription in publisher.subscriptions():
+                        subscription.remove("resources")
+                self.remove("resources")
 
         except Exception as e:  # nocoverage
             self.handleTraceback(  # nocoverage
