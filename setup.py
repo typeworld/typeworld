@@ -19,7 +19,7 @@ if MAC:
 
 setup(
     name="typeworld",  # How you named your package folder (MyLib)
-    version="0.2.10b3",
+    version="0.2.10.post2",  # .post2
     license="apache-2.0",
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     description="""This module hosts the Type.World JSON Protocol definitions in
