@@ -3115,7 +3115,7 @@ class Family(DictBasedObject):
             None,
             (
                 "URL of PDF file with type specimen and/or instructions for entire "
-                "family. May be overriden on font level at ::Font.pdf::."
+                "family. May be overriden on font level at ::Font.pdfURL::."
             ),
         ],
     }
