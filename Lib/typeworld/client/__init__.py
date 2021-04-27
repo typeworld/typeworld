@@ -4085,6 +4085,22 @@ class APISubscription(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
+    def remove(self, key):
+        try:
+            preferences = dict(
+                self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL())
+                or {}
+            )
+            if key in preferences:
+                del preferences[key]
+                self.parent.parent.set(
+                    "subscription(%s)" % self.protocol.unsecretURL(), preferences
+                )
+        except Exception as e:  # nocoverage
+            self.parent.parent.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+            )
+
     def save(self):
         try:
             subscriptions = self.parent.get("subscriptions") or []
