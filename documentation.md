@@ -278,6 +278,12 @@ I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` reque
 
 Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
 
+### Reference Implementation
+
+This is good place to point out the reference implementation as a Python-based *flask* server. It contains the basic structure for a dynamic API Endpoint but leaves all data sources blank that you need to implement according to your server’s database and user structure.
+
+Check it out here: [github.com/typeworld/sampleFlaskServer](https://github.com/typeworld/sampleFlaskServer)
+
 
 
 
