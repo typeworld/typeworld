@@ -4377,85 +4377,94 @@ class TestTypeWorld(unittest.TestCase):
 
         print("STATUS: -2")
 
-        # Get publisher's logo, first time
-        self.assertTrue(
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .protocol.endpointCommand()[1]
-            .logoURL
-        )
-        success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .protocol.endpointCommand()[1]
-            .logoURL
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
-        self.assertEqual(mimeType, "image/svg+xml")
+        subscription = user0.client.publishers()[0].subscriptions()[0]
+        logoURL = subscription.protocol.endpointCommand()[1].logoURL
+        files = user0.client.publishers()[0].subscriptions()[0].files()
+        self.assertTrue(logoURL in files)
+        files = user0.client.publishers()[0].files()
+        self.assertTrue(logoURL in files)
+        files = user0.client.files()
+        self.assertTrue(logoURL in files)
 
-        # Get publisher's logo, second time (from cache in preferences)
-        self.assertTrue(
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .protocol.endpointCommand()[1]
-            .logoURL
-        )
-        success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .protocol.endpointCommand()[1]
-            .logoURL
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
-        self.assertEqual(mimeType, "image/svg+xml")
+        # # Get publisher's logo, first time
+        # self.assertTrue(
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .protocol.endpointCommand()[1]
+        #     .logoURL
+        # )
+        # success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .protocol.endpointCommand()[1]
+        #     .logoURL
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        # self.assertEqual(mimeType, "image/svg+xml")
 
-        logoURL = (
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .protocol.installableFontsCommand()[1]
-            .foundries[0]
-            .styling["light"]["logoURL"]
-        )
+        # # Get publisher's logo, second time (from cache in preferences)
+        # self.assertTrue(
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .protocol.endpointCommand()[1]
+        #     .logoURL
+        # )
+        # success, logo, mimeType = user0.client.publishers()[0].resourceByURL(
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .protocol.endpointCommand()[1]
+        #     .logoURL
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        # self.assertEqual(mimeType, "image/svg+xml")
 
-        # Get foundry's logo, first time
-        self.assertTrue(logoURL)
-        success, logo, mimeType = (
-            user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        # logoURL = (
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .protocol.installableFontsCommand()[1]
+        #     .foundries[0]
+        #     .styling["light"]["logoURL"]
+        # )
 
-        # Get foundry's logo, second time (from cache in preferences)
-        self.assertTrue(logoURL)
-        success, logo, mimeType = (
-            user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
+        # # Get foundry's logo, first time
+        # self.assertTrue(logoURL)
+        # success, logo, mimeType = (
+        #     user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
-        # Get foundry's logo, first time
-        self.assertTrue(logoURL)
-        success, logo, mimeType = (
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .resourceByURL(logoURL, binary=True)
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith("PD94b"))
+        # # Get foundry's logo, second time (from cache in preferences)
+        # self.assertTrue(logoURL)
+        # success, logo, mimeType = (
+        #     user0.client.publishers()[0].subscriptions()[0].resourceByURL(logoURL)
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith('<?xml version="1.0" encoding="utf-8"?>'))
 
-        # Get foundry's logo, second time (from cache in preferences)
-        self.assertTrue(logoURL)
-        success, logo, mimeType = (
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .resourceByURL(logoURL, binary=True)
-        )
-        self.assertEqual(success, True)
-        self.assertTrue(logo.startswith("PD94b"))
+        # # Get foundry's logo, first time
+        # self.assertTrue(logoURL)
+        # success, logo, mimeType = (
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .resourceByURL(logoURL, binary=True)
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith("PD94b"))
 
-        print("STATUS: -1")
+        # # Get foundry's logo, second time (from cache in preferences)
+        # self.assertTrue(logoURL)
+        # success, logo, mimeType = (
+        #     user0.client.publishers()[0]
+        #     .subscriptions()[0]
+        #     .resourceByURL(logoURL, binary=True)
+        # )
+        # self.assertEqual(success, True)
+        # self.assertTrue(logo.startswith("PD94b"))
+
+        # print("STATUS: -1")
 
         #####
 

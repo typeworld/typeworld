@@ -558,6 +558,17 @@ class TypeWorldClientDelegate(object):
     def userAccountHasBeenUpdated(self):
         pass
 
+    def _subscriptionWillDelete(self, subscription):
+        try:
+            self.subscriptionWillDelete(subscription)
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def subscriptionWillDelete(self, subscription):
+        pass
+
     def _subscriptionHasBeenDeleted(self, subscription):
         try:
             self.subscriptionHasBeenDeleted(subscription)
@@ -567,6 +578,17 @@ class TypeWorldClientDelegate(object):
             )
 
     def subscriptionHasBeenDeleted(self, subscription):
+        pass
+
+    def _publisherWillDelete(self, publisher):
+        try:
+            self.publisherWillDelete(publisher)
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def publisherWillDelete(self, publisher):
         pass
 
     def _publisherHasBeenDeleted(self, publisher):
@@ -3170,7 +3192,7 @@ class APIPublisher(object):
                     return False, message
 
             # Resources
-            self.parent.deleteResources(self.get("resources") or [])
+            self.parent.delegate._publisherWillDelete(self)
 
             self.parent.remove("publisher(%s)" % self.canonicalURL)
             publishers = self.parent.get("publishers")
@@ -4165,7 +4187,7 @@ class APISubscription(object):
             self.parent.parent.unregisterZMQCallback(self.zmqTopic())
 
             # Resources
-            self.parent.parent.deleteResources(self.get("resources") or [])
+            self.parent.parent.delegate._subscriptionWillDelete(self)
 
             self.parent.parent.remove("subscription(%s)" % self.protocol.unsecretURL())
 
