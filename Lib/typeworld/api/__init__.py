@@ -1900,8 +1900,9 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
 
     def isSet(self):
         for langId in self._possible_keys:
-            if langId in self._content and self.getText([langId]) is not None:
+            if langId in self._content and self.get(langId) not in (None, ""):
                 return True
+        return False
 
     def isEmpty(self):
         return not self.isSet()
