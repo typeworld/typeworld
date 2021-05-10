@@ -1899,18 +1899,12 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         return information, warnings, critical
 
     def isSet(self):
-        return not self.isEmpty()
-
-    def isEmpty(self):
-
-        # Check for existence of languages
-        hasAtLeastOneLanguage = False
         for langId in self._possible_keys:
             if langId in self._content and self.getText([langId]) is not None:
-                hasAtLeastOneLanguage = True
-                break
+                return True
 
-        return not hasAtLeastOneLanguage
+    def isEmpty(self):
+        return not self.isSet()
 
     def loadDict(self, d):
         for key in d:
