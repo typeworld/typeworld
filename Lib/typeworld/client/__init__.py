@@ -1323,6 +1323,7 @@ class APIClient(object):
 
                 commands = self.get("pendingOnlineCommands") or {}
 
+                # unlinkUser
                 if "unlinkUser" in commands and commands["unlinkUser"]:
                     success, message = self.performUnlinkUser()
 
@@ -1333,6 +1334,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # linkUser
                 if "linkUser" in commands and commands["linkUser"]:
                     success, message = self.performLinkUser(commands["linkUser"][0])
 
@@ -1343,6 +1345,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # syncSubscriptions
                 if "syncSubscriptions" in commands and commands["syncSubscriptions"]:
                     success, message = self.performSyncSubscriptions(
                         commands["syncSubscriptions"]
@@ -1355,6 +1358,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # uploadSubscriptions
                 if (
                     "uploadSubscriptions" in commands
                     and commands["uploadSubscriptions"]
@@ -1370,6 +1374,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # acceptInvitation
                 if "acceptInvitation" in commands and commands["acceptInvitation"]:
                     success, message = self.performAcceptInvitation(
                         commands["acceptInvitation"]
@@ -1382,6 +1387,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # declineInvitation
                 if "declineInvitation" in commands and commands["declineInvitation"]:
                     success, message = self.performDeclineInvitation(
                         commands["declineInvitation"]
@@ -1394,6 +1400,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # downloadSubscriptions
                 if (
                     "downloadSubscriptions" in commands
                     and commands["downloadSubscriptions"]
@@ -1407,6 +1414,7 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                # downloadSettings
                 if "downloadSettings" in commands and commands["downloadSettings"]:
                     success, message = self.performDownloadSettings()
 
