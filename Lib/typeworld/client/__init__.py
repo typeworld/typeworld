@@ -1452,7 +1452,7 @@ class APIClient(object):
             self.appendCommands(
                 "uploadSubscriptions", self.secretSubscriptionURLs() or ["empty"]
             )
-            self.appendCommands("downloadSubscriptions")
+            # self.appendCommands("downloadSubscriptions")
 
             success, message = True, None
             if performCommands:
@@ -2168,7 +2168,7 @@ class APIClient(object):
 
             self.appendCommands("linkUser", userID)
             self.appendCommands("syncSubscriptions")
-            self.appendCommands("downloadSubscriptions")
+            # self.appendCommands("downloadSubscriptions")
 
             return self.performCommands()
         except Exception as e:  # nocoverage
