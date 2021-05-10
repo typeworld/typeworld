@@ -657,6 +657,17 @@ class TypeWorldClientDelegate(object):
     def messageQueueConnected(self):
         pass
 
+    def _messageQueueError(self, status=None):
+        try:
+            self.messageQueueError(status=status)
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def messageQueueError(self, status=None):
+        pass
+
     def _messageQueueDisconnected(self):
         try:
             self.messageQueueDisconnected()
@@ -783,6 +794,7 @@ class APIClient(object):
 
             self._zmqRunning = False
             self._zmqCallbacks = {}
+            self._zmqStatus = None
 
             self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -875,7 +887,50 @@ class APIClient(object):
                 target=self.zmqListener, daemon=True
             )
             self.zmqListenerThread.start()
-            self.delegate._messageQueueConnected()
+
+            # MONITOR
+            self._zmqMonitor = self.zmqSocket.get_monitor_socket()
+            t = threading.Thread(target=self.event_monitor, args=(self._zmqMonitor,))
+            t.start()
+
+    def event_monitor(self, monitor):
+        import zmq
+        from zmq.utils.monitor import recv_monitor_message
+        import zmq.error
+
+        EVENT_MAP = {}
+        for name in dir(zmq):
+            if name.startswith("EVENT_"):
+                value = getattr(zmq, name)
+                # print("%21s : %4i" % (name, value))
+                EVENT_MAP[value] = name
+
+        # Store these events:
+        error = [
+            "EVENT_DISCONNECTED",
+            "EVENT_CLOSED",
+            "EVENT_CONNECT_RETRIED",
+            "EVENT_CONNECT_DELAYED",
+        ]
+        connected = ["EVENT_HANDSHAKE_SUCCEEDED"]
+
+        try:
+            while monitor.poll():
+                evt = recv_monitor_message(monitor)
+                status = EVENT_MAP[evt["event"]]
+                if status in error:
+                    self.delegate._messageQueueError(status=status)
+                if status in connected:
+                    self.delegate._messageQueueConnected()
+                # evt.update({"description": status})
+                # print("Event: {}".format(evt))
+                if evt["event"] == zmq.EVENT_MONITOR_STOPPED:
+                    break
+        except zmq.error.ZMQError:
+            pass
+        monitor.close()
+        # print()
+        # print("event monitor thread done!")
 
     def zmqListener(self):
         import zmq
@@ -903,6 +958,7 @@ class APIClient(object):
             # for topic in self._zmqCallbacks:
             #     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
             self._zmqRunning = False
+            self._zmqMonitor.close()
             self.zmqSocket.close()
             self._zmqctx.destroy()
             self.zmqListenerThread.join()
