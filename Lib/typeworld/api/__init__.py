@@ -1822,7 +1822,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         """Like getText(), but additionally returns the language of whatever
         text was found first."""
 
-        if type(locale) in (str, str):
+        if type(locale) == str:
             if self.get(locale):
                 return self.get(locale), locale
 
