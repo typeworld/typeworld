@@ -21,6 +21,7 @@ import re
 from time import gmtime, strftime
 import requests
 import requests.exceptions
+import http.client as httplib
 
 import typeworld.api
 
@@ -1263,14 +1264,34 @@ class APIClient(object):
                 if time.time() - self.lastOnlineCheck[server] < 10:
                     return True
 
+            if server.startswith("http://"):
+                server = server[7:]
+            elif server.startswith("https://"):
+                server = server[8:]
+
+            # try:
+            #     urllib.request.urlopen(server, context=self.sslcontext)  # Python 3.x
+            # except urllib.error.URLError:
+            #     return False
+
+            conn = httplib.HTTPConnection(server, timeout=5)
             try:
-                urllib.request.urlopen(server, context=self.sslcontext)  # Python 3.x
-            except urllib.error.URLError:
+                conn.request("HEAD", "/")
+                conn.close()
+                # return True
+            except:  # noqa
+                conn.close()
                 return False
+
+            # try:
+            #     urllib2.urlopen(server, timeout=1)
+            # except urllib2.URLError as err:
+            #     return False
+
             # Do nothing if HTTP errors are returned, and let the subsequent methods
             # handle the details
-            except urllib.error.HTTPError:
-                pass
+            # except urllib.error.HTTPError:
+            #     pass
 
             self.lastOnlineCheck[server] = time.time()
             return True
