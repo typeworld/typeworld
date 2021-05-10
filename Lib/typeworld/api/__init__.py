@@ -1008,9 +1008,14 @@ class DictBasedObject(object):
         return self.difference(other) == {}
 
     def difference(self, other):
+
+        d1 = self.dumpDict(validate=False)
+        d2 = other.dumpDict(validate=False)
+
         from deepdiff import DeepDiff
 
-        return DeepDiff(self.dumpDict(), other.dumpDict(), ignore_order=True)
+        r2 = DeepDiff(d1, d2, ignore_order=True)
+        return r2
 
     def nonListProxyBasedKeys(self):
 
