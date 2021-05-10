@@ -1810,7 +1810,7 @@ Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
         return str(self.getText())
 
     def __bool__(self):
-        return bool(self.getText())
+        return self.isSet()
 
     def sample(self):
         o = self.__class__()
