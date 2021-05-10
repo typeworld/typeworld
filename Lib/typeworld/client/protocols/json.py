@@ -529,12 +529,14 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
     def save(self):
 
         assert self._endpointCommand
-        self.set("endpoint", self._endpointCommand.dumpJSON())
+        self.set("endpoint", self._endpointCommand.dumpJSON(validate=False))
 
         assert self._installableFontsCommand
-        self.set("installableFonts", self._installableFontsCommand.dumpJSON())
+        self.set(
+            "installableFonts", self._installableFontsCommand.dumpJSON(validate=False)
+        )
 
         if self._installFontsCommand:
-            self.set("installFonts", self._installFontsCommand.dumpJSON())
+            self.set("installFonts", self._installFontsCommand.dumpJSON(validate=False))
         else:
             self.set("installFonts", "")
