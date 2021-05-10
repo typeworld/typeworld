@@ -1480,25 +1480,22 @@ class DictBasedObject(object):
 
             if self.discardThisKey(key) is False:
 
+                attr = getattr(self, key)
+
                 if (
                     # required
                     (key in self._structure and self._structure[key][1])
                     # don't know
-                    or getattr(self, key)
+                    or attr
                     # is set
-                    or (
-                        hasattr(getattr(self, key), "isSet")
-                        and getattr(self, key).isSet()
-                    )
+                    or (hasattr(attr, "isSet") and attr.isSet())
                 ):
 
-                    if hasattr(getattr(self, key), "dumpDict"):
-                        d[key] = getattr(self, key).dumpDict(
-                            strict=strict, validate=validate
-                        )
+                    if hasattr(attr, "dumpDict"):
+                        d[key] = attr.dumpDict(strict=strict, validate=validate)
 
-                    elif issubclass(getattr(self, key).__class__, (ListProxy)):
-                        d[key] = list(getattr(self, key))
+                    elif issubclass(attr.__class__, (ListProxy)):
+                        d[key] = list(attr)
 
                         if len(d[key]) > 0 and hasattr(d[key][0], "dumpDict"):
                             d[key] = [
@@ -1507,7 +1504,7 @@ class DictBasedObject(object):
                             ]
 
                     else:
-                        d[key] = getattr(self, key)
+                        d[key] = attr
 
         return d
 
