@@ -558,6 +558,28 @@ class TypeWorldClientDelegate(object):
     def userAccountHasBeenUpdated(self):
         pass
 
+    def _userAccountIsReloading(self):
+        try:
+            self.userAccountIsReloading()
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def userAccountIsReloading(self):
+        pass
+
+    def _userAccountHasReloaded(self):
+        try:
+            self.userAccountHasReloaded()
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def userAccountHasReloaded(self):
+        pass
+
     def _subscriptionWillDelete(self, subscription):
         try:
             self.subscriptionWillDelete(subscription)
@@ -1297,6 +1319,8 @@ class APIClient(object):
 
             if self.online():
 
+                self.delegate._userAccountIsReloading()
+
                 commands = self.get("pendingOnlineCommands") or {}
 
                 if "unlinkUser" in commands and commands["unlinkUser"]:
@@ -1393,6 +1417,8 @@ class APIClient(object):
                     else:
                         self._syncProblems.append(message)
 
+                self.delegate._userAccountHasReloaded()
+
                 if self._syncProblems:
                     return False, self._syncProblems[0]
                 else:
@@ -1400,6 +1426,7 @@ class APIClient(object):
 
             else:
 
+                self.delegate._userAccountHasReloaded()
                 self._syncProblems.append("#(response.notOnline)")
                 return (
                     False,
