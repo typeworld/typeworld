@@ -1333,6 +1333,13 @@ class APIClient(object):
             )
 
     def performCommands(self):
+        log = True
+
+        if log:
+            print()
+            print("performCommands()")
+            # for line in traceback.format_stack():
+            #     print(line.strip())
         try:
 
             success, message = True, None
@@ -1347,6 +1354,8 @@ class APIClient(object):
                 # unlinkUser
                 if "unlinkUser" in commands and commands["unlinkUser"]:
                     success, message = self.performUnlinkUser()
+                    if log:
+                        print("unlinkUser")
 
                     if success:
                         commands["unlinkUser"] = []
@@ -1358,6 +1367,8 @@ class APIClient(object):
                 # linkUser
                 if "linkUser" in commands and commands["linkUser"]:
                     success, message = self.performLinkUser(commands["linkUser"][0])
+                    if log:
+                        print("linkUser")
 
                     if success:
                         commands["linkUser"] = []
@@ -1371,6 +1382,8 @@ class APIClient(object):
                     success, message = self.performSyncSubscriptions(
                         commands["syncSubscriptions"]
                     )
+                    if log:
+                        print("syncSubscriptions")
 
                     if success:
                         commands["syncSubscriptions"] = []
@@ -1387,6 +1400,8 @@ class APIClient(object):
                     success, message = self.perfomUploadSubscriptions(
                         commands["uploadSubscriptions"]
                     )
+                    if log:
+                        print("uploadSubscriptions")
 
                     if success:
                         commands["uploadSubscriptions"] = []
@@ -1400,6 +1415,8 @@ class APIClient(object):
                     success, message = self.performAcceptInvitation(
                         commands["acceptInvitation"]
                     )
+                    if log:
+                        print("acceptInvitation")
 
                     if success:
                         commands["acceptInvitation"] = []
@@ -1413,6 +1430,8 @@ class APIClient(object):
                     success, message = self.performDeclineInvitation(
                         commands["declineInvitation"]
                     )
+                    if log:
+                        print("declineInvitation")
 
                     if success:
                         commands["declineInvitation"] = []
@@ -1427,6 +1446,8 @@ class APIClient(object):
                     and commands["downloadSubscriptions"]
                 ):
                     success, message = self.performDownloadSubscriptions()
+                    if log:
+                        print("downloadSubscriptions")
 
                     if success:
                         commands["downloadSubscriptions"] = []
@@ -1438,6 +1459,8 @@ class APIClient(object):
                 # downloadSettings
                 if "downloadSettings" in commands and commands["downloadSettings"]:
                     success, message = self.performDownloadSettings()
+                    if log:
+                        print("downloadSettings")
 
                     if success:
                         commands["downloadSettings"] = []
