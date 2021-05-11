@@ -2175,30 +2175,37 @@ class APIClient(object):
             if not email or not password:
                 return False, "#(RequiredFieldEmpty)"
 
-            parameters = {
-                "email": email,
-                "password": password,
-            }
+            if self.online():
 
-            success, response, responseObject = self.performRequest(
-                self.mothership + "/logInUserAccount", parameters
-            )
-            if not success:
-                return False, response
+                parameters = {
+                    "email": email,
+                    "password": password,
+                }
 
-            response = json.loads(response.decode())
+                success, response, responseObject = self.performRequest(
+                    self.mothership + "/logInUserAccount", parameters
+                )
+                if not success:
+                    return False, response
 
-            if response["response"] != "success":
+                response = json.loads(response.decode())
+
+                if response["response"] != "success":
+                    return (
+                        False,
+                        [
+                            "#(response.%s)" % response["response"],
+                            "#(response.%s.headline)" % response["response"],
+                        ],
+                    )
+
+                # success
+                return self.linkUser(response["anonymousUserID"], response["secretKey"])
+            else:
                 return (
                     False,
-                    [
-                        "#(response.%s)" % response["response"],
-                        "#(response.%s.headline)" % response["response"],
-                    ],
+                    ["#(response.notOnline)", "#(response.notOnline.headline)"],
                 )
-
-            # success
-            return self.linkUser(response["anonymousUserID"], response["secretKey"])
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(  # nocoverage
