@@ -1731,6 +1731,8 @@ class APIClient(object):
                 for subscription in publisher.subscriptions():
                     if not subscription.protocol.secretURL() in [
                         x["url"] for x in response["heldSubscriptions"]
+                    ] and not subscription.protocol.unsecretURL() in [
+                        x["url"] for x in response["acceptedInvitations"]
                     ]:
                         subscription.delete(updateSubscriptionsOnServer=False)
 
