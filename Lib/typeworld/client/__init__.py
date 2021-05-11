@@ -1767,7 +1767,7 @@ class APIClient(object):
                     if invitation.url == url:
                         if invitation.ID not in IDs:
                             IDs.append(invitation.ID)
-            assert len(IDs) == len(urls)
+            # assert len(IDs) == len(urls)
 
             if userID:
 
