@@ -448,7 +448,8 @@ class User(object):
                     "#(response.userUnknown.headline)",
                 ]:
                     raise ValueError(message)
-                # print('Creating user account for %s' % self.login[0])
+                print("Deleted user account for %s" % self.login[0], success, message)
+                print("Creating user account for %s" % self.login[0])
                 success, message = self.client.createUserAccount(
                     "Test User", self.login[0], self.login[1], self.login[1]
                 )
@@ -4529,6 +4530,8 @@ class TestTypeWorld(unittest.TestCase):
 
         print("test_UserAccounts() started...")
 
+        print(user0, user1)
+
         # Create user account
 
         success, message = user0.client.createUserAccount(
@@ -4608,18 +4611,41 @@ class TestTypeWorld(unittest.TestCase):
         user0.client.testScenario = "simulateCentralServerNotReachable"
         success, message = user0.client.logInUserAccount(*testUser1)
         self.assertEqual(success, False)
+        self.assertTrue("Failed to establish a new connection" in message)
+
         user0.client.testScenario = "simulateCentralServerProgrammingError"
         success, message = user0.client.logInUserAccount(*testUser1)
+        print(message)
         self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            "HTTP Error 500",
+        )
+
         user0.client.testScenario = "simulateCentralServerErrorInResponse"
         success, message = user0.client.logInUserAccount(*testUser1)
         self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            [
+                "#(response.simulateCentralServerErrorInResponse)",
+                "#(response.simulateCentralServerErrorInResponse.headline)",
+            ],
+        )
         user0.client.testScenario = "simulateNotOnline"
         success, message = user0.client.logInUserAccount(*testUser1)
         self.assertEqual(success, False)
+        self.assertEqual(
+            message,
+            [
+                "#(response.notOnline)",
+                "#(response.notOnline.headline)",
+            ],
+        )
 
         user0.client.testScenario = None
         success, message = user0.client.logInUserAccount(*testUser1)
+        print(success, message)
         self.assertEqual(success, False)
         self.assertEqual(
             message,
@@ -4631,6 +4657,7 @@ class TestTypeWorld(unittest.TestCase):
 
         user0.client.testScenario = "simulateTestUser1IsPro"
         success, message = user0.client.logInUserAccount(*testUser1)
+        print(message)
         self.assertEqual(success, True)
         success, message = user0.client.unlinkUser()
         self.assertEqual(success, True)
