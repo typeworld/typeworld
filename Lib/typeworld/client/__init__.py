@@ -1339,7 +1339,7 @@ class APIClient(object):
             )
 
     def performCommands(self):
-        log = True
+        log = False
 
         if log:
             print()
