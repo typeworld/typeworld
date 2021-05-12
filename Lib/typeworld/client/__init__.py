@@ -592,15 +592,21 @@ class TypeWorldClientDelegate(object):
     def subscriptionWillDelete(self, subscription):
         pass
 
-    def _subscriptionHasBeenDeleted(self, subscription):
+    def _subscriptionHasBeenDeleted(
+        self, subscription, withinPublisherDeletion=False, remotely=False
+    ):
         try:
-            self.subscriptionHasBeenDeleted(subscription)
+            self.subscriptionHasBeenDeleted(
+                subscription, withinPublisherDeletion, remotely
+            )
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def subscriptionHasBeenDeleted(self, subscription):
+    def subscriptionHasBeenDeleted(
+        self, subscription, withinPublisherDeletion, remotely
+    ):
         pass
 
     def _publisherWillDelete(self, publisher):
@@ -625,15 +631,15 @@ class TypeWorldClientDelegate(object):
     def publisherHasBeenDeleted(self, publisher):
         pass
 
-    def _subscriptionHasBeenAdded(self, subscription):
+    def _subscriptionHasBeenAdded(self, subscription, remotely=False):
         try:
-            self.subscriptionHasBeenAdded(subscription)
+            self.subscriptionHasBeenAdded(subscription, remotely)
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
-    def subscriptionHasBeenAdded(self, subscription):
+    def subscriptionHasBeenAdded(self, subscription, remotely):
         pass
 
     def _subscriptionWillUpdate(self, subscription):
@@ -1653,7 +1659,7 @@ class APIClient(object):
                 # Add new subscription
                 if incomingSubscription["url"] not in oldURLs:
                     success, message, publisher, subscription = self.addSubscription(
-                        incomingSubscription["url"], updateSubscriptionsOnServer=False
+                        incomingSubscription["url"], remotely=True
                     )
 
                     if success:
@@ -1661,7 +1667,9 @@ class APIClient(object):
                         if incomingServerTimestamp:
                             subscription.set("serverTimestamp", incomingServerTimestamp)
 
-                        self.delegate._subscriptionHasBeenAdded(subscription)
+                        self.delegate._subscriptionHasBeenAdded(
+                            subscription, remotely=True
+                        )
 
                     else:
                         return (
@@ -1734,7 +1742,7 @@ class APIClient(object):
                     ] and not subscription.protocol.unsecretURL() in [
                         x["url"] for x in response["acceptedInvitations"]
                     ]:
-                        subscription.delete(updateSubscriptionsOnServer=False)
+                        subscription.delete(remotely=True)
 
             self.delegate._userAccountHasBeenUpdated()
 
@@ -1925,7 +1933,7 @@ class APIClient(object):
                             message,
                             publisher,
                             subscription,
-                        ) = self.addSubscription(url, updateSubscriptionsOnServer=False)
+                        ) = self.addSubscription(url, remotely=True)
 
                         if not success:
                             return False, message
@@ -2875,7 +2883,7 @@ Version: {typeworld.api.VERSION}
         url,
         username=None,
         password=None,
-        updateSubscriptionsOnServer=True,
+        remotely=False,
         JSON=None,
     ):
         try:
@@ -2996,8 +3004,9 @@ Version: {typeworld.api.VERSION}
                 publisher.save()
                 subscription.stillAlive()
                 self.manageMessageQueueConnection()
+                self.delegate._subscriptionHasBeenAdded(subscription)
 
-            if updateSubscriptionsOnServer:
+            if not remotely:
                 success, message = self.uploadSubscriptions()
                 if not success:
                     return (
@@ -3330,7 +3339,7 @@ class APIPublisher(object):
         try:
             for subscription in self.subscriptions():
                 success, message = subscription.delete(
-                    calledFromParent=True, updateSubscriptionsOnServer=False
+                    calledFromParent=True, remotely=False
                 )
                 if not success:
                     return False, message
@@ -4311,7 +4320,7 @@ class APISubscription(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def delete(self, calledFromParent=False, updateSubscriptionsOnServer=True):
+    def delete(self, calledFromParent=False, remotely=False):
         try:
             success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
@@ -4351,10 +4360,12 @@ class APISubscription(object):
             if len(subscriptions) == 0 and calledFromParent is False:
                 self.parent.delete()
 
-            self.parent.parent.delegate._subscriptionHasBeenDeleted(self)
+            self.parent.parent.delegate._subscriptionHasBeenDeleted(
+                self, withinPublisherDeletion=calledFromParent, remotely=remotely
+            )
             self.parent.parent.manageMessageQueueConnection()
 
-            if updateSubscriptionsOnServer:
+            if not remotely:
                 self.parent.parent.uploadSubscriptions()
 
             return True, None
