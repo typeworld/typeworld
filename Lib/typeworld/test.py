@@ -596,6 +596,7 @@ class TestTypeWorld(unittest.TestCase):
         user1.client.delegate.reset()
 
         # Add protected subscription
+        user1.client.testScenario = "simulateTestUser1IsPro"
         result = user1.client.addSubscription(protectedSubscription)
         success, message, publisher, subscription = result
         if not success:
