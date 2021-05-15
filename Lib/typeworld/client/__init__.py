@@ -3335,14 +3335,16 @@ class APIPublisher(object):
     #             sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
     #         )
 
-    def delete(self):
+    def delete(self, calledFromSubscription=False):
         try:
-            for subscription in self.subscriptions():
-                success, message = subscription.delete(
-                    calledFromParent=True, remotely=False
-                )
-                if not success:
-                    return False, message
+
+            if not calledFromSubscription:
+                for subscription in self.subscriptions():
+                    success, message = subscription.delete(
+                        calledFromParent=True, remotely=False
+                    )
+                    if not success:
+                        return False, message
 
             # Resources
             self.parent.delegate._publisherWillDelete(self)
@@ -3354,7 +3356,8 @@ class APIPublisher(object):
             # self.parent.set('currentPublisher', '')
 
             # Sync to server
-            self.parent.uploadSubscriptions()
+            if not calledFromSubscription:
+                self.parent.uploadSubscriptions()
 
             self.parent.delegate._publisherHasBeenDeleted(self)
             self.parent.manageMessageQueueConnection()
@@ -4358,14 +4361,14 @@ class APISubscription(object):
             self.parent._subscriptions = {}
 
             if len(subscriptions) == 0 and calledFromParent is False:
-                self.parent.delete()
+                self.parent.delete(calledFromSubscription=True)
 
             self.parent.parent.delegate._subscriptionHasBeenDeleted(
                 self, withinPublisherDeletion=calledFromParent, remotely=remotely
             )
             self.parent.parent.manageMessageQueueConnection()
 
-            if not remotely:
+            if not remotely and not calledFromParent:
                 self.parent.parent.uploadSubscriptions()
 
             return True, None
