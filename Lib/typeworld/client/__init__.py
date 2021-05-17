@@ -3004,19 +3004,19 @@ Version: {typeworld.api.VERSION}
                 publisher.save()
                 subscription.stillAlive()
                 self.manageMessageQueueConnection()
-                self.delegate._subscriptionHasBeenAdded(subscription)
 
-            if not remotely:
-                success, message = self.uploadSubscriptions()
-                if not success:
-                    return (
-                        False,
-                        message,
-                        None,
-                        None,
-                    )  # 'Response from client.uploadSubscriptions(): %s' %
+                if not remotely and not self.externallyControlled:
+                    success, message = self.uploadSubscriptions()
+                    if not success:
+                        return (
+                            False,
+                            message,
+                            None,
+                            None,
+                        )  # 'Response from client.uploadSubscriptions(): %s' %
 
-            protocol.subscriptionAdded()
+                self.delegate._subscriptionHasBeenAdded(subscription, remotely)
+                # protocol.subscriptionAdded()
 
             return True, None, publisher, subscription
 
