@@ -2337,7 +2337,7 @@ class LicenseUsage(DictBasedObject):
         "seatsAllowed": [
             IntegerDataType,
             False,
-            0,
+            None,
             (
                 "In case of desktop font (see ::Font.purpose::), number of "
                 "installations permitted by the user’s license."
@@ -2346,7 +2346,7 @@ class LicenseUsage(DictBasedObject):
         "seatsInstalled": [
             IntegerDataType,
             False,
-            0,
+            None,
             (
                 "In case of desktop font (see ::Font.purpose::), number of "
                 "installations recorded by the API endpoint. This value will "
