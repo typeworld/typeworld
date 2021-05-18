@@ -466,6 +466,7 @@ a lot of time is saved.
         },
         "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
+        "publisherTypes": [],
         "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
@@ -476,6 +477,7 @@ a lot of time is saved.
         "termsOfServiceURL": "https://awesomefonts.com/termsofservice.html"
     },
     "installableFonts": {
+        "foundries": [],
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
@@ -565,6 +567,7 @@ data, and whether or not this endpoint can be publicized about.
     },
     "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
+    "publisherTypes": [],
     "sendsLiveNotifications": false,
     "supportedCommands": [
         "endpoint",
@@ -683,6 +686,8 @@ List of publisher business types: ['free', 'retail', 'custom', 'undefined']. In 
 
 __Required:__ True<br />
 __Type:__ List of Str objects<br />
+__Default value:__ []
+
 <div id="class-endpointresponse-attribute-sendsLiveNotifications"></div>
 
 ### sendsLiveNotifications
@@ -804,6 +809,7 @@ are available to install for a user.
 *Example JSON data:*
 ```json
 {
+    "foundries": [],
     "prefersRevealedUserIdentity": false,
     "response": "success"
 }
@@ -842,6 +848,8 @@ List of [Foundry](#user-content-class-foundry) objects; foundries that this dist
 
 __Required:__ True<br />
 __Type:__ List of [Foundry](#user-content-class-foundry) objects<br />
+__Default value:__ []
+
 <div id="class-installablefontsresponse-attribute-name"></div>
 
 ### name
@@ -1055,6 +1063,8 @@ text was found first.
 *Example JSON data:*
 ```json
 {
+    "families": [],
+    "licenses": [],
     "name": {
         "de": "Geile Schriften",
         "en": "Awesome Fonts"
@@ -1101,6 +1111,8 @@ List of [Family](#user-content-class-family) objects.
 
 __Required:__ True<br />
 __Type:__ List of [Family](#user-content-class-family) objects<br />
+__Default value:__ []
+
 <div id="class-foundry-attribute-licenses"></div>
 
 ### licenses
@@ -1109,6 +1121,8 @@ List of [LicenseDefinition](#user-content-class-licensedefinition) objects under
 
 __Required:__ True<br />
 __Type:__ List of [LicenseDefinition](#user-content-class-licensedefinition) objects<br />
+__Default value:__ []
+
 <div id="class-foundry-attribute-name"></div>
 
 ### name
@@ -1307,6 +1321,7 @@ __Format:__ Maximum allowed characters: 100.<br />
         "de": "Fette Groteske mit runden Ecken",
         "en": "Nice big fat face with smooth corners"
     },
+    "fonts": [],
     "name": {
         "en": "Awesome Family"
     },
@@ -1368,6 +1383,8 @@ List of [Font](#user-content-class-font) objects. The order will be displayed un
 
 __Required:__ True<br />
 __Type:__ List of [Font](#user-content-class-font) objects<br />
+__Default value:__ []
+
 <div id="class-family-attribute-galleryURL"></div>
 
 ### galleryURL
@@ -1705,7 +1722,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'ttf', 'woff', 'woff2']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'ttf', 'ttc', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />

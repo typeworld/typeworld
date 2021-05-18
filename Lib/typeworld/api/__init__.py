@@ -3096,7 +3096,7 @@ class Family(DictBasedObject):
         "fonts": [
             FontListProxy,
             True,
-            None,
+            [],
             (
                 "List of ::Font:: objects. The order will be displayed unchanged in "
                 "the UI, so it’s in your responsibility to order them correctly."
@@ -3369,7 +3369,7 @@ class Foundry(DictBasedObject):
         "licenses": [
             LicenseDefinitionListProxy,
             True,
-            None,
+            [],
             (
                 "List of ::LicenseDefinition:: objects under which the fonts in this "
                 "response are issued. For space efficiency, these licenses are defined "
@@ -3378,7 +3378,7 @@ class Foundry(DictBasedObject):
                 "across foundries."
             ),
         ],
-        "families": [FamiliesListProxy, True, None, "List of ::Family:: objects."],
+        "families": [FamiliesListProxy, True, [], "List of ::Family:: objects."],
         "packages": [
             FontPackageListProxy,
             False,
@@ -3575,7 +3575,7 @@ class InstallableFontsResponse(BaseResponse):
         "foundries": [
             FoundryListProxy,
             True,
-            None,
+            [],
             (
                 "List of ::Foundry:: objects; foundries that this distributor "
                 "supports. In most cases this will be only one, as many foundries "
@@ -4169,7 +4169,7 @@ data, and whether or not this endpoint can be publicized about.
         "publisherTypes": [
             SupportedPublisherTypeListProxy,
             True,
-            None,
+            [],
             (
                 f"List of publisher business types: {PUBLISHERTYPES}. "
                 "In case ::EndpointResponse.public:: is set to `True`, only the "
