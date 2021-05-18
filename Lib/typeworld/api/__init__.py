@@ -37,6 +37,7 @@ ERROR = "error"
 UNKNOWNFONT = "unknownFont"
 INSUFFICIENTPERMISSION = "insufficientPermission"
 SEATALLOWANCEREACHED = "seatAllowanceReached"
+EXPIRED = "fontExpired"
 UNKNOWNINSTALLATION = "unknownInstallation"
 NOFONTSAVAILABLE = "noFontsAvailable"
 TEMPORARILYUNAVAILABLE = "temporarilyUnavailable"
@@ -54,6 +55,7 @@ RESPONSES = {
         "message in the `errorMessage` field."
     ),
     UNKNOWNFONT: "No font could be identified for the given `fontID`.",
+    EXPIRED: "This font installation has expired.",
     INSUFFICIENTPERMISSION: (
         "The Type.World user account credentials "
         "couldn’t be confirmed by the publisher (which are checked with the "
@@ -163,6 +165,7 @@ INSTALLFONTASSETCOMMAND = {
         LOGINREQUIRED,
         REVEALEDUSERIDENTITYREQUIRED,
         SEATALLOWANCEREACHED,
+        EXPIRED,
     ],
 }
 UNINSTALLFONTASSETCOMMAND = {
