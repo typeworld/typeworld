@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 0.2.9-beta)
+# Type.World JSON Protocol (Version 0.2.11-beta)
 
 ## Preamble
 
@@ -43,6 +43,11 @@ These are the breaking changes so far:
 
 * `0.2.9-beta`
 
+
+### Changes in `0.2.11-beta`
+
+* Added response code `fontExpired` to [InstallFontAsset.response](#user-content-class-installfontasset-attribute-response).
+* Removed Font.languageSupport. Later, this functionality will be replaced by a list of unicodes that a font support to calculate language support on the GUI app side.
 
 ### Changes in `0.2.9-beta`
 
@@ -256,7 +261,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.9-beta"
+    "version": "0.2.11-beta"
 }
 ```
 
@@ -404,7 +409,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.9-beta"
+    "version": "0.2.11-beta"
 }
 ```
 
@@ -461,7 +466,6 @@ a lot of time is saved.
         },
         "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
         "public": true,
-        "publisherTypes": [],
         "sendsLiveNotifications": false,
         "supportedCommands": [
             "endpoint",
@@ -472,11 +476,10 @@ a lot of time is saved.
         "termsOfServiceURL": "https://awesomefonts.com/termsofservice.html"
     },
     "installableFonts": {
-        "foundries": [],
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.9-beta"
+    "version": "0.2.11-beta"
 }
 ```
 
@@ -529,7 +532,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.9-beta
+__Default value:__ 0.2.11-beta
 
 
 
@@ -562,7 +565,6 @@ data, and whether or not this endpoint can be publicized about.
     },
     "privacyPolicyURL": "https://awesomefonts.com/privacypolicy.html",
     "public": true,
-    "publisherTypes": [],
     "sendsLiveNotifications": false,
     "supportedCommands": [
         "endpoint",
@@ -802,7 +804,6 @@ are available to install for a user.
 *Example JSON data:*
 ```json
 {
-    "foundries": [],
     "prefersRevealedUserIdentity": false,
     "response": "success"
 }
@@ -1054,8 +1055,6 @@ text was found first.
 *Example JSON data:*
 ```json
 {
-    "families": [],
-    "licenses": [],
     "name": {
         "de": "Geile Schriften",
         "en": "Awesome Fonts"
@@ -1308,7 +1307,6 @@ __Format:__ Maximum allowed characters: 100.<br />
         "de": "Fette Groteske mit runden Ecken",
         "en": "Nice big fat face with smooth corners"
     },
-    "fonts": [],
     "name": {
         "en": "Awesome Family"
     },
@@ -1407,7 +1405,7 @@ __Type:__ List of [FontPackage](#user-content-class-fontpackage) objects<br />
 
 ### pdfURL
 
-URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at [Font.pdf](#user-content-class-font-attribute-pdf).
+URL of PDF file with type specimen and/or instructions for entire family. May be overriden on font level at [Font.pdfURL](#user-content-class-font-attribute-pdfurl).
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1638,8 +1636,7 @@ Returns False if this version is defined at the family level.
     "postScriptName": "AwesomeFamily-Bold",
     "purpose": "desktop",
     "status": "stable",
-    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold",
-    "usedLicenses": []
+    "uniqueID": "AwesomeFonts-AwesomeFamily-Bold"
 }
 ```
 
@@ -1647,7 +1644,7 @@ Returns False if this version is defined at the family level.
 
 ### Attributes
 
-[billboardURLs](#class-font-attribute-billboardurls)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[languageSupport](#class-font-attribute-languagesupport)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
+[billboardURLs](#class-font-attribute-billboardurls)<br />[dateFirstPublished](#class-font-attribute-datefirstpublished)<br />[designerKeywords](#class-font-attribute-designerkeywords)<br />[expiry](#class-font-attribute-expiry)<br />[expiryDuration](#class-font-attribute-expiryduration)<br />[features](#class-font-attribute-features)<br />[format](#class-font-attribute-format)<br />[free](#class-font-attribute-free)<br />[name](#class-font-attribute-name)<br />[packageKeywords](#class-font-attribute-packagekeywords)<br />[pdfURL](#class-font-attribute-pdfurl)<br />[postScriptName](#class-font-attribute-postscriptname)<br />[protected](#class-font-attribute-protected)<br />[purpose](#class-font-attribute-purpose)<br />[status](#class-font-attribute-status)<br />[uniqueID](#class-font-attribute-uniqueid)<br />[usedLicenses](#class-font-attribute-usedlicenses)<br />[variableFont](#class-font-attribute-variablefont)<br />[versions](#class-font-attribute-versions)<br />
 
 ### Methods
 
@@ -1708,7 +1705,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'woff', 'woff2', 'ttc', 'otf']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'ttc', 'ttf', 'woff', 'woff2']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1720,14 +1717,6 @@ Font is freeware. For UI signaling
 
 __Required:__ False<br />
 __Type:__ Bool<br />
-<div id="class-font-attribute-languageSupport"></div>
-
-### languageSupport
-
-Dictionary of suppported languages as script/language combinations
-
-__Required:__ False<br />
-__Type:__ Dict<br />
 <div id="class-font-attribute-name"></div>
 
 ### name
@@ -1932,8 +1921,6 @@ In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-p
 
 __Required:__ False<br />
 __Type:__ Int<br />
-__Default value:__ 0
-
 <div id="class-licenseusage-attribute-seatsInstalled"></div>
 
 ### seatsInstalled
@@ -1942,8 +1929,6 @@ In case of desktop font (see [Font.purpose](#user-content-class-font-attribute-p
 
 __Required:__ False<br />
 __Type:__ Int<br />
-__Default value:__ 0
-
 <div id="class-licenseusage-attribute-upgradeURL"></div>
 
 ### upgradeURL
@@ -2135,6 +2120,8 @@ Type of response:
 `revealedUserIdentityRequired`: The access to this subscription requires a valid Type.World user account and that the user agrees to having their identity (name and email address) submitted to the publisher upon font installation (closed workgroups only).
 
 `seatAllowanceReached`: The user has exhausted their seat allowances for this font. The app may take them to the publisher’s website as defined in [LicenseUsage.upgradeURL](#user-content-class-licenseusage-attribute-upgradeurl) to upgrade their font license.
+
+`fontExpired`: This font installation has expired.
 
 
 
