@@ -74,7 +74,7 @@ from typeworld.api import (  # noqa: E402
 )
 
 from typeworld.api import (  # noqa: E402
-    LanguageSupportDataType,
+    # LanguageSupportDataType,
     OpenTypeFeatureDataType,
     OpenSourceLicenseIdentifierDataType,
     SupportedAPICommandsDataType,
@@ -725,7 +725,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertTrue(DateDataType().valid())
         self.assertTrue(VersionDataType().valid())
 
-        self.assertTrue(LanguageSupportDataType().valid())
+        # self.assertTrue(LanguageSupportDataType().valid())
         self.assertTrue(OpenTypeFeatureDataType().valid())
         self.assertTrue(OpenSourceLicenseIdentifierDataType().valid())
         self.assertTrue(SupportedAPICommandsDataType().valid())
@@ -2355,7 +2355,7 @@ class TestTypeWorld(unittest.TestCase):
                     "'unknownFont', 'insufficientPermission', "
                     "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', "
                     "'loginRequired', 'revealedUserIdentityRequired', "
-                    "'seatAllowanceReached']"
+                    "'seatAllowanceReached', 'fontExpired']"
                 ),
             )
 
