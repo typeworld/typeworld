@@ -23,7 +23,7 @@ import platform
 
 #  Constants
 
-VERSION = "0.2.10-beta"
+VERSION = "0.2.11-beta"
 BREAKINGVERSIONS = ["0.2.9-beta"]
 
 WIN = platform.system() == "Windows"
@@ -1994,23 +1994,23 @@ class MultiLanguageLongTextProxy(MultiLanguageTextProxy):
 #  Top-Level Data Types
 
 
-class LanguageSupportDataType(DictionaryDataType):
-    def valid(self):
-        if not self.value:
-            return True
-        for script in self.value:
-            if not len(script) == 4 or not script.islower():
-                return "Script tag '%s' needs to be a four-letter lowercase tag." % (
-                    script
-                )
+# class LanguageSupportDataType(DictionaryDataType):
+#     def valid(self):
+#         if not self.value:
+#             return True
+#         for script in self.value:
+#             if not len(script) == 4 or not script.islower():
+#                 return "Script tag '%s' needs to be a four-letter lowercase tag." % (
+#                     script
+#                 )
 
-            for language in self.value[script]:
-                if not len(language) == 3 or not language.isupper():
-                    return (
-                        "Language tag '%s' needs to be a " "three-letter uppercase tag."
-                    ) % (language)
+#             for language in self.value[script]:
+#                 if not len(language) == 3 or not language.isupper():
+#                     return (
+#                         "Language tag '%s' needs to be a " "three-letter uppercase"
+#                     ) % (language)
 
-        return True
+#         return True
 
 
 class OpenTypeFeatureDataType(StringDataType):
@@ -2807,12 +2807,12 @@ class Font(DictBasedObject):
                 "https://docs.microsoft.com/en-us/typography/opentype/spec/featuretags"
             ),
         ],
-        "languageSupport": [
-            LanguageSupportDataType,
-            False,
-            None,
-            "Dictionary of suppported languages as script/language combinations",
-        ],
+        # "languageSupport": [
+        #     LanguageSupportDataType,
+        #     False,
+        #     None,
+        #     "Dictionary of suppported languages as script/language combinations",
+        # ],
     }
 
     def __repr__(self):

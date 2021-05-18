@@ -44,6 +44,11 @@ These are the breaking changes so far:
 __breakingAppVersions__
 
 
+### Changes in `0.2.11-beta`
+
+* Added response code `fontExpired` to [InstallFontAsset.response](#user-content-class-installfontasset-attribute-response).
+* Removed Font.languageSupport. Later, this functionality will be replaced by a list of unicodes that a font support to calculate language support on the GUI app side.
+
 ### Changes in `0.2.9-beta`
 
 * Introduced [EndpointResponse.sendsLiveNotifications](#user-content-class-endpointresponse-attribute-sendslivenotifications).
