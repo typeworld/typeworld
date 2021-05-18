@@ -3826,7 +3826,7 @@ class APISubscription(object):
     # 					installedVersion = self.installedFontVersion(fontID)
     # 					return installedVersion and installedVersion != font.getVersions()[-1].number
 
-    def removeFonts(self, fonts, dryRun=False, updateSubscription=True):
+    def removeFonts(self, fontIDs, dryRun=False, updateSubscription=True):
         try:
             success, installableFontsCommand = self.protocol.installableFontsCommand()
 
@@ -3835,11 +3835,7 @@ class APISubscription(object):
 
             folder = self.parent.folder()
 
-            fontIDs = []
-
-            for fontID in fonts:
-
-                fontIDs.append(fontID)
+            for fontID in fontIDs:
 
                 path = None
                 font = self.fontByID(fontID)
