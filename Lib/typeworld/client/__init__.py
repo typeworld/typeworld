@@ -919,8 +919,10 @@ class APIClient(object):
 
             # MONITOR
             self._zmqMonitor = self.zmqSocket.get_monitor_socket()
-            t = threading.Thread(target=self.event_monitor, args=(self._zmqMonitor,))
-            t.start()
+            self.zmqMonitorThread = threading.Thread(
+                target=self.event_monitor, args=(self._zmqMonitor,), daemon=True
+            )
+            self.zmqMonitorThread.start()
 
     def event_monitor(self, monitor):
         import zmq
@@ -991,6 +993,7 @@ class APIClient(object):
             self.zmqSocket.close()
             self._zmqctx.destroy()
             self.zmqListenerThread.join()
+            self.zmqMonitorThread.join()
             # self._zmqctx.term()
             self.delegate._messageQueueDisconnected()
 
