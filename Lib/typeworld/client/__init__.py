@@ -243,7 +243,7 @@ def getProtocol(url):
     return False, "Protocol %s doesn’t exist in this app (yet)." % protocolName
 
 
-def request(url, parameters={}, method="POST"):
+def request(url, parameters={}, method="POST", timeout=30):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
@@ -252,9 +252,9 @@ def request(url, parameters={}, method="POST"):
     for i in range(10):
         try:
             if method == "POST":
-                response = requests.post(url, parameters, timeout=30)
+                response = requests.post(url, parameters, timeout=timeout)
             elif method == "GET":
-                response = requests.get(url, timeout=30)
+                response = requests.get(url, timeout=timeout)
         # except requests.exceptions.ConnectionError:
         #     message = f'Connection refused: {url}'
         # except requests.exceptions.HTTPError:
