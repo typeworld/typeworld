@@ -281,6 +281,7 @@ The app will ask for the JSON responses at your API endpoint (`https://awesomefo
 * **`subscriptionID`** The aforementioned ID to uniquely identify the fonts you serve.
 * **`secretKey`** The secret key to authenticate the requester.
 * **`accessToken`** The single use access token that you may use to identify whether a user was logged in to your website when first accessing a subscription. The access token is only ever served there in your website’s user account, and thrown away and replaced upon first access using this token. Afterwards users need to be verified with the central Type.World server. See *"Security Design, Level 2"* for details.
+* **`anonymousTypeWorldUserID`** is a key that anonymously identifies a user
 * **`anonymousAppID`** is a key that uniquely and anonymously identifies a Type.World app installation. You should use this to track how often a font has been installed by a user through different app instances and reject requests once the limit has been reached.
 * **`fonts`** identifying the unique font ID and version number to install or uninstall as a comma separated list of slash-separated `fontID/version` tuples, such as `font1ID/font1version,font2ID/font2version,font3ID/font3version`.
 * **`userEmail`** and **`userName`** in case the user has a Type.World user account and has explicitly agreed to reveal his/her identity on a per-subscription basis. This only makes sense in a trusted custom type development environment where the type designers may want to get in touch personally with the font’s users in a small work group, for instance in a branding agency. This tremendously streamlines everyone’s workflow. If necessary, a publisher in a trusted custom type development environment could reject the serving of subscriptions to requesters who are unidentified, e.g. requests with empty `userEmail` and `userName` parameters. There is currently no way to verify the correctness of the incoming two values for data privacy reasons. They need to be taken as is.
@@ -294,6 +295,13 @@ I suggest to return a `405 Method Not Allowed` HTTP response for all `GET` reque
 ### Warning of SQL Injection
 
 Whatever you do with your server, bear in mind that the parameters attached to the requests could be malformed to contain [SQL injection attacks](https://www.w3schools.com/sql/sql_injection.asp) and the likes and need to be quarantined.
+
+### Identifying Font Installations
+
+If you want to track font installations to observe license compliance, you need to identify a font installation by the triplet of request parameters `subscriptionID, anonymousAppID, fontID`.
+
+The `fontID` comes as part of the `fonts` request parameter.
+
 
 ### Reference Implementation
 
