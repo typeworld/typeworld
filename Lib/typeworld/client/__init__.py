@@ -2893,10 +2893,7 @@ Version: {typeworld.api.VERSION}
     def addSubscription(
         self,
         url,
-        username=None,
-        password=None,
         remotely=False,
-        JSON=None,
     ):
         try:
             self._updatingProblem = None
