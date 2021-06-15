@@ -481,7 +481,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             return (
                 False,
                 (
-                    "API endpoint %s does not support the 'installableFonts' or "
+                    "API endpoint %s does not support the 'installableFonts' and "
                     "'installFonts' commands."
                 )
                 % root.endpoint.canonicalURL,
