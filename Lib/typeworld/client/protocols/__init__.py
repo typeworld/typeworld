@@ -7,6 +7,8 @@ class TypeWorldProtocolBase(object):
 
         # References to objects this is attached to
         self.client = None
+
+        # APISubscription object will be attached here from the outside
         self.subscription = None
 
         self.initialize()
