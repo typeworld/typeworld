@@ -217,6 +217,10 @@ class URL(object):
 
 
 def getProtocol(url):
+    """\
+    Loads a protocol plugin from the file system and returns an
+    instantiated protocol object
+    """
 
     protocolName = URL(url).protocol
 
