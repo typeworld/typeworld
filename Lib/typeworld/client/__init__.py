@@ -2632,134 +2632,143 @@ class APIClient(object):
 
     def handleTraceback(self, file=None, sourceMethod=None, e=None):
 
-        payload = f"""\
+        # Needs explicit permission, to be handled by UI
+        if self.get("sendCrashReports") or self.testing:
+
+            payload = f"""\
 Version: {typeworld.api.VERSION}
 {traceback.format_exc()}
 """
 
-        # Remove path parts to make tracebacks identical (so they don't re-surface)
+            # Remove path parts to make tracebacks identical (so they don't re-surface)
 
-        def removePathPrefix(_payload, _snippet, _file):
-            m = re.search(r'File "(.+?)"', _payload, re.MULTILINE)
-            if m:
-                _file = m.group(1)
-                index = _file.find(_snippet)
-                if index != -1:
-                    clientPathPrefix = _file[:index]
-                    return _payload.replace(clientPathPrefix, "")
+            def removePathPrefix(_payload, _snippet, _file):
+                m = re.search(r'File "(.+?)"', _payload, re.MULTILINE)
+                if m:
+                    _file = m.group(1)
+                    index = _file.find(_snippet)
+                    if index != -1:
+                        clientPathPrefix = _file[:index]
+                        return _payload.replace(clientPathPrefix, "")
+                    else:
+                        return _payload
                 else:
-                    return _payload
-            else:
-                return _payload  # nocoverage (this seems to never get executed,
-                # because code always contains `File "..."` like it should.
-                # Leaving this here just in case) TODO
+                    return _payload  # nocoverage (this seems to never get executed,
+                    # because code always contains `File "..."` like it should.
+                    # Leaving this here just in case) TODO
 
-        # Normalize file paths
-        if WIN:
-            payload = (
-                removePathPrefix(payload, "TypeWorld.exe", __file__)
-                .replace("\\", "/")
-                .replace("TypeWorld.exe", "app.py")
+            # Normalize file paths
+            if WIN:
+                payload = (
+                    removePathPrefix(payload, "TypeWorld.exe", __file__)
+                    .replace("\\", "/")
+                    .replace("TypeWorld.exe", "app.py")
+                )
+            payload = removePathPrefix(payload, "typeworld/client/", __file__).replace(
+                "\\", "/"
             )
-        payload = removePathPrefix(payload, "typeworld/client/", __file__).replace(
-            "\\", "/"
-        )
-        payload = removePathPrefix(payload, "app.py", file).replace("\\", "/")
+            payload = removePathPrefix(payload, "app.py", file).replace("\\", "/")
 
-        # Create supplementary information
-        supplementary = {
-            "os": OSName(),
-            "file": file or __file__,
-            "preferences": self._preferences.dictionary(),
-        }
+            # Create supplementary information
+            supplementary = {
+                "os": OSName(),
+                "file": file or __file__,
+                "preferences": self._preferences.dictionary(),
+            }
 
-        if sourceMethod:
-            if hasattr(sourceMethod, "__self__") and sourceMethod.__self__:
-                supplementary["sourceMethodSignature"] = (
-                    str(sourceMethod.__self__.__class__.__name__)
-                    + "."
-                    + str(sourceMethod.__name__)
-                    + str(inspect.signature(sourceMethod))
+            if sourceMethod:
+                if hasattr(sourceMethod, "__self__") and sourceMethod.__self__:
+                    supplementary["sourceMethodSignature"] = (
+                        str(sourceMethod.__self__.__class__.__name__)
+                        + "."
+                        + str(sourceMethod.__name__)
+                        + str(inspect.signature(sourceMethod))
+                    )
+                else:
+                    supplementary["sourceMethodSignature"] = str(  # nocoverage
+                        sourceMethod.__name__  # nocoverage
+                    ) + str(  # nocoverage
+                        inspect.signature(sourceMethod)  # nocoverage
+                    )  # nocoverage
+                    # (currently not testing for calling this method without
+                    # a sourceMethod parameter)
+
+            supplementary["traceback"] = payload
+            supplementary["stack"] = []
+            supplementary["trace"] = []
+            for s in inspect.stack():
+                supplementary["stack"].append(
+                    {
+                        "filename": str(s.filename),
+                        "lineno": str(s.lineno),
+                        "function": str(s.function),
+                        "code_context": str(
+                            s.code_context[0].replace("\t", " ").rstrip()
+                        )
+                        if s.code_context
+                        else None,
+                    }
+                )
+            for s in inspect.trace():
+                supplementary["trace"].append(
+                    {
+                        "filename": str(s.filename),
+                        "lineno": str(s.lineno),
+                        "function": str(s.function),
+                        "code_context": str(
+                            s.code_context[0].replace("\t", " ").rstrip()
+                        )
+                        if s.code_context
+                        else None,
+                    }
+                )
+
+            # replace faulty line of code (some Python versions include the faulty code
+            # line in the traceback output, some not)
+            if supplementary["trace"] and supplementary["trace"][0]["code_context"]:
+                payload = payload.replace(supplementary["trace"][0]["code_context"], "")
+                payload = payload.replace("\n \n", "\n")
+
+            parameters = {
+                "payload": payload,
+                "supplementary": json.dumps(supplementary),
+            }
+
+            # Submit to central server
+            # if self.online(self.mothership):
+
+            def handleTracebackWorker(self):
+
+                success, response, responseObject = self.performRequest(
+                    self.mothership + "/handleTraceback", parameters
+                )
+                if success:
+                    response = json.loads(response.decode())
+                    if response["response"] != "success":
+                        self.log(
+                            "handleTraceback() error on server, step 2: %s" % response
+                        )
+                if not success:
+                    self.log("handleTraceback() error on server, step 1: %s" % response)
+
+            handleTracebackThread = threading.Thread(
+                target=handleTracebackWorker, args=(self,)
+            )
+            handleTracebackThread.start()
+
+            # Log
+            if sourceMethod:
+                self.log(
+                    payload
+                    + "\nMethod signature:\n"
+                    + supplementary["sourceMethodSignature"]
                 )
             else:
-                supplementary["sourceMethodSignature"] = str(  # nocoverage
-                    sourceMethod.__name__  # nocoverage
-                ) + str(  # nocoverage
-                    inspect.signature(sourceMethod)  # nocoverage
-                )  # nocoverage
-                # (currently not testing for calling this method without
-                # a sourceMethod parameter)
+                self.log(payload)  # nocoverage  # nocoverage  # nocoverage
+                # (currently not testing for calling this method without a sourceMethod
+                # parameter)
 
-        supplementary["traceback"] = payload
-        supplementary["stack"] = []
-        supplementary["trace"] = []
-        for s in inspect.stack():
-            supplementary["stack"].append(
-                {
-                    "filename": str(s.filename),
-                    "lineno": str(s.lineno),
-                    "function": str(s.function),
-                    "code_context": str(s.code_context[0].replace("\t", " ").rstrip())
-                    if s.code_context
-                    else None,
-                }
-            )
-        for s in inspect.trace():
-            supplementary["trace"].append(
-                {
-                    "filename": str(s.filename),
-                    "lineno": str(s.lineno),
-                    "function": str(s.function),
-                    "code_context": str(s.code_context[0].replace("\t", " ").rstrip())
-                    if s.code_context
-                    else None,
-                }
-            )
-
-        # replace faulty line of code (some Python versions include the faulty code
-        # line in the traceback output, some not)
-        if supplementary["trace"] and supplementary["trace"][0]["code_context"]:
-            payload = payload.replace(supplementary["trace"][0]["code_context"], "")
-            payload = payload.replace("\n \n", "\n")
-
-        parameters = {
-            "payload": payload,
-            "supplementary": json.dumps(supplementary),
-        }
-
-        # Submit to central server
-        # if self.online(self.mothership):
-
-        def handleTracebackWorker(self):
-
-            success, response, responseObject = self.performRequest(
-                self.mothership + "/handleTraceback", parameters
-            )
-            if success:
-                response = json.loads(response.decode())
-                if response["response"] != "success":
-                    self.log("handleTraceback() error on server, step 2: %s" % response)
-            if not success:
-                self.log("handleTraceback() error on server, step 1: %s" % response)
-
-        handleTracebackThread = threading.Thread(
-            target=handleTracebackWorker, args=(self,)
-        )
-        handleTracebackThread.start()
-
-        # Log
-        if sourceMethod:
-            self.log(
-                payload
-                + "\nMethod signature:\n"
-                + supplementary["sourceMethodSignature"]
-            )
-        else:
-            self.log(payload)  # nocoverage  # nocoverage  # nocoverage
-            # (currently not testing for calling this method without a sourceMethod
-            # parameter)
-
-        return False, payload
+            return False, payload
 
     def log(self, *arg):
         string = "Type.World: %s" % " ".join(map(str, arg))
