@@ -31,6 +31,23 @@ If you have any problems in understanding the system that probably means that it
 
 # Quick Start
 
+## Videos
+
+### Humorous General Explanation Video
+
+In a humorous conversation with Bill, a fictional American type foundry representative, I explain why an app like Type.World needs to exist and how it provides a vastly improved user experience to working with fonts.
+
+
+<div style="padding:56.25% 0 0 0;position:relative; margin-top: 20px;"><iframe src="https://player.vimeo.com/video/557493242?byline=0&portrait=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+### Presentation at TypeTech Meetup, Feb. 26th 2021
+
+This video is a general introduction to the app and how it interacts with the different servers across the network; foundry servers, and the central Type.World servers.
+
+<div style="padding:56.25% 0 0 0;position:relative; margin-top: 20px;"><iframe src="https://player.vimeo.com/video/557494046?byline=0&portrait=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+## How To Start Your Development
+
 To start developing your own API Endpoint for the Type.World App, you need to:
 
 * Understand the project’s development timeline (see *Development Time Line* hereabove under *Preamble*
@@ -423,8 +440,18 @@ Internally, the `typeworld.client` module uses a method called `request()` that 
 If you’re building your own API endpoint under the Type.World JSON protocol, we offer a remote API Endpoint Validator that will check your endpoint for proper functionality.
 
 * If you obtain the `typeworld` Python module via [PyPi](https://pypi.org/project/typeworld/) with `pip install typeworld`, you may invoke the validator from the command line: `validateTypeWorldEndpoint typeworld://json+https//typeworldserver.com/api/bZA2JbWHEAkFjako0Mtz/ all`. This is the preferred method because it allows you to check your local development server that isn’t live on the internet. Also if you run it locally, it reduces strain on the central server. (That’s because of latency. These validations will take long, and the load balancer will think it needs to start another instance, which will affect our billing)
-* You may invoke the validator on directly this website: [Online API Endpoint Validator](/developer/validate)
-* You may also use this validator remotely with its own API: [Type.World API](/developer/api/#validateAPIEndpoint).
+
+## Affiliate Program
+
+Type.World offers a 10% commission on fees of its *Pro Publisher Plan*. This program is intended for FaaS (Foundry as a Service) providers.
+
+Customers of FaaS providers still need to individually sign up for the *Type.World Pro Publisher Plan* and enter their *API Key* with Type.World into the FaaS app, then pay their Type.World fees directly to Type.World. Through the Affiliate Program, FaaS providers are provided with a reimbursement of their implementation efforts and are kindly asked to not bill their customers an additional fee for providing the Type.World integration.
+
+[Sign up here](https://typeworld.getrewardful.com) with our partner *Rewardful* and make sure you redirect your FaaS customers to our website using your unique `?via=yourfaasid` ID. The link directly to the foundry billing page would then be this: `https://type.world/developer/billing/?via=yourfaasid`
+
+Payouts are only possible to a PayPal account.
+
+**Note:** Many privacy-oriented browsers and browser plugins nowadays prevent cookies from being set or external JavaScript from being executed. This means that the tracking of your FaaS customer’s signup with Type.World might go unnoticed. You should get notified of each referral, and if not, please drop me a line to [hello@type.world](mailto:hello@type.world) and I can retrospectively hook up your customer with your Affiliate account, and even pay out accumulated commissions retrospectively.
 
 # Contribute
 
@@ -434,11 +461,13 @@ Type.World is looking for a number of voluntary contributions. At the moment, th
 
 If you would like to see the app translated into your language, please consider contributing your translation skills.
 
-We have a web-interface in place to assist with the translations. A one-click assistant can provide an auto-translation by Google and you may choose to use it as a basis for your manual translation. This saves a lot of work for widely spoken languages where Google Translate provides good results.
+We have a web-interface to assist with translations. A one-click assistant can provide an auto-translation by Google Translate and you may choose to use it as a basis for your manual translation. This saves a lot of work for widely spoken languages where Google Translate provides good results.
 
-The interface isn’t perfect, but it’s pretty good compared to editing text files.
+Please note that the app is currently not yet designed to handle right-to-left text gracefully. But given that full localization is built into the protocol from the beginning, the app is intended to support right-to-left text in the future. So translations for right-to-left languages can already be contributed now, which will make it all the easier to work on supporting right-to-left in the user interface.
 
-Please note that the app is currently not yet designed to handle right-to-left text gracefully. But given that full localization is built into the protocol from the beginning, the app is intended to support right-to-left text in the future. When the time has come to support right-to-left text, it would be great to do it with real translations rather than placeholder text.
+If you choose to contribute a translation, it would be great if you could also be on standby in the future, as translations need to be updated every now and then along with the app. The web interface allows to easily recognize changed or added translation pairs, so that future work can be kept to a minimum. Every now and then you would receive an email asking you to update the translations ahead of a pending app update release.
+
+And no worries, I can always remove you as a translator if it gets overwhelming and we can find someone else instead.
 
 ### Translation Process
 
@@ -446,7 +475,7 @@ Please note that the app is currently not yet designed to handle right-to-left t
 
 Your Type.World user account will be authorized for one or more languages and you will see a "Translate" link appear in the web site’s menu bar. Follow it to see the available datapoints. Be aware that initial page load may take longer than average.
 
-You agree that your name gets credited for the translations.
+Let me know whether you want to be credited as the translator for your language. Your user account’s personal name will be used to display the credit.
 
 Every once in a while you will receive an email notifying you of pending necessary translations, either because the original English wording has changed since you last edited it or because new datapoints have appeared in the meantime. This notification will normally be sent a week or two prior to a pending app release.
 
