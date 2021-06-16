@@ -1016,7 +1016,9 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
+Markdown is permitted in `MultiLanguageLongText`.
+Line breaks need to be escaped as `
+` characters.
 
 *Example JSON data:*
 ```json
@@ -1531,8 +1533,8 @@ For the time being, only family-level FontPackages are supported in the UI.
 Description
 
 __Required:__ False<br />
-__Type:__ [MultiLanguageText](#user-content-class-multilanguagetext)<br />
-__Format:__ Maximum allowed characters: 100.<br />
+__Type:__ [MultiLanguageLongText](#user-content-class-multilanguagelongtext)<br />
+__Format:__ Maximum allowed characters: 3000. Mardown code is permitted for text formatting.<br />
 <div id="class-fontpackage-attribute-keyword"></div>
 
 ### keyword
@@ -1722,7 +1724,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['otf', 'woff2', 'ttf', 'ttc', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
