@@ -1973,7 +1973,8 @@ for languageCode, text in (
     api.name.set(languageCode, text)
 ```
 
-Neither HTML nor Markdown code is permitted in `MultiLanguageText`.
+Markdown is permitted in `MultiLanguageLongText`.
+Line breaks need to be escaped as `\n` characters.
 """
 
     _length = 3000
@@ -2258,7 +2259,7 @@ class FontPackage(DictBasedObject):
             ),
         ],
         "name": [MultiLanguageTextProxy, True, None, "Name of package"],
-        "description": [MultiLanguageTextProxy, False, None, "Description"],
+        "description": [MultiLanguageLongTextProxy, False, None, "Description"],
     }
 
     def __repr__(self):
