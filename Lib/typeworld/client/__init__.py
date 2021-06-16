@@ -2894,6 +2894,17 @@ Version: {typeworld.api.VERSION}
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
+    def reportAPIEndpointError(self, url):
+        reportThread = threading.Thread(
+            target=self.reportAPIEndpointErrorWorker, args=(url,)
+        )
+        reportThread.start()
+
+    def reportAPIEndpointErrorWorker(self, url):
+        success, content, response = self.performRequest(
+            self.mothership + "/reportAPIEndpointError", {"subscriptionURL": url}
+        )
+
     def addSubscription(
         self,
         url,
@@ -2901,6 +2912,7 @@ Version: {typeworld.api.VERSION}
         password=None,
         remotely=False,
         JSON=None,
+        reportErrors=True,
     ):
         try:
             self._updatingProblem = None
@@ -2926,6 +2938,8 @@ Version: {typeworld.api.VERSION}
                 if success:
                     endpointCommand = message
                 else:
+                    if reportErrors:
+                        self.reportAPIEndpointError(url)
                     return False, message, None, None
 
                 protocol.setSecretKey(protocol.url.secretKey)
@@ -2947,6 +2961,8 @@ Version: {typeworld.api.VERSION}
                     #     "#(response.loginRequired)",
                     #     "#(response.loginRequired.headline)",
                     # ]
+                    if reportErrors:
+                        self.reportAPIEndpointError(url)
                     return False, message, None, None
 
                 # endpointCommand
@@ -2987,6 +3003,8 @@ Version: {typeworld.api.VERSION}
                             )
                             == 1
                         ):
+                            if reportErrors:
+                                self.reportAPIEndpointError(url)
                             return (
                                 False,
                                 [
@@ -3002,6 +3020,8 @@ Version: {typeworld.api.VERSION}
                     self.commercial
                     and self.appID not in endpointCommand.allowedCommercialApps
                 ):
+                    if reportErrors:
+                        self.reportAPIEndpointError(url)
                     return (
                         False,
                         [
