@@ -222,7 +222,7 @@ def getProtocol(url):
     instantiated protocol object
     """
 
-    protocolName = URL(url).protocol
+    protocolName = URL(url).protocol  # test
 
     for ext in (".py", ".pyc"):
         if os.path.exists(
