@@ -3684,6 +3684,21 @@ class APISubscription(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
+    def invitationSent(self):
+        try:
+
+            if self.parent.parent.user():
+                sentInvitations = self.parent.parent.sentInvitations()
+                if sentInvitations:
+                    for invitation in sentInvitations:
+                        if self.protocol.unsecretURL() == invitation.url:
+                            return True
+
+        except Exception as e:  # nocoverage
+            self.parent.parent.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
+            )
+
     def stillUpdating(self):
         try:
             return self.url in self.parent._updatingSubscriptions
