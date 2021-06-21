@@ -2780,7 +2780,6 @@ Version: {typeworld.api.VERSION}
             nslog(string)
         else:
             logging.debug(string)
-        print(string)
 
     def prepareUpdate(self):
         self._subscriptionsUpdated = []
