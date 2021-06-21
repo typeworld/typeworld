@@ -23,7 +23,7 @@ import platform
 
 #  Constants
 
-VERSION = "1.0.0"
+VERSION = "0.2.11-beta"
 BREAKINGVERSIONS = ["0.2.9-beta"]
 
 WIN = platform.system() == "Windows"
