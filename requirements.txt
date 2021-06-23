@@ -1,4 +1,3 @@
-deepdiff
 keyring
 markdown2
 pyzmq

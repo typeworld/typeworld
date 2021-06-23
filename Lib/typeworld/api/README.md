@@ -420,7 +420,7 @@ Next we load that same JSON code back into an object tree, such as the GUI app w
 root2 = RootResponse()
 root2.loadJSON(jsonResponse)
 
-# Let’s see if they are identical (requires deepdiff)
+# Let’s see if they are identical
 print(root.sameContent(root2))
 ```
 

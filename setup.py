@@ -10,7 +10,6 @@ install_requires = [  # I get to this in a second
     "semver",
     "requests",
     "keyring",
-    "deepdiff",
     "pyzmq",
 ]
 

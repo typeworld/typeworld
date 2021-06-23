@@ -2186,14 +2186,11 @@ class TestTypeWorld(unittest.TestCase):
             "https://type.world?hello=type&world=type#xyz",
         )
 
-        # load json/dict
-        d = {"en": "Hello World", "de": "Hallo Welt"}
-        j = json.dumps(d)
-        d1 = typeworld.api.MultiLanguageText(json=j).dumpDict()
-        d2 = typeworld.api.MultiLanguageText(dict=d).dumpDict()
-        from deepdiff import DeepDiff
-
-        self.assertEqual(DeepDiff(d1, d2, ignore_order=True), {})
+        # # load json/dict
+        # d = {"en": "Hello World", "de": "Hallo Welt"}
+        # j = json.dumps(d)
+        # d1 = typeworld.api.MultiLanguageText(json=j).dumpDict()
+        # d2 = typeworld.api.MultiLanguageText(dict=d).dumpDict()
 
         # URL parsing and constructing
         success, protocol = typeworld.client.getProtocol(freeNamedSubscription)

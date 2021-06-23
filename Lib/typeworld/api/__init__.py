@@ -1008,17 +1008,20 @@ class DictBasedObject(object):
         return obj
 
     def sameContent(self, other):
-        return self.difference(other) == {}
+        #        return self.difference(other) == {}
+        return json.dumps(self.dumpDict(validate=False), sort_keys=True) == json.dumps(
+            other.dumpDict(validate=False), sort_keys=True
+        )
 
-    def difference(self, other):
+    # def difference(self, other):
 
-        d1 = self.dumpDict(validate=False)
-        d2 = other.dumpDict(validate=False)
+    #     d1 = self.dumpDict(validate=False)
+    #     d2 = other.dumpDict(validate=False)
 
-        from deepdiff import DeepDiff
+    #     from deepdiff import DeepDiff
 
-        r2 = DeepDiff(d1, d2, ignore_order=True)
-        return r2
+    #     r2 = DeepDiff(d1, d2, ignore_order=True)
+    #     return r2
 
     def nonListProxyBasedKeys(self):
 
