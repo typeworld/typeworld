@@ -2973,6 +2973,7 @@ Version: {typeworld.api.VERSION}
                 assert endpointCommand
 
                 # Breaking API Version Check
+                print("downloadedSettings:", self.get("downloadedSettings"))
                 if "breakingAPIVersions" in self.get("downloadedSettings"):
                     breakingVersions = copy.copy(
                         self.get("downloadedSettings")["breakingAPIVersions"]
