@@ -959,14 +959,14 @@ class APIClient(object):
                     self.delegate._messageQueueConnected()
 
                 evt.update({"description": status})
-                print("Event: {}".format(evt))
+                # print("Event: {}".format(evt))
 
                 if evt["event"] == zmq.EVENT_MONITOR_STOPPED:
                     break
         except zmq.error.ZMQError:
             pass
         monitor.close()
-        print("event monitor thread done!")
+        # print("event monitor thread done!")
 
     def zmqListener(self):
         import zmq
@@ -2694,8 +2694,8 @@ Version: {typeworld.api.VERSION}
                     ) + str(  # nocoverage
                         inspect.signature(sourceMethod)  # nocoverage
                     )  # nocoverage
-                    # (currently not testing for calling this method without
-                    # a sourceMethod parameter)
+                # (currently not testing for calling this method without
+                # a sourceMethod parameter)
 
             supplementary["traceback"] = payload
             supplementary["stack"] = []
@@ -2973,7 +2973,6 @@ Version: {typeworld.api.VERSION}
                 assert endpointCommand
 
                 # Breaking API Version Check
-                print("downloadedSettings:", self.get("downloadedSettings"))
                 if "breakingAPIVersions" in self.get("downloadedSettings"):
                     breakingVersions = copy.copy(
                         self.get("downloadedSettings")["breakingAPIVersions"]
@@ -3592,7 +3591,7 @@ class APISubscription(object):
             )
 
     def inviteUser(self, targetEmail):
-        print("inviteUser()")
+        # print("inviteUser()")
         try:
 
             if self.parent.parent.online():
@@ -3614,7 +3613,7 @@ class APISubscription(object):
                     return False, response
 
                 response = json.loads(response.decode())
-                print(response)
+                # print(response)
 
                 if response["response"] == "success":
                     return True, None
