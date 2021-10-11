@@ -3055,9 +3055,11 @@ Version: {typeworld.api.VERSION}
             return True, None, publisher, subscription
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
+            self.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
+
+            return False, traceback.format_exc(), None, None
 
     def publisher(self, canonicalURL):
         try:
