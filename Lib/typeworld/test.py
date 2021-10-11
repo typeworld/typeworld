@@ -4328,6 +4328,9 @@ class TestTypeWorld(unittest.TestCase):
             .revokeUser("test3@type.world")
         )
         self.assertEqual(success, False)
+
+        # Supposed to pass
+        sentInvitations = len(user2.client.sentInvitations())
         user2.client.testScenario = None
         success, message = (
             user2.client.publishers()[0]
@@ -4337,6 +4340,8 @@ class TestTypeWorld(unittest.TestCase):
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
+        user2.client.downloadSubscriptions()
+        self.assertEqual(sentInvitations - 1, len(user2.client.sentInvitations()))
 
         print("STATUS: -6")
 

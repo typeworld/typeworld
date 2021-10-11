@@ -957,15 +957,16 @@ class APIClient(object):
                     self.delegate._messageQueueError(status=status)
                 if status in connected:
                     self.delegate._messageQueueConnected()
-                # evt.update({"description": status})
-                # print("Event: {}".format(evt))
+
+                evt.update({"description": status})
+                print("Event: {}".format(evt))
+
                 if evt["event"] == zmq.EVENT_MONITOR_STOPPED:
                     break
         except zmq.error.ZMQError:
             pass
         monitor.close()
-        # print()
-        # print("event monitor thread done!")
+        print("event monitor thread done!")
 
     def zmqListener(self):
         import zmq
@@ -1956,7 +1957,6 @@ class APIClient(object):
             )
 
     def downloadSettings(self, performCommands=True):
-
         try:
 
             if performCommands:
