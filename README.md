@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/typeworld/typeworld.svg?branch=main)](https://travis-ci.org/typeWorld/typeWorld)
+[![Build Status](https://travis-ci.com/typeworld/typeworld.svg?branch=main)](https://app.travis-ci.com/github/typeworld/typeworld)
 [![PyPI version](https://badge.fury.io/py/typeworld.svg)](https://badge.fury.io/py/typeworld)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
