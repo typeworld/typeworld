@@ -5,8 +5,6 @@ import sys
 import os
 import copy
 import time
-import urllib.request
-import urllib.parse
 import ssl
 import certifi
 import json
@@ -2776,11 +2774,11 @@ class TestTypeWorld(unittest.TestCase):
         print("test_normalSubscription() started...")
 
         # Reset Test Conditions
-        request = urllib.request.Request(
+        success, response, responseObject = typeworld.client.request(
             "https://typeworldserver.com/resetTestConditions"
         )
-        response = urllib.request.urlopen(request, context=sslcontext).read()
         print(response)
+        self.assertTrue(success)
 
         self.assertTrue(
             user0.client.online(MOTHERSHIP.split("//")[1].split("/")[0].split(":")[0])
