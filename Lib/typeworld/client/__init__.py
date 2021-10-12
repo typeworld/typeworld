@@ -254,19 +254,39 @@ def request(url, parameters={}, method="POST", timeout=30):
     message = None
 
     for i in range(10):
+
         try:
+
+            # This is awkward, but currently the only workaround:
+            # I can't get GAE to accept http requests coming from itself, such as
+            # when typeworld is loaded as a module inside type.world and then
+            # needs to access type.world for communication.
+            # Thus, we're routing all internal traffic directly to flask via its
+            # test_client():
+            try:
+                import main
+
+                GAE = True
+            except ImportError:
+                GAE = False
+
+            if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+                if "api.type.world" in url:
+                    url = url.split("api.type.world")[-1]
+                elif "typeworld2.appspot.com" in url:
+                    url = url.split("typeworld2.appspot.com")[-1]
+                with main.app.test_client() as c:
+                    if method == "POST":
+                        response = c.post(url, data=parameters)
+                        return True, response.data, None
+                    elif method == "GET":
+                        response = c.get(url)
+                        return True, response.data, None
+
             if method == "POST":
                 response = requests.post(url, parameters, timeout=timeout)
             elif method == "GET":
                 response = requests.get(url, timeout=timeout)
-        # except requests.exceptions.ConnectionError:
-        #     message = f'Connection refused: {url}'
-        # except requests.exceptions.HTTPError:
-        #     message = f'HTTP Error: {url}'
-        # except requests.exceptions.Timeout:
-        #     message = f'Connection timed out: {url}'
-        # except requests.exceptions.TooManyRedirects:
-        #     message = f'Too many redirects: {url}'
         except Exception:
             if parameters:
                 parameters = copy.copy(parameters)
