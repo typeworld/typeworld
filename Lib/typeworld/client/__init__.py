@@ -713,12 +713,26 @@ class TypeWorldClientDelegate(object):
     def _messageQueueError(self, status=None):
         try:
             self.messageQueueError(status=status)
+
         except Exception:  # nocoverage
             self.client.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name)
             )
 
     def messageQueueError(self, status=None):
+        pass
+
+    def _messageQueueLostConnection(self):
+        try:
+            self.messageQueueLostConnection()
+            self.client.zmqRestart()
+
+        except Exception:  # nocoverage
+            self.client.handleTraceback(  # nocoverage
+                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
+            )
+
+    def messageQueueLostConnection(self):
         pass
 
     def _messageQueueDisconnected(self):
@@ -914,9 +928,16 @@ class APIClient(object):
         assert success
         assert self.get("downloadedSettings")["messagingQueue"].startswith("tcp://")
         assert self.get("downloadedSettings")["breakingAPIVersions"]
+        print(self.get("downloadedSettings"))
 
     def wentOffline(self):
         pass
+
+    def zmqRestart(self):
+        self.zmqQuit()
+        self.wentOnline()
+        self.zmqSetup()
+        self.reRegisterZMQCallbacks()
 
     def zmqSetup(self):
         import zmq
@@ -944,7 +965,9 @@ class APIClient(object):
             # MONITOR
             self._zmqMonitor = self.zmqSocket.get_monitor_socket()
             self.zmqMonitorThread = threading.Thread(
-                target=self.event_monitor, args=(self._zmqMonitor,), daemon=True
+                target=self.event_monitor,
+                args=(self._zmqMonitor,),
+                daemon=True,
             )
             self.zmqMonitorThread.start()
 
@@ -962,10 +985,13 @@ class APIClient(object):
 
         # Store these events:
         error = [
-            "EVENT_DISCONNECTED",
             "EVENT_CLOSED",
             "EVENT_CONNECT_RETRIED",
             "EVENT_CONNECT_DELAYED",
+        ]
+        lostConnection = [
+            "EVENT_DISCONNECTED",
+            "EVENT_CLOSED",
         ]
         connected = ["EVENT_HANDSHAKE_SUCCEEDED"]
 
@@ -975,6 +1001,12 @@ class APIClient(object):
                 status = EVENT_MAP[evt["event"]]
                 if status in error:
                     self.delegate._messageQueueError(status=status)
+                if status in lostConnection:
+                    zmqRestartThread = threading.Thread(
+                        target=self.delegate._messageQueueLostConnection, daemon=True
+                    )
+                    zmqRestartThread.start()
+                    # self.delegate._messageQueueLostConnection()
                 if status in connected:
                     self.delegate._messageQueueConnected()
 
@@ -983,6 +1015,7 @@ class APIClient(object):
 
                 if evt["event"] == zmq.EVENT_MONITOR_STOPPED:
                     break
+
         except zmq.error.ZMQError:
             pass
         monitor.close()
@@ -1021,6 +1054,14 @@ class APIClient(object):
             self.zmqMonitorThread.join()
             # self._zmqctx.term()
             self.delegate._messageQueueDisconnected()
+
+    def reRegisterZMQCallbacks(self):
+        import zmq
+        import zmq.error
+
+        if self.zmqSubscriptions:
+            for topic in self._zmqCallbacks:
+                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
 
     def registerZMQCallback(self, topic, method):
         import zmq
