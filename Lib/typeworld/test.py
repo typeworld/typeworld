@@ -106,24 +106,16 @@ sslcontext = ssl.create_default_context(cafile=certifi.where())
 # import code; code.interact(local=locals())
 
 
-freeSubscription = (
-    "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-)
-flatFreeSubscription = (
-    "typeworld://json+https//typeworldserver.com/flatapi/q8JZfYn9olyUvcCOiqHq/"
-)
+freeSubscription = "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
+flatFreeSubscription = "typeworld://json+https//typeworldserver.com/flatapi/q8JZfYn9olyUvcCOiqHq/"
 protectedSubscription = (
     "typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr:"
     "qncMnRXZLvHfLLwteTsX@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
 )
 protectedSubscriptionWithoutAccessToken = (
-    "typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@"
-    "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
+    "typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
 )
-freeNamedSubscription = (
-    "typeworld://json+https//s9lWvayTEOaB9eIIMA67@"
-    "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-)
+freeNamedSubscription = "typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
 testUser1 = ("test1@type.world", "12345678")
 testUser2 = ("test2@type.world", "01234567")
 testUser3 = ("test3@type.world", "23456789")
@@ -159,16 +151,11 @@ root = EndpointResponse()
 root.name.en = "Font Publisher"
 root.canonicalURL = "http://fontpublisher.com/api/"
 root.adminEmail = "admin@fontpublisher.com"
-root.supportedCommands = [
-    x["keyword"] for x in COMMANDS
-]  # this API supports all commands
+root.supportedCommands = [x["keyword"] for x in COMMANDS]  # this API supports all commands
 root.publisherTypes = PUBLISHERTYPES
 root.backgroundColor = "AABBCC"
 root.licenseIdentifier = "CC-BY-NC-ND-4.0"
-root.logoURL = (
-    "https://typeworldserver.com/?page=outputDataBaseFile&"
-    "className=TWFS_Foundry&ID=8&field=logo"
-)
+root.logoURL = "https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_Foundry&ID=8&field=logo"
 root.privacyPolicyURL = "https://type.world/legal/privacy.html"
 root.termsOfServiceURL = "https://type.world/legal/terms.html"
 root.public = False
@@ -246,16 +233,10 @@ font.features = ["aalt", "liga"]
 # Font 2
 font2 = Font()
 font2.billboardURLs = [
-    (
-        "https://typeworldserver.com/?page=outputDataBaseFile&"
-        "className=TWFS_FamilyBillboards&ID=2&field=image"
-    )
+    "https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
 ]
 font2.billboardURLs.append(
-    (
-        "https://typeworldserver.com/?page=outputDataBaseFile&"
-        "className=TWFS_FamilyBillboards&ID=6&field=image"
-    )
+    "https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image"
 )
 font2.dateFirstPublished = "2004-10-10"
 font2.designerKeywords.append("yanone")
@@ -290,16 +271,10 @@ familyVersion.releaseDate = "2004-10-10"
 # Family
 family = Family()
 family.billboardURLs = [
-    (
-        "https://typeworldserver.com/?page=outputDataBaseFile&"
-        "className=TWFS_FamilyBillboards&ID=2&field=image"
-    )
+    "https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
 ]
 family.billboardURLs.append(
-    (
-        "https://typeworldserver.com/?page=outputDataBaseFile&"
-        "className=TWFS_FamilyBillboards&ID=6&field=image"
-    )
+    "https://typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=6&field=image"
 )
 family.dateFirstPublished = "2019-10-01"
 family.description.en = "Kaffeesatz is a free font classic"
@@ -461,9 +436,7 @@ class User(object):
                         self.client.user(),
                     )
             else:
-                success, message = self.client.logInUserAccount(
-                    self.login[0], self.login[1]
-                )
+                success, message = self.client.logInUserAccount(self.login[0], self.login[1])
                 assert success
 
             self.credentials = (self.client.user(), self.client.secretKey())
@@ -529,9 +502,7 @@ class User(object):
 
     def loadClient(self, testScenario=None):
         self.client = APIClient(
-            preferences=AppKitNSUserDefaults("world.type.test%s" % id(self))
-            if MAC
-            else JSON(self.prefFile),
+            preferences=AppKitNSUserDefaults("world.type.test%s" % id(self)) if MAC else JSON(self.prefFile),
             mothership=MOTHERSHIP,
             zmqSubscriptions=True,
             online=self.online,
@@ -580,9 +551,7 @@ class TestTypeWorld(unittest.TestCase):
         user1.clearInvitations()
         user1.clearSubscriptions()
 
-        user4 = User(
-            testUser1, createUserAccount=False, testScenario="simulateTestUser1IsPro"
-        )
+        user4 = User(testUser1, createUserAccount=False, testScenario="simulateTestUser1IsPro")
         self.assertEqual(user1.client.user(), user4.client.user())
         user4.client.delegate = TestDelegate()
         self.assertTrue(user4.client.requiresMessageQueueConnection())
@@ -621,13 +590,11 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
             "testScenario": "simulateUpdateSubscriptionQuotaReached",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/updateSubscription", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/updateSubscription", parameters)
         if not success:
             print(response)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         self.assertEqual(response["response"], "paidSubscriptionRequired")
 
         # Send Update Subscription Notification
@@ -637,9 +604,7 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
             "testScenario": "simulateAddedFontVersion",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/updateSubscription", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/updateSubscription", parameters)
         self.assertEqual(success, True)
 
         parameters = {
@@ -648,9 +613,7 @@ class TestTypeWorld(unittest.TestCase):
             "testing": "true",
             "testScenario": "simulateAddedFont",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/updateSubscription", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/updateSubscription", parameters)
         self.assertEqual(success, True)
 
         # Send Update Subscription Notification
@@ -659,22 +622,17 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/updateSubscription", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/updateSubscription", parameters)
         if not success:
             print(response)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         self.assertEqual(response["response"], "success")
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         loop = 0
-        while (
-            subscription not in user1.client.delegate._subscriptionsUpdated
-            and loop < 60  # wait
-        ):
+        while subscription not in user1.client.delegate._subscriptionsUpdated and loop < 60:  # wait
             print(f"Waiting for subscription to be updated... {loop}s")
             time.sleep(1)
             loop += 1
@@ -760,8 +718,7 @@ class TestTypeWorld(unittest.TestCase):
         r2 = copy.deepcopy(root)
         try:
             r2.canonicalURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -780,11 +737,9 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown API command: 'unsupportedCommand'. "
-                    "Possible: ['endpoint', 'installableFonts', 'installFonts', "
-                    "'uninstallFonts']"
-                ),
+                "Unknown API command: 'unsupportedCommand'. "
+                "Possible: ['endpoint', 'installableFonts', 'installFonts', "
+                "'uninstallFonts']",
             )
 
         # publisherTypes
@@ -794,10 +749,7 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown publisher type: 'unsupportedCommand'. "
-                    "Possible: ['free', 'retail', 'custom', 'undefined']"
-                ),
+                "Unknown publisher type: 'unsupportedCommand'. Possible: ['free', 'retail', 'custom', 'undefined']",
             )
 
         # publisherTypes
@@ -810,22 +762,17 @@ class TestTypeWorld(unittest.TestCase):
             self.assertEqual(
                 validate[2],
                 [
-                    (
-                        "<EndpointResponse> --> When EndpointResponse.public is set "
-                        "to True, then only a restricted set of types is allowed for "
-                        "EndpointResponse.publisherTypes: ['free', 'retail', 'custom']."
-                        " You have 'undefined'"
-                    )
+                    "<EndpointResponse> --> When EndpointResponse.public is set "
+                    "to True, then only a restricted set of types is allowed for "
+                    "EndpointResponse.publisherTypes: ['free', 'retail', 'custom']."
+                    " You have 'undefined'"
                 ],
             )
 
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown publisher type: 'unsupportedCommand'. "
-                    "Possible: ['free', 'retail', 'custom', 'undefined']"
-                ),
+                "Unknown publisher type: 'unsupportedCommand'. Possible: ['free', 'retail', 'custom', 'undefined']",
             )
 
         # backgroundColor
@@ -845,18 +792,14 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown license identifier: 'unsupportedLicense'. "
-                    "See https://spdx.org/licenses/"
-                ),
+                "Unknown license identifier: 'unsupportedLicense'. See https://spdx.org/licenses/",
             )
 
         # logo
         r2 = copy.deepcopy(root)
         try:
             r2.logoURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -865,8 +808,7 @@ class TestTypeWorld(unittest.TestCase):
         r2 = copy.deepcopy(root)
         try:
             r2.privacyPolicyURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -875,8 +817,7 @@ class TestTypeWorld(unittest.TestCase):
         r2 = copy.deepcopy(root)
         try:
             r2.termsOfServiceURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -886,16 +827,13 @@ class TestTypeWorld(unittest.TestCase):
         try:
             r2.public = "True"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>.")
 
         # website
         r2 = copy.deepcopy(root)
         try:
             r2.websiteURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -930,9 +868,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.designers = "yanone"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>.")
 
         # error
         i2 = copy.deepcopy(installableFonts)
@@ -941,12 +877,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallableFontsResponse> --> .response is 'error', "
-                    "but .errorMessage is missing."
-                )
-            ],
+            ["<InstallableFontsResponse> --> .response is 'error', but .errorMessage is missing."],
         )
 
         # error
@@ -957,10 +888,7 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "<InstallableFontsResponse> --> .response is 'error', "
-                    "but .errorMessage is missing."
-                ),
+                "<InstallableFontsResponse> --> .response is 'error', but .errorMessage is missing.",
             )
 
         # name
@@ -976,9 +904,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.prefersRevealedUserIdentity = "True"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>.")
 
         # type
         i2 = copy.deepcopy(installableFonts)
@@ -987,11 +913,9 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown response type: 'abc'. Possible: ['success', 'error', "
-                    "'noFontsAvailable', 'insufficientPermission', "
-                    "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired']"
-                ),
+                "Unknown response type: 'abc'. Possible: ['success', 'error', "
+                "'noFontsAvailable', 'insufficientPermission', "
+                "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired']",
             )
 
         # userEmail
@@ -1013,9 +937,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries = "yanone"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>.")
 
         i2 = copy.deepcopy(installableFonts)
         i2.name.en = ""
@@ -1026,13 +948,11 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[1],
             [
-                (
-                    "<InstallableFontsResponse> --> The response has no .name value. "
-                    "It is not required, but highly recommended, to describe the "
-                    "purpose of this subscription to the user (such as 'Commercial "
-                    "Fonts', 'Free Fonts', etc. This is especially useful if you offer "
-                    "several different subscriptions to the same user."
-                )
+                "<InstallableFontsResponse> --> The response has no .name value. "
+                "It is not required, but highly recommended, to describe the "
+                "purpose of this subscription to the user (such as 'Commercial "
+                "Fonts', 'Free Fonts', etc. This is especially useful if you offer "
+                "several different subscriptions to the same user."
             ],
         )
 
@@ -1042,12 +962,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallableFontsResponse> --> .response is 'error', "
-                    "but .errorMessage is missing."
-                )
-            ],
+            ["<InstallableFontsResponse> --> .response is 'error', but .errorMessage is missing."],
         )
 
     def test_Designer(self):
@@ -1061,12 +976,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallableFontsResponse>.designers --> <Designer 'None'>.name "
-                    "is a required attribute, but empty"
-                )
-            ],
+            ["<InstallableFontsResponse>.designers --> <Designer 'None'>.name is a required attribute, but empty"],
         )
 
         # description
@@ -1083,28 +993,20 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.designers --> <Designer 'Yanone'>."
-                    "keyword is a required attribute, but empty"
-                ),
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'> --> Has designer 'yanone', but "
-                    "<InstallableFontsResponse>.designers has no matching designer."
-                ),
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Bold'> --> Has designer 'yanone', but "
-                    "<InstallableFontsResponse>.designers has no matching designer."
-                ),
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'> --> Has designer "
-                    "'yanone', but <InstallableFontsResponse>.designers has no "
-                    "matching designer."
-                ),
+                "<InstallableFontsResponse>.designers --> <Designer 'Yanone'>."
+                "keyword is a required attribute, but empty",
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'> --> Has designer 'yanone', but "
+                "<InstallableFontsResponse>.designers has no matching designer.",
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Bold'> --> Has designer 'yanone', but "
+                "<InstallableFontsResponse>.designers has no matching designer.",
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'> --> Has designer "
+                "'yanone', but <InstallableFontsResponse>.designers has no "
+                "matching designer.",
             ],
         )
 
@@ -1115,20 +1017,16 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallableFontsResponse>.designers --> <Designer 'None'>.name"
-                    " is a required attribute, but empty"
-                )
-            ],
+            ["<InstallableFontsResponse>.designers --> <Designer 'None'>.name is a required attribute, but empty"],
         )
 
         # website
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.designers[0].websiteURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            i2.designers[
+                0
+            ].websiteURL = (
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -1145,21 +1043,18 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".licenses --> <LicenseDefinition 'None'>.name is a required "
-                    "attribute, but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".licenses --> <LicenseDefinition 'None'>.name is a required "
+                "attribute, but empty"
             ],
         )
 
         # URL
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].licenses[0].URL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
-            )
+            i2.foundries[0].licenses[
+                0
+            ].URL = "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
 
@@ -1171,25 +1066,19 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".licenses --> <LicenseDefinition 'Yanone EULA'>.keyword is a "
-                    "required attribute, but empty"
-                ),
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> "
-                    "<Font 'YanoneKaffeesatz-Regular'>.usedLicenses --> <LicenseUsage"
-                    " 'yanoneEULA'> --> Has license 'yanoneEULA', but <Foundry "
-                    "'Awesome Fonts'> has no matching license."
-                ),
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Bold'>.usedLicenses --> <LicenseUsage "
-                    "'yanoneEULA'> --> Has license 'yanoneEULA', but <Foundry "
-                    "'Awesome Fonts'> has no matching license."
-                ),
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".licenses --> <LicenseDefinition 'Yanone EULA'>.keyword is a "
+                "required attribute, but empty",
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> "
+                "<Font 'YanoneKaffeesatz-Regular'>.usedLicenses --> <LicenseUsage"
+                " 'yanoneEULA'> --> Has license 'yanoneEULA', but <Foundry "
+                "'Awesome Fonts'> has no matching license.",
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Bold'>.usedLicenses --> <LicenseUsage "
+                "'yanoneEULA'> --> Has license 'yanoneEULA', but <Foundry "
+                "'Awesome Fonts'> has no matching license.",
             ],
         )
 
@@ -1235,21 +1124,13 @@ class TestTypeWorld(unittest.TestCase):
         i2 = copy.deepcopy(installableFonts)
         print(i2.foundries[0].families[0].versions[0])
         assert i2.foundries[0].families[0].versions[0].isFontSpecific() is False
-        assert (
-            i2.foundries[0].families[0].versions[0].parent
-            == i2.foundries[0].families[0]
-        )
+        assert i2.foundries[0].families[0].versions[0].parent == i2.foundries[0].families[0]
         assert i2.foundries[0].families[0].fonts[0].versions[0].isFontSpecific() is True
-        assert (
-            i2.foundries[0].families[0].fonts[0].versions[0].parent
-            == i2.foundries[0].families[0].fonts[0]
-        )
+        assert i2.foundries[0].families[0].fonts[0].versions[0].parent == i2.foundries[0].families[0].fonts[0]
 
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].fonts[0].filename(
-                i2.foundries[0].families[0].fonts[0].getVersions()[-1]
-            )
+            i2.foundries[0].families[0].fonts[0].filename(i2.foundries[0].families[0].fonts[0].getVersions()[-1])
         except ValueError as e:
             self.assertEqual(str(e), "Supplied version must be str or int or float")
 
@@ -1260,17 +1141,13 @@ class TestTypeWorld(unittest.TestCase):
         # allowanceDescription
         # is optional, so this will pass
         i2 = copy.deepcopy(installableFonts)
-        i2.foundries[0].families[0].fonts[0].usedLicenses[
-            0
-        ].allowanceDescription.en = None
+        i2.foundries[0].families[0].fonts[0].usedLicenses[0].allowanceDescription.en = None
         self.assertEqual(i2.validate()[2], [])
 
         # dateAddedForUser
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].fonts[0].usedLicenses[
-                0
-            ].dateAddedForUser = "2010-20-21"
+            i2.foundries[0].families[0].fonts[0].usedLicenses[0].dateAddedForUser = "2010-20-21"
         except ValueError as e:
             self.assertEqual(
                 str(e),
@@ -1285,12 +1162,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'>.usedLicenses --> <LicenseUsage ''>."
-                    "keyword is a required attribute, but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'>.usedLicenses --> <LicenseUsage ''>."
+                "keyword is a required attribute, but empty"
             ],
         )
 
@@ -1318,9 +1193,10 @@ class TestTypeWorld(unittest.TestCase):
         # URL
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].fonts[0].usedLicenses[0].upgradeURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            i2.foundries[0].families[0].fonts[0].usedLicenses[
+                0
+            ].upgradeURL = (
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -1342,10 +1218,9 @@ class TestTypeWorld(unittest.TestCase):
         # billboardURLs
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].fonts[1].billboardURLs[0] = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
-            )
+            i2.foundries[0].families[0].fonts[1].billboardURLs[
+                0
+            ] = "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
 
@@ -1367,12 +1242,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'> --> Has designer 'gfknlergerg', but "
-                    "<InstallableFontsResponse>.designers has no matching designer."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'> --> Has designer 'gfknlergerg', but "
+                "<InstallableFontsResponse>.designers has no matching designer."
             ],
         )
 
@@ -1388,9 +1261,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].families[0].fonts[0].free = "True"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>.")
 
         # name
         i2 = copy.deepcopy(installableFonts)
@@ -1401,22 +1272,19 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'>.name is a required attribute, "
-                    "but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'>.name is a required attribute, "
+                "but empty"
             ],
         )
 
         # pdf
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].fonts[0].pdfURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
-            )
+            i2.foundries[0].families[0].fonts[
+                0
+            ].pdfURL = "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
 
@@ -1433,9 +1301,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].families[0].fonts[0].protected = "True"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>.")
 
         # purpose
         i2 = copy.deepcopy(installableFonts)
@@ -1454,10 +1320,7 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown Font Status: 'instable'. Possible: ['prerelease', "
-                    "'trial', 'stable']"
-                ),
+                "Unknown Font Status: 'instable'. Possible: ['prerelease', 'trial', 'stable']",
             )
 
         # uniqueID
@@ -1468,12 +1331,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'>.uniqueID is a required attribute, "
-                    "but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'>.uniqueID is a required attribute, "
+                "but empty"
             ],
         )
         i2 = copy.deepcopy(installableFonts)
@@ -1483,16 +1344,14 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'> --> The suggested file name is longer "
-                    "than 220 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                    "aaaaaaaaaaaa_1.0.otf"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'> --> The suggested file name is longer "
+                "than 220 characters: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                "aaaaaaaaaaaa_1.0.otf"
             ],
         )
         i2 = copy.deepcopy(installableFonts)
@@ -1502,13 +1361,11 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'> --> .uniqueID must not contain the "
-                    "character ':' because it will be used for the font’s file name "
-                    "on disk."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'> --> .uniqueID must not contain the "
+                "character ':' because it will be used for the font’s file name "
+                "on disk."
             ],
         )
 
@@ -1520,12 +1377,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'>.usedLicenses is a required "
-                    "attribute, but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'>.usedLicenses is a required "
+                "attribute, but empty"
             ],
         )
         try:
@@ -1533,10 +1388,7 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Wrong data type. Is <class 'str'>, should be: "
-                    "<class 'typeworld.api.LicenseUsage'>."
-                ),
+                "Wrong data type. Is <class 'str'>, should be: <class 'typeworld.api.LicenseUsage'>.",
             )
 
         # variableFont
@@ -1544,9 +1396,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].families[0].fonts[0].variableFont = "True"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'bool'>.")
 
         # versions
         i2 = copy.deepcopy(installableFonts)
@@ -1557,19 +1407,15 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "<Font 'YanoneKaffeesatz-Regular'> has no version information, and "
-                    "neither has its family <Family 'Yanone Kaffeesatz'>. Either one "
-                    "needs to carry version information."
-                ),
+                "<Font 'YanoneKaffeesatz-Regular'> has no version information, and "
+                "neither has its family <Family 'Yanone Kaffeesatz'>. Either one "
+                "needs to carry version information.",
             )
 
         # other
         i2 = copy.deepcopy(installableFonts)
         print(i2.foundries[0].families[0].fonts[0])
-        assert (
-            i2.foundries[0].families[0].fonts[0].parent == i2.foundries[0].families[0]
-        )
+        assert i2.foundries[0].families[0].fonts[0].parent == i2.foundries[0].families[0]
         assert type(i2.foundries[0].families[0].fonts[0].getDesigners()) == list
 
         # filename and purpose
@@ -1594,12 +1440,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
-                    "'YanoneKaffeesatz-Regular'> --> Is a desktop font (see .purpose), "
-                    "but has no .format value."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'>.fonts --> <Font "
+                "'YanoneKaffeesatz-Regular'> --> Is a desktop font (see .purpose), "
+                "but has no .format value."
             ],
         )
 
@@ -1608,16 +1452,12 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].families[0].fonts[0].languageSupport = {"LATN": ["DEU"]}
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Script tag 'LATN' needs to be a four-letter lowercase tag."
-            )
+            self.assertEqual(str(e), "Script tag 'LATN' needs to be a four-letter lowercase tag.")
         i2 = copy.deepcopy(installableFonts)
         try:
             i2.foundries[0].families[0].fonts[0].languageSupport = {"latn": ["de"]}
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Language tag 'de' needs to be a three-letter uppercase tag."
-            )
+            self.assertEqual(str(e), "Language tag 'de' needs to be a three-letter uppercase tag.")
 
         # features
         i2 = copy.deepcopy(installableFonts)
@@ -1636,10 +1476,9 @@ class TestTypeWorld(unittest.TestCase):
         # billboardURLs
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].billboardURLs[0] = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
-            )
+            i2.foundries[0].families[0].billboardURLs[
+                0
+            ] = "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
 
@@ -1666,30 +1505,27 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].families[0].designerKeywords = "yanone"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>.")
         i2.foundries[0].families[0].designerKeywords = ["awieberg"]
         validate = i2.validate()
         print(validate[2])
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'Yanone Kaffeesatz'> --> Has designer "
-                    "'awieberg', but <InstallableFontsResponse>.designers has no "
-                    "matching designer."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'Yanone Kaffeesatz'> --> Has designer "
+                "'awieberg', but <InstallableFontsResponse>.designers has no "
+                "matching designer."
             ],
         )
 
         # galleryURL
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].galleryURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            i2.foundries[0].families[
+                0
+            ].galleryURL = (
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -1697,9 +1533,10 @@ class TestTypeWorld(unittest.TestCase):
         # issueTrackerURL
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].issueTrackerURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            i2.foundries[0].families[
+                0
+            ].issueTrackerURL = (
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -1711,30 +1548,28 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    ".families --> <Family 'None'>.name is a required attribute, "
-                    "but empty"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                ".families --> <Family 'None'>.name is a required attribute, "
+                "but empty"
             ],
         )
 
         # pdf
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].pdfURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
-            )
+            i2.foundries[0].families[
+                0
+            ].pdfURL = "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
 
         # sourceURL
         i2 = copy.deepcopy(installableFonts)
         try:
-            i2.foundries[0].families[0].sourceURL = (
-                "typeworldserver.com/?page=outputDataBaseFile&"
-                "className=TWFS_FamilyBillboards&ID=2&field=image"
+            i2.foundries[0].families[
+                0
+            ].sourceURL = (
+                "typeworldserver.com/?page=outputDataBaseFile&className=TWFS_FamilyBillboards&ID=2&field=image"
             )
         except ValueError as e:
             self.assertEqual(str(e), "Needs to start with http:// or https://")
@@ -1754,19 +1589,11 @@ class TestTypeWorld(unittest.TestCase):
         # Package Names
         i2 = copy.deepcopy(installableFonts)
 
-        self.assertEqual(
-            i2.foundries[0].families[0].getPackages()[-1].name.de, "Desktop-Schriften"
-        )
-        self.assertEqual(
-            i2.foundries[0].families[0].getPackages()[-1].name.en, "Desktop Fonts"
-        )
-        self.assertEqual(
-            i2.foundries[0].families[0].getPackages()[-1].getFormats(), ["otf"]
-        )
+        self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].name.de, "Desktop-Schriften")
+        self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].name.en, "Desktop Fonts")
+        self.assertEqual(i2.foundries[0].families[0].getPackages()[-1].getFormats(), ["otf"])
 
-        self.assertEqual(
-            i2.foundries[0].families[0].fonts[0].getPackageKeywords(), ["desktop"]
-        )
+        self.assertEqual(i2.foundries[0].families[0].fonts[0].getPackageKeywords(), ["desktop"])
         self.assertEqual(
             i2.foundries[0].families[0].fonts[1].getPackageKeywords(),
             [typeworld.api.DEFAULT],
@@ -1838,11 +1665,9 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    " --> Styling keyword 'whatevs' is unknown. Known are "
-                    "['light', 'dark']."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                " --> Styling keyword 'whatevs' is unknown. Known are "
+                "['light', 'dark']."
             ],
         )
 
@@ -1902,11 +1727,9 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    " --> .styling 'logoURL' attribute: Needs to start with http:// or "
-                    "https://"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                " --> .styling 'logoURL' attribute: Needs to start with http:// or "
+                "https://"
             ],
         )
 
@@ -1964,11 +1787,9 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
-                    " --> .styling color attribute 'headerColor': Not a valid hex color"
-                    " of format RRGGBB (like FF0000 for red): F20D5I"
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'Awesome Fonts'>"
+                " --> .styling color attribute 'headerColor': Not a valid hex color"
+                " of format RRGGBB (like FF0000 for red): F20D5I"
             ],
         )
 
@@ -1984,9 +1805,7 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].licenses = "yanoneEULA"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>."
-            )
+            self.assertEqual(str(e), "Wrong data type. Is <class 'str'>, should be: <class 'list'>.")
 
         # name
         i2 = copy.deepcopy(installableFonts)
@@ -1996,12 +1815,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'None'>.name"
-                    " is a required attribute, but empty"
-                )
-            ],
+            ["<InstallableFontsResponse>.foundries --> <Foundry 'None'>.name is a required attribute, but empty"],
         )
 
         # supportEmail
@@ -2016,22 +1830,16 @@ class TestTypeWorld(unittest.TestCase):
         try:
             i2.foundries[0].telephone = "+49176123456a456"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Needs to start with + and contain only numbers 0-9"
-            )
+            self.assertEqual(str(e), "Needs to start with + and contain only numbers 0-9")
         i2 = copy.deepcopy(installableFonts)
         try:
             i2.foundries[0].telephone = "0049176123456456"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Needs to start with + and contain only numbers 0-9"
-            )
+            self.assertEqual(str(e), "Needs to start with + and contain only numbers 0-9")
         try:
             i2.foundries[0].telephone = "a"
         except ValueError as e:
-            self.assertEqual(
-                str(e), "Needs to start with + and contain only numbers 0-9"
-            )
+            self.assertEqual(str(e), "Needs to start with + and contain only numbers 0-9")
 
         # socialURLs
         self.assertEqual(
@@ -2064,56 +1872,54 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse>.foundries --> <Foundry 'abcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
-                    "abcabcabcabcabc'>.name --> <MultiLanguageText> --> Language entry "
-                    "'en' is too long. Allowed are 100 characters."
-                )
+                "<InstallableFontsResponse>.foundries --> <Foundry 'abcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc"
+                "abcabcabcabcabc'>.name --> <MultiLanguageText> --> Language entry "
+                "'en' is too long. Allowed are 100 characters."
             ],
         )
 
@@ -2125,18 +1931,10 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             validate[2],
             [
-                (
-                    "<InstallableFontsResponse> --> "
-                    "Duplicate unique foundry IDs: ['yanone']"
-                ),
-                (
-                    "<InstallableFontsResponse> --> "
-                    "Duplicate unique family IDs: ['yanone-yanonekaffeesatz']"
-                ),
-                (
-                    "<InstallableFontsResponse> --> Duplicate unique family IDs: "
-                    "['yanone-kaffeesatz-regular', 'yanone-kaffeesatz-bold']"
-                ),
+                "<InstallableFontsResponse> --> Duplicate unique foundry IDs: ['yanone']",
+                "<InstallableFontsResponse> --> Duplicate unique family IDs: ['yanone-yanonekaffeesatz']",
+                "<InstallableFontsResponse> --> Duplicate unique family IDs: "
+                "['yanone-kaffeesatz-regular', 'yanone-kaffeesatz-bold']",
             ],
         )
 
@@ -2171,16 +1969,12 @@ class TestTypeWorld(unittest.TestCase):
         success, message = user1.client.endpointCommand(protectedSubscription)
         self.assertFalse(success)
         print(message)  # nocoverage
-        self.assertTrue(
-            "Invalid control character at: line 9 column 47 (char 300)" in message
-        )
+        self.assertTrue("Invalid control character at: line 9 column 47 (char 300)" in message)
 
         # TODO: Invite user to subscription with API endpoint as source
 
         self.assertEqual(
-            typeworld.client.helpers.addAttributeToURL(
-                "https://type.world?hello=world#xyz", "hello=type&world=type"
-            ),
+            typeworld.client.helpers.addAttributeToURL("https://type.world?hello=world#xyz", "hello=type&world=type"),
             "https://type.world?hello=type&world=type#xyz",
         )
 
@@ -2197,10 +1991,7 @@ class TestTypeWorld(unittest.TestCase):
 
         self.assertEqual(
             protocol.shortUnsecretURL(),
-            (
-                "typeworld://json+https//s9lWvayTEOaB9eIIMA67@"
-                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            ),
+            "typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
         )
 
         self.assertEqual(
@@ -2208,9 +1999,7 @@ class TestTypeWorld(unittest.TestCase):
             "https://typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
         )
 
-        typeworld.client.helpers.Garbage(
-            20, uppercase=True, lowercase=True, numbers=True, punctuation=True
-        )
+        typeworld.client.helpers.Garbage(20, uppercase=True, lowercase=True, numbers=True, punctuation=True)
 
     def test_InstallFontsResponse(self):
 
@@ -2278,12 +2067,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallFontAsset> --> "
-                    "Either .dataURL or .data can be defined, not both"
-                )
-            ],
+            ["<InstallFontAsset> --> Either .dataURL or .data can be defined, not both"],
         )
 
         installFonts = InstallFontsResponse()
@@ -2299,12 +2083,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallFontAsset> --> .response is set to success, but neither "
-                    ".data nor .dataURL are set."
-                )
-            ],
+            ["<InstallFontAsset> --> .response is set to success, but neither .data nor .dataURL are set."],
         )
 
         installFonts = InstallFontsResponse()
@@ -2318,12 +2097,7 @@ class TestTypeWorld(unittest.TestCase):
         print(validate[2])
         self.assertEqual(
             validate[2],
-            [
-                (
-                    "<InstallFontAsset> --> .response is 'error', "
-                    "but .errorMessage is missing."
-                )
-            ],
+            ["<InstallFontAsset> --> .response is 'error', but .errorMessage is missing."],
         )
 
         installFonts = InstallFontsResponse()
@@ -2333,10 +2107,8 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown font MIME Type: 'font/whatevs'. Possible: "
-                    "['font/collection', 'font/otf', 'font/sfnt', 'font/ttf']"
-                ),
+                "Unknown font MIME Type: 'font/whatevs'. Possible: "
+                "['font/collection', 'font/otf', 'font/sfnt', 'font/ttf']",
             )
 
         asset = InstallFontAsset()
@@ -2345,13 +2117,11 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown response type: 'a'. Possible: ['success', 'error', "
-                    "'unknownFont', 'insufficientPermission', "
-                    "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', "
-                    "'loginRequired', 'revealedUserIdentityRequired', "
-                    "'seatAllowanceReached', 'fontExpired']"
-                ),
+                "Unknown response type: 'a'. Possible: ['success', 'error', "
+                "'unknownFont', 'insufficientPermission', "
+                "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', "
+                "'loginRequired', 'revealedUserIdentityRequired', "
+                "'seatAllowanceReached', 'fontExpired']",
             )
 
     def test_UninstallFontsResponse(self):
@@ -2364,12 +2134,10 @@ class TestTypeWorld(unittest.TestCase):
         except ValueError as e:
             self.assertEqual(
                 str(e),
-                (
-                    "Unknown response type: 'a'. Possible: ['success', 'error', "
-                    "'unknownFont', 'insufficientPermission', "
-                    "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', "
-                    "'loginRequired', 'unknownInstallation']"
-                ),
+                "Unknown response type: 'a'. Possible: ['success', 'error', "
+                "'unknownFont', 'insufficientPermission', "
+                "'temporarilyUnavailable', 'validTypeWorldUserAccountRequired', "
+                "'loginRequired', 'unknownInstallation']",
             )
 
     def test_InstallableFontsResponse_Old(self):
@@ -2436,9 +2204,7 @@ class TestTypeWorld(unittest.TestCase):
             pass
 
         text = MultiLanguageText()
-        self.assertEqual(
-            text.customValidation()[2], ["Needs to contain at least one language field"]
-        )
+        self.assertEqual(text.customValidation()[2], ["Needs to contain at least one language field"])
         self.assertEqual(bool(text), False)
         text.en = "Hello"
         self.assertEqual(bool(text), True)
@@ -2531,28 +2297,21 @@ class TestTypeWorld(unittest.TestCase):
         # urlIsValid()
         self.assertEqual(
             typeworld.client.urlIsValid(
-                (
-                    "typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
-                    "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                )
+                "typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
+                "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             )[0],
             True,
         )
         self.assertEqual(
             typeworld.client.urlIsValid(
-                (
-                    "https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
-                    "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                )
+                "https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             )[0],
             False,
         )
         self.assertEqual(
             typeworld.client.urlIsValid(
-                (
-                    "typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:"
-                    "bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                )
+                "typeworldjson://json+https//s9lWvayTEOaB9eIIMA67:"
+                "bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             )[0],
             False,
         )
@@ -2560,10 +2319,8 @@ class TestTypeWorld(unittest.TestCase):
         # splitJSONURL()
         self.assertEqual(
             typeworld.client.splitJSONURL(
-                (
-                    "typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
-                    ":accessToken@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                )
+                "typeworld://json+https//s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
+                ":accessToken@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             ),
             (
                 "typeworld://",
@@ -2577,10 +2334,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(
             typeworld.client.splitJSONURL(
-                (
-                    "typeworld://json+https//s9lWvayTEOaB9eIIMA67@"
-                    "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-                )
+                "typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
             ),
             (
                 "typeworld://",
@@ -2593,9 +2347,7 @@ class TestTypeWorld(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            typeworld.client.splitJSONURL(
-                "typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            ),
+            typeworld.client.splitJSONURL("typeworld://json+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"),
             (
                 "typeworld://",
                 "json",
@@ -2607,9 +2359,7 @@ class TestTypeWorld(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            typeworld.client.splitJSONURL(
-                "typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            ),
+            typeworld.client.splitJSONURL("typeworld://json+http//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"),
             (
                 "typeworld://",
                 "json",
@@ -2649,15 +2399,11 @@ class TestTypeWorld(unittest.TestCase):
         user0.takeDown()
 
         user0.client.testScenario = "simulateEndpointDoesntSupportInstallFontCommand"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
 
         user0.client.testScenario = "simulateBreakingAPIVersion"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
         self.assertEqual(
             message,
@@ -2669,102 +2415,69 @@ class TestTypeWorld(unittest.TestCase):
 
         # Supposed to pass
         user0.client.testScenario = "simulateNonBreakingHigherAPIVersion"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         if not success:
             print(message)
         self.assertEqual(success, True)
         user0.client.publishers()[0].delete()
 
-        user0.client.testScenario = (
-            "simulateEndpointDoesntSupportInstallableFontsCommand"
-        )
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        user0.client.testScenario = "simulateEndpointDoesntSupportInstallableFontsCommand"
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
 
         user0.client.testScenario = "simulateCustomError"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
 
         user0.client.testScenario = "simulateNotOnline"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
 
         user0.client.testScenario = "simulateProgrammingError"
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, False)
         self.assertEqual(message, "HTTP Error 500")
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworld://unknownprotocol+"
-                "https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            )
+            "typeworld://unknownprotocol+https//typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
         )
         self.assertEqual(success, False)
-        self.assertEqual(
-            message, "Protocol unknownprotocol doesn’t exist in this app (yet)."
-        )
+        self.assertEqual(message, "Protocol unknownprotocol doesn’t exist in this app (yet).")
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@"
-                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/@"
-            )
+            "typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@"
+            "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/@"
         )
         self.assertEqual(success, False)
-        self.assertEqual(
-            message, "URL contains more than one @ sign, so don’t know how to parse it."
-        )
+        self.assertEqual(message, "URL contains more than one @ sign, so don’t know how to parse it.")
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworldjson://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
-                "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            )
+            "typeworldjson://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
+            "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
         )
         self.assertEqual(success, False)
         self.assertEqual(message, "Unknown custom protocol, known are: ['typeworld']")
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworldjson//json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
-                "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            )
+            "typeworldjson//json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm"
+            "@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
         )
         self.assertEqual(success, False)
         self.assertEqual(message, "Unknown custom protocol, known are: ['typeworld']")
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@"
-                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/:"
-            )
+            "typeworld://json+https://s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@"
+            "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/:"
         )
         self.assertEqual(success, False)
         self.assertEqual(
             message,
-            (
-                "URL contains more than one :// combination, "
-                "so don’t know how to parse it."
-            ),
+            "URL contains more than one :// combination, so don’t know how to parse it.",
         )
 
         success, message, publisher, subscription = user0.client.addSubscription(
-            (
-                "typeworld://json+s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@"
-                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            )
+            "typeworld://json+s9lWvayTEOaB9eIIMA67:bN0QnnNsaE4LfHlOMGkm@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
         )
         self.assertEqual(success, False)
         self.assertEqual(message, "URL is malformed.")
@@ -2774,15 +2487,11 @@ class TestTypeWorld(unittest.TestCase):
         print("test_normalSubscription() started...")
 
         # Reset Test Conditions
-        success, response, responseObject = typeworld.client.request(
-            "https://typeworldserver.com/resetTestConditions"
-        )
+        success, response, responseObject = typeworld.client.request("https://typeworldserver.com/resetTestConditions")
         print(response)
         self.assertTrue(success)
 
-        self.assertTrue(
-            user0.client.online(MOTHERSHIP.split("//")[1].split("/")[0].split(":")[0])
-        )
+        self.assertTrue(user0.client.online(MOTHERSHIP.split("//")[1].split("/")[0].split(":")[0]))
 
         self.assertTrue(user2.client.user())
 
@@ -2793,11 +2502,9 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         print(response)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         self.assertEqual(success, True)
         self.assertEqual(response["response"], "success")
 
@@ -2832,12 +2539,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(len(user0.client.publishers()[0].subscriptions()), 1)
         self.assertEqual(
-            len(
-                user0.client.publishers()[0]
-                .subscriptions()[-1]
-                .protocol.installableFontsCommand()[1]
-                .foundries
-            ),
+            len(user0.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries),
             1,
         )
         self.assertEqual(
@@ -2857,12 +2559,8 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         # Name
-        self.assertEqual(
-            user0.client.publishers()[0].name()[0], "Test Publisher (Don’t Touch)"
-        )
-        self.assertEqual(
-            user0.client.publishers()[0].subscriptions()[0].name(), "Free Fonts"
-        )
+        self.assertEqual(user0.client.publishers()[0].name()[0], "Test Publisher (Don’t Touch)")
+        self.assertEqual(user0.client.publishers()[0].subscriptions()[0].name(), "Free Fonts")
 
         # Reload client
         # Equal to closing the app and re-opening,
@@ -2892,27 +2590,17 @@ class TestTypeWorld(unittest.TestCase):
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         # Install All 4 Fonts
-        user0.client.publishers()[0].subscriptions()[0].set(
-            "acceptedTermsOfService", True
-        )
+        user0.client.publishers()[0].subscriptions()[0].set("acceptedTermsOfService", True)
         fonts = [[x.uniqueID, x.getVersions()[-1].number] for x in user0.testFonts()]
-        success, message = (
-            user0.client.publishers()[0].subscriptions()[0].installFonts(fonts)
-        )
+        success, message = user0.client.publishers()[0].subscriptions()[0].installFonts(fonts)
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
-        self.assertEqual(
-            user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 4
-        )
+        self.assertEqual(user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 4)
 
         # Remove Font
         user0.client.testScenario = "simulateNoPath"
-        success, message = (
-            user0.client.publishers()[0]
-            .subscriptions()[0]
-            .removeFonts([user0.testFont().uniqueID])
-        )
+        success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts([user0.testFont().uniqueID])
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, False)
@@ -2922,15 +2610,11 @@ class TestTypeWorld(unittest.TestCase):
         # Remove all 4 fonts
         user0.client.testScenario = None
         fonts = [x.uniqueID for x in user0.testFonts()]
-        success, message = (
-            user0.client.publishers()[0].subscriptions()[0].removeFonts(fonts)
-        )
+        success, message = user0.client.publishers()[0].subscriptions()[0].removeFonts(fonts)
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
-        self.assertEqual(
-            user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0
-        )
+        self.assertEqual(user0.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
@@ -2966,12 +2650,10 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         print(success, response)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -2985,12 +2667,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(success, True)
         self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
         self.assertEqual(
-            len(
-                user1.client.publishers()[0]
-                .subscriptions()[-1]
-                .protocol.installableFontsCommand()[1]
-                .foundries
-            ),
+            len(user1.client.publishers()[0].subscriptions()[-1].protocol.installableFontsCommand()[1].foundries),
             1,
         )
         self.assertTrue(subscription.hasProtectedFonts())
@@ -3003,11 +2680,9 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         print(response)
         self.assertEqual(response["response"], "success")
 
@@ -3016,16 +2691,12 @@ class TestTypeWorld(unittest.TestCase):
             "anonymousAppID": user1.client.anonymousAppID(),
             "anonymousTypeWorldUserID": user1.client.user(),
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
-            "subscriptionURL": protectedSubscriptionWithoutAccessToken.replace(
-                "@", "a@"
-            ),  # change URL slightly
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken.replace("@", "a@"),  # change URL slightly
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -3040,11 +2711,9 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         print(response)
         self.assertEqual(response["response"], "invalid")
 
@@ -3061,11 +2730,9 @@ class TestTypeWorld(unittest.TestCase):
             "subscriptionURL": protectedSubscriptionWithoutAccessToken,
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/verifyCredentials", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         print(response)
         self.assertEqual(response["response"], "success")
 
@@ -3074,13 +2741,11 @@ class TestTypeWorld(unittest.TestCase):
             "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
             "testing": "true",
         }
-        success, response, responseObject = typeworld.client.request(
-            MOTHERSHIP + "/updateSubscription", parameters
-        )
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/updateSubscription", parameters)
         if not success:
             print(response)
         self.assertEqual(success, True)
-        response = json.loads(response.decode())
+        response = json.loads(response)
         self.assertEqual(response["response"], "success")
 
         time.sleep(5)
@@ -3090,18 +2755,13 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(protocol.secretURL(), protectedSubscriptionWithoutAccessToken)
         self.assertEqual(
             protocol.unsecretURL(),
-            protectedSubscriptionWithoutAccessToken.replace(
-                ":OxObIWDJjW95SkeL3BNr@", ":secretKey@"
-            ),
+            protectedSubscriptionWithoutAccessToken.replace(":OxObIWDJjW95SkeL3BNr@", ":secretKey@"),
         )
 
         # saveURL
         self.assertEqual(
             user1.client.publishers()[0].subscriptions()[-1].protocol.unsecretURL(),
-            (
-                "typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@"
-                "typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-            ),
+            "typeworld://json+https//s9lWvayTEOaB9eIIMA67:secretKey@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/",
         )
         # completeURL
         self.assertEqual(
@@ -3166,17 +2826,13 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(success, True)
         print("changes", changes)
         self.assertFalse(changes)
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         print("Updating subscription 1:", success, message, changes)
         self.assertEqual(success, True)
         print("changes", changes)
         self.assertFalse(changes)
         self.assertEqual(user1.client.publishers()[0].stillUpdating(), False)
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].stillUpdating(), False)
         print(user1.client.publishers()[0].updatingProblem())
         self.assertEqual(user1.client.allSubscriptionsUpdated(), True)
 
@@ -3186,9 +2842,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
             (
                 False,
                 [
@@ -3197,9 +2851,7 @@ class TestTypeWorld(unittest.TestCase):
                 ],
             ),
         )
-        user1.client.publishers()[0].subscriptions()[-1].set(
-            "acceptedTermsOfService", True
-        )
+        user1.client.publishers()[0].subscriptions()[-1].set("acceptedTermsOfService", True)
         # Then it's supposed to fail because the server requires the revealted user
         # identity for this subscription
         self.assertEqual(
@@ -3212,9 +2864,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
             (
                 False,
                 [
@@ -3229,27 +2879,19 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
             (True, None),
         )
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
         # Test for version
         self.assertEqual(
-            user1.client.publishers()[0]
-            .subscriptions()[0]
-            .installedFontVersion(fontID=user1.testFont().uniqueID),
+            user1.client.publishers()[0].subscriptions()[0].installedFontVersion(fontID=user1.testFont().uniqueID),
             user1.testFont().getVersions()[-1].number,
         )
         self.assertEqual(
-            user1.client.publishers()[0]
-            .subscriptions()[0]
-            .installedFontVersion(font=user1.testFont()),
+            user1.client.publishers()[0].subscriptions()[0].installedFontVersion(font=user1.testFont()),
             user1.testFont().getVersions()[-1].number,
         )
 
@@ -3259,42 +2901,32 @@ class TestTypeWorld(unittest.TestCase):
         user1.client.testScenario = "simulateNotOnline"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateImpersonatedCanonicalURL"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
         self.assertEqual(message, "'url' must begin with 'canonicalURL'")
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, False)
         self.assertEqual(message, "'url' must begin with 'canonicalURL'")
 
         user1.client.testScenario = "simulateProgrammingError"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, False)
         user1.client.testScenario = "simulateInsufficientPermissions"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, False)
         user1.client.testScenario = "simulateCustomError"
         success, message, changes = user1.client.publishers()[0].update()
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
 
@@ -3302,11 +2934,7 @@ class TestTypeWorld(unittest.TestCase):
 
         # Uninstall font here
         user1.client.testScenario = None
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         if success is False:
             print("Uninstall font:", message)  # nocoverage
         self.assertEqual(success, True)
@@ -3318,25 +2946,19 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if success is False:
             print(message)  # nocoverage
         self.assertEqual(success, False)
-        self.assertEqual(
-            message, ["#(response.loginRequired)", "#(response.loginRequired.headline)"]
-        )
+        self.assertEqual(message, ["#(response.loginRequired)", "#(response.loginRequired.headline)"])
 
         # Repeat font installation
         user1.client.testScenario = "simulateProgrammingError"
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if not success:
             print(message)  # nocoverage
@@ -3346,9 +2968,7 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if not success:
             print(message)  # nocoverage
@@ -3360,9 +2980,7 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if not success:
             print(message)  # nocoverage
@@ -3389,19 +3007,14 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if success is False:
             print(message)  # nocoverage
         self.assertEqual(success, False)
         self.assertEqual(
             message,
-            (
-                "Font Test_Foundry-Runya-Runya-Regular-otf-StandardSet "
-                "with version 1.1 not found in assets"
-            ),
+            "Font Test_Foundry-Runya-Runya-Regular-otf-StandardSet with version 1.1 not found in assets",
         )
         # Uninstall (because server has recorded successful installation here, as the
         # asset version number is set to a non-matching number, but still a correct
@@ -3435,45 +3048,33 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         # Simulate unexpected empty subscription
         user1.client.testScenario = "simulateNoFontsAvailable"
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         print("Updating subscription 2:", success, message, changes)
         self.assertEqual(success, True)
         self.assertEqual(changes, {"removedFonts": 2, "overallChanges": True})
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 0)
 
         # Return to normal subscription
         user1.client.testScenario = None
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, True)
         self.assertEqual(changes, {"addedFonts": 2, "overallChanges": True})
 
         # Simulated Added Version
         user1.client.testScenario = "simulateAddedFontVersion"
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, True)
         self.assertEqual(changes, {"fontsWithAddedVersions": 2, "overallChanges": True})
 
@@ -3481,9 +3082,7 @@ class TestTypeWorld(unittest.TestCase):
 
         # Return to normal subscription
         user1.client.testScenario = None
-        success, message, changes = (
-            user1.client.publishers()[0].subscriptions()[0].update()
-        )
+        success, message, changes = user1.client.publishers()[0].subscriptions()[0].update()
         self.assertEqual(success, True)
 
         # Install font again
@@ -3491,18 +3090,14 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
             (True, None),
         )
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
         self.assertEqual(len(user1.client.publishers()), 1)
         self.assertEqual(len(user1.client.publishers()[0].subscriptions()), 1)
 
@@ -3511,9 +3106,7 @@ class TestTypeWorld(unittest.TestCase):
         # Remove font again
         user1.client.testScenario = None
         self.assertEqual(
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID]),
+            user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID]),
             (True, None),
         )
 
@@ -3525,9 +3118,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertTrue(len(instances) >= 1)
 
         # Revoke app instance
-        success, response = user1.client.revokeAppInstance(
-            user1.client.anonymousAppID()
-        )
+        success, response = user1.client.revokeAppInstance(user1.client.anonymousAppID())
         if not success:
             print(response)
         self.assertEqual(success, True)
@@ -3549,18 +3140,12 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         # Update subscriptions
-        success, message, changed = (
-            user1.client.publishers()[0].subscriptions()[-1].update()
-        )
+        success, message, changed = user1.client.publishers()[0].subscriptions()[-1].update()
         self.assertEqual(success, True)
 
         # Reinstall font, fails because no permissions
         user1.client.testScenario = None
-        response = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .installFonts([[testFontID, testFontVersion]])
-        )
+        response = user1.client.publishers()[0].subscriptions()[-1].installFonts([[testFontID, testFontVersion]])
         success, message = response
         print(response)
         self.assertEqual(success, False)
@@ -3573,9 +3158,7 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         # Reactivate app instance
-        success, response = user1.client.reactivateAppInstance(
-            user1.client.anonymousAppID()
-        )
+        success, response = user1.client.reactivateAppInstance(user1.client.anonymousAppID())
         if not success:
             print(response)
         self.assertEqual(success, True)
@@ -3587,17 +3170,13 @@ class TestTypeWorld(unittest.TestCase):
         success, message = (
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            )
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]])
         )
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
-        self.assertEqual(
-            user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1
-        )
+        self.assertEqual(user1.client.publishers()[0].subscriptions()[0].amountInstalledFonts(), 1)
 
         # This is also supposed to delete the installed protected font
         user1.client.testScenario = "simulateCentralServerNotReachable"
@@ -3646,16 +3225,12 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(user1.client.userEmail(), "test1@type.world")
 
         # Install again
-        user1.client.publishers()[0].subscriptions()[-1].set(
-            "acceptedTermsOfService", True
-        )
+        user1.client.publishers()[0].subscriptions()[-1].set("acceptedTermsOfService", True)
         user1.client.publishers()[0].subscriptions()[-1].set("revealIdentity", True)
         self.assertEqual(
             user1.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user1.testFont().uniqueID, user1.testFont().getVersions()[-1].number]]),
             (True, None),
         )
         self.assertEqual(user1.client.publishers()[0].amountInstalledFonts(), 1)
@@ -3678,75 +3253,50 @@ class TestTypeWorld(unittest.TestCase):
         # Protected subscription, installation on second machine
 
         user2.client.testScenario = "simulateWrongMimeType"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
         self.assertEqual(
             message,
-            (
-                "Resource headers returned wrong MIME type: 'text/html'. "
-                "Expected is '['application/json']'."
-            ),
+            "Resource headers returned wrong MIME type: 'text/html'. Expected is '['application/json']'.",
         )
         user2.client.testScenario = "simulateImpersonatedCanonicalURL"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
         self.assertEqual(message, "'url' must begin with 'canonicalURL'")
 
         user2.client.testScenario = "simulateNotHTTP200"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.testScenario = "simulateProgrammingError"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.testScenario = "simulateInvalidAPIJSONResponse"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.testScenario = "simulateFaultyAPIJSONResponse"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.testScenario = "simulateCentralServerNotReachable"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.testScenario = "simulateCentralServerProgrammingError"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
         user2.client.testScenario = "simulateCentralServerErrorInResponse"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
         user2.client.testScenario = "simulateNotOnline"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, False)
 
         user2.client.publishers()[0].delete()
         user2.client.testScenario = "simulateNoCommercialAppsAllowed"
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         print(message)
         self.assertEqual(success, False)
         self.assertEqual(
@@ -3758,9 +3308,7 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         user2.client.testScenario = None
-        success, message, publisher, subscription = user2.client.addSubscription(
-            protectedSubscription
-        )
+        success, message, publisher, subscription = user2.client.addSubscription(protectedSubscription)
         self.assertEqual(success, True)
 
         # Two versions available
@@ -3768,24 +3316,18 @@ class TestTypeWorld(unittest.TestCase):
             len(
                 user2.client.publishers()[0]
                 .subscriptions()[-1]
-                .installFonts(
-                    [[user2.testFont().uniqueID, user2.testFont().getVersions()]]
-                )
+                .installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()]])
             ),
             2,
         )
 
         # Supposed to reject because seats are limited to 1
-        user2.client.publishers()[0].subscriptions()[-1].set(
-            "acceptedTermsOfService", True
-        )
+        user2.client.publishers()[0].subscriptions()[-1].set("acceptedTermsOfService", True)
         user2.client.publishers()[0].subscriptions()[-1].set("revealIdentity", True)
         self.assertEqual(
             user2.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]),
             (
                 False,
                 [
@@ -3797,93 +3339,53 @@ class TestTypeWorld(unittest.TestCase):
 
         # Uninstall font for user1
         user1.client.testScenario = "simulatePermissionError"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateTemporarilyUnavailable"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateCustomError"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         print(message)  # nocoverage
         self.assertEqual(success, False)
         self.assertEqual(message.getText(), "simulateCustomError")
 
         user1.client.testScenario = "simulateNoPath"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         print(message)  # nocoverage
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateProgrammingError"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         self.assertEqual(success, False)
 
         user1.client.testScenario = "simulateInsufficientPermissions"
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         self.assertEqual(success, False)
 
         # Supposed to succeed
         user1.client.testScenario = None
-        success, message = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user1.testFont().uniqueID])
-        )
+        success, message = user1.client.publishers()[0].subscriptions()[-1].removeFonts([user1.testFont().uniqueID])
         self.assertEqual(success, True)
 
         # Uninstall font for user2, must fail because deleting same font file
         # (doesn't make sense in normal setup)
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user2.testFont().uniqueID])
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
         print(result)
-        self.assertEqual(
-            result, (False, "Font path couldn’t be determined (preflight)")
-        )
+        self.assertEqual(result, (False, "Font path couldn’t be determined (preflight)"))
 
         # Try again for user2
         self.assertEqual(
             user2.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]
-            ),
+            .installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[-1].number]]),
             (True, None),
         )
 
         # Uninstall font on for user2
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user2.testFont().uniqueID])
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
         print(result)
         self.assertEqual(result, (True, None))
 
@@ -3891,9 +3393,7 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(
             user2.client.publishers()[0]
             .subscriptions()[-1]
-            .installFonts(
-                [[user2.testFont().uniqueID, user2.testFont().getVersions()[0].number]]
-            ),
+            .installFonts([[user2.testFont().uniqueID, user2.testFont().getVersions()[0].number]]),
             (True, None),
         )
 
@@ -3903,16 +3403,10 @@ class TestTypeWorld(unittest.TestCase):
         # One font must be outdated
         self.assertEqual(user2.client.amountOutdatedFonts(), 1)
         self.assertEqual(user2.client.publishers()[0].amountOutdatedFonts(), 1)
-        self.assertEqual(
-            user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1
-        )
+        self.assertEqual(user2.client.publishers()[0].subscriptions()[0].amountOutdatedFonts(), 1)
 
         # Uninstall font for user2
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .removeFonts([user2.testFont().uniqueID])
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].removeFonts([user2.testFont().uniqueID])
         print(result)
         self.assertEqual(result, (True, None))
 
@@ -3926,9 +3420,7 @@ class TestTypeWorld(unittest.TestCase):
         )
         self.assertEqual(
             family,
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .familyByID(family.uniqueID),
+            user2.client.publishers()[0].subscriptions()[-1].familyByID(family.uniqueID),
         )
 
         # Font By ID
@@ -3949,9 +3441,7 @@ class TestTypeWorld(unittest.TestCase):
 
         # Uninstallation of fonts when they aren't present in the subscription anymore
         user0.client.addSubscription(freeSubscription)
-        user0.client.publishers()[0].subscriptions()[-1].set(
-            "acceptedTermsOfService", True
-        )
+        user0.client.publishers()[0].subscriptions()[-1].set("acceptedTermsOfService", True)
         font = (
             user0.client.publishers()[0]
             .subscriptions()[-1]
@@ -4053,23 +3543,13 @@ class TestTypeWorld(unittest.TestCase):
 
         # Invitations
         # Invite to client without linked user account
-        success, message, publisher, subscription = user0.client.addSubscription(
-            freeSubscription
-        )
+        success, message, publisher, subscription = user0.client.addSubscription(freeSubscription)
         self.assertEqual(success, True)
-        result = (
-            user0.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test12345@type.world")
-        )
+        result = user0.client.publishers()[0].subscriptions()[-1].inviteUser("test12345@type.world")
         self.assertEqual(result, (False, "No source user linked."))
 
         # Invite unknown user
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test12345@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test12345@type.world")
         self.assertEqual(
             result,
             (
@@ -4085,11 +3565,7 @@ class TestTypeWorld(unittest.TestCase):
         user1.client.testScenario = None
         self.assertEqual(user1.client.userEmail(), "test1@type.world")
         # self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test1@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test1@type.world")
         self.assertEqual(
             result,
             (
@@ -4105,11 +3581,7 @@ class TestTypeWorld(unittest.TestCase):
         user1.client.testScenario = "simulateTestUser1IsPro"
         self.assertEqual(user1.client.userEmail(), "test1@type.world")
         # self.assertEqual(user1.client.user(), '736b524a-cf24-11e9-9f62-901b0ecbcc7a')
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test1@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test1@type.world")
         self.assertEqual(
             result,
             (
@@ -4125,32 +3597,16 @@ class TestTypeWorld(unittest.TestCase):
 
         # Invite real user
         user1.client.testScenario = "simulateCentralServerNotReachable"
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         self.assertEqual(result[0], False)
         user1.client.testScenario = "simulateCentralServerProgrammingError"
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         self.assertEqual(result[0], False)
         user1.client.testScenario = "simulateCentralServerErrorInResponse"
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         self.assertEqual(result[0], False)
         user1.client.testScenario = "simulateNotOnline"
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         self.assertEqual(result[0], False)
 
         # Update user2
@@ -4161,11 +3617,7 @@ class TestTypeWorld(unittest.TestCase):
 
         # Supposed to pass invitation
         user1.client.testScenario = "simulateTestUser1IsPro"
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         print(result)
         self.assertEqual(result[0], True)
 
@@ -4188,11 +3640,7 @@ class TestTypeWorld(unittest.TestCase):
         # Decline (exists only here in test script)
         user2.clearInvitations()
         # Invite again
-        result = (
-            user1.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test2@type.world")
-        )
+        result = user1.client.publishers()[0].subscriptions()[-1].inviteUser("test2@type.world")
         self.assertEqual(result, (True, None))
 
         print("STATUS: -11")
@@ -4228,22 +3676,14 @@ class TestTypeWorld(unittest.TestCase):
         user2.client.testScenario = None
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].inviteUser("test3@type.world")
         self.assertEqual(success, False)
 
         # Invite yet another user
         user2.client.testScenario = "simulateTestUser2IsPro"
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test3@type.world")
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].inviteUser("test3@type.world")
         self.assertEqual(result, (True, None))
         success, message = user2.client.downloadSubscriptions()
         self.assertEqual(success, True)
@@ -4278,11 +3718,7 @@ class TestTypeWorld(unittest.TestCase):
         # Invite again
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test3@type.world")
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].inviteUser("test3@type.world")
         self.assertEqual(result, (True, None))
         user2.client.downloadSubscriptions()
         self.assertEqual(len(user2.client.sentInvitations()), 1)
@@ -4299,42 +3735,22 @@ class TestTypeWorld(unittest.TestCase):
 
         # Revoke user
         user2.client.testScenario = "simulateCentralServerNotReachable"
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .revokeUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser("test3@type.world")
         self.assertEqual(success, False)
         user2.client.testScenario = "simulateCentralServerProgrammingError"
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .revokeUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser("test3@type.world")
         self.assertEqual(success, False)
         user2.client.testScenario = "simulateCentralServerErrorInResponse"
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .revokeUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser("test3@type.world")
         self.assertEqual(success, False)
         user2.client.testScenario = "simulateNotOnline"
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .revokeUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser("test3@type.world")
         self.assertEqual(success, False)
 
         # Supposed to pass
         sentInvitations = len(user2.client.sentInvitations())
         user2.client.testScenario = None
-        success, message = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .revokeUser("test3@type.world")
-        )
+        success, message = user2.client.publishers()[0].subscriptions()[-1].revokeUser("test3@type.world")
         if not success:
             print(message)  # nocoverage
         self.assertEqual(success, True)
@@ -4353,11 +3769,7 @@ class TestTypeWorld(unittest.TestCase):
         user2.client.testScenario = "simulateTestUser2IsPro"
         self.assertEqual(len(user3.client.pendingInvitations()), 0)
         self.assertEqual(len(user3.client.publishers()), 0)
-        result = (
-            user2.client.publishers()[0]
-            .subscriptions()[-1]
-            .inviteUser("test3@type.world")
-        )
+        result = user2.client.publishers()[0].subscriptions()[-1].inviteUser("test3@type.world")
         self.assertEqual(result, (True, None))
         user2.client.downloadSubscriptions()
         self.assertEqual(len(user2.client.sentInvitations()), 1)
@@ -4520,7 +3932,7 @@ class TestTypeWorld(unittest.TestCase):
     # parameters)
     # 	self.assertEqual(success, True)
 
-    # 	response = json.loads(response.decode())
+    # 	response = json.loads(response)
     # 	print(response)
 
     # 	self.assertEqual(response['response'], 'success')
@@ -4535,35 +3947,25 @@ class TestTypeWorld(unittest.TestCase):
 
         # Create user account
 
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "", ""
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "", "")
         self.assertEqual(message, "#(RequiredFieldEmpty)")
 
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "abc", "def"
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "abc", "def")
         self.assertEqual(message, "#(PasswordsDontMatch)")
 
         user0.client.testScenario = "simulateCentralServerNotReachable"
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "abc", "abc"
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "abc", "abc")
         self.assertEqual(success, False)
         self.assertTrue("Failed to establish a new connection" in message)
 
         user0.client.testScenario = "simulateCentralServerProgrammingError"
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "abc", "abc"
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "abc", "abc")
         self.assertEqual(success, False)
         print(message)
         self.assertTrue("HTTP Error 500" in message)
 
         user0.client.testScenario = "simulateCentralServerErrorInResponse"
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "abc", "abc"
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "abc", "abc")
         self.assertEqual(success, False)
         self.assertEqual(
             message,
@@ -4574,13 +3976,9 @@ class TestTypeWorld(unittest.TestCase):
         )
 
         user0.client.testScenario = "simulateNotOnline"
-        success, message = user0.client.createUserAccount(
-            "Test", "test0@type.world", "abc", "abc"
-        )
+        success, message = user0.client.createUserAccount("Test", "test0@type.world", "abc", "abc")
         self.assertEqual(success, False)
-        self.assertEqual(
-            message, ["#(response.notOnline)", "#(response.notOnline.headline)"]
-        )
+        self.assertEqual(message, ["#(response.notOnline)", "#(response.notOnline.headline)"])
 
         # Delete User Account
 
@@ -4600,9 +3998,7 @@ class TestTypeWorld(unittest.TestCase):
         user0.client.testScenario = "simulateNotOnline"
         success, message = user0.client.deleteUserAccount("test0@type.world", "abc")
         self.assertEqual(success, False)
-        self.assertEqual(
-            message, ["#(response.notOnline)", "#(response.notOnline.headline)"]
-        )
+        self.assertEqual(message, ["#(response.notOnline)", "#(response.notOnline.headline)"])
 
         # Log In User Account
 
@@ -4618,10 +4014,7 @@ class TestTypeWorld(unittest.TestCase):
         success, message = user0.client.logInUserAccount(*testUser1)
         print(message)
         self.assertEqual(success, False)
-        self.assertEqual(
-            message,
-            "HTTP Error 500",
-        )
+        self.assertTrue("HTTP Error 500" in message)
 
         user0.client.testScenario = "simulateCentralServerErrorInResponse"
         success, message = user0.client.logInUserAccount(*testUser1)

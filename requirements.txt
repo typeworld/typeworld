@@ -3,3 +3,4 @@ markdown2
 pyzmq
 requests
 semver
+stripe>=2.60.0,<3.0

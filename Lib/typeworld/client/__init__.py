@@ -22,6 +22,7 @@ from time import gmtime, strftime
 import requests
 import requests.exceptions
 import http.client as httplib
+import stripe.http_client
 
 import typeworld.api
 
@@ -71,12 +72,7 @@ if "TRAVIS" in os.environ:
 
 def urlIsValid(url):
 
-    if (
-        not url.find("typeworld://")
-        < url.find("+")
-        < url.find("http")
-        < url.find("//", url.find("http"))
-    ):
+    if not url.find("typeworld://") < url.find("+") < url.find("http") < url.find("//", url.find("http")):
         return False, "URL is malformed."
 
     if url.count("@") > 1:
@@ -99,10 +95,7 @@ def urlIsValid(url):
     if url.count("://") > 1:
         return (
             False,
-            (
-                "URL contains more than one :// combination, "
-                "so don’t know how to parse it."
-            ),
+            "URL contains more than one :// combination, so don’t know how to parse it.",
         )
 
     return True, None
@@ -225,17 +218,13 @@ def getProtocol(url):
     protocolName = URL(url).protocol
 
     for ext in (".py", ".pyc"):
-        if os.path.exists(
-            os.path.join(os.path.dirname(__file__), "protocols", protocolName + ext)
-        ):
+        if os.path.exists(os.path.join(os.path.dirname(__file__), "protocols", protocolName + ext)):
 
             import importlib
 
             spec = importlib.util.spec_from_file_location(
                 "json",
-                os.path.join(
-                    os.path.dirname(__file__), "protocols", protocolName + ext
-                ),
+                os.path.join(os.path.dirname(__file__), "protocols", protocolName + ext),
             )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -251,9 +240,37 @@ def request(url, parameters={}, method="POST", timeout=30):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
+    client = stripe.http_client.new_default_http_client(timeout=timeout)
+
     message = None
 
     for i in range(10):
+
+        try:
+            content, status_code, headers = client.request(method, url, {}, parameters)
+        except Exception:
+            if parameters:
+                parameters = copy.copy(parameters)
+                for key in parameters:
+                    if key.lower().endswith("key"):
+                        parameters[key] = "*****"
+                    if key.lower().endswith("secret"):
+                        parameters[key] = "*****"
+                message = (
+                    f"Response from {url} with parameters {parameters} after {i+1} tries: "
+                    + traceback.format_exc().splitlines()[-1]
+                )
+            else:
+                message = traceback.format_exc().splitlines()[-1]
+
+            return False, message, None
+
+        client.close()
+
+        if status_code == 200:
+            return True, content, headers
+        else:
+            return False, f"HTTP Error {status_code}", headers
 
         try:
 
@@ -296,8 +313,7 @@ def request(url, parameters={}, method="POST", timeout=30):
                     if key.lower().endswith("secret"):
                         parameters[key] = "*****"
                 message = (
-                    f"Response from {url} with parameters "
-                    f"{parameters} after {i+1} tries: "
+                    f"Response from {url} with parameters {parameters} after {i+1} tries: "
                     + traceback.format_exc().splitlines()[-1]
                 )
             else:
@@ -496,9 +512,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.fontWillInstall(font)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def fontWillInstall(self, font):
         assert type(font) == typeworld.api.Font
@@ -507,9 +521,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.fontHasInstalled(success, message, font)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def fontHasInstalled(self, success, message, font):
         if success:
@@ -519,9 +531,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.fontWillUninstall(font)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def fontWillUninstall(self, font):
         assert type(font) == typeworld.api.Font
@@ -530,9 +540,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.fontHasUninstalled(success, message, font)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def fontHasUninstalled(self, success, message, font):
         if success:
@@ -542,9 +550,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.subscriptionUpdateNotificationHasBeenReceived(subscription)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def subscriptionUpdateNotificationHasBeenReceived(self, subscription):
         assert type(subscription) == typeworld.client.APISubscription
@@ -565,9 +571,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.userAccountUpdateNotificationHasBeenReceived()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def userAccountUpdateNotificationHasBeenReceived(self):
         pass
@@ -576,9 +580,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.userAccountHasBeenUpdated()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def userAccountHasBeenUpdated(self):
         pass
@@ -587,9 +589,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.userAccountIsReloading()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def userAccountIsReloading(self):
         pass
@@ -598,9 +598,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.userAccountHasReloaded()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def userAccountHasReloaded(self):
         pass
@@ -609,37 +607,25 @@ class TypeWorldClientDelegate(object):
         try:
             self.subscriptionWillDelete(subscription)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def subscriptionWillDelete(self, subscription):
         pass
 
-    def _subscriptionHasBeenDeleted(
-        self, subscription, withinPublisherDeletion=False, remotely=False
-    ):
+    def _subscriptionHasBeenDeleted(self, subscription, withinPublisherDeletion=False, remotely=False):
         try:
-            self.subscriptionHasBeenDeleted(
-                subscription, withinPublisherDeletion, remotely
-            )
+            self.subscriptionHasBeenDeleted(subscription, withinPublisherDeletion, remotely)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
-    def subscriptionHasBeenDeleted(
-        self, subscription, withinPublisherDeletion, remotely
-    ):
+    def subscriptionHasBeenDeleted(self, subscription, withinPublisherDeletion, remotely):
         pass
 
     def _publisherWillDelete(self, publisher):
         try:
             self.publisherWillDelete(publisher)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def publisherWillDelete(self, publisher):
         pass
@@ -648,9 +634,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.publisherHasBeenDeleted(publisher)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def publisherHasBeenDeleted(self, publisher):
         pass
@@ -659,9 +643,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.subscriptionHasBeenAdded(subscription, remotely)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def subscriptionHasBeenAdded(self, subscription, remotely):
         pass
@@ -670,9 +652,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.subscriptionWillUpdate(subscription)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def subscriptionWillUpdate(self, subscription):
         pass
@@ -681,9 +661,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.subscriptionHasBeenUpdated(subscription, success, message, changes)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def subscriptionHasBeenUpdated(self, subscription, success, message, changes):
         pass
@@ -692,9 +670,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.clientPreferenceChanged(key, value)
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def clientPreferenceChanged(self, key, value):
         pass
@@ -703,9 +679,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.messageQueueConnected()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def messageQueueConnected(self):
         pass
@@ -715,9 +689,7 @@ class TypeWorldClientDelegate(object):
             self.messageQueueError(status=status)
 
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def messageQueueError(self, status=None):
         pass
@@ -728,9 +700,7 @@ class TypeWorldClientDelegate(object):
             self.client.zmqRestart()
 
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def messageQueueLostConnection(self):
         pass
@@ -739,9 +709,7 @@ class TypeWorldClientDelegate(object):
         try:
             self.messageQueueDisconnected()
         except Exception:  # nocoverage
-            self.client.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
 
     def messageQueueDisconnected(self):
         pass
@@ -887,10 +855,7 @@ class APIClient(object):
             #
 
             # 0.2.10 or newer
-            if (
-                semver.VersionInfo.parse(typeworld.api.VERSION).compare("0.2.10-beta")
-                >= 0
-            ):
+            if semver.VersionInfo.parse(typeworld.api.VERSION).compare("0.2.10-beta") >= 0:
                 # Delete all resources
                 for publisher in self.publishers():
                     for subscription in publisher.subscriptions():
@@ -898,9 +863,7 @@ class APIClient(object):
                 self.remove("resources")
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def __repr__(self):
         return f'<APIClient user="{self.user()}">'
@@ -910,18 +873,14 @@ class APIClient(object):
             assert abc  # noqa: F821
 
         except Exception as e:
-            self.handleTraceback(
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)
 
     def tracebackTest2(self):
         try:
             assert abc  # noqa: F821
 
         except Exception:
-            self.handleTraceback(
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name)
-            )
+            self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))
 
     def wentOnline(self):
         success, message = self.downloadSettings(performCommands=True)
@@ -957,9 +916,7 @@ class APIClient(object):
             self.zmqSocket.connect(target)
 
             self._zmqRunning = True
-            self.zmqListenerThread = threading.Thread(
-                target=self.zmqListener, daemon=True
-            )
+            self.zmqListenerThread = threading.Thread(target=self.zmqListener, daemon=True)
             self.zmqListenerThread.start()
 
             # MONITOR
@@ -1002,9 +959,7 @@ class APIClient(object):
                 if status in error:
                     self.delegate._messageQueueError(status=status)
                 if status in lostConnection:
-                    zmqRestartThread = threading.Thread(
-                        target=self.delegate._messageQueueLostConnection, daemon=True
-                    )
+                    zmqRestartThread = threading.Thread(target=self.delegate._messageQueueLostConnection, daemon=True)
                     zmqRestartThread.start()
                     # self.delegate._messageQueueLostConnection()
                 if status in connected:
@@ -1098,9 +1053,7 @@ class APIClient(object):
                     self.delegate._userAccountUpdateNotificationHasBeenReceived()
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     # def clearPendingOnlineCommands(self):
     # 	commands = self.get('pendingOnlineCommands') or {}
@@ -1147,31 +1100,23 @@ class APIClient(object):
 
     def get(self, key):
         try:
-            return self._preferences.get(
-                "world.type.guiapp." + key
-            ) or self._preferences.get(key)
+            return self._preferences.get("world.type.guiapp." + key) or self._preferences.get(key)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def set(self, key, value):
         try:
             self._preferences.set("world.type.guiapp." + key, value)
             self.delegate._clientPreferenceChanged(key, value)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def remove(self, key):
         try:
             self._preferences.remove("world.type.guiapp." + key)
             self._preferences.remove(key)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performRequest(self, url, parameters={}, method="POST"):
 
@@ -1212,9 +1157,7 @@ class APIClient(object):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def acceptedInvitations(self):
         try:
@@ -1226,9 +1169,7 @@ class APIClient(object):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def sentInvitations(self):
         try:
@@ -1240,9 +1181,7 @@ class APIClient(object):
                     _list.append(invitation)
             return _list
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def secretSubscriptionURLs(self):
         try:
@@ -1256,9 +1195,7 @@ class APIClient(object):
             return _list
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def unsecretSubscriptionURLs(self):
         try:
@@ -1270,17 +1207,13 @@ class APIClient(object):
 
             return _list
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def timezone(self):
         try:
             return strftime("%z", gmtime())
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def syncProblems(self):
         return self._syncProblems
@@ -1313,9 +1246,7 @@ class APIClient(object):
             return parameters
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def online(self, server=None):
         try:
@@ -1332,10 +1263,7 @@ class APIClient(object):
             if not server.startswith("http"):
                 server = "http://" + server
 
-            if (
-                server in self.lastOnlineCheck
-                and type(self.lastOnlineCheck[server]) is float
-            ):
+            if server in self.lastOnlineCheck and type(self.lastOnlineCheck[server]) is float:
                 if time.time() - self.lastOnlineCheck[server] < 10:
                     return True
 
@@ -1372,9 +1300,7 @@ class APIClient(object):
             return True
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def appendCommands(self, commandName, commandsList=["pending"]):
         try:
@@ -1403,9 +1329,7 @@ class APIClient(object):
             self.set("pendingOnlineCommands", commands)
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performCommands(self):
         log = False
@@ -1454,9 +1378,7 @@ class APIClient(object):
 
                 # syncSubscriptions
                 if "syncSubscriptions" in commands and commands["syncSubscriptions"]:
-                    success, message = self.performSyncSubscriptions(
-                        commands["syncSubscriptions"]
-                    )
+                    success, message = self.performSyncSubscriptions(commands["syncSubscriptions"])
                     if log:
                         print("syncSubscriptions")
 
@@ -1468,13 +1390,8 @@ class APIClient(object):
                         self._syncProblems.append(message)
 
                 # uploadSubscriptions
-                if (
-                    "uploadSubscriptions" in commands
-                    and commands["uploadSubscriptions"]
-                ):
-                    success, message = self.perfomUploadSubscriptions(
-                        commands["uploadSubscriptions"]
-                    )
+                if "uploadSubscriptions" in commands and commands["uploadSubscriptions"]:
+                    success, message = self.perfomUploadSubscriptions(commands["uploadSubscriptions"])
                     if log:
                         print("uploadSubscriptions")
 
@@ -1487,9 +1404,7 @@ class APIClient(object):
 
                 # acceptInvitation
                 if "acceptInvitation" in commands and commands["acceptInvitation"]:
-                    success, message = self.performAcceptInvitation(
-                        commands["acceptInvitation"]
-                    )
+                    success, message = self.performAcceptInvitation(commands["acceptInvitation"])
                     if log:
                         print("acceptInvitation")
 
@@ -1502,9 +1417,7 @@ class APIClient(object):
 
                 # declineInvitation
                 if "declineInvitation" in commands and commands["declineInvitation"]:
-                    success, message = self.performDeclineInvitation(
-                        commands["declineInvitation"]
-                    )
+                    success, message = self.performDeclineInvitation(commands["declineInvitation"])
                     if log:
                         print("declineInvitation")
 
@@ -1516,10 +1429,7 @@ class APIClient(object):
                         self._syncProblems.append(message)
 
                 # downloadSubscriptions
-                if (
-                    "downloadSubscriptions" in commands
-                    and commands["downloadSubscriptions"]
-                ):
+                if "downloadSubscriptions" in commands and commands["downloadSubscriptions"]:
                     success, message = self.performDownloadSubscriptions()
                     if log:
                         print("downloadSubscriptions")
@@ -1561,16 +1471,12 @@ class APIClient(object):
                 )
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def uploadSubscriptions(self, performCommands=True):
         try:
 
-            self.appendCommands(
-                "uploadSubscriptions", self.secretSubscriptionURLs() or ["empty"]
-            )
+            self.appendCommands("uploadSubscriptions", self.secretSubscriptionURLs() or ["empty"])
             # self.appendCommands("downloadSubscriptions")
 
             success, message = True, None
@@ -1579,9 +1485,7 @@ class APIClient(object):
             return success, message
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def perfomUploadSubscriptions(self, oldURLs):
 
@@ -1605,13 +1509,13 @@ class APIClient(object):
                     "secretKey": self.secretKey(),
                 }
 
-                success, response, responseObject = self.performRequest(
+                success, response, headers = self.performRequest(
                     self.mothership + "/uploadUserSubscriptions", parameters
                 )
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -1625,9 +1529,7 @@ class APIClient(object):
             # Success
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def downloadSubscriptions(self, performCommands=True):
 
@@ -1641,9 +1543,7 @@ class APIClient(object):
                 return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performDownloadSubscriptions(self):
         try:
@@ -1664,7 +1564,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -1681,9 +1581,7 @@ class APIClient(object):
 
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def executeDownloadSubscriptions(self, response):
         try:
@@ -1697,9 +1595,7 @@ class APIClient(object):
 
             # Verified Email Address
             if "userAccountEmailIsVerified" in response:
-                self.set(
-                    "userAccountEmailIsVerified", response["userAccountEmailIsVerified"]
-                )
+                self.set("userAccountEmailIsVerified", response["userAccountEmailIsVerified"])
 
             # USer Account Status
             if "userAccountStatus" in response:
@@ -1719,10 +1615,7 @@ class APIClient(object):
 
                 # Incoming server timestamp
                 incomingServerTimestamp = None
-                if (
-                    "serverTimestamp" in incomingSubscription
-                    and incomingSubscription["serverTimestamp"]
-                ):
+                if "serverTimestamp" in incomingSubscription and incomingSubscription["serverTimestamp"]:
                     incomingServerTimestamp = incomingSubscription["serverTimestamp"]
 
                 # Add new subscription
@@ -1736,15 +1629,12 @@ class APIClient(object):
                         if incomingServerTimestamp:
                             subscription.set("serverTimestamp", incomingServerTimestamp)
 
-                        self.delegate._subscriptionHasBeenAdded(
-                            subscription, remotely=True
-                        )
+                        self.delegate._subscriptionHasBeenAdded(subscription, remotely=True)
 
                     else:
                         return (
                             False,
-                            "Received from self.addSubscription() for %s: %s"
-                            % (incomingSubscription["url"], message),
+                            "Received from self.addSubscription() for %s: %s" % (incomingSubscription["url"], message),
                         )
 
                 # Update subscription
@@ -1752,27 +1642,18 @@ class APIClient(object):
                     subscription = None
                     for publisher in self.publishers():
                         for subscription in publisher.subscriptions():
-                            if (
-                                subscription.url
-                                == URL(incomingSubscription["url"]).unsecretURL()
-                            ):
+                            if subscription.url == URL(incomingSubscription["url"]).unsecretURL():
                                 break
 
                     if (
                         incomingServerTimestamp
                         and subscription.get("serverTimestamp")
-                        and int(incomingServerTimestamp)
-                        > int(subscription.get("serverTimestamp"))
-                    ) or (
-                        incomingServerTimestamp
-                        and not subscription.get("serverTimestamp")
-                    ):
+                        and int(incomingServerTimestamp) > int(subscription.get("serverTimestamp"))
+                    ) or (incomingServerTimestamp and not subscription.get("serverTimestamp")):
                         success, message, changes = subscription.update()
 
                         if success:
-                            subscription.set(
-                                "serverTimestamp", int(incomingServerTimestamp)
-                            )
+                            subscription.set("serverTimestamp", int(incomingServerTimestamp))
 
             def replace_item(obj, key, replace_value):
                 for k, v in obj.items():
@@ -1817,9 +1698,7 @@ class APIClient(object):
 
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def acceptInvitation(self, url):
         try:
@@ -1829,9 +1708,7 @@ class APIClient(object):
 
             return self.performCommands()
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performAcceptInvitation(self, urls):
         try:
@@ -1863,7 +1740,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -1877,9 +1754,7 @@ class APIClient(object):
                 # Success
                 return self.executeDownloadSubscriptions(response)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def declineInvitation(self, url):
         try:
@@ -1891,9 +1766,7 @@ class APIClient(object):
             return self.performCommands()
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performDeclineInvitation(self, urls):
         try:
@@ -1925,7 +1798,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -1939,15 +1812,11 @@ class APIClient(object):
                 # Success
                 return self.executeDownloadSubscriptions(response)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def syncSubscriptions(self, performCommands=True):
         try:
-            self.appendCommands(
-                "syncSubscriptions", self.secretSubscriptionURLs() or ["empty"]
-            )
+            self.appendCommands("syncSubscriptions", self.secretSubscriptionURLs() or ["empty"])
 
             if performCommands:
                 return self.performCommands()
@@ -1955,9 +1824,7 @@ class APIClient(object):
                 return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performSyncSubscriptions(self, oldURLs):
         try:
@@ -1983,7 +1850,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -2013,9 +1880,7 @@ class APIClient(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def downloadSettings(self, performCommands=True):
         try:
@@ -2028,9 +1893,7 @@ class APIClient(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performDownloadSettings(self):
         try:
@@ -2041,13 +1904,11 @@ class APIClient(object):
                 parameters["anonymousUserID"] = self.user()
                 parameters["secretKey"] = self.secretKey()
 
-            success, response, responseObject = self.performRequest(
-                self.mothership + "/downloadSettings", parameters
-            )
+            success, response, responseObject = self.performRequest(self.mothership + "/downloadSettings", parameters)
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2064,45 +1925,33 @@ class APIClient(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def user(self):
         try:
             return self.get("typeworldUserAccount") or ""
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def userKeychainKey(self, ID):
         try:
             return "https://%s@%s.type.world" % (ID, self.anonymousAppID())
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def secretKey(self, userID=None):
         try:
             keyring = self.keyring()
-            return keyring.get_password(
-                self.userKeychainKey(userID or self.user()), "secretKey"
-            )
+            return keyring.get_password(self.userKeychainKey(userID or self.user()), "secretKey")
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def userName(self):
         try:
             keyring = self.keyring()
             return keyring.get_password(self.userKeychainKey(self.user()), "userName")
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def userEmail(self):
         try:
@@ -2110,9 +1959,7 @@ class APIClient(object):
             return keyring.get_password(self.userKeychainKey(self.user()), "userEmail")
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def createUserAccount(self, name, email, password1, password2):
         try:
@@ -2138,7 +1985,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -2159,9 +2006,7 @@ class APIClient(object):
                 )
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def deleteUserAccount(self, email, password):
         try:
@@ -2189,7 +2034,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -2210,9 +2055,7 @@ class APIClient(object):
                     ["#(response.notOnline)", "#(response.notOnline.headline)"],
                 )
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def resendEmailVerification(self):
         try:
@@ -2227,7 +2070,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2242,9 +2085,7 @@ class APIClient(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def logInUserAccount(self, email, password):
         try:
@@ -2264,7 +2105,7 @@ class APIClient(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] != "success":
                     return (
@@ -2284,9 +2125,7 @@ class APIClient(object):
                 )
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def linkUser(self, userID, secretKey):
         try:
@@ -2301,9 +2140,7 @@ class APIClient(object):
 
             return self.performCommands()
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performLinkUser(self, userID):
         try:
@@ -2322,7 +2159,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2343,20 +2180,14 @@ class APIClient(object):
 
             keyring = self.keyring()
             if "userEmail" in response:
-                keyring.set_password(
-                    self.userKeychainKey(userID), "userEmail", response["userEmail"]
-                )
+                keyring.set_password(self.userKeychainKey(userID), "userEmail", response["userEmail"])
             if "userName" in response:
-                keyring.set_password(
-                    self.userKeychainKey(userID), "userName", response["userName"]
-                )
+                keyring.set_password(self.userKeychainKey(userID), "userName", response["userName"])
 
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def linkedAppInstances(self):
         try:
@@ -2369,13 +2200,11 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response, responseObject = self.performRequest(
-                self.mothership + "/userAppInstances", parameters
-            )
+            success, response, responseObject = self.performRequest(self.mothership + "/userAppInstances", parameters)
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2403,9 +2232,7 @@ class APIClient(object):
 
             return True, instances
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def revokeAppInstance(self, anonymousAppID=None):
         try:
@@ -2418,13 +2245,11 @@ class APIClient(object):
                 "secretKey": self.secretKey(),
             }
 
-            success, response, responseObject = self.performRequest(
-                self.mothership + "/revokeAppInstance", parameters
-            )
+            success, response, responseObject = self.performRequest(self.mothership + "/revokeAppInstance", parameters)
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2437,9 +2262,7 @@ class APIClient(object):
 
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def reactivateAppInstance(self, anonymousAppID=None):
         try:
@@ -2459,7 +2282,7 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             if response["response"] != "success":
                 return (
@@ -2472,18 +2295,14 @@ class APIClient(object):
 
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def unlinkUser(self):
         try:
             self.appendCommands("unlinkUser")
             return self.performCommands()
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def uninstallAllProtectedFonts(self, dryRun=False):
         try:
@@ -2505,32 +2324,22 @@ class APIClient(object):
 
                                 # Dry run from central server: add all fonts to list
                                 if dryRun and font.protected:
-                                    fontIDs.append(
-                                        font.uniqueID
-                                    )  # nocoverage (This is executed only when the
+                                    fontIDs.append(font.uniqueID)  # nocoverage (This is executed only when the
                                     # central server uninstalls *all* fonts)
 
                                 # Run from local client, add only actually installed
                                 # fonts
-                                elif (
-                                    not dryRun
-                                    and font.protected
-                                    and subscription.installedFontVersion(font=font)
-                                ):
+                                elif not dryRun and font.protected and subscription.installedFontVersion(font=font):
                                     fontIDs.append(font.uniqueID)
 
                     if fontIDs:
-                        success, message = subscription.removeFonts(
-                            fontIDs, dryRun=dryRun, updateSubscription=False
-                        )
+                        success, message = subscription.removeFonts(fontIDs, dryRun=dryRun, updateSubscription=False)
                         if not success:
                             return False, message
 
             return True, None
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def performUnlinkUser(self):
         try:
@@ -2552,13 +2361,10 @@ class APIClient(object):
             if not success:
                 return False, response
 
-            response = json.loads(response.decode())
+            response = json.loads(response)
 
             continueFor = ["userUnknown"]
-            if (
-                response["response"] != "success"
-                and not response["response"] in continueFor
-            ):
+            if response["response"] != "success" and not response["response"] in continueFor:
                 return (
                     False,
                     [
@@ -2586,9 +2392,7 @@ class APIClient(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def systemLocale(self):
         try:
@@ -2597,9 +2401,7 @@ class APIClient(object):
                 if MAC:
                     from AppKit import NSLocale
 
-                    self._systemLocale = str(
-                        NSLocale.preferredLanguages()[0].split("_")[0].split("-")[0]
-                    )
+                    self._systemLocale = str(NSLocale.preferredLanguages()[0].split("_")[0].split("-")[0])
                 else:
                     import locale
 
@@ -2607,9 +2409,7 @@ class APIClient(object):
 
             return self._systemLocale
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def locale(self):
         try:
@@ -2630,9 +2430,7 @@ class APIClient(object):
 
             return _locale
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def expiringInstalledFonts(self):
         try:
@@ -2642,9 +2440,7 @@ class APIClient(object):
                     fonts.extend(subscription.expiringInstalledFonts())
             return fonts
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def amountOutdatedFonts(self):
         try:
@@ -2653,9 +2449,7 @@ class APIClient(object):
                 amount += publisher.amountOutdatedFonts()
             return amount
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def keyring(self):
         try:
@@ -2672,15 +2466,11 @@ class APIClient(object):
 
             if MAC:  # nocoverage
                 if self.inCompiledApp:
-                    keyring.core.set_keyring(
-                        keyring.core.load_keyring("keyring.backends.macOS.Keyring")
-                    )  # nocoverage
+                    keyring.core.set_keyring(keyring.core.load_keyring("keyring.backends.macOS.Keyring"))  # nocoverage
 
             elif WIN:  # nocoverage
                 keyring.core.set_keyring(
-                    keyring.core.load_keyring(
-                        "keyring.backends.Windows.WinVaultKeyring"
-                    )
+                    keyring.core.load_keyring("keyring.backends.Windows.WinVaultKeyring")
                 )  # nocoverage
 
             elif LINUX:  # nocoverage
@@ -2691,9 +2481,7 @@ class APIClient(object):
             return keyring  # nocoverage
 
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def handleTraceback(self, file=None, sourceMethod=None, e=None):
 
@@ -2729,9 +2517,7 @@ Version: {typeworld.api.VERSION}
                     .replace("\\", "/")
                     .replace("TypeWorld.exe", "app.py")
                 )
-            payload = removePathPrefix(payload, "typeworld/client/", __file__).replace(
-                "\\", "/"
-            )
+            payload = removePathPrefix(payload, "typeworld/client/", __file__).replace("\\", "/")
             payload = removePathPrefix(payload, "app.py", file).replace("\\", "/")
 
             # Create supplementary information
@@ -2767,11 +2553,7 @@ Version: {typeworld.api.VERSION}
                         "filename": str(s.filename),
                         "lineno": str(s.lineno),
                         "function": str(s.function),
-                        "code_context": str(
-                            s.code_context[0].replace("\t", " ").rstrip()
-                        )
-                        if s.code_context
-                        else None,
+                        "code_context": str(s.code_context[0].replace("\t", " ").rstrip()) if s.code_context else None,
                     }
                 )
             for s in inspect.trace():
@@ -2780,11 +2562,7 @@ Version: {typeworld.api.VERSION}
                         "filename": str(s.filename),
                         "lineno": str(s.lineno),
                         "function": str(s.function),
-                        "code_context": str(
-                            s.code_context[0].replace("\t", " ").rstrip()
-                        )
-                        if s.code_context
-                        else None,
+                        "code_context": str(s.code_context[0].replace("\t", " ").rstrip()) if s.code_context else None,
                     }
                 )
 
@@ -2808,26 +2586,18 @@ Version: {typeworld.api.VERSION}
                     self.mothership + "/handleTraceback", parameters
                 )
                 if success:
-                    response = json.loads(response.decode())
+                    response = json.loads(response)
                     if response["response"] != "success":
-                        self.log(
-                            "handleTraceback() error on server, step 2: %s" % response
-                        )
+                        self.log("handleTraceback() error on server, step 2: %s" % response)
                 if not success:
                     self.log("handleTraceback() error on server, step 1: %s" % response)
 
-            handleTracebackThread = threading.Thread(
-                target=handleTracebackWorker, args=(self,)
-            )
+            handleTracebackThread = threading.Thread(target=handleTracebackWorker, args=(self,))
             handleTracebackThread.start()
 
             # Log
             if sourceMethod:
-                self.log(
-                    payload
-                    + "\nMethod signature:\n"
-                    + supplementary["sourceMethodSignature"]
-                )
+                self.log(payload + "\nMethod signature:\n" + supplementary["sourceMethodSignature"])
             else:
                 self.log(payload)  # nocoverage  # nocoverage  # nocoverage
                 # (currently not testing for calling this method without a sourceMethod
@@ -2855,9 +2625,7 @@ Version: {typeworld.api.VERSION}
 
             return True
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
     # def deleteResources(self, urls):
@@ -2934,9 +2702,7 @@ Version: {typeworld.api.VERSION}
 
             return anonymousAppID
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def endpointCommand(self, url):
         try:
@@ -2951,14 +2717,10 @@ Version: {typeworld.api.VERSION}
             # Get Root Command
             return protocol.endpointCommand(testScenario=self.testScenario)
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def reportAPIEndpointError(self, url):
-        reportThread = threading.Thread(
-            target=self.reportAPIEndpointErrorWorker, args=(url,)
-        )
+        reportThread = threading.Thread(target=self.reportAPIEndpointErrorWorker, args=(url,))
         reportThread.start()
 
     def reportAPIEndpointErrorWorker(self, url):
@@ -3027,25 +2789,19 @@ Version: {typeworld.api.VERSION}
                     return False, message, None, None
 
                 # endpointCommand
-                success, endpointCommand = protocol.endpointCommand(
-                    testScenario=self.testScenario
-                )
+                success, endpointCommand = protocol.endpointCommand(testScenario=self.testScenario)
                 assert success
                 assert endpointCommand
 
                 # Breaking API Version Check
                 if "breakingAPIVersions" in self.get("downloadedSettings"):
-                    breakingVersions = copy.copy(
-                        self.get("downloadedSettings")["breakingAPIVersions"]
-                    )
+                    breakingVersions = copy.copy(self.get("downloadedSettings")["breakingAPIVersions"])
                     if self.testScenario == "simulateBreakingAPIVersion":
                         versionParts = breakingVersions[-1].split(".")
                         versionParts[0] = str(int(versionParts[0]) + 1)
                         breakingVersions.append(".".join(versionParts))
 
-                    success, rootCommand = protocol.rootCommand(
-                        testScenario=self.testScenario
-                    )
+                    success, rootCommand = protocol.rootCommand(testScenario=self.testScenario)
                     assert success
                     assert rootCommand
                     incomingVersion = rootCommand.version
@@ -3053,17 +2809,10 @@ Version: {typeworld.api.VERSION}
                     for breakingVersion in breakingVersions:
                         # Breaking version is higher than local API version
                         if (
-                            semver.VersionInfo.parse(breakingVersion).compare(
-                                typeworld.api.VERSION
-                            )
+                            semver.VersionInfo.parse(breakingVersion).compare(typeworld.api.VERSION)
                             == 1
                             # Incoming version is higher than breaking
-                        ) and (
-                            semver.VersionInfo.parse(incomingVersion).compare(
-                                breakingVersion
-                            )
-                            == 1
-                        ):
+                        ) and (semver.VersionInfo.parse(incomingVersion).compare(breakingVersion) == 1):
                             if reportErrors:
                                 self.reportAPIEndpointError(url)
                             return (
@@ -3077,10 +2826,7 @@ Version: {typeworld.api.VERSION}
                             )
 
                 # Commercial app check
-                if (
-                    self.commercial
-                    and self.appID not in endpointCommand.allowedCommercialApps
-                ):
+                if self.commercial and self.appID not in endpointCommand.allowedCommercialApps:
                     if reportErrors:
                         self.reportAPIEndpointError(url)
                     return (
@@ -3116,9 +2862,7 @@ Version: {typeworld.api.VERSION}
             return True, None, publisher, subscription
 
         except Exception as e:  # nocoverage
-            self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
             return False, traceback.format_exc(), None, None
 
@@ -3133,9 +2877,7 @@ Version: {typeworld.api.VERSION}
 
             return self._publishers[canonicalURL]
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def publishers(self):
         try:
@@ -3150,9 +2892,7 @@ Version: {typeworld.api.VERSION}
             else:
                 return []
         except Exception as e:  # nocoverage
-            return self.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def files(self):
         "Returns list of all resource URLs"
@@ -3195,17 +2935,13 @@ class APIPublisher(object):
 
                 return tempfile.gettempdir()
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def stillUpdating(self):
         try:
             return len(self._updatingSubscriptions) > 0
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def updatingProblem(self):
         try:
@@ -3221,9 +2957,7 @@ class APIPublisher(object):
                 return problems
 
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def name(self, locale=["en"]):
 
@@ -3232,17 +2966,13 @@ class APIPublisher(object):
             if endpointCommand:
                 return endpointCommand.name.getTextAndLocale(locale=locale)
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def amountInstalledFonts(self):
         try:
             return len(self.installedFonts())
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def installedFonts(self):
         try:
@@ -3255,17 +2985,13 @@ class APIPublisher(object):
 
             return _list
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def amountOutdatedFonts(self):
         try:
             return len(self.outdatedFonts())
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def outdatedFonts(self):
         try:
@@ -3278,9 +3004,7 @@ class APIPublisher(object):
 
             return _list
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     # def currentSubscription(self):
     # 	if self.get('currentSubscription'):
@@ -3302,9 +3026,7 @@ class APIPublisher(object):
 
                 return o
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def set(self, key, value):
         try:
@@ -3312,9 +3034,7 @@ class APIPublisher(object):
             preferences[key] = value
             self.parent.set("publisher(%s)" % self.canonicalURL, preferences)
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     # def addGitHubSubscription(self, url, commits):
 
@@ -3353,9 +3073,7 @@ class APIPublisher(object):
             return self._subscriptions[url]
 
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def subscriptions(self):
         try:
@@ -3366,9 +3084,7 @@ class APIPublisher(object):
                         subscriptions.append(self.subscription(url))
             return subscriptions
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def update(self):
         try:
@@ -3395,9 +3111,7 @@ class APIPublisher(object):
                     False,
                 )
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def save(self):
         try:
@@ -3406,9 +3120,7 @@ class APIPublisher(object):
                 publishers.append(self.canonicalURL)
             self.parent.set("publishers", publishers)
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     # # DEPRECATED, since resources are now handled by GUI since 0.2.10-beta
     # def resourceByURL(self, url, binary=False, update=False):
@@ -3437,9 +3149,7 @@ class APIPublisher(object):
 
             if not calledFromSubscription:
                 for subscription in self.subscriptions():
-                    success, message = subscription.delete(
-                        calledFromParent=True, remotely=False
-                    )
+                    success, message = subscription.delete(calledFromParent=True, remotely=False)
                     if not success:
                         return False, message
 
@@ -3464,9 +3174,7 @@ class APIPublisher(object):
             return True, None
 
         except Exception as e:  # nocoverage
-            self.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
+            self.parent.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
     def files(self):
         "Returns list of all resource URLs that the publisher may have loaded"
@@ -3498,9 +3206,7 @@ class APISubscription(object):
             # ZMQ
             if self.parent.parent._isSetOnline and self.parent.parent.zmqSubscriptions:
                 self.parent.parent.zmqSetup()
-                self.parent.parent.registerZMQCallback(
-                    self.zmqTopic(), self.zmqCallback
-                )
+                self.parent.parent.registerZMQCallback(self.zmqTopic(), self.zmqCallback)
 
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
@@ -3508,9 +3214,7 @@ class APISubscription(object):
             )
 
     def zmqTopic(self):
-        return "subscription-%s" % urllib.parse.quote_plus(
-            self.protocol.shortUnsecretURL()
-        )
+        return "subscription-%s" % urllib.parse.quote_plus(self.protocol.shortUnsecretURL())
 
     def __repr__(self):
         return f'<APISubscription url="{self.url}">'
@@ -3540,8 +3244,7 @@ class APISubscription(object):
                     and "sourceAnonymousAppID" not in data
                     or (
                         "sourceAnonymousAppID" in data
-                        and data["sourceAnonymousAppID"]
-                        != self.parent.parent.anonymousAppID()
+                        and data["sourceAnonymousAppID"] != self.parent.parent.anonymousAppID()
                     )
                 ):
 
@@ -3584,7 +3287,7 @@ class APISubscription(object):
     # 		if not success:
     # 			return False, response
 
-    # 		response = json.loads(response.decode())
+    # 		response = json.loads(response)
 
     # 		if response['response'] != 'success':
     # 			return False, ['#(response.%s)' % response['response'], '#(response.%s.
@@ -3634,15 +3337,13 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
             # Touch only once
             if not self.parent.parent.user():
                 if not self.stillAliveTouched:
 
-                    stillAliveThread = threading.Thread(
-                        target=stillAliveWorker, args=(self,)
-                    )
+                    stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self,))
                     stillAliveThread.start()
 
                     self.stillAliveTouched = time.time()
@@ -3673,7 +3374,7 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
                 # print(response)
 
                 if response["response"] == "success":
@@ -3715,7 +3416,7 @@ class APISubscription(object):
                 if not success:
                     return False, response
 
-                response = json.loads(response.decode())
+                response = json.loads(response)
 
                 if response["response"] == "success":
                     return True, None
@@ -3896,10 +3597,7 @@ class APISubscription(object):
                 for family in foundry.families:
                     for font in family.fonts:
                         installedFontVersion = self.installedFontVersion(font=font)
-                        if (
-                            installedFontVersion
-                            and installedFontVersion != font.getVersions()[-1].number
-                        ):
+                        if installedFontVersion and installedFontVersion != font.getVersions()[-1].number:
                             if font not in _list:
                                 _list.append(font.uniqueID)
             return _list
@@ -3917,9 +3615,7 @@ class APISubscription(object):
                 font = self.fontByID(fontID)
 
             for version in font.getVersions():
-                path = os.path.join(
-                    folder, self.uniqueID() + "-" + font.filename(version.number)
-                )
+                path = os.path.join(folder, self.uniqueID() + "-" + font.filename(version.number))
                 if os.path.exists(path):
                     return version.number
 
@@ -3970,10 +3666,7 @@ class APISubscription(object):
                     # Test for permissions here
                     if not dryRun:
                         try:
-                            if (
-                                self.parent.parent.testScenario
-                                == "simulatePermissionError"
-                            ):
+                            if self.parent.parent.testScenario == "simulatePermissionError":
                                 raise PermissionError
                             else:
                                 if not os.path.exists(os.path.dirname(path)):
@@ -4021,10 +3714,7 @@ class APISubscription(object):
                     if len(payload.assets) == 0:
                         return (
                             False,
-                            (
-                                "No fonts to uninstall in .assets, expected "
-                                f"{len(uninstallTheseProtectedFontIDs)} assets"
-                            ),
+                            f"No fonts to uninstall in .assets, expected {len(uninstallTheseProtectedFontIDs)} assets",
                         )
 
                     # Process fonts
@@ -4038,16 +3728,12 @@ class APISubscription(object):
                                 pass
 
                             # Predefined response messages
-                            elif (
-                                incomingFont.response != "error"
-                                and incomingFont.response != "success"
-                            ):
+                            elif incomingFont.response != "error" and incomingFont.response != "success":
                                 return (
                                     False,
                                     [
                                         "#(response.%s)" % incomingFont.response,
-                                        "#(response.%s.headline)"
-                                        % incomingFont.response,
+                                        "#(response.%s.headline)" % incomingFont.response,
                                     ],
                                 )
 
@@ -4058,15 +3744,11 @@ class APISubscription(object):
 
                                 path = None
                                 font = self.fontByID(incomingFont.uniqueID)
-                                installedFontVersion = self.installedFontVersion(
-                                    font=font
-                                )
+                                installedFontVersion = self.installedFontVersion(font=font)
                                 if installedFontVersion:
                                     path = os.path.join(
                                         folder,
-                                        self.uniqueID()
-                                        + "-"
-                                        + font.filename(installedFontVersion),
+                                        self.uniqueID() + "-" + font.filename(installedFontVersion),
                                     )
 
                                 if self.parent.parent.testScenario == "simulateNoPath":
@@ -4075,23 +3757,16 @@ class APISubscription(object):
                                 if not path and not dryRun:
                                     return (
                                         False,
-                                        (
-                                            "Font path couldn’t be determined "
-                                            "(deleting unprotected fonts)"
-                                        ),
+                                        "Font path couldn’t be determined (deleting unprotected fonts)",
                                     )
 
                                 if not dryRun:
                                     os.remove(path)
 
-                                self.parent.parent.delegate._fontHasUninstalled(
-                                    True, None, font
-                                )
+                                self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
                 else:
-                    self.parent.parent.delegate._fontHasUninstalled(
-                        False, payload, font
-                    )
+                    self.parent.parent.delegate._fontHasUninstalled(False, payload, font)
                     return False, payload
 
             # Unprotected fonts
@@ -4114,10 +3789,7 @@ class APISubscription(object):
                     if not path and not dryRun:
                         return (
                             False,
-                            (
-                                "Font path couldn’t be determined (deleting "
-                                "unprotected fonts)"
-                            ),
+                            "Font path couldn’t be determined (deleting unprotected fonts)",
                         )
 
                     if not dryRun:
@@ -4162,9 +3834,7 @@ class APISubscription(object):
 
                 path = None
                 font = self.fontByID(fontID)
-                path = os.path.join(
-                    folder, self.uniqueID() + "-" + font.filename(version)
-                )
+                path = os.path.join(folder, self.uniqueID() + "-" + font.filename(version))
                 if font.protected or font.expiry or font.expiryDuration:
                     protectedFonts = True
 
@@ -4195,9 +3865,7 @@ class APISubscription(object):
                 installTheseFontIDs.append(fontID)
 
             # Server access
-            success, payload = self.protocol.installFonts(
-                fonts, updateSubscription=protectedFonts
-            )
+            success, payload = self.protocol.installFonts(fonts, updateSubscription=protectedFonts)
 
             font = None
             if success:
@@ -4206,24 +3874,16 @@ class APISubscription(object):
                 if len(payload.assets) == 0:
                     return (
                         False,
-                        (
-                            "No fonts to install in .assets, expected "
-                            f"{len(installTheseFontIDs)} assets"
-                        ),
+                        f"No fonts to install in .assets, expected {len(installTheseFontIDs)} assets",
                     )
 
                 # Check if all requested fonts and fontVersions
                 # are present in the assets
                 for fontID, version in fonts:
-                    if not [fontID, version] in [
-                        [x.uniqueID, x.version] for x in payload.assets
-                    ]:
+                    if not [fontID, version] in [[x.uniqueID, x.version] for x in payload.assets]:
                         return (
                             False,
-                            (
-                                f"Font {fontID} with version {version} "
-                                "not found in assets"
-                            ),
+                            f"Font {fontID} with version {version} not found in assets",
                         )
 
                 # Process fonts
@@ -4235,10 +3895,7 @@ class APISubscription(object):
                             return False, incomingFont.errorMessage
 
                         # Predefined response messages
-                        elif (
-                            incomingFont.response != "error"
-                            and incomingFont.response != "success"
-                        ):
+                        elif incomingFont.response != "error" and incomingFont.response != "success":
                             return (
                                 False,
                                 [
@@ -4253,9 +3910,7 @@ class APISubscription(object):
                             font = self.fontByID(incomingFont.uniqueID)
                             path = os.path.join(
                                 folder,
-                                self.uniqueID()
-                                + "-"
-                                + font.filename(versionByFont[incomingFont.uniqueID]),
+                                self.uniqueID() + "-" + font.filename(versionByFont[incomingFont.uniqueID]),
                             )
                             assert path
 
@@ -4274,9 +3929,7 @@ class APISubscription(object):
                                     success,
                                     response,
                                     responseObject,
-                                ) = self.parent.parent.performRequest(
-                                    incomingFont.dataURL, method="GET"
-                                )
+                                ) = self.parent.parent.performRequest(incomingFont.dataURL, method="GET")
 
                                 if not success:
                                     return False, response
@@ -4286,9 +3939,7 @@ class APISubscription(object):
                                     f.write(response)
                                     f.close()
 
-                            self.parent.parent.delegate._fontHasInstalled(
-                                True, None, font
-                            )
+                            self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
                 # Ping
                 self.stillAlive()
@@ -4322,18 +3973,14 @@ class APISubscription(object):
                 self.parent.parent._subscriptionsUpdated.append(self.url)
 
                 if not success:
-                    self.parent.parent.delegate._subscriptionHasBeenUpdated(
-                        self, success, message, changes
-                    )
+                    self.parent.parent.delegate._subscriptionHasBeenUpdated(self, success, message, changes)
                     return success, message, changes
 
                 if changes:
                     self.save()
 
                 # Success
-                self.parent.parent.delegate._subscriptionHasBeenUpdated(
-                    self, True, None, changes
-                )
+                self.parent.parent.delegate._subscriptionHasBeenUpdated(self, True, None, changes)
                 return True, None, changes
 
             else:
@@ -4344,9 +3991,7 @@ class APISubscription(object):
                     "#(response.serverNotReachable.headline)",
                 ]
 
-                self.parent.parent.delegate._subscriptionHasBeenUpdated(
-                    self, False, self._updatingProblem, False
-                )
+                self.parent.parent.delegate._subscriptionHasBeenUpdated(self, False, self._updatingProblem, False)
 
                 return False, self._updatingProblem, False
 
@@ -4366,10 +4011,7 @@ class APISubscription(object):
 
     def get(self, key):
         try:
-            preferences = dict(
-                self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL())
-                or {}
-            )
+            preferences = dict(self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL()) or {})
             if key in preferences:
 
                 o = preferences[key]
@@ -4389,14 +4031,9 @@ class APISubscription(object):
     def set(self, key, value):
         try:
 
-            preferences = dict(
-                self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL())
-                or {}
-            )
+            preferences = dict(self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL()) or {})
             preferences[key] = value
-            self.parent.parent.set(
-                "subscription(%s)" % self.protocol.unsecretURL(), preferences
-            )
+            self.parent.parent.set("subscription(%s)" % self.protocol.unsecretURL(), preferences)
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -4404,15 +4041,10 @@ class APISubscription(object):
 
     def remove(self, key):
         try:
-            preferences = dict(
-                self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL())
-                or {}
-            )
+            preferences = dict(self.parent.parent.get("subscription(%s)" % self.protocol.unsecretURL()) or {})
             if key in preferences:
                 del preferences[key]
-                self.parent.parent.set(
-                    "subscription(%s)" % self.protocol.unsecretURL(), preferences
-                )
+                self.parent.parent.set("subscription(%s)" % self.protocol.unsecretURL(), preferences)
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
