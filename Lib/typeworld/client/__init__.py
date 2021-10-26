@@ -254,7 +254,7 @@ def request(url, parameters={}, method="POST", timeout=30):
             # Thus, we're routing all internal traffic directly to flask via its
             # test_client():
             try:
-                import app
+                import typeworldserver
 
                 print("typeworld in GAE")
 
@@ -268,7 +268,7 @@ def request(url, parameters={}, method="POST", timeout=30):
                     url = url.split("api.type.world")[-1]
                 elif "typeworld2.appspot.com" in url:
                     url = url.split("typeworld2.appspot.com")[-1]
-                with app.app.test_client() as c:
+                with typeworldserver.app.test_client() as c:
                     if method == "POST":
                         response = c.post(url, data=parameters)
                         return True, response.data, response.headers
