@@ -256,11 +256,16 @@ def request(url, parameters={}, method="POST", timeout=30):
             try:
                 import app
 
+                print("typeworld in GAE")
+
                 GAE = True
             except ImportError:
+                print("typeworld not in GAE")
+
                 GAE = False
 
             if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+                print("routing internally")
                 if "api.type.world" in url:
                     url = url.split("api.type.world")[-1]
                 elif "typeworld2.appspot.com" in url:
