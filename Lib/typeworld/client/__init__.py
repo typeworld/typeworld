@@ -19,8 +19,6 @@ import logging
 import inspect
 import re
 from time import gmtime, strftime
-import requests
-import requests.exceptions
 import http.client as httplib
 import stripe.http_client
 
@@ -243,12 +241,46 @@ def request(url, parameters={}, method="POST", timeout=30):
     client = stripe.http_client.new_default_http_client(timeout=timeout)
 
     message = None
+    tries = 10
 
-    for i in range(10):
+    for i in range(tries):
 
         try:
+
+            # This is awkward, but currently the only workaround:
+            # I can't get GAE to accept http requests coming from itself, such as
+            # when typeworld is loaded as a module inside type.world and then
+            # needs to access type.world for communication.
+            # Thus, we're routing all internal traffic directly to flask via its
+            # test_client():
+            try:
+                import app
+
+                GAE = True
+            except ImportError:
+                GAE = False
+
+            if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+                if "api.type.world" in url:
+                    url = url.split("api.type.world")[-1]
+                elif "typeworld2.appspot.com" in url:
+                    url = url.split("typeworld2.appspot.com")[-1]
+                with app.app.test_client() as c:
+                    if method == "POST":
+                        response = c.post(url, data=parameters)
+                        return True, response.data, response.headers
+                    elif method == "GET":
+                        response = c.get(url)
+                        return True, response.data, response.headers
+
             content, status_code, headers = client.request(method, url, {}, parameters)
         except Exception:
+
+            # Continue the loop directly unless this is last round
+            if i < tries - 1:
+                continue
+
+            # Output error message
             if parameters:
                 parameters = copy.copy(parameters)
                 for key in parameters:
@@ -272,60 +304,60 @@ def request(url, parameters={}, method="POST", timeout=30):
         else:
             return False, f"HTTP Error {status_code}", headers
 
-        try:
+        # try:
 
-            # This is awkward, but currently the only workaround:
-            # I can't get GAE to accept http requests coming from itself, such as
-            # when typeworld is loaded as a module inside type.world and then
-            # needs to access type.world for communication.
-            # Thus, we're routing all internal traffic directly to flask via its
-            # test_client():
-            try:
-                import main
+        #     # This is awkward, but currently the only workaround:
+        #     # I can't get GAE to accept http requests coming from itself, such as
+        #     # when typeworld is loaded as a module inside type.world and then
+        #     # needs to access type.world for communication.
+        #     # Thus, we're routing all internal traffic directly to flask via its
+        #     # test_client():
+        #     try:
+        #         import main
 
-                GAE = True
-            except ImportError:
-                GAE = False
+        #         GAE = True
+        #     except ImportError:
+        #         GAE = False
 
-            if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
-                if "api.type.world" in url:
-                    url = url.split("api.type.world")[-1]
-                elif "typeworld2.appspot.com" in url:
-                    url = url.split("typeworld2.appspot.com")[-1]
-                with main.app.test_client() as c:
-                    if method == "POST":
-                        response = c.post(url, data=parameters)
-                        return True, response.data, None
-                    elif method == "GET":
-                        response = c.get(url)
-                        return True, response.data, None
+        #     if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+        #         if "api.type.world" in url:
+        #             url = url.split("api.type.world")[-1]
+        #         elif "typeworld2.appspot.com" in url:
+        #             url = url.split("typeworld2.appspot.com")[-1]
+        #         with main.app.test_client() as c:
+        #             if method == "POST":
+        #                 response = c.post(url, data=parameters)
+        #                 return True, response.data, None
+        #             elif method == "GET":
+        #                 response = c.get(url)
+        #                 return True, response.data, None
 
-            if method == "POST":
-                response = requests.post(url, parameters, timeout=timeout)
-            elif method == "GET":
-                response = requests.get(url, timeout=timeout)
-        except Exception:
-            if parameters:
-                parameters = copy.copy(parameters)
-                for key in parameters:
-                    if key.lower().endswith("key"):
-                        parameters[key] = "*****"
-                    if key.lower().endswith("secret"):
-                        parameters[key] = "*****"
-                message = (
-                    f"Response from {url} with parameters {parameters} after {i+1} tries: "
-                    + traceback.format_exc().splitlines()[-1]
-                )
-            else:
-                message = traceback.format_exc().splitlines()[-1]
-            return False, message, None
-        else:
-            # try:
-            if response.status_code != 200:
-                return False, f"HTTP Error {response.status_code}", response
+        #     if method == "POST":
+        #         response = requests.post(url, parameters, timeout=timeout)
+        #     elif method == "GET":
+        #         response = requests.get(url, timeout=timeout)
+        # except Exception:
+        #     if parameters:
+        #         parameters = copy.copy(parameters)
+        #         for key in parameters:
+        #             if key.lower().endswith("key"):
+        #                 parameters[key] = "*****"
+        #             if key.lower().endswith("secret"):
+        #                 parameters[key] = "*****"
+        #         message = (
+        #             f"Response from {url} with parameters {parameters} after {i+1} tries: "
+        #             + traceback.format_exc().splitlines()[-1]
+        #         )
+        #     else:
+        #         message = traceback.format_exc().splitlines()[-1]
+        #     return False, message, None
+        # else:
+        #     # try:
+        #     if response.status_code != 200:
+        #         return False, f"HTTP Error {response.status_code}", response
 
-            else:
-                return True, response.content, response
+        #     else:
+        #         return True, response.content, response
 
 
 def splitJSONURL(url):
