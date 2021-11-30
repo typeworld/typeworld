@@ -253,35 +253,37 @@ def request(url, parameters={}, method="POST", timeout=30):
             # needs to access type.world for communication.
             # Thus, we're routing all internal traffic directly to flask via its
             # test_client():
-            try:
-                import typeworldserver
+            # try:
+            #     import typeworldserver
 
-                assert typeworldserver
+            #     assert typeworldserver
 
-                # print("typeworld in GAE")
+            #     # print("typeworld in GAE")
 
-                GAE = os.getenv("GAE_ENV", "").startswith("standard")
-            except ImportError:
-                GAE = False
+            #     GAE = os.getenv("GAE_ENV", "").startswith("standard")
+            # except ImportError:
+            #     GAE = False
 
             # target = "typeworld2.ue.r.appspot.com"
             # if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
             #     url = url.replace("api.type.world", target)
             #     url = url.replace("typeworld2.appspot.com", target)
 
-            if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
-                print("routing internally to flask")
-                if "api.type.world" in url:
-                    url = url.split("api.type.world")[-1]
-                elif "typeworld2.appspot.com" in url:
-                    url = url.split("typeworld2.appspot.com")[-1]
-                with typeworldserver.app.test_client() as c:
-                    if method == "POST":
-                        response = c.post(url, data=parameters)
-                        return True, response.data, {"status_code": response.status_code, "headers": response.headers}
-                    elif method == "GET":
-                        response = c.get(url)
-                        return True, response.data, {"status_code": response.status_code, "headers": response.headers}
+            # if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+            #     print("routing internally to flask")
+            #     if "api.type.world" in url:
+            #         url = url.split("api.type.world")[-1]
+            #     elif "typeworld2.appspot.com" in url:
+            #         url = url.split("typeworld2.appspot.com")[-1]
+            #     with typeworldserver.app.test_client() as c:
+            #         if method == "POST":
+            #             response = c.post(url, data=parameters)
+            #             return True, response.data, {"status_code": response.status_code,
+            # "headers": response.headers}
+            #         elif method == "GET":
+            #             response = c.get(url)
+            #             return True, response.data, {"status_code": response.status_code,
+            # "headers": response.headers}
 
             content, status_code, headers = client.request(method, url, {}, parameters)
         except Exception:
