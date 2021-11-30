@@ -256,25 +256,34 @@ def request(url, parameters={}, method="POST", timeout=30):
             try:
                 import typeworldserver
 
-                print("typeworld in GAE")
+                assert typeworldserver
 
-                GAE = True
+                # print("typeworld in GAE")
+
+                GAE = os.getenv("GAE_ENV", "").startswith("standard")
             except ImportError:
                 GAE = False
 
+            target = "typeworld2.ue.r.appspot.com"
             if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
-                print("routing internally to flask")
-                if "api.type.world" in url:
-                    url = url.split("api.type.world")[-1]
-                elif "typeworld2.appspot.com" in url:
-                    url = url.split("typeworld2.appspot.com")[-1]
-                with typeworldserver.app.test_client() as c:
-                    if method == "POST":
-                        response = c.post(url, data=parameters)
-                        return True, response.data, response.headers
-                    elif method == "GET":
-                        response = c.get(url)
-                        return True, response.data, response.headers
+                url = url.replace("api.type.world", target)
+                url = url.replace("typeworld2.appspot.com", target)
+
+            # if GAE and ("api.type.world" in url or "typeworld2.appspot.com" in url):
+            #     print("routing internally to flask")
+            #     if "api.type.world" in url:
+            #         url = url.split("api.type.world")[-1]
+            #     elif "typeworld2.appspot.com" in url:
+            #         url = url.split("typeworld2.appspot.com")[-1]
+            #     with typeworldserver.app.test_client() as c:
+            #         if method == "POST":
+            #             response = c.post(url, data=parameters)
+            #             return True, response.data, {"status_code": response.status_code,
+            # "headers": response.headers}
+            #         elif method == "GET":
+            #             response = c.get(url)
+            #             return True, response.data, {"status_code": response.status_code,
+            #  "headers": response.headers}
 
             content, status_code, headers = client.request(method, url, {}, parameters)
         except Exception:
@@ -298,14 +307,14 @@ def request(url, parameters={}, method="POST", timeout=30):
             else:
                 message = traceback.format_exc().splitlines()[-1]
 
-            return False, message, None
+            return False, message, {"status_code": None, "headers": None}
 
         client.close()
 
         if status_code == 200:
-            return True, content, headers
+            return True, content, {"status_code": status_code, "headers": headers}
         else:
-            return False, f"HTTP Error {status_code}", headers
+            return False, f"HTTP Error {status_code}", {"status_code": status_code, "headers": headers}
 
         # try:
 
