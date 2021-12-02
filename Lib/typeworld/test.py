@@ -2700,6 +2700,22 @@ class TestTypeWorld(unittest.TestCase):
         print(response)
         self.assertEqual(response["response"], "invalid")
 
+        # verifyCredentials with subscriptionURL
+        parameters = {
+            "anonymousAppID": user1.client.anonymousAppID(),
+            "anonymousTypeWorldUserID": user1.client.user(),
+            "APIKey": "I3ZYbDwYgG3S7lpOGI6LjEylQWt6tPS7MJtN1d3T",
+            "subscriptionURL": protectedSubscriptionWithoutAccessToken.replace("http//", "").replace(
+                "https//", ""
+            ),  # change URL slightly
+            "testing": "true",
+        }
+        success, response, responseObject = typeworld.client.request(MOTHERSHIP + "/verifyCredentials", parameters)
+        self.assertEqual(success, True)
+        response = json.loads(response)
+        print(response)
+        self.assertEqual(response["response"], "invalid")
+
         # Clear
         user1.clearSubscriptions()
 
