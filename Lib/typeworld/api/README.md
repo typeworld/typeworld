@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 0.2.11-beta)
+# Type.World JSON Protocol (Version 1.0.0)
 
 ## Preamble
 
@@ -261,7 +261,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "0.2.11-beta"
+    "version": "1.0.0"
 }
 ```
 
@@ -409,7 +409,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.11-beta"
+    "version": "1.0.0"
 }
 ```
 
@@ -481,7 +481,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "0.2.11-beta"
+    "version": "1.0.0"
 }
 ```
 
@@ -534,7 +534,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 0.2.11-beta
+__Default value:__ 1.0.0
 
 
 
@@ -819,7 +819,7 @@ are available to install for a user.
 
 ### Attributes
 
-[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[packages](#class-installablefontsresponse-attribute-packages)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
+[designers](#class-installablefontsresponse-attribute-designers)<br />[errorMessage](#class-installablefontsresponse-attribute-errormessage)<br />[foundries](#class-installablefontsresponse-attribute-foundries)<br />[name](#class-installablefontsresponse-attribute-name)<br />[packages](#class-installablefontsresponse-attribute-packages)<br />[prefersRevealedUserIdentity](#class-installablefontsresponse-attribute-prefersrevealeduseridentity)<br />[response](#class-installablefontsresponse-attribute-response)<br />[userEmail](#class-installablefontsresponse-attribute-useremail)<br />[userIsVerified](#class-installablefontsresponse-attribute-userisverified)<br />[userName](#class-installablefontsresponse-attribute-username)<br />
 
 ## Attributes
 
@@ -908,6 +908,16 @@ The email address of the user who these fonts are licensed to.
 
 __Required:__ False<br />
 __Type:__ Str<br />
+<div id="class-installablefontsresponse-attribute-userIsVerified"></div>
+
+### userIsVerified
+
+This user is known to the publisher. The initial implication for this is to not display the Terms of Service and Privacy banner to this user, as they have already agreed to the terms on the publisher’s website. Only new users (invitees) will be presented with the banner.
+
+__Required:__ False<br />
+__Type:__ Bool<br />
+__Default value:__ False
+
 <div id="class-installablefontsresponse-attribute-userName"></div>
 
 ### userName
@@ -1724,7 +1734,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'otf', 'woff2', 'woff']
 
 __Required:__ False<br />
 __Type:__ Str<br />

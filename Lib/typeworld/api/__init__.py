@@ -3374,6 +3374,14 @@ class InstallableFontsResponse(BaseResponse):
             None,
             "The email address of the user who these fonts are licensed to.",
         ],
+        "userIsVerified": [
+            BooleanDataType,
+            False,
+            False,
+            "This user is known to the publisher. The initial implication for this is to not display the Terms of"
+            " Service and Privacy banner to this user, as they have already agreed to the terms on the publisher’s"
+            " website. Only new users (invitees) will be presented with the banner.",
+        ],
         "prefersRevealedUserIdentity": [
             BooleanDataType,
             True,
