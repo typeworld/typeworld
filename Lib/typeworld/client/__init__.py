@@ -3757,8 +3757,10 @@ class APISubscription(object):
     def installFonts(self, fonts):
         try:
 
+            success, installabeFontsCommand = self.protocol.installableFontsCommand()
+
             # Terms of Service
-            if self.get("acceptedTermsOfService") is not True:
+            if installabeFontsCommand.userIsVerified is False and self.get("acceptedTermsOfService") is not True:
                 return (
                     False,
                     [
@@ -3766,8 +3768,6 @@ class APISubscription(object):
                         "#(response.termsOfServiceNotAccepted.headline)",
                     ],
                 )
-
-            success, installabeFontsCommand = self.protocol.installableFontsCommand()
 
             installTheseFontIDs = []
             protectedFonts = False
