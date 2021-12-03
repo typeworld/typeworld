@@ -186,24 +186,14 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
 
         if responses["errors"]:
 
-            if (
-                self.url.unsecretURL()
-                in self.subscription.parent._updatingSubscriptions
-            ):
-                self.subscription.parent._updatingSubscriptions.remove(
-                    self.url.unsecretURL()
-                )
+            if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+                self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
             self.subscription._updatingProblem = "\n".join(responses["errors"])
             return False, self.subscription._updatingProblem, False
 
         if root.installableFonts.response == "error":
-            if (
-                self.url.unsecretURL()
-                in self.subscription.parent._updatingSubscriptions
-            ):
-                self.subscription.parent._updatingSubscriptions.remove(
-                    self.url.unsecretURL()
-                )
+            if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+                self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
             self.subscription._updatingProblem = root.installableFonts.errorMessage
             return False, self.subscription._updatingProblem, False
 
@@ -212,13 +202,8 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             "insufficientPermission",
             "loginRequired",
         ):
-            if (
-                self.url.unsecretURL()
-                in self.subscription.parent._updatingSubscriptions
-            ):
-                self.subscription.parent._updatingSubscriptions.remove(
-                    self.url.unsecretURL()
-                )
+            if self.url.unsecretURL() in self.subscription.parent._updatingSubscriptions:
+                self.subscription.parent._updatingSubscriptions.remove(self.url.unsecretURL())
             self.subscription._updatingProblem = [
                 f"#(response.{root.installableFonts.response})",
                 f"#(response.{root.installableFonts.response}.headline)",
@@ -276,14 +261,10 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     for family in foundry.families:
                         for font in family.fonts:
                             if font.uniqueID == fontID:
-                                if self.subscription.installedFontVersion(
-                                    font.uniqueID
-                                ):
+                                if self.subscription.installedFontVersion(font.uniqueID):
                                     deleteTheseFonts.append(fontID)
 
-            success, message = self.subscription.removeFonts(
-                deleteTheseFonts, updateSubscription=False
-            )
+            success, message = self.subscription.removeFonts(deleteTheseFonts, updateSubscription=False)
             if not success:
                 return (
                     False,
@@ -358,11 +339,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 [f"#(response.{api.response})", f"#(response.{api.response}.headline)"],
             )
 
-        if (
-            updateSubscription
-            and root.installableFonts
-            and root.installableFonts.response == "success"
-        ):
+        if updateSubscription and root.installableFonts and root.installableFonts.response == "success":
             self.setInstallableFontsCommand(root.installableFonts)
 
         return True, api
@@ -423,11 +400,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                     ],
                 )
 
-            if (
-                updateSubscription
-                and root.installableFonts
-                and root.installableFonts.response == "success"
-            ):
+            if updateSubscription and root.installableFonts and root.installableFonts.response == "success":
                 self.setInstallableFontsCommand(root.installableFonts)
 
             return True, api
@@ -480,10 +453,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         ):
             return (
                 False,
-                (
-                    "API endpoint %s does not support the 'installableFonts' and "
-                    "'installFonts' commands."
-                )
+                "API endpoint %s does not support the 'installableFonts' and 'installFonts' commands."
                 % root.endpoint.canonicalURL,
             )
 
@@ -494,10 +464,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
                 return False, "api.response is error, but no error message was given"
 
         # Predefined response messages
-        if (
-            root.installableFonts.response != "error"
-            and root.installableFonts.response != "success"
-        ):
+        if root.installableFonts.response != "error" and root.installableFonts.response != "success":
             return (
                 False,
                 [
@@ -532,9 +499,7 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
         self.set("endpoint", self._endpointCommand.dumpJSON(validate=False))
 
         assert self._installableFontsCommand
-        self.set(
-            "installableFonts", self._installableFontsCommand.dumpJSON(validate=False)
-        )
+        self.set("installableFonts", self._installableFontsCommand.dumpJSON(validate=False))
 
         if self._installFontsCommand:
             self.set("installFonts", self._installFontsCommand.dumpJSON(validate=False))
