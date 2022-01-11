@@ -35,9 +35,7 @@ def Execute(command):
     import os
     import subprocess
 
-    process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, shell=True, close_fds=True
-    )
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, close_fds=True)
     os.waitpid(process.pid, 0)
     response = process.stdout.read().strip()
     process.stdout.close()
@@ -292,12 +290,8 @@ if MAC:
     CFIndex = ctypes.c_long
     UniChar = ctypes.c_uint16
 
-    CoreFoundation = ctypes.CDLL(
-        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"
-    )
-    Foundation = ctypes.CDLL(
-        "/System/Library/Frameworks/Foundation.framework/Foundation"
-    )
+    CoreFoundation = ctypes.CDLL("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")
+    Foundation = ctypes.CDLL("/System/Library/Frameworks/Foundation.framework/Foundation")
 
     # void CFRelease(CFTypeRef arg)
     CoreFoundation.CFRelease.restype = None
