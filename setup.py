@@ -11,6 +11,7 @@ install_requires = [  # I get to this in a second
     "requests",
     "keyring",
     "pyzmq",
+    "fonttools",
 ]
 
 if MAC:
