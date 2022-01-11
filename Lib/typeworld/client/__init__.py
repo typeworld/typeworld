@@ -20,7 +20,7 @@ import inspect
 import re
 from time import gmtime, strftime
 import http.client as httplib
-import stripe.http_client
+import requests
 
 import typeworld.api
 
@@ -238,15 +238,23 @@ def request(url, parameters={}, method="POST", timeout=30):
     """Perform request in a loop 10 times, because the central server’s instance might
     shut down unexpectedly during a request, especially longer running ones."""
 
-    client = stripe.http_client.new_default_http_client(timeout=timeout)
-
     message = None
     tries = 10
+
+    # status_code = None
+    # content = None
+    # headers = None
 
     for i in range(tries):
 
         try:
-            content, status_code, headers = client.request(method, url, {}, parameters)
+            if method == "POST":
+                request = requests.post(url, parameters)
+            elif method == "GET":
+                request = requests.get(url)
+            content = request.content
+            status_code = request.status_code
+            headers = request.headers
         except Exception:
 
             # Continue the loop directly unless this is last round
@@ -269,8 +277,6 @@ def request(url, parameters={}, method="POST", timeout=30):
                 message = traceback.format_exc().splitlines()[-1]
 
             return False, message, {"status_code": None, "headers": None}
-
-        client.close()
 
         if status_code == 200:
             return True, content, {"status_code": status_code, "headers": headers}

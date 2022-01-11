@@ -11,7 +11,6 @@ install_requires = [  # I get to this in a second
     "requests",
     "keyring",
     "pyzmq",
-    "stripe>=2.60.0,<3.0",
 ]
 
 if MAC:
