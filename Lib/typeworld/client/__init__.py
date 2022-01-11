@@ -2452,6 +2452,7 @@ Version: {typeworld.api.VERSION}
 {traceback.format_exc()}
 """
 
+            print(payload)
             # Remove path parts to make tracebacks identical (so they don't re-surface)
 
             def removePathPrefix(_payload, _snippet, _file):
