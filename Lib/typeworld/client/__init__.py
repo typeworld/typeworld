@@ -30,7 +30,10 @@ from typeworld.client.helpers import (
     MachineName,
     OSName,
     Garbage,
+    register_font_in_winreg,
+    unregister_font_in_winreg,
 )
+
 
 WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
@@ -3717,7 +3720,25 @@ class APISubscription(object):
                                     )
 
                                 if not dryRun:
-                                    os.remove(path)
+                                    if WIN:
+                                        unregister_font_in_winreg(path)
+
+                                    i = 0
+                                    while os.path.exists(path) and i < 100:
+                                        try:
+                                            os.remove(path)
+                                        except PermissionError:
+                                            if WIN:
+                                                os.system(f"del {path}")
+                                                print("Deleting in secondary try")
+                                            time.sleep(0.1)
+
+                                        i += 1
+                                    if os.path.exists(path):
+                                        return (
+                                            False,
+                                            "Font couldn’t be removed due to lack of permissions reported by Windows",
+                                        )
 
                                 self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
@@ -3749,7 +3770,24 @@ class APISubscription(object):
                         )
 
                     if not dryRun:
-                        os.remove(path)
+                        if WIN:
+                            unregister_font_in_winreg(path)
+
+                        i = 0
+                        while os.path.exists(path) and i < 100:
+                            try:
+                                os.remove(path)
+                            except PermissionError:
+                                if WIN:
+                                    os.system(f"del {path}")
+                                    print("Deleting in secondary try")
+                                time.sleep(0.1)
+                            i += 1
+                        if os.path.exists(path):
+                            return (
+                                False,
+                                "Font couldn’t be removed due to lack of permissions reported by Windows",
+                            )
 
                     self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
@@ -3879,6 +3917,9 @@ class APISubscription(object):
                                 f.write(base64.b64decode(incomingFont.data))
                                 f.close()
 
+                                if WIN:
+                                    register_font_in_winreg(path)
+
                             elif incomingFont.dataURL:
 
                                 (
@@ -3894,6 +3935,9 @@ class APISubscription(object):
                                     f = open(path, "wb")
                                     f.write(response)
                                     f.close()
+
+                                    if WIN:
+                                        register_font_in_winreg(path)
 
                             self.parent.parent.delegate._fontHasInstalled(True, None, font)
 

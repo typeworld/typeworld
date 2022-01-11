@@ -1,5 +1,6 @@
 import platform
 import os
+import sys
 
 
 def ReadFromFile(path):
@@ -81,6 +82,50 @@ def get_registry_value(key, subkey, value):
     handle = winreg.OpenKey(key, subkey)
     (value, type) = winreg.QueryValueEx(handle, value)
     return value
+
+
+def register_font_in_winreg(path):
+    from fontTools.ttLib import TTFont
+
+    f = TTFont(path)
+    name = (f["name"].getName(4, 3, 1, 1033) or f["name"].getName(4, 1, 0, 0)).toUnicode()
+    string = f"{name} ({os.path.splitext(path)[-1].split('.')[-1]})"
+    f.close()
+    import winreg as wreg
+
+    key = wreg.OpenKey(
+        wreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", 0, wreg.KEY_SET_VALUE
+    )
+    wreg.SetValueEx(key, string, 0, wreg.REG_SZ, os.path.basename(path))
+
+
+def unregister_font_in_winreg(path):
+    from fontTools.ttLib import TTFont
+
+    f = TTFont(path)
+    name = (f["name"].getName(4, 3, 1, 1033) or f["name"].getName(4, 1, 0, 0)).toUnicode()
+    string = f"{name} ({os.path.splitext(path)[-1].split('.')[-1]})"
+    f.close()
+    import winreg as wreg
+
+    key = wreg.OpenKey(
+        wreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", 0, wreg.KEY_ALL_ACCESS
+    )
+    try:
+        wreg.DeleteValue(key, string)
+    except FileNotFoundError:
+        pass
+    key.Close()
+
+
+# https://www.tenforums.com/tutorials/54452-rebuild-font-cache-windows-10-a.html
+def rebuild_font_cache():
+    os.system('sc stop "FontCache"')
+    os.system('sc config "FontCache" start=disabled')
+    os.system('del /A /F /Q "%WinDir%\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache\\*FontCache*"')
+    os.system('del /A /F /Q "%WinDir%\\System32\\FNTCACHE.DAT"')
+    os.system('sc config "FontCache" start=auto')
+    os.system('sc start "FontCache"')
 
 
 def MachineName():
@@ -222,7 +267,6 @@ to the developer."""
 
 if MAC:
     import ctypes
-    import sys
 
     __all__ = [
         "nslog",

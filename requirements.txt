@@ -3,3 +3,4 @@ markdown2
 pyzmq
 requests
 semver
+fonttools
