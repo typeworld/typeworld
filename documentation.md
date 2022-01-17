@@ -4,26 +4,6 @@
 
 Document last revised: %timestamp%
 
-### Development Time Line
-
-Currently, we’re looking into the following timeline:
-
-* Summer 2020: Reaching **Beta** status, afterwards only casual development until September 2020, very limited support (because summer)
-* October 2020: Return to full time development, full support
-* March 2021: Release of final **Version 1.0**
-
-### Development Status
-
-As of this writing, the Type.World Project is in *Beta* phase.
-
-<!--[![Build Status](https://travis-ci.org/typeWorld/typeWorld.svg?branch=master)](https://travis-ci.org/typeWorld/typeWorld)
-[![codecov](https://codecov.io/gh/typeWorld/typeWorld/branch/master/graph/badge.svg)](https://codecov.io/gh/typeWorld/typeWorld)
-[![PyPI version](https://badge.fury.io/py/typeworld.svg)](https://badge.fury.io/py/typeworld)
-
--->The **Beta** status applies mostly to the Type.World JSON Protocol and the [headless client module](https://github.com/typeworld/typeworld) which is used by the GUI App, as well as central server, including documentation. This is what developers of API endpoints need in order to implement the system on their servers.
-
-The GUI App is missing a small handful of features, but they are all about the user experience, and not related to the publisher’s side of work. The app is expected to develop significantly between October 2020 and March 2021.
-
 ### Problems with the Documentation
 
 If you have any problems in understanding the system that probably means that it hasn’t been explained well enough yet. In this case, please drop me a line at [hello@type.world](mailto:hello@type.world) and explain your limitations. I will try to improve the documentation.
