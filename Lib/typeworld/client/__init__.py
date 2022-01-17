@@ -30,8 +30,8 @@ from typeworld.client.helpers import (
     MachineName,
     OSName,
     Garbage,
-    register_font_in_winreg,
-    unregister_font_in_winreg,
+    install_font,
+    uninstall_font,
 )
 
 
@@ -3721,25 +3721,10 @@ class APISubscription(object):
                                     )
 
                                 if not dryRun:
-                                    if WIN:
-                                        unregister_font_in_winreg(path)
 
-                                    i = 0
-                                    while os.path.exists(path) and i < 100:
-                                        try:
-                                            os.remove(path)
-                                        except PermissionError:
-                                            if WIN:
-                                                os.system(f"del {path}")
-                                                print("Deleting in secondary try")
-                                            time.sleep(0.1)
-
-                                        i += 1
-                                    if os.path.exists(path):
-                                        return (
-                                            False,
-                                            "Font couldn’t be removed due to lack of permissions reported by Windows",
-                                        )
+                                    success, message = uninstall_font(path)
+                                    if not success:
+                                        return False, message
 
                                 self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
@@ -3771,24 +3756,10 @@ class APISubscription(object):
                         )
 
                     if not dryRun:
-                        if WIN:
-                            unregister_font_in_winreg(path)
 
-                        i = 0
-                        while os.path.exists(path) and i < 100:
-                            try:
-                                os.remove(path)
-                            except PermissionError:
-                                if WIN:
-                                    os.system(f"del {path}")
-                                    print("Deleting in secondary try")
-                                time.sleep(0.1)
-                            i += 1
-                        if os.path.exists(path):
-                            return (
-                                False,
-                                "Font couldn’t be removed due to lack of permissions reported by Windows",
-                            )
+                        success, message = uninstall_font(path)
+                        if not success:
+                            return False, message
 
                     self.parent.parent.delegate._fontHasUninstalled(True, None, font)
 
@@ -3914,12 +3885,9 @@ class APISubscription(object):
 
                             if incomingFont.data and incomingFont.encoding:
 
-                                f = open(path, "wb")
-                                f.write(base64.b64decode(incomingFont.data))
-                                f.close()
-
-                                if WIN:
-                                    register_font_in_winreg(path)
+                                success, message = install_font(path, base64.b64decode(incomingFont.data))
+                                if not success:
+                                    return False, message
 
                             elif incomingFont.dataURL:
 
@@ -3933,12 +3901,10 @@ class APISubscription(object):
                                     return False, response
 
                                 else:
-                                    f = open(path, "wb")
-                                    f.write(response)
-                                    f.close()
 
-                                    if WIN:
-                                        register_font_in_winreg(path)
+                                    success, message = install_font(path, response)
+                                    if not success:
+                                        return False, message
 
                             self.parent.parent.delegate._fontHasInstalled(True, None, font)
 

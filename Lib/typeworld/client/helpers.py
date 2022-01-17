@@ -1,6 +1,8 @@
 import platform
 import os
 import sys
+import traceback
+import time
 
 
 def ReadFromFile(path):
@@ -80,6 +82,50 @@ def get_registry_value(key, subkey, value):
     handle = winreg.OpenKey(key, subkey)
     (value, type) = winreg.QueryValueEx(handle, value)
     return value
+
+
+def install_font(path, data):
+    try:
+        f = open(path, "wb")
+        f.write(data)
+        f.close()
+
+        if WIN:
+            register_font_in_winreg(path)
+
+        return True, None
+
+    except Exception:
+        return False, traceback.format_exc()
+
+
+def uninstall_font(path):
+    if WIN:
+        unregister_font_in_winreg(path)
+
+    i = 0
+    while os.path.exists(path) and i < 100:
+        try:
+            os.remove(path)
+        except PermissionError:
+            if WIN:
+                os.system(f"del {path}")
+            time.sleep(0.1)
+        i += 1
+
+    # Font still not deleted
+    if os.path.exists(path):
+
+        # Put registry entry bacl where it was
+        if WIN:
+            register_font_in_winreg(path)
+
+        return (
+            False,
+            "Font couldn’t be removed.",
+        )
+
+    return True, None
 
 
 def register_font_in_winreg(path):
