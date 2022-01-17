@@ -3,6 +3,7 @@ import os
 import sys
 import traceback
 import time
+import subprocess
 
 
 def ReadFromFile(path):
@@ -109,7 +110,8 @@ def uninstall_font(path):
             os.remove(path)
         except PermissionError:
             if WIN:
-                os.system(f"del {path}")
+                print("delete using secondary procedure")
+                subprocess.call(f"del {path}", shell=True)
             time.sleep(0.1)
         i += 1
 
