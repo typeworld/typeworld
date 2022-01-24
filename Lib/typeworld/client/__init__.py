@@ -252,9 +252,9 @@ def request(url, parameters={}, method="POST", timeout=30):
 
         try:
             if method == "POST":
-                request = requests.post(url, parameters)
+                request = requests.post(url, parameters, timeout=timeout)
             elif method == "GET":
-                request = requests.get(url)
+                request = requests.get(url, timeout=timeout)
             content = request.content
             status_code = request.status_code
             headers = request.headers
