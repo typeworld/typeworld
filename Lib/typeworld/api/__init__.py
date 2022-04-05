@@ -2498,7 +2498,10 @@ class Font(DictBasedObject):
             "commands. Also, it will be used for the file name of the font on "
             "disk, together with the version string and the file extension. "
             "Together, they must not be longer than 220 characters and must "
-            "not contain the following characters: / ? < > \\ : * | ^",
+            "not contain the following characters: / ? < > \\ : * | ^ \n*Note:* This "
+            "ID *must not* include the font's version number, as then it would "
+            "be treated as a different font. Please also read the section on "
+            "[versioning](#versioning) above.",
         ],
         "postScriptName": [
             StringDataType,
@@ -2521,7 +2524,7 @@ class Font(DictBasedObject):
             "the family object under ::Family.versions::, which are then expected "
             "to be available for the entire family. However, either the fonts or "
             "the font family *must* carry version information and the validator "
-            "will complain when they don’t.\n\nPlease also read the section on "
+            "will complain when they don't.\n\nPlease also read the section on "
             "[versioning](#versioning) above.",
         ],
         "designerKeywords": [

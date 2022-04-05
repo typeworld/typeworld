@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 1.0.0)
+# Type.World JSON Protocol (Version 1.0.3)
 
 ## Preamble
 
@@ -261,7 +261,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "1.0.0"
+    "version": "1.0.3"
 }
 ```
 
@@ -409,7 +409,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "1.0.0"
+    "version": "1.0.3"
 }
 ```
 
@@ -481,7 +481,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "1.0.0"
+    "version": "1.0.3"
 }
 ```
 
@@ -534,7 +534,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 1.0.0
+__Default value:__ 1.0.3
 
 
 
@@ -1734,7 +1734,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['ttf', 'ttc', 'otf', 'woff2', 'woff']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1812,7 +1812,8 @@ __Default value:__ stable
 
 ### uniqueID
 
-A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \ : * | ^
+A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \ : * | ^ 
+*Note:* This ID *must not* include the font's version number, as then it would be treated as a different font. Please also read the section on [versioning](#versioning) above.
 
 __Required:__ True<br />
 __Type:__ Str<br />
@@ -1838,7 +1839,7 @@ __Default value:__ False
 
 ### versions
 
-List of [Version](#user-content-class-version) objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under [Family.versions](#user-content-class-family-attribute-versions), which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don’t.
+List of [Version](#user-content-class-version) objects. These are font-specific versions; they may exist only for this font. You may define additional versions at the family object under [Family.versions](#user-content-class-family-attribute-versions), which are then expected to be available for the entire family. However, either the fonts or the font family *must* carry version information and the validator will complain when they don't.
 
 Please also read the section on [versioning](#versioning) above.
 
