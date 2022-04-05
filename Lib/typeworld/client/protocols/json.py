@@ -326,7 +326,6 @@ class TypeWorldProtocol(typeworld.client.protocols.TypeWorldProtocolBase):
             data=data,
         )
         api = root.uninstallFonts
-        print(root.dumpJSON())
 
         if messages["errors"]:
             return False, "\n\n".join(messages["errors"])
