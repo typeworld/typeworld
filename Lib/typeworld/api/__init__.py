@@ -2498,10 +2498,16 @@ class Font(DictBasedObject):
             "commands. Also, it will be used for the file name of the font on "
             "disk, together with the version string and the file extension. "
             "Together, they must not be longer than 220 characters and must "
-            "not contain the following characters: / ? < > \\ : * | ^ \n*Note:* This "
-            "ID *must not* include the font's version number, as then it would "
+            "not contain the following characters: / ? < > \\ : * | ^ \n**Note:** This "
+            "ID **must not** include the font's version number, as then it would "
             "be treated as a different font. Please also read the section on "
-            "[versioning](#versioning) above.",
+            "[versioning](#versioning) above.\n"
+            "If you offer different font formats of the same font (TTF and OTF), "
+            "this should be reflected in the *uniqueID* as well.\n"
+            "Example:\n"
+            "`MyFoundry_MyFamily_MyFont-Regular_TTF`\n"
+            "`MyFoundry_MyFamily_MyFont-Regular_OTF`\n"
+            "`MyFoundry_MyFamily_MyFont-Regular_TTFVAR`\n",
         ],
         "postScriptName": [
             StringDataType,

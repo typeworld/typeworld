@@ -1734,7 +1734,7 @@ __Type:__ List of Str objects<br />
 
 ### format
 
-Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'otf', 'woff2', 'ttf', 'ttc']
+Font file format. Required value in case of `desktop` font (see [Font.purpose](#user-content-class-font-attribute-purpose). Possible: ['woff', 'ttc', 'otf', 'woff2', 'ttf']
 
 __Required:__ False<br />
 __Type:__ Str<br />
@@ -1813,7 +1813,13 @@ __Default value:__ stable
 ### uniqueID
 
 A machine-readable string that uniquely identifies this font within the publisher. It will be used to ask for un/installation of the font from the server in the `installFonts` and `uninstallFonts` commands. Also, it will be used for the file name of the font on disk, together with the version string and the file extension. Together, they must not be longer than 220 characters and must not contain the following characters: / ? < > \ : * | ^ 
-*Note:* This ID *must not* include the font's version number, as then it would be treated as a different font. Please also read the section on [versioning](#versioning) above.
+**Note:** This ID **must not** include the font's version number, as then it would be treated as a different font. Please also read the section on [versioning](#versioning) above.
+If you offer different font formats of the same font (TTF and OTF), this should be reflected in the *uniqueID* as well.
+Example:
+`MyFoundry_MyFamily_MyFont-Regular_TTF`
+`MyFoundry_MyFamily_MyFont-Regular_OTF`
+`MyFoundry_MyFamily_MyFont-Regular_TTFVAR`
+
 
 __Required:__ True<br />
 __Type:__ Str<br />
