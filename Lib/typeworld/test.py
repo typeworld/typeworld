@@ -116,7 +116,7 @@ protectedSubscriptionWithoutAccessToken = (
     "typeworld://json+https//s9lWvayTEOaB9eIIMA67:OxObIWDJjW95SkeL3BNr@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
 )
 freeNamedSubscription = "typeworld://json+https//s9lWvayTEOaB9eIIMA67@typeworldserver.com/api/q8JZfYn9olyUvcCOiqHq/"
-testUser1 = ("test1@type.world", "12345678")
+testUser1 = ("test1@type.world", "0123456789")
 testUser2 = ("test2@type.world", "01234567")
 testUser3 = ("test3@type.world", "23456789")
 
