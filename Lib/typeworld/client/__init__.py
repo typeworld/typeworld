@@ -1920,7 +1920,7 @@ class APIClient(object):
         except Exception as e:  # nocoverage
             return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
 
-    def createUserAccount(self, name, email, password1, password2):
+    def createUserAccount(self, name, email, password1, password2, parameters={}):
         try:
             if self.online():
 
@@ -1930,11 +1930,9 @@ class APIClient(object):
                 if password1 != password2:
                     return False, "#(PasswordsDontMatch)"
 
-                parameters = {
-                    "name": name,
-                    "email": email,
-                    "password": password1,
-                }
+                parameters["name"] = name
+                parameters["email"] = email
+                parameters["password"] = password1
                 if self.secretServerAuthKey:
                     parameters["SECRETKEY"] = self.secretServerAuthKey
 
