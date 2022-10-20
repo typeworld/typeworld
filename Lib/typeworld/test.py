@@ -504,7 +504,7 @@ class User(object):
         self.client = APIClient(
             preferences=AppKitNSUserDefaults("world.type.test%s" % id(self)) if MAC else JSON(self.prefFile),
             mothership=MOTHERSHIP,
-            zmqSubscriptions=True,
+            liveNotifications=True,
             online=self.online,
             testing=True,
             delegate=self.delegate,
@@ -525,6 +525,7 @@ class TestTypeWorld(unittest.TestCase):
 
     def test_updateNotifications(self):
 
+        global user4
         print("test_updateNotifications() started...")
 
         class TestDelegate(typeworld.client.TypeWorldClientDelegate):
@@ -555,7 +556,6 @@ class TestTypeWorld(unittest.TestCase):
         self.assertEqual(user1.client.user(), user4.client.user())
         user4.client.delegate = TestDelegate()
         self.assertTrue(user4.client.requiresMessageQueueConnection())
-        self.assertTrue(user4.client._zmqRunning)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
@@ -640,7 +640,7 @@ class TestTypeWorld(unittest.TestCase):
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
 
         # User1 hasn't been notified to pull user account updates
-        # Because it's the origin user account of the subbscription addition
+        # Because it's the origin user account of the subscription addition
         self.assertFalse(user1.client.delegate._accountUpdateCheck)
 
         print("\nLine %s" % getframeinfo(currentframe()).lineno)
@@ -4115,6 +4115,8 @@ def tearDown():
     user2.client.quit()
     user3.takeDown()
     user3.client.quit()
+    user4.takeDown()
+    user4.client.quit()
 
     # Local
     if "TRAVIS" not in os.environ:

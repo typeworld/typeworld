@@ -1,6 +1,6 @@
+fonttools
+google-cloud-pubsub
 keyring
 markdown2
-pyzmq
 requests
 semver
-fonttools

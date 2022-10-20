@@ -21,6 +21,9 @@ import re
 from time import gmtime, strftime
 import http.client as httplib
 import requests
+from google.cloud import pubsub_v1
+from google.oauth2 import service_account
+import google.api_core.exceptions
 
 import typeworld.api
 
@@ -34,7 +37,6 @@ from typeworld.client.helpers import (
     uninstall_font,
 )
 
-
 WIN = platform.system() == "Windows"
 MAC = platform.system() == "Darwin"
 LINUX = platform.system() == "Linux"
@@ -42,6 +44,50 @@ CI = os.getenv("CI", "false").lower() == "true"
 GAE = os.getenv("GAE_ENV", "").startswith("standard")
 
 MOTHERSHIP = "https://api.type.world/v1"
+
+# Pub/Sub
+GC_PROJECT_ID = "typeworld2"
+key = {
+    "type": "service_account",
+    "project_id": "typeworld2",
+    "private_key_id": "eb06d32ca58e323f567d23fb29fde5de229d7e1a",
+    "private_key": (
+        "-----BEGIN PRIVATE"
+        " KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD1VhlL+zGeBO96\nXX"
+        "Xf6/rPOffWCU3quQ0Z1kOmAB3iyXIV8VoE9ngBpKYKYg9aLLuOkiiml5b/qjcs\nnkbXh/SOq4EHsJoN"
+        "fee1ucJcqYrJDdarZwBIQKCx+0J+275dHznEZZ1MvGhTf1hM\n3r4xum8sT9+UymqYbHrPY79XKO0j5p"
+        "3mX9WY6NAtHqmyQpnAEFrc6Dsag3ayatQK\n87SKer7KKQvCR/x2PSQChPbaTTzaqELo3QHx9M99FN5d"
+        "lFytkMhUQL7q/jkXGfJZ\nB6iYuHwng3vloTJV688F373Q7VPhAa7VljmG6Ftj6OiblKQn//Y/x5mSMV"
+        "hFOKmO\nEkP7AnRLAgMBAAECggEAWQaIwHMjEqHc2szuWLazeR4iandO4GWNNPp06thw/9o0\nvXSqw1F"
+        "Cw+ng3LSvuHuyBa7Q9H7equC0C8tVjqGFo33loQo7JLky61VAi8p0E7gj\nVWhXiGB3T46LFyibQAR0PG"
+        "nZNj7KJr53ptFPOBFchTpouf/nxW7b88TQ6opt3w/7\nAXRFThILjodeN0+jp7x84aYFDf/CUXdclIbBA"
+        "gnjY8GlIG5jkIoCQHoyAQU5MSyR\notA1UwpTm+W20GjqM8WGa8ccTKqFcapFpaFrLEUlSczHcM2EyxcJ"
+        "d3eBRzZS2kY4\napNtO5Skq/PMetsYd1uxk3BaHi2PBby5U82QXF8MaQKBgQD/4H0jQEvXVPv71/n4\nal"
+        "xgDjwd569cypLbCGF8HzhnEv6Tt1QNkPkhf59ubyjmuUXdTseITk7O9bWmk/hb\nwMQxywHX8K3Qv4HGI4"
+        "0NcBZRFLVd1RLYIlS8t618ih1GnjK26exrGhVD4ergzMcQ\n8w0eyAzmbEehThYZxD8WGEq4uQKBgQD1dE/"
+        "aXvMlscmB4Idd+IckwtqRGf8WJBYQ\nFHa+QiOkf5JGHYx1NQaT/ZfHpdr6cuWi6zEk7exMlCrrvpxeT9e"
+        "rDkJO9iZsl5qt\ncJeoG0mIBYa1GPVU3zEJuHiHjSoC7mQh5ksd8vLFAD2c3VLhmHzfUxDLhj0bQFDj\nA"
+        "R5qyZVLIwKBgQDSmT3lqaHCVVwgaB6Ba2kkVhL8uhgHU2OTi05RDpEppOSLR7SS\nhePGwnfCORN88rih8Z"
+        "kggvMyO+GKfPdI7VuNb/zQcnNdAIIbRl9t0/dKPLUZyal8\n4qTDvpm3iyWVXdd33QiNDia6fFMJOwIM3T"
+        "7LOvQDItPB27cs9ezGjq/RYQKBgAP0\ne9To8sIIu1Z8Z7H77zGIcj0kThftPO3FZqRqLGjaJWE72KeK0zB"
+        "PRcLRyVV/xHN7\nlq8hpk0Vlht2Vs6uOqtm72qWTMgzKSriRY9P4T9v11vTqyBS+FdPwaFthN/HN5XU\nQC"
+        "GbaI4EEvoUFuHLszdl/z9ISnPF9Yey3OqblOxBAoGAXVUarqWRdw9uKeD0VAe8\nLMT3r4fyXAgR/7dyvtDA"
+        "IO0/flSsC2IBVOjOQR0oEik13897PcYMDW/oDhyRSjGm\ndw+ztLoo/FCx9CUo+RtkhxDNuH826R49huULD"
+        "n7Z7SQTB8DzhNO/RgKFxDcZBUAl\nUZd7QqnYqi7Hfi2huuWDbtQ=\n-----END"
+        " PRIVATE KEY-----\n"
+    ),
+    "client_email": "clientapp@typeworld2.iam.gserviceaccount.com",
+    "client_id": "112523607896916711481",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": (
+        "https://www.googleapis.com/robot/v1/metadata/x509/clientapp%40typeworld2.iam.gserviceaccount.com"
+    ),
+}
+credentials = service_account.Credentials.from_service_account_info(key)
+pubsub_subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
+pubsub_timeout = 5.0
 
 if MAC:
     from AppKit import NSUserDefaults
@@ -656,7 +702,6 @@ class TypeWorldClientDelegate(object):
     def _messageQueueLostConnection(self):
         try:
             self.messageQueueLostConnection()
-            self.client.zmqRestart()
 
         except Exception:  # nocoverage
             self.client.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name))  # nocoverage
@@ -753,7 +798,7 @@ class APIClient(object):
         delegate=None,
         mothership=None,
         mode="headless",
-        zmqSubscriptions=False,
+        liveNotifications=False,
         online=False,
         testing=False,
         externallyControlled=False,
@@ -776,7 +821,7 @@ class APIClient(object):
             self.delegate.client = self
             self.mothership = mothership or MOTHERSHIP
             self.mode = mode  # gui or headless
-            self.zmqSubscriptions = zmqSubscriptions
+            self.liveNotifications = liveNotifications
             self._isSetOnline = online
             self.lastOnlineCheck = {}
             self.testing = testing
@@ -786,9 +831,7 @@ class APIClient(object):
             self.commercial = commercial
             self.appID = appID
 
-            self._zmqRunning = False
-            self._zmqCallbacks = {}
-            self._zmqStatus = None
+            self._pubSubCallbacks = {}
 
             self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -802,12 +845,40 @@ class APIClient(object):
             if self._isSetOnline and not self.externallyControlled:
                 self.wentOnline()
 
-            # ZMQ
-            if self._isSetOnline and self.zmqSubscriptions:
+            # Pub/Sub
+            if self._isSetOnline and self.liveNotifications:
+                topic_path = pubsub_subscriber.topic_path(GC_PROJECT_ID, "clientapp-updates")
+                subscription_id = f"clientapp-updates-{self.anonymousAppID()}"
+                if self.testing:
+                    subscription_id += "-testing-" + str(int(time.time()))
+                self.subscription_path = pubsub_subscriber.subscription_path(
+                    GC_PROJECT_ID,
+                    subscription_id,
+                )
+
+                try:
+                    subscription = pubsub_subscriber.create_subscription(
+                        request={"name": self.subscription_path, "topic": topic_path}
+                    )
+                except google.api_core.exceptions.AlreadyExists:
+                    pass
+
+                pubsub_subscriber.subscribe(self.subscription_path, callback=self.pubsubMessageCallback)
+
                 if self.user():
                     topicID = "user-%s" % self.user()
-                    self.registerZMQCallback(topicID, self.zmqCallback)
+                    self.registerPubSubCallback(topicID, self.pubSubCallback)
                 self.manageMessageQueueConnection()
+
+                # # Wrap subscriber in a 'with' block to automatically call close() when done.
+                # with pubsub_subscriber:
+                #     try:
+                #         # When `timeout` is not set, result() will block indefinitely,
+                #         # unless an exception is encountered first.
+                #         streaming_pull_future.result(timeout=pubsub_timeout)
+                #     except TimeoutError:
+                #         streaming_pull_future.cancel()  # Trigger the shutdown.
+                #         streaming_pull_future.result()  # Block until the shutdown is complete.
 
             #
             # Version-dependent startup procedures
@@ -844,163 +915,43 @@ class APIClient(object):
     def wentOnline(self):
         success, message = self.downloadSettings(performCommands=True)
         assert success
-        assert self.get("downloadedSettings")["messagingQueue"].startswith("tcp://")
         assert self.get("downloadedSettings")["breakingAPIVersions"]
-        print(self.get("downloadedSettings"))
+        # print(self.get("downloadedSettings"))
 
     def wentOffline(self):
         pass
 
-    def zmqRestart(self):
-        self.zmqQuit()
-        self.wentOnline()
-        self.zmqSetup()
-        self.reRegisterZMQCallbacks()
-
-    def zmqSetup(self):
-        import zmq
-        import zmq.error
-
-        if not self._zmqRunning:
-            self._zmqctx = zmq.Context.instance()
-            self.zmqSocket = self._zmqctx.socket(zmq.SUB)
-
-            # https://github.com/zeromq/libzmq/issues/2882
-            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE, 1)
-            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_CNT, 10)
-            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_IDLE, 30)
-            self.zmqSocket.setsockopt(zmq.TCP_KEEPALIVE_INTVL, 30)
-
-            target = self.get("downloadedSettings")["messagingQueue"]
-            self.zmqSocket.connect(target)
-
-            self._zmqRunning = True
-            self.zmqListenerThread = threading.Thread(target=self.zmqListener, daemon=True)
-            self.zmqListenerThread.start()
-
-            # MONITOR
-            self._zmqMonitor = self.zmqSocket.get_monitor_socket()
-            self.zmqMonitorThread = threading.Thread(
-                target=self.event_monitor,
-                args=(self._zmqMonitor,),
-                daemon=True,
-            )
-            self.zmqMonitorThread.start()
-
-    def event_monitor(self, monitor):
-        import zmq
-        from zmq.utils.monitor import recv_monitor_message
-        import zmq.error
-
-        EVENT_MAP = {}
-        for name in dir(zmq):
-            if name.startswith("EVENT_"):
-                value = getattr(zmq, name)
-                # print("%21s : %4i" % (name, value))
-                EVENT_MAP[value] = name
-
-        # Store these events:
-        error = [
-            "EVENT_CLOSED",
-            "EVENT_CONNECT_RETRIED",
-            "EVENT_CONNECT_DELAYED",
-        ]
-        lostConnection = [
-            "EVENT_DISCONNECTED",
-            "EVENT_CLOSED",
-        ]
-        connected = ["EVENT_HANDSHAKE_SUCCEEDED"]
-
-        try:
-            while monitor.poll():
-                evt = recv_monitor_message(monitor)
-                status = EVENT_MAP[evt["event"]]
-                if status in error:
-                    self.delegate._messageQueueError(status=status)
-                if status in lostConnection:
-                    zmqRestartThread = threading.Thread(target=self.delegate._messageQueueLostConnection, daemon=True)
-                    zmqRestartThread.start()
-                    # self.delegate._messageQueueLostConnection()
-                if status in connected:
-                    self.delegate._messageQueueConnected()
-
-                evt.update({"description": status})
-                # print("Event: {}".format(evt))
-
-                if evt["event"] == zmq.EVENT_MONITOR_STOPPED:
-                    break
-
-        except zmq.error.ZMQError:
-            pass
-        monitor.close()
-        # print("event monitor thread done!")
-
-    def zmqListener(self):
-        import zmq
-        import zmq.error
-
-        while self._zmqRunning:
-            time.sleep(0.1)
-            try:
-                topic, msg = self.zmqSocket.recv_multipart(flags=zmq.NOBLOCK)
-                topic = topic.decode()
-                msg = msg.decode()
-
-                if topic in self._zmqCallbacks:
-                    self._zmqCallbacks[topic](msg)
-            except zmq.Again:
-                pass
-            except zmq.error.ZMQError:
-                pass
-
     def quit(self):
-        self.zmqQuit()
+        try:
+            pubsub_subscriber.delete_subscription(request={"subscription": self.subscription_path})
+        except ValueError:
+            pass
+        pubsub_subscriber.close()
 
-    def zmqQuit(self):
-        if self._zmqRunning:
-            # for topic in self._zmqCallbacks:
-            #     self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
-            self._zmqRunning = False
-            self._zmqMonitor.close()
-            self.zmqSocket.close()
-            self._zmqctx.destroy()
-            self.zmqListenerThread.join()
-            self.zmqMonitorThread.join()
-            # self._zmqctx.term()
-            self.delegate._messageQueueDisconnected()
+    def registerPubSubCallback(self, topic, method):
+        self._pubSubCallbacks[topic] = method
+        print("ApiClient.registerPubSubCallback", self._pubSubCallbacks)
 
-    def reRegisterZMQCallbacks(self):
-        import zmq
-        import zmq.error
+    def unregisterPubSubCallback(self, topic):
+        if topic in self._pubSubCallbacks:
+            del self._pubSubCallbacks[topic]
 
-        if self.zmqSubscriptions:
-            for topic in self._zmqCallbacks:
-                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+    def pubsubMessageCallback(self, message):
 
-    def registerZMQCallback(self, topic, method):
-        import zmq
-        import zmq.error
+        data = json.loads(message.data.decode("utf-8"))
+        topic = data["topic"]
 
-        if self.zmqSubscriptions:
-            if self._zmqRunning and not self.zmqSocket.closed:
-                self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
-            self._zmqCallbacks[topic] = method
+        print("APIClient.pubsubMessageCallback", data)
+        if topic in self._pubSubCallbacks:
+            self._pubSubCallbacks[topic](data)
 
-    def unregisterZMQCallback(self, topic):
-        import zmq
-        import zmq.error
+        message.ack()
 
-        if self.zmqSubscriptions:
-            if topic in self._zmqCallbacks:
-                if self._zmqRunning and not self.zmqSocket.closed:
-                    self.zmqSocket.setsockopt(zmq.UNSUBSCRIBE, topic.encode("ascii"))
-                del self._zmqCallbacks[topic]
-
-    def zmqCallback(self, message):
+    def pubSubCallback(self, data):
+        print("APIClient.pubSubCallback", data)
         try:
 
-            if message:
-                data = json.loads(message)
+            if data:
                 if data["command"] == "pullUpdates" and (
                     "sourceAnonymousAppID" not in data
                     or (
@@ -1013,6 +964,22 @@ class APIClient(object):
 
         except Exception as e:  # nocoverage
             return self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
+
+    def messageQueueIsRunning(self):
+        return self._isSetOnline and self.liveNotifications and self.requiresMessageQueueConnection()
+
+    def manageMessageQueueConnection(self):
+        pass
+        # if self._isSetOnline and self.liveNotifications:
+        #     requiresMessageQueueConnection = self.requiresMessageQueueConnection()
+
+        # if requiresMessageQueueConnection and not self._zmqRunning:
+        #     self.zmqSetup()
+        #     for topic in self._zmqCallbacks:
+        #         self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
+
+        # elif not requiresMessageQueueConnection and self._zmqRunning:
+        #     self.zmqQuit()
 
     # def clearPendingOnlineCommands(self):
     # 	commands = self.get('pendingOnlineCommands') or {}
@@ -1041,21 +1008,6 @@ class APIClient(object):
             or self.testing
             # or self.testScenario == "simulateProAccount"
         )
-
-    def manageMessageQueueConnection(self):
-        import zmq
-        import zmq.error
-
-        if self._isSetOnline and self.zmqSubscriptions:
-            requiresMessageQueueConnection = self.requiresMessageQueueConnection()
-
-            if requiresMessageQueueConnection and not self._zmqRunning:
-                self.zmqSetup()
-                for topic in self._zmqCallbacks:
-                    self.zmqSocket.setsockopt(zmq.SUBSCRIBE, topic.encode("ascii"))
-
-            elif not requiresMessageQueueConnection and self._zmqRunning:
-                self.zmqQuit()
 
     def get(self, key):
         try:
@@ -2131,9 +2083,9 @@ class APIClient(object):
             self.set("typeworldUserAccount", userID)
             assert userID == self.user()
 
-            # ZMQ
+            # Pub/Sub
             topicID = "user-%s" % self.user()
-            self.registerZMQCallback(topicID, self.zmqCallback)
+            self.registerPubSubCallback(topicID, self.pubSubCallback)
 
             keyring = self.keyring()
             if "userEmail" in response:
@@ -2336,9 +2288,9 @@ class APIClient(object):
             self.remove("pendingInvitations")
             self.remove("sentInvitations")
 
-            # ZMQ
+            # Pub/Sub
             topicID = "user-%s" % userID
-            self.unregisterZMQCallback(topicID)
+            self.unregisterPubSubCallback(topicID)
 
             keyring = self.keyring()
             keyring.delete_password(self.userKeychainKey(userID), "secretKey")
@@ -2804,7 +2756,6 @@ Version: {typeworld.api.VERSION}
                 subscription.save()
                 publisher.save()
                 subscription.stillAlive()
-                self.manageMessageQueueConnection()
                 self.delegate._subscriptionHasBeenAdded(subscription, remotely)
 
             if not remotely and not self.externallyControlled:
@@ -3125,7 +3076,6 @@ class APIPublisher(object):
                 self.parent.uploadSubscriptions()
 
             self.parent.delegate._publisherHasBeenDeleted(self)
-            self.parent.manageMessageQueueConnection()
 
             self.parent._publishers = {}
 
@@ -3161,17 +3111,16 @@ class APISubscription(object):
             self.stillAliveTouched = None
             self._updatingProblem = None
 
-            # ZMQ
-            if self.parent.parent._isSetOnline and self.parent.parent.zmqSubscriptions:
-                self.parent.parent.zmqSetup()
-                self.parent.parent.registerZMQCallback(self.zmqTopic(), self.zmqCallback)
+            # Pub/Sub
+            if self.parent.parent._isSetOnline and self.parent.parent.liveNotifications:
+                self.parent.parent.registerPubSubCallback(self.pubSubTopic(), self.pubSubCallback)
 
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def zmqTopic(self):
+    def pubSubTopic(self):
         return "subscription-%s" % urllib.parse.quote_plus(self.protocol.shortUnsecretURL())
 
     def __repr__(self):
@@ -3193,10 +3142,10 @@ class APISubscription(object):
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
             )
 
-    def zmqCallback(self, message):
+    def pubSubCallback(self, data):
+        print("APISubscription.pubSubCallback", data)
         try:
-            if message:
-                data = json.loads(message)
+            if data:
                 if (
                     data["command"] == "pullUpdates"
                     and "sourceAnonymousAppID" not in data
@@ -4044,8 +3993,8 @@ class APISubscription(object):
             except Exception:
                 pass
 
-            # ZMQ
-            self.parent.parent.unregisterZMQCallback(self.zmqTopic())
+            # Pub/Sub
+            self.parent.parent.unregisterPubSubCallback(self.pubSubTopic())
 
             # Resources
             self.parent.parent.delegate._subscriptionWillDelete(self)
@@ -4071,7 +4020,6 @@ class APISubscription(object):
             self.parent.parent.delegate._subscriptionHasBeenDeleted(
                 self, withinPublisherDeletion=calledFromParent, remotely=remotely
             )
-            self.parent.parent.manageMessageQueueConnection()
 
             if not remotely and not calledFromParent:
                 self.parent.parent.uploadSubscriptions()

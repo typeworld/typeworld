@@ -10,7 +10,7 @@ install_requires = [  # I get to this in a second
     "semver",
     "requests",
     "keyring",
-    "pyzmq",
+    "google-cloud-pubsub",
     "fonttools",
 ]
 
