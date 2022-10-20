@@ -848,9 +848,9 @@ class APIClient(object):
             # Pub/Sub
             if self._isSetOnline and self.liveNotifications:
                 topic_path = pubsub_subscriber.topic_path(GC_PROJECT_ID, "clientapp-updates")
-                subscription_id = f"clientapp-updates-{self.anonymousAppID()}"
+                subscription_id = f"clientapp-updates-{self.anonymousAppID()}-{int(time.time())}"
                 if self.testing:
-                    subscription_id += "-testing-" + str(int(time.time()))
+                    subscription_id += "-testing"
                 self.subscription_path = pubsub_subscriber.subscription_path(
                     GC_PROJECT_ID,
                     subscription_id,
