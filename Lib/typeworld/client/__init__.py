@@ -932,7 +932,6 @@ class APIClient(object):
 
     def registerPubSubCallback(self, topic, method):
         self._pubSubCallbacks[topic] = method
-        print("ApiClient.registerPubSubCallback", self._pubSubCallbacks)
 
     def unregisterPubSubCallback(self, topic):
         if topic in self._pubSubCallbacks:
@@ -943,14 +942,12 @@ class APIClient(object):
         data = json.loads(message.data.decode("utf-8"))
         topic = data["topic"]
 
-        print("APIClient.pubsubMessageCallback", data)
         if topic in self._pubSubCallbacks:
             self._pubSubCallbacks[topic](data)
 
         message.ack()
 
     def pubSubCallback(self, data):
-        print("APIClient.pubSubCallback", data)
         try:
 
             if data:
@@ -3145,7 +3142,6 @@ class APISubscription(object):
             )
 
     def pubSubCallback(self, data):
-        print("APISubscription.pubSubCallback", data)
         try:
             if data:
                 if (
