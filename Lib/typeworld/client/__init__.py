@@ -926,6 +926,8 @@ class APIClient(object):
             pubsub_subscriber.delete_subscription(request={"subscription": self.subscription_path})
         except ValueError:
             pass
+        except google.api_core.exceptions.NotFound:
+            pass
         pubsub_subscriber.close()
 
     def registerPubSubCallback(self, topic, method):
