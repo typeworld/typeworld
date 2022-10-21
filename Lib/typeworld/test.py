@@ -2794,17 +2794,6 @@ class TestTypeWorld(unittest.TestCase):
             protectedSubscriptionWithoutAccessToken,
         )
 
-        user1.client.testScenario = "simulateCentralServerNotReachable"
-        user1.client.publishers()[0].subscriptions()[0].stillAlive()
-        user1.client.testScenario = "simulateCentralServerProgrammingError"
-        user1.client.publishers()[0].subscriptions()[0].stillAlive()
-        user1.client.testScenario = "simulateCentralServerErrorInResponse"
-        user1.client.publishers()[0].subscriptions()[0].stillAlive()
-        user1.client.testScenario = "simulateNotOnline"
-        user1.client.publishers()[0].subscriptions()[0].stillAlive()
-        user1.client.testScenario = None
-        user1.client.publishers()[0].subscriptions()[0].stillAlive()
-
         user1.client.testScenario = "simulateFaultyClientVersion"
         success, message = user1.client.downloadSubscriptions()
         self.assertEqual(success, False)
