@@ -1,4 +1,4 @@
-# Type.World JSON Protocol (Version 1.0.3)
+# Type.World JSON Protocol (Version 1.0.4)
 
 ## Preamble
 
@@ -261,7 +261,7 @@ Will output the following JSON code:
         ],
         "termsOfServiceURL": "https://type.world/legal/default/TermsOfService.html"
     },
-    "version": "1.0.3"
+    "version": "1.0.4"
 }
 ```
 
@@ -409,7 +409,7 @@ Will output the following JSON code:
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "1.0.3"
+    "version": "1.0.4"
 }
 ```
 
@@ -481,7 +481,7 @@ a lot of time is saved.
         "prefersRevealedUserIdentity": false,
         "response": "success"
     },
-    "version": "1.0.3"
+    "version": "1.0.4"
 }
 ```
 
@@ -534,7 +534,7 @@ Version of 'installFonts' response
 __Required:__ True<br />
 __Type:__ Str<br />
 __Format:__ Simple float number (1 or 1.01) or semantic versioning (2.0.0-rc.1) as per [semver.org](https://semver.org)<br />
-__Default value:__ 1.0.3
+__Default value:__ 1.0.4
 
 
 
