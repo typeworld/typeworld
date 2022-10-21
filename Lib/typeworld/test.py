@@ -4104,8 +4104,11 @@ def tearDown():
     user2.client.quit()
     user3.takeDown()
     user3.client.quit()
-    user4.takeDown()
-    user4.client.quit()
+    try:
+        user4.takeDown()
+        user4.client.quit()
+    except AttributeError:
+        pass
 
     # Local
     if "TRAVIS" not in os.environ:
