@@ -85,8 +85,6 @@ key = {
         "https://www.googleapis.com/robot/v1/metadata/x509/clientapp%40typeworld2.iam.gserviceaccount.com"
     ),
 }
-credentials = service_account.Credentials.from_service_account_info(key)
-pubsub_subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
 pubsub_timeout = 5.0
 
 if MAC:
@@ -833,6 +831,8 @@ class APIClient(object):
 
             self._pubSubCallbacks = {}
             self.messageQueueAge = None
+            self.pubsub_credentials = None
+            self.pubsub_subscriber = None
 
             self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -892,14 +892,13 @@ class APIClient(object):
         success, message = self.downloadSettings(performCommands=True)
         assert success
         assert self.get("downloadedSettings")["breakingAPIVersions"]
-        # print(self.get("downloadedSettings"))
 
     def wentOffline(self):
         pass
 
     def quit(self):
         # self.stopMessageQueue()
-        # pubsub_subscriber.close()
+        # self.pubsub_subscriber.close()
         pass
 
     def cronMinutely(self):
@@ -911,21 +910,32 @@ class APIClient(object):
             time.sleep(60)
 
     def startMessageQueue(self):
-        topic_path = pubsub_subscriber.topic_path(GC_PROJECT_ID, "clientapp-updates")
+
+        if not self.pubsub_credentials:
+            self.pubsub_credentials = service_account.Credentials.from_service_account_info(key)
+        if not self.pubsub_subscriber:
+            self.pubsub_subscriber = pubsub_v1.SubscriberClient(credentials=self.pubsub_credentials)
+
+        # Topic
+        pubSubTopic = "clientapp-updates"
+        if "pubSubTopic" in self.get("downloadedSettings"):
+            pubSubTopic = self.get("downloadedSettings")["pubSubTopic"]
+
+        topic_path = self.pubsub_subscriber.topic_path(GC_PROJECT_ID, pubSubTopic)
         subscription_id = f"clientapp-updates-{self.anonymousAppID()}-{int(time.time())}"
         if self.testing:
             subscription_id += "-testing"
-        self.subscription_path = pubsub_subscriber.subscription_path(
+        self.subscription_path = self.pubsub_subscriber.subscription_path(
             GC_PROJECT_ID,
             subscription_id,
         )
 
         try:
-            pubsub_subscriber.create_subscription(request={"name": self.subscription_path, "topic": topic_path})
+            self.pubsub_subscriber.create_subscription(request={"name": self.subscription_path, "topic": topic_path})
         except google.api_core.exceptions.AlreadyExists:
             pass
 
-        pubsub_subscriber.subscribe(self.subscription_path, callback=self.pubsubMessageCallback)
+        self.pubsub_subscriber.subscribe(self.subscription_path, callback=self.pubsubMessageCallback)
 
         if self.user():
             topicID = "user-%s" % self.user()
@@ -936,7 +946,7 @@ class APIClient(object):
 
     def stopMessageQueue(self):
         try:
-            pubsub_subscriber.delete_subscription(request={"subscription": self.subscription_path})
+            self.pubsub_subscriber.delete_subscription(request={"subscription": self.subscription_path})
         except ValueError:
             pass
         except google.api_core.exceptions.NotFound:
