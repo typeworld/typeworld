@@ -848,7 +848,8 @@ class APIClient(object):
 
             # Pub/Sub
             if self._isSetOnline and self.liveNotifications:
-                self.startMessageQueue()
+                startMessageQueueThread = threading.Thread(target=self.startMessageQueue)
+                startMessageQueueThread.start()
 
             #
             # Version-dependent startup procedures
