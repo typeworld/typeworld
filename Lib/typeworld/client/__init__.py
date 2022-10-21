@@ -832,6 +832,7 @@ class APIClient(object):
             self.appID = appID
 
             self._pubSubCallbacks = {}
+            self.messageQueueAge = None
 
             self.sslcontext = ssl.create_default_context(cafile=certifi.where())
 
@@ -847,38 +848,7 @@ class APIClient(object):
 
             # Pub/Sub
             if self._isSetOnline and self.liveNotifications:
-                topic_path = pubsub_subscriber.topic_path(GC_PROJECT_ID, "clientapp-updates")
-                subscription_id = f"clientapp-updates-{self.anonymousAppID()}-{int(time.time())}"
-                if self.testing:
-                    subscription_id += "-testing"
-                self.subscription_path = pubsub_subscriber.subscription_path(
-                    GC_PROJECT_ID,
-                    subscription_id,
-                )
-
-                try:
-                    subscription = pubsub_subscriber.create_subscription(
-                        request={"name": self.subscription_path, "topic": topic_path}
-                    )
-                except google.api_core.exceptions.AlreadyExists:
-                    pass
-
-                pubsub_subscriber.subscribe(self.subscription_path, callback=self.pubsubMessageCallback)
-
-                if self.user():
-                    topicID = "user-%s" % self.user()
-                    self.registerPubSubCallback(topicID, self.pubSubCallback)
-                self.manageMessageQueueConnection()
-
-                # # Wrap subscriber in a 'with' block to automatically call close() when done.
-                # with pubsub_subscriber:
-                #     try:
-                #         # When `timeout` is not set, result() will block indefinitely,
-                #         # unless an exception is encountered first.
-                #         streaming_pull_future.result(timeout=pubsub_timeout)
-                #     except TimeoutError:
-                #         streaming_pull_future.cancel()  # Trigger the shutdown.
-                #         streaming_pull_future.result()  # Block until the shutdown is complete.
+                self.startMessageQueue()
 
             #
             # Version-dependent startup procedures
@@ -891,6 +861,11 @@ class APIClient(object):
                     for subscription in publisher.subscriptions():
                         subscription.remove("resources")
                 self.remove("resources")
+
+            # Cron Jobs
+            cronMinutelyThread = threading.Thread(target=self.cronMinutely)
+            cronMinutelyThread.daemon = True
+            cronMinutelyThread.start()
 
         except Exception as e:  # nocoverage
             self.handleTraceback(sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e)  # nocoverage
@@ -922,13 +897,54 @@ class APIClient(object):
         pass
 
     def quit(self):
+        self.stopMessageQueue()
+        pubsub_subscriber.close()
+
+    def cronMinutely(self):
+        while True:
+
+            # Restart message queue (= new subscription) every 7 days
+            if self.messageQueueAge and self.messageQueueAge < time.time() - 7 * 24 * 60 * 60:
+                self.restartMessageQueue()
+            time.sleep(60)
+
+    def startMessageQueue(self):
+        topic_path = pubsub_subscriber.topic_path(GC_PROJECT_ID, "clientapp-updates")
+        subscription_id = f"clientapp-updates-{self.anonymousAppID()}-{int(time.time())}"
+        if self.testing:
+            subscription_id += "-testing"
+        self.subscription_path = pubsub_subscriber.subscription_path(
+            GC_PROJECT_ID,
+            subscription_id,
+        )
+
+        try:
+            pubsub_subscriber.create_subscription(request={"name": self.subscription_path, "topic": topic_path})
+        except google.api_core.exceptions.AlreadyExists:
+            pass
+
+        pubsub_subscriber.subscribe(self.subscription_path, callback=self.pubsubMessageCallback)
+
+        if self.user():
+            topicID = "user-%s" % self.user()
+            self.registerPubSubCallback(topicID, self.pubSubCallback)
+        self.manageMessageQueueConnection()
+
+        self.messageQueueAge = time.time()
+
+    def stopMessageQueue(self):
         try:
             pubsub_subscriber.delete_subscription(request={"subscription": self.subscription_path})
         except ValueError:
             pass
         except google.api_core.exceptions.NotFound:
             pass
-        pubsub_subscriber.close()
+        self.subscription_path = None
+
+    def restartMessageQueue(self):
+        self.stopMessageQueue()
+        self.startMessageQueue()
+        print("Restarted MQ")
 
     def registerPubSubCallback(self, topic, method):
         self._pubSubCallbacks[topic] = method
