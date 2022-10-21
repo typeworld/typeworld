@@ -898,8 +898,9 @@ class APIClient(object):
         pass
 
     def quit(self):
-        self.stopMessageQueue()
-        pubsub_subscriber.close()
+        # self.stopMessageQueue()
+        # pubsub_subscriber.close()
+        pass
 
     def cronMinutely(self):
         while True:
