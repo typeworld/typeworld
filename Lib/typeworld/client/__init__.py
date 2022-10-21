@@ -2754,7 +2754,6 @@ Version: {typeworld.api.VERSION}
                 # Success
                 subscription.save()
                 publisher.save()
-                subscription.stillAlive()
                 self.delegate._subscriptionHasBeenAdded(subscription, remotely)
 
             if not remotely and not self.externallyControlled:
@@ -3107,7 +3106,6 @@ class APISubscription(object):
             self.protocol.client = self.parent.parent
             self.url = self.protocol.unsecretURL()
 
-            self.stillAliveTouched = None
             self._updatingProblem = None
 
             # Pub/Sub
@@ -3215,43 +3213,6 @@ class APISubscription(object):
                             return True
 
             return False
-        except Exception as e:  # nocoverage
-            self.parent.parent.handleTraceback(  # nocoverage
-                sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
-            )
-
-    def stillAlive(self):
-
-        try:
-
-            def stillAliveWorker(self):
-
-                # Register endpoint
-
-                parameters = {
-                    "url": "typeworld://%s+%s"
-                    % (
-                        self.protocol.url.protocol,
-                        self.parent.canonicalURL.replace("://", "//"),
-                    ),
-                }
-
-                success, response, responseObject = self.parent.parent.performRequest(
-                    self.parent.parent.mothership + "/registerAPIEndpoint", parameters
-                )
-                if not success:
-                    return False, response
-
-                response = json.loads(response)
-
-            # Touch only once
-            if not self.parent.parent.user():
-                if not self.stillAliveTouched:
-
-                    stillAliveThread = threading.Thread(target=stillAliveWorker, args=(self,))
-                    stillAliveThread.start()
-
-                    self.stillAliveTouched = time.time()
         except Exception as e:  # nocoverage
             self.parent.parent.handleTraceback(  # nocoverage
                 sourceMethod=getattr(self, sys._getframe().f_code.co_name), e=e
@@ -3853,9 +3814,6 @@ class APISubscription(object):
 
                             self.parent.parent.delegate._fontHasInstalled(True, None, font)
 
-                # Ping
-                self.stillAlive()
-
                 return True, None
 
             else:
@@ -3874,8 +3832,6 @@ class APISubscription(object):
             if self.parent.parent.online(self.protocol.url.restDomain.split("/")[0]):
 
                 self.parent.parent.delegate._subscriptionWillUpdate(self)
-
-                self.stillAlive()
 
                 success, message, changes = self.protocol.update()
 
